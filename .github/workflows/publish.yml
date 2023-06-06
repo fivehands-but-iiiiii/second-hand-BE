@@ -1,0 +1,55 @@
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ "BE/000-cicd-test" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: checkout
+      uses: actions/checkout@v3
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+
+#     - name: make application-database.yaml
+#       run: |
+#         cd ./src/main/resources
+#         touch ./application-database.yaml
+#         echo "${{ secrets.application_database }}" >> ./application-database.yaml
+#       shell: bash
+
+    ## gradle build
+    - name: Build with Gradle
+      run: ./gradlew bootJar
+
+
+    - name: docker build and push
+      run: |
+        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        docker build -t ${{ secrets.DOCKER_REPO }}/secondhand .
+        docker push ${{ secrets.DOCKER_REPO }}/secondhand
+
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ubuntu
+        key: ${{ secrets.KEY }}
+        script: |
+          sudo docker rm -f $(docker ps -qa)
+          sudo docker pull ${{ secrets.DOCKER_REPO }}/secondhand
+          sudo docker pull ${{ secrets.DOCKER_REPO }}/secondhand-nginx
+          docker-compose up -d
+          docker image prune -f
+          
+          
