@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class TestApiController {
 
+    @GetMapping("")
+    public String testGetRequest() {
+        return "/get?input=?  /post{testText=?,testNumber=?}";
+    }
+
     @GetMapping("/get")
     public String testGetRequest(String input) {
         return "API response = " + input;
