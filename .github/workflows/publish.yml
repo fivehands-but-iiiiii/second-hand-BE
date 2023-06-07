@@ -2,7 +2,7 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "BE/000-cicd-test" ]
+    branches: [ "BE/007-build-test" ]
 
 permissions:
   contents: read
@@ -30,7 +30,10 @@ jobs:
 
     ## gradle build
     - name: Build with Gradle
-      run: ./gradlew bootJar
+      run: 
+        cd backend
+        chmod +x gradlew
+        ./gradlew clean build
 
 
     - name: docker build and push
