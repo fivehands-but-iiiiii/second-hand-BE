@@ -2,7 +2,10 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "BE/000-cicd-test" ]
+    branches: [ "BE/001-init-project" ]
+
+env:
+  working-directory: ./backend
 
 permissions:
   contents: read
@@ -19,7 +22,11 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '11'
-        distribution: 'temurin'
+        distribution: 'adopt'
+    - run: |
+        touch ./backend/src/main/resources/application-db.yml
+        echo "${{ secrets.APPLICATION }}" > ./backend/src/main/resources/application-db.yml
+        cat ./backend/src/main/resources/application-db.yml
 
 #     - name: make application-database.yaml
 #       run: |
@@ -30,8 +37,10 @@ jobs:
 
     ## gradle build
     - name: Build with Gradle
-      run: ./gradlew bootJar
-
+      run: |
+        chmod +x gradlew
+        ./gradlew clean build
+      working-directory: ${{ env.working-directory }}
 
     - name: docker build and push
       run: |
