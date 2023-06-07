@@ -4,6 +4,9 @@ on:
   push:
     branches: [ "BE/007-build-test" ]
 
+env:
+  working-directory: ./backend
+
 permissions:
   contents: read
 
@@ -20,7 +23,8 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-        
+  
+    - uses: actions/setup-java@v3
     - run: |
         touch ./backend/src/main/resources/application.yml
         echo "${{ secrets.APPLICATION }}" > ./backend/src/main/resources/application.yml
@@ -36,10 +40,9 @@ jobs:
     ## gradle build
     - name: Build with Gradle
       run: |
-        cd backend
         chmod +x gradlew
         ./gradlew clean build
-
+      working-directory: ${{ env.working-directory }}
 
     - name: docker build and push
       run: |
