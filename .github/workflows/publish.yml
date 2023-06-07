@@ -23,8 +23,6 @@ jobs:
       with:
         java-version: '11'
         distribution: 'adopt'
-  
-    - uses: actions/setup-java@v3
     - run: |
         touch ./backend/src/main/resources/application.yml
         echo "${{ secrets.APPLICATION }}" > ./backend/src/main/resources/application.yml
