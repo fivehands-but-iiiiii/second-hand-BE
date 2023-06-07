@@ -59,7 +59,7 @@ jobs:
           sudo docker rm -f $(docker ps -qa)
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/secondhand
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/secondhand-nginx
-          docker-compose up -d
+          docker compose up -d
           docker image prune -f
           
           
