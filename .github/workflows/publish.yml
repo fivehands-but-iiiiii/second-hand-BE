@@ -19,7 +19,12 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '11'
-        distribution: 'adopt'
+        distribution: 'temurin'
+        
+    - run: |
+        touch ./backend/src/main/resources/application.yml
+        echo "${{ secrets.APPLICATION }}" > ./backend/src/main/resources/application.yml
+        cat ./backend/src/main/resources/application.yml
 
 #     - name: make application-database.yaml
 #       run: |
