@@ -45,8 +45,8 @@ jobs:
     - name: docker build and push
       run: |
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-        docker build -t ${{ secrets.DOCKER_REPO }}/secondhand .
-        docker push ${{ secrets.DOCKER_REPO }}/secondhand
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/secondhand .
+        docker push ${{ secrets.DOCKER_USERNAME }}/secondhand
 
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@master
@@ -56,8 +56,8 @@ jobs:
         key: ${{ secrets.KEY }}
         script: |
           sudo docker rm -f $(docker ps -qa)
-          sudo docker pull ${{ secrets.DOCKER_REPO }}/secondhand
-          sudo docker pull ${{ secrets.DOCKER_REPO }}/secondhand-nginx
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/secondhand
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/secondhand-nginx
           docker-compose up -d
           docker image prune -f
           
