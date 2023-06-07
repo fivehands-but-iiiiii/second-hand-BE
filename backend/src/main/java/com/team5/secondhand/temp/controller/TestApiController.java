@@ -1,7 +1,7 @@
-package com.team5.backend.temp.controller;
+package com.team5.secondhand.temp.controller;
 
-import com.team5.backend.temp.dto.PostRequest;
-import com.team5.backend.temp.dto.PostResponse;
+import com.team5.secondhand.temp.dto.PostRequest;
+import com.team5.secondhand.temp.dto.PostResponse;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/test")

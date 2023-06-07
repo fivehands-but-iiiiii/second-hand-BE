@@ -1,4 +1,4 @@
-package com.team5.backend.temp.dto;
+package com.team5.secondhand.temp.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
