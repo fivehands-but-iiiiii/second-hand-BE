@@ -2,7 +2,8 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "BE/001-init-project" ]
+    branches: [ "dev/BE" ]
+    
 
 env:
   working-directory: ./backend
