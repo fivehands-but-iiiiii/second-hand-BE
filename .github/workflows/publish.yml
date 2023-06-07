@@ -24,9 +24,9 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
     - run: |
-        touch ./backend/src/main/resources/application.yml
-        echo "${{ secrets.APPLICATION }}" > ./backend/src/main/resources/application.yml
-        cat ./backend/src/main/resources/application.yml
+        touch ./backend/src/main/resources/application-db.yml
+        echo "${{ secrets.APPLICATION }}" > ./backend/src/main/resources/application-db.yml
+        cat ./backend/src/main/resources/application-db.yml
 
 #     - name: make application-database.yaml
 #       run: |
