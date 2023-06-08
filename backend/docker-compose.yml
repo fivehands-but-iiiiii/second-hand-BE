@@ -1,0 +1,20 @@
+version: "1"
+services:
+  was:
+    image: inewpow/secondhand-nginx
+    container_name: was-nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - application
+
+  application:
+    build: .
+    image: inewpow/secondhand
+    container_name: was-application
+    ports:
+      - 8080:8080
+    expose:
+      - 8080
