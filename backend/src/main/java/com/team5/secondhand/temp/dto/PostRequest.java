@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PostRequest {
     private String testText;
-    private String testNumber;
+    private Long testNumber;
 }

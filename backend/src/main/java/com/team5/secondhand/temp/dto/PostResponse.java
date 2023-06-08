@@ -12,6 +12,7 @@ public class PostResponse {
     private String testNumberResult;
 
     public static PostResponse from(PostRequest postRequest) {
-        return new PostResponse("result : "+postRequest.getTestText(), postRequest.getTestNumber());
+        return new PostResponse("RESULT = { "+postRequest.getTestText() + " }",
+                "RESUT NUMBER = { " + postRequest.getTestNumber() + " }");
     }
 }
