@@ -1,4 +1,31 @@
-const theme = {
+interface Theme {
+  neutral: {
+    text: string;
+    textWeak: string;
+    textStrong: string;
+    background: string;
+    backgroundWeak: string;
+    backgroundBold: string;
+    backgroundBlur: string;
+    border: string;
+    borderStrong: string;
+    overlay: string;
+  };
+  accent: {
+    text: string;
+    textWeak: string;
+    backgroundPrimary: string;
+    backgroundSecondary: string;
+  };
+  system: {
+    default: string;
+    warning: string;
+    background: string;
+    backgroundWeak: string;
+  };
+}
+
+const theme: Theme = {
   neutral: {
     text: '$gray900',
     textWeak: '$gray800',
@@ -24,5 +51,4 @@ const theme = {
     backgroundWeak: '$gray200',
   },
 };
-
 export default theme;
