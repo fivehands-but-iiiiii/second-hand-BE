@@ -1,23 +1,4 @@
-interface Colors {
-  white: string;
-  gray50: string;
-  gray100: string;
-  gray200: string;
-  gray300: string;
-  gray400: string;
-  gray500: string;
-  gray600: string;
-  gray700: string;
-  gray800: string;
-  gray900: string;
-  black: string;
-  mint: string;
-  orange: string;
-  blue: string;
-  red: string;
-}
-
-const colors: Colors = {
+const colors = {
   white: '#FFFFFF',
   gray50: '#FAFAFA',
   gray100: 'rgba(249, 249, 249, 0.8)',
@@ -36,4 +17,31 @@ const colors: Colors = {
   red: '#FF3B30',
 };
 
-export default colors;
+const palette = {
+  neutral: {
+    text: colors.gray900,
+    textWeak: colors.gray800,
+    textStrong: colors.black,
+    background: colors.white,
+    backgroundWeak: colors.gray50,
+    backgroundBold: colors.gray400,
+    backgroundBlur: colors.gray100,
+    border: colors.gray500,
+    borderStrong: colors.gray700,
+    overlay: colors.gray600,
+  },
+  accent: {
+    text: colors.white,
+    textWeak: colors.black,
+    backgroundPrimary: colors.orange,
+    backgroundSecondary: colors.mint,
+  },
+  system: {
+    default: colors.blue,
+    warning: colors.red,
+    background: colors.white,
+    backgroundWeak: colors.gray200,
+  },
+};
+
+export default palette;
