@@ -1,47 +1,47 @@
 const fonts = {
   largeTitle: {
-    weight: 'regular',
-    size: '34px',
+    fontWeight: 400,
+    fontSize: '34px',
   },
   title1: {
-    weight: 'regular',
-    size: '28px',
+    fontWeight: 400,
+    fontSize: '28px',
   },
   title2: {
-    weight: 'regular',
-    size: '22px',
+    fontWeight: 400,
+    fontSize: '22px',
   },
   title3: {
-    weight: 'regular',
-    size: '20px',
+    fontWeight: 400,
+    fontSize: '20px',
   },
   headline: {
-    weight: 'semibold',
-    size: '17px',
+    fontWeight: 600,
+    fontSize: '17px',
   },
   body: {
-    weight: 'regular',
-    size: '17px',
+    fontWeight: 400,
+    fontSize: '17px',
   },
   callout: {
-    weight: 'regular',
-    size: '16px',
+    fontWeight: 400,
+    fontSize: '16px',
   },
   subhead: {
-    weight: 'regular',
-    size: '15px',
+    fontWeight: 400,
+    fontSize: '15px',
   },
   footnote: {
-    weight: 'regular',
-    size: '13px',
+    fontWeight: 400,
+    fontSize: '13px',
   },
   caption1: {
-    weight: 'regular',
-    size: '12px',
+    fontWeight: 400,
+    fontSize: '12px',
   },
   caption2: {
-    weight: 'regular',
-    size: '11px',
+    fontWeight: 400,
+    fontSize: '11px',
   },
 };
 
