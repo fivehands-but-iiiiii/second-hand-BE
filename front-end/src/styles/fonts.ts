@@ -1,23 +1,4 @@
-interface Font {
-  weight: string;
-  size: string;
-}
-
-interface Fonts {
-  largeTitle: Font;
-  title1: Font;
-  title2: Font;
-  title3: Font;
-  headline: Font;
-  body: Font;
-  callout: Font;
-  subhead: Font;
-  footnote: Font;
-  caption1: Font;
-  caption2: Font;
-}
-
-const fonts: Fonts = {
+const fonts = {
   largeTitle: {
     weight: 'regular',
     size: '34px',
