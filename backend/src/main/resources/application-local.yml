@@ -1,0 +1,11 @@
+logging:
+  level:
+    root: warn
+    com.team5.secondhand: debug
+  file:
+    name: application.log
+
+  logback:
+    rolling policy:
+      file-name-pattern: application.%d{yyyy-MM-dd}.log
+      max-history: 30
