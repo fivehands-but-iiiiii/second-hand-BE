@@ -5,6 +5,7 @@ spring:
     group:
       local:
         - db-local
+        - local
       prod:
         - prod
       dev:
