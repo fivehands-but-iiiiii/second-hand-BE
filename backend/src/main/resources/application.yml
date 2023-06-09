@@ -1,22 +1,12 @@
 spring:
   profiles:
-    active:
-      - dev
+    active: dev
     group:
-      local:
-        - db-local
-        - local
-      prod:
-        - prod
-      dev:
-        - dev
-    include:
-      - aws
-      - jwt
+      local: [db-local, local]
+      prod: [prod]
+      dev: [dev]
+    include: [aws, jwt]
   servlet:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
-logging:
-  level:
-    com.team5.secondhand: debug
