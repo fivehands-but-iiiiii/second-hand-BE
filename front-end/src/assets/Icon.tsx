@@ -1,22 +1,29 @@
-import * as icons from '@assets/svgs/index';
+import * as iconTypes from '@assets/svgs/index';
 import palette from '@styles/colors';
 
 interface IconProps {
-  iconName: keyof typeof icons;
-  width?: number;
-  height?: number;
+  name: keyof typeof iconTypes;
+  size?: keyof typeof iconSizes;
   fill?: string;
 }
 
+const iconSizes = {
+  xs: 14,
+  sm: 17,
+  md: 20,
+  lg: 24,
+  xl: 30,
+};
+
 const Icon = ({
-  iconName,
-  width = 21,
-  height = width,
+  name,
+  size = 'md',
   fill = palette.neutral.text,
 }: IconProps) => {
-  const IconComponent = icons[iconName];
+  const IconComponent = iconTypes[name];
+  const iconSize = iconSizes[size];
 
-  return <IconComponent width={width} height={height} fill={fill} />;
+  return <IconComponent width={iconSize} height={iconSize} fill={fill} />;
 };
 
 export default Icon;
