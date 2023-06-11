@@ -1,11 +1,10 @@
 import { useState, createContext } from 'react';
 
-import { ThemeProvider } from 'styled-components';
-
 import Login, { UserInfo } from '@pages/Login';
+import GlobalStyle from '@styles/globalStyles';
+import theme from '@styles/theme';
 
-import GlobalStyle from './styles/globalStyles';
-import theme from './styles/theme';
+import { ThemeProvider } from 'styled-components';
 
 export const UserInfoContext = createContext({});
 

@@ -1,4 +1,5 @@
 import { DefaultTheme } from 'styled-components';
+
 import palette from './colors';
 import fonts from './fonts';
 
