@@ -16,15 +16,39 @@
     "import/order": [
       "error",
       {
-        "groups": ["builtin", "external", "parent", "sibling", "index"],
+        "groups": ["builtin", "external", "internal", "parent", "sibling", "index", "unknown"],
+        "pathGroups": [
+          {
+            "pattern": "react*",
+            "group": "external",
+            "position": "before"
+          },
+          {
+            "pattern": "@pages/*",
+            "group": "internal",
+            "position": "after"
+          },
+          {
+            "pattern": "@components/*",
+            "group": "internal",
+            "position": "after"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": [],
         "alphabetize": {
           "order": "asc",
           "caseInsensitive": true
         },
-        "newlines-between": "never"
+        "newlines-between": "always"
       }
     ],
     "import/no-unresolved": "off",
-    "import/export": "off"
+    "import/export": "off",
+    "react/react-in-jsx-scope": "off",
+    "camelcase": "error",
+    "spaced-comment": "error",
+    "quotes": ["error", "single"],
+    "no-duplicate-imports": "error",
+    "react/no-unescaped-entities": 0
   }
 }
