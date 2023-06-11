@@ -3,7 +3,7 @@ import { styled } from 'styled-components';
 
 interface ButtonProps extends HTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
-  type?: 'FAB' | 'rectangle';
+  type?: 'FA' | 'rectangle';
   active?: boolean;
 }
 
@@ -14,7 +14,7 @@ const Button = ({
   ...rest
 }: ButtonProps) => {
   const ButtonTypes = {
-    FAB: MyFAB,
+    FA: MyFAB,
     rectangle: MyRectangleButton,
   };
   const MyButton = ButtonTypes[type];
@@ -52,6 +52,7 @@ const MyFAB = styled(MyButton)`
   width: 56px;
   height: 56px;
   padding: 0;
+  gap: 0 4px;
   background: ${({ theme }) => theme.colors.accent.backgroundPrimary};
   border-radius: 50%;
   ${({ theme }) => theme.fonts.subhead}
