@@ -1,23 +1,16 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+import { DETAIL_STATUS_MENU } from '@common/PopupSheet/sheetTypes';
+import PopupSheet from '@components/common/PopupSheet/PopupSheet';
+
 import styled from 'styled-components';
 
-export interface UserInfo {
-  id: number;
-  memberId: string;
-  profileImgUrl: string;
-  region: number[];
-}
-
-interface LoginProps {
-  handleUserInfo: (userInfo: UserInfo) => void;
-}
-
-const Login = ({ handleUserInfo }: LoginProps) => {
+const Login = () => {
   const [inputValue, setInputValue] = useState('');
+  const navigate = useNavigate();
 
   const fetchPost = async (inputValue: string) => {
-    const navigate = useNavigate();
     const res = await fetch('/login', {
       method: 'POST',
       headers: {
@@ -27,7 +20,6 @@ const Login = ({ handleUserInfo }: LoginProps) => {
     });
     const data = await res.json();
     if (data) {
-      handleUserInfo(data);
       navigate('/');
     }
   };
@@ -41,6 +33,11 @@ const Login = ({ handleUserInfo }: LoginProps) => {
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="아이디를 입력하세요"
+        />
+        <PopupSheet
+          type="slideUp"
+          menu={DETAIL_STATUS_MENU}
+          onClose={() => console.log(1)}
         />
       </div>
       <div>

@@ -1,28 +1,23 @@
-import { useState, createContext } from 'react';
+import { createContext } from 'react';
+import { BrowserRouter } from 'react-router-dom';
 
-import Login, { UserInfo } from '@pages/Login';
 import GlobalStyle from '@styles/globalStyles';
 import theme from '@styles/theme';
 
 import { ThemeProvider } from 'styled-components';
 
+import AppRouter from './routes/AppRouter';
+
 export const UserInfoContext = createContext({});
 
 function App() {
-  const [userInfo, setUserInfo] = useState({});
-  const handleUserInfo = (userInfo: UserInfo) => {
-    setUserInfo(userInfo);
-  };
-
   return (
     <>
       <ThemeProvider theme={theme}>
-        <UserInfoContext.Provider value={{ userInfo, handleUserInfo }}>
-          <GlobalStyle />
-          <div className="app">
-            <Login handleUserInfo={handleUserInfo} />
-          </div>
-        </UserInfoContext.Provider>
+        <GlobalStyle />
+        <BrowserRouter>
+          <AppRouter />
+        </BrowserRouter>
       </ThemeProvider>
     </>
   );
