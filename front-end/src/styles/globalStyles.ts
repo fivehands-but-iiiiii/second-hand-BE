@@ -21,6 +21,12 @@ const GlobalStyle = createGlobalStyle`
   * {
     box-sizing: border-box;
   }
+
+  button {
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+  }
 `;
 
 export default GlobalStyle;
