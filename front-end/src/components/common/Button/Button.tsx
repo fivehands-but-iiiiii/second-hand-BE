@@ -1,61 +1,122 @@
 import { HTMLAttributes, ReactNode } from 'react';
-import { styled } from 'styled-components';
+
+import { css, styled } from 'styled-components';
+
+interface Circle {
+  [key: string]: number;
+}
+
+interface ButtonStyleProps extends ButtonProps {
+  circleSize?: number;
+}
 
 interface ButtonProps extends HTMLAttributes<HTMLButtonElement> {
-  children: ReactNode;
-  type?: 'FA' | 'rectangle';
   active?: boolean;
+  category?: boolean;
+  icon?: boolean;
+  circle?: 'sm' | 'md' | 'lg';
+  fullWidth?: boolean;
+  spaceBetween?: boolean;
+  disabled?: boolean;
+  children: ReactNode;
 }
 
 const Button = ({
-  children,
-  type = 'rectangle',
   active = false,
+  category = false,
+  icon = false,
+  circle,
+  fullWidth = false,
+  spaceBetween = false,
+  disabled = false,
+  children,
   ...rest
 }: ButtonProps) => {
-  const ButtonTypes = {
-    FA: MyFAB,
-    rectangle: MyRectangleButton,
+  const circleTypes = (circle: keyof Circle) => {
+    const circleSize: Circle = {
+      sm: 20,
+      md: 28,
+      lg: 56,
+    };
+
+    if (circle) {
+      return circleSize[circle];
+    }
   };
-  const MyButton = ButtonTypes[type];
 
   return (
-    <MyButton active={active} {...rest}>
+    <MyButton
+      active={active}
+      category={category}
+      icon={icon}
+      circleSize={circle && circleTypes(circle)}
+      fullWidth={fullWidth}
+      spaceBetween={spaceBetween}
+      disabled={disabled}
+      {...rest}
+    >
       {children}
     </MyButton>
   );
 };
 
-const MyButton = styled.button<ButtonProps>`
-  ${({ theme }) => theme.fonts.subhead}
-  background: ${({ theme, active }) =>
-    active
-      ? theme.colors.accent.backgroundPrimary
-      : theme.colors.system.background};
-  color: ${({ theme, active }) =>
-    active ? theme.colors.accent.text : theme.colors.accent.textWeak};
-`;
-
-const MyRectangleButton = styled(MyButton)`
+const MyButton = styled.button<ButtonStyleProps>`
   display: flex;
-  width: 100%;
-  padding: 16px 20px;
-  justify-content: space-between;
-  ${({ theme }) => theme.fonts.subhead}
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  gap: 4px;
   border-radius: 8px;
-  border: ${({ theme, active }) =>
-    active ? 'none' : `1px solid ${theme.colors.neutral.border}`};
-`;
-
-const MyFAB = styled(MyButton)`
-  position: fixed;
-  width: 56px;
-  height: 56px;
-  padding: 0;
-  gap: 0 4px;
-  background: ${({ theme }) => theme.colors.accent.backgroundPrimary};
-  border-radius: 50%;
-  ${({ theme }) => theme.fonts.subhead}
+  ${({ theme }) => theme.fonts.caption1}
+  ${({ active, theme }) =>
+    active
+      ? css`
+          color: ${theme.colors.accent.text};
+          background-color: ${theme.colors.accent.backgroundPrimary};
+        `
+      : css`
+          color: ${theme.colors.accent.textWeak};
+          border: 1px solid ${theme.colors.neutral.border};
+        `};
+  ${({ icon }) =>
+    icon &&
+    css`
+      flex-direction: column;
+      border: none;
+      gap: 7px;
+    `}
+  ${({ circleSize, theme }) =>
+    circleSize &&
+    css`
+      height: ${circleSize}px;
+      width: ${circleSize}px;
+      ${theme.fonts.caption2};
+      border-radius: 50%;
+      padding: 10px;
+    `}
+  ${({ category }) =>
+    category &&
+    css`
+      border-radius: 50px;
+    `}
+  ${({ fullWidth, theme }) =>
+    fullWidth &&
+    css`
+      width: 100%;
+      padding: 16px 20px;
+      ${theme.fonts.subhead};
+    `}
+  ${({ spaceBetween }) =>
+    spaceBetween &&
+    css`
+      justify-content: space-between;
+    `}
+  ${({ disabled }) =>
+    disabled &&
+    css`
+      pointer-events: none;
+      cursor: default;
+    `}
 `;
 
 export default Button;
