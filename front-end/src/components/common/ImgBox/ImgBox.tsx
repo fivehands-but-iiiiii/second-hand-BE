@@ -1,28 +1,24 @@
 import { styled } from 'styled-components';
 
-import theme from '../../../styles/theme';
-
 export interface ImgBoxProps {
   src: string;
-  width: number;
-  height: number;
+  size?: 'sm' | 'md' | 'lg';
 }
 
-const ImgBox = ({ src, width, height }: ImgBoxProps) => {
-  return <ImgBoxContainer src={src} alt={src} width={width} height={height} />;
+const ImgBox = ({ src, size = 'lg' }: ImgBoxProps) => {
+  const boxType = {
+    sm: 48,
+    md: 80,
+    lg: 120,
+  };
+  const boxSize = boxType[size];
+  return <MyImgBox src={src} alt={src} width={boxSize} height={boxSize} />;
 };
 
-ImgBox.defaultProps = {
-  width: 120,
-  height: 120,
-};
-
-const ImgBoxContainer = styled.img<ImgBoxProps>`
-  width: ${({ width }) => width}px;
-  height: ${({ height }) => height}px;
-  border: 5px solid ${theme.neutral.border};
+const MyImgBox = styled.img<ImgBoxProps>`
   border-radius: 10px;
   background-color: #f2f2f2;
+  border: 1px solid ${({ theme }) => theme.colors.neutral.border};
 `;
 
 export default ImgBox;
