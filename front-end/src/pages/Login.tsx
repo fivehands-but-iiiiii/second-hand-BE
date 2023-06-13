@@ -1,23 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import styled from 'styled-components';
 
-export interface UserInfo {
-  id: number;
-  memberId: string;
-  profileImgUrl: string;
-  region: number[];
-}
-
-interface LoginProps {
-  handleUserInfo: (userInfo: UserInfo) => void;
-}
-
-const Login = ({ handleUserInfo }: LoginProps) => {
+const Login = () => {
   const [inputValue, setInputValue] = useState('');
+  const navigate = useNavigate();
 
   const fetchPost = async (inputValue: string) => {
-    const navigate = useNavigate();
     const res = await fetch('/login', {
       method: 'POST',
       headers: {
@@ -27,7 +17,6 @@ const Login = ({ handleUserInfo }: LoginProps) => {
     });
     const data = await res.json();
     if (data) {
-      handleUserInfo(data);
       navigate('/');
     }
   };
