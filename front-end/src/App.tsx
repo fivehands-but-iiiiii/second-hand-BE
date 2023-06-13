@@ -1,5 +1,6 @@
 import { BrowserRouter } from 'react-router-dom';
 
+import Tabs from '@components/common/TabBar/Tabs';
 import GlobalStyle from '@styles/globalStyles';
 import theme from '@styles/theme';
 
@@ -14,6 +15,7 @@ const App = () => {
         <GlobalStyle />
         <BrowserRouter>
           <AppRouter />
+          <Tabs></Tabs>
         </BrowserRouter>
       </ThemeProvider>
     </>
