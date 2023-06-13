@@ -11,6 +11,7 @@ const MobileLayout = () => {
 };
 
 const MyMobileLayout = styled.div`
+  position: relative;
   width: 393px;
   height: 852px;
   margin: 0 auto;
