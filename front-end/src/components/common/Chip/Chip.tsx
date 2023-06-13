@@ -4,7 +4,7 @@ interface ChipProps {
   status: 'reservation' | 'soldOut';
 }
 
-const Chip = ({ status = 'reservation' }: ChipProps) => {
+const Chip = ({ status }: ChipProps) => {
   const chipTypes = {
     reservation: {
       text: '예약중',
