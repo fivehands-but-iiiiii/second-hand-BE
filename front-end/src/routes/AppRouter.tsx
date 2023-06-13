@@ -1,7 +1,7 @@
 import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
 
 import Home from '@pages/Home';
-import Join from '@pages/Join';
+// import Join from '@pages/Join';
 import MobileLayout from '@pages/Layout';
 import Login from '@pages/Login';
 
@@ -27,7 +27,7 @@ const AppRouter = () => {
         />
       )} */}
         <Route path="/login" element={<Login />} />
-        <Route path="/join" element={<Join />} />
+        {/* <Route path="/join" element={<Join />} /> */}
         <Route path="/" element={<Home />} />
       </Route>
     </Routes>
