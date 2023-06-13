@@ -6,13 +6,13 @@ interface MenuItem {
   id: string;
   title: string;
   style?: string;
-  onClick?: () => void;
+  onClick: () => void;
 }
 
 interface PopupSheetProps {
   type: 'slideDown' | 'slideUp';
   menu: MenuItem[];
-  onClose?: () => void;
+  onSheetClose: () => void;
 }
 
 interface PopupSheetStyleProps {
@@ -20,7 +20,7 @@ interface PopupSheetStyleProps {
   slidedown?: boolean;
 }
 
-const PopupSheet = ({ type, menu, onClose }: PopupSheetProps) => {
+const PopupSheet = ({ type, menu, onSheetClose }: PopupSheetProps) => {
   const isSlideDown = type === 'slideDown';
 
   return (
@@ -28,7 +28,7 @@ const PopupSheet = ({ type, menu, onClose }: PopupSheetProps) => {
       {isSlideDown ? (
         <MyMenuPopdown>
           {menu &&
-          // onClick 이벤트 페이지에서 주입해야함
+            // onClick 이벤트 페이지에서 주입해야함
             menu.map(({ id, title, style, onClick }) => (
               <MyPopupOption key={id} option={style} slidedown>
                 <Button fullWidth icon onClick={onClick}>
@@ -51,7 +51,7 @@ const PopupSheet = ({ type, menu, onClose }: PopupSheetProps) => {
                   </MyPopupOption>
                 ))}
             </MyMenuPopUp>
-            <Button fullWidth onClick={onClose}>
+            <Button fullWidth onClick={onSheetClose}>
               취소
             </Button>
           </MyPopupSheet>
