@@ -6,6 +6,7 @@ interface MenuItem {
   id: string;
   title: string;
   style?: string;
+  onClick?: () => void;
 }
 
 interface PopupSheetProps {
@@ -27,9 +28,10 @@ const PopupSheet = ({ type, menu, onClose }: PopupSheetProps) => {
       {isSlideDown ? (
         <MyMenuPopdown>
           {menu &&
-            menu.map(({ id, title, style }) => (
+          // onClick 이벤트 페이지에서 주입해야함
+            menu.map(({ id, title, style, onClick }) => (
               <MyPopupOption key={id} option={style} slidedown>
-                <Button fullWidth icon onClick={() => console.log(1)}>
+                <Button fullWidth icon onClick={onClick}>
                   {title}
                 </Button>
               </MyPopupOption>
@@ -41,9 +43,9 @@ const PopupSheet = ({ type, menu, onClose }: PopupSheetProps) => {
           <MyPopupSheet>
             <MyMenuPopUp>
               {menu &&
-                menu.map(({ id, title, style }) => (
+                menu.map(({ id, title, style, onClick }) => (
                   <MyPopupOption key={id} option={style}>
-                    <Button fullWidth icon onClick={() => console.log(1)}>
+                    <Button fullWidth icon onClick={onClick}>
                       {title}
                     </Button>
                   </MyPopupOption>
