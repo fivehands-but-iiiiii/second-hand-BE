@@ -1,6 +1,5 @@
 package com.team5.secondhand.global.dto;
 
-import lombok.Data;
 import lombok.Getter;
 
 @Getter
