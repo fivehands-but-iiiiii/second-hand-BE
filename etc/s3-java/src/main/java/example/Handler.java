@@ -54,8 +54,10 @@ public class Handler implements RequestHandler<S3Event, String> {
       if (!matcher.matches()) {
           return "";
       }
-      String imageType = matcher.group(1);
-      if (!(JPG_TYPE.equals(imageType)) && !(PNG_TYPE.equals(imageType))) {
+      String imageType = matcher.group(1).toLowerCase();
+
+      if (!(JPG_TYPE.equals(imageType)) && !(PNG_TYPE.equals(imageType))
+              && !(JPEG_TYPE.equals(imageType)) && !(GIF_TYPE.equals(imageType))) {
           return "";
       }
 
