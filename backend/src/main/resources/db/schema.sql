@@ -72,7 +72,7 @@ DROP TABLE IF EXISTS `secondhand-db`.`category`;
 
 CREATE TABLE IF NOT EXISTS `secondhand-db`.`category`
 (
-    `id`      BIGINT       NOT NULL,
+    `id`      BIGINT       NOT NULL auto_increment,
     `title`   VARCHAR(16)  NOT NULL,
     `img_url` VARCHAR(100) NOT NULL,
     PRIMARY KEY (`id`),
