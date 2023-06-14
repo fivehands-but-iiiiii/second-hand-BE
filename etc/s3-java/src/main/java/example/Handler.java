@@ -91,14 +91,23 @@ public class Handler implements RequestHandler<S3Event, String> {
     String bucket, String key, String imageType) {
       Map<String, String> metadata = new HashMap<>();
       metadata.put("Content-Length", Integer.toString(outputStream.size()));
-      if (JPG_TYPE.equals(imageType)) {
-        metadata.put("Content-Type", JPG_MIME);
-      } else if (PNG_TYPE.equals(imageType)) {
-        metadata.put("Content-Type", PNG_MIME);
-      } else if (JPEG_TYPE.equals(imageType)) {
-        metadata.put("Content-Type", JPEG_MIME);
-      } else if (GIF_TYPE.equals(imageType)) {
-        metadata.put("Content-Type", GIF_MIME);
+
+      imageType = imageType.toLowerCase();
+      String contentTypeHeader = "Content-Type";
+
+      switch (imageType) {
+          case JPG_TYPE:
+              metadata.put(contentTypeHeader, JPG_MIME);
+              break;
+          case PNG_TYPE:
+              metadata.put(contentTypeHeader, PNG_MIME);
+              break;
+          case JPEG_TYPE:
+              metadata.put(contentTypeHeader, JPEG_MIME);
+              break;
+          case GIF_TYPE:
+              metadata.put(contentTypeHeader, GIF_MIME);
+              break;
       }
 
       PutObjectRequest putObjectRequest = PutObjectRequest.builder()
