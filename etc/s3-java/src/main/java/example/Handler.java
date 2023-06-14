@@ -24,8 +24,8 @@ import java.util.regex.Pattern;
 // Handler value: example.Handler
 public class Handler implements RequestHandler<S3Event, String> {
 
-    private static final float MAX_WIDTH = 160;
-    private static final float MAX_HEIGHT = 160;
+    private static final float MAX_WIDTH = 300;
+    private static final float MAX_HEIGHT = 300;
     private final String JPG_TYPE = "jpg";
     private final String JPG_MIME = "image/jpeg";
     private final String JPEG_TYPE = "jpeg";
@@ -56,8 +56,9 @@ public class Handler implements RequestHandler<S3Event, String> {
       }
       String imageType = matcher.group(1).toLowerCase();
 
-      if (!(JPG_TYPE.equals(imageType)) && !(PNG_TYPE.equals(imageType))
-              && !(JPEG_TYPE.equals(imageType)) && !(GIF_TYPE.equals(imageType))) {
+      if (!(JPG_TYPE.equals(imageType.toLowerCase())) && !(PNG_TYPE.equals(imageType.toLowerCase()))
+              && !(JPEG_TYPE.equals(imageType.toLowerCase())) && !(GIF_TYPE.equals(imageType.toLowerCase()))) {
+          System.out.println("Skipping non-image " + srcKey);
           return "";
       }
 
