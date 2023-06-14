@@ -1,4 +1,4 @@
-import { HTMLProps } from 'react';
+import { useCallback, useRef, ComponentPropsWithRef } from 'react';
 
 import Icon from '@assets/Icon';
 import * as iconTypes from '@assets/svgs/index';
@@ -9,7 +9,7 @@ interface TextareaStyleProps extends TextareaProps {
   hasAdorned?: boolean;
 }
 
-interface TextareaProps extends HTMLProps<HTMLTextAreaElement> {
+interface TextareaProps extends ComponentPropsWithRef<'textarea'> {
   value: string;
   type?: 'default' | 'adorned' | 'chat';
   singleLine?: boolean;
@@ -23,6 +23,7 @@ const Textarea = ({
   adorned,
   ...rest
 }: TextareaProps) => {
+  const textRef = useRef<HTMLTextAreaElement>(null);
   const textareaTypes = {
     default: MyDefaultTextarea,
     adorned: MyAdornedTextarea,
@@ -30,13 +31,21 @@ const Textarea = ({
   };
   const MyTextarea = textareaTypes[type];
 
+  const handleResizeHeight = useCallback(() => {
+    if (singleLine) return;
+    if (textRef.current) {
+      textRef.current.style.height = textRef.current.scrollHeight + 'px';
+    }
+  }, []);
+
   return (
     <MyTextareaContainer>
       <MyTextarea
+        ref={textRef}
+        onInput={handleResizeHeight}
         value={value}
         singleLine={singleLine}
         hasAdorned={!!adorned}
-        rows={1}
         {...rest}
       />
       {adorned && (
@@ -60,7 +69,8 @@ const MyTextarea = styled.textarea<TextareaStyleProps>`
   border: none;
   outline: none;
   resize: none;
-  ${({ singleLine }) => singleLine && 'white-space: nowrap;'}
+  overflow: hidden;
+  ${({ singleLine }) => singleLine && 'white-space: nowrap; overflow: hidden;'}
   ::placeholder {
     color: ${({ theme }) => theme.colors.neutral.textWeak};
   }

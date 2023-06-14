@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useState } from 'react';
+import { useCallback, useState, ChangeEvent } from 'react';
 
 const useInput = (initialValue: string) => {
   const [value, setValue] = useState(initialValue);
@@ -11,6 +11,7 @@ const useInput = (initialValue: string) => {
   );
 
   const onSubmit = useCallback(() => {
+    // TODO: submit 기능 구현
     setValue('');
   }, []);
 
