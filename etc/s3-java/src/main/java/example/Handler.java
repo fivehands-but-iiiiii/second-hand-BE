@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification.S3EventNotificationRecord;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -16,8 +17,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +26,7 @@ public class Handler implements RequestHandler<S3Event, String> {
     private static final float MAX_WIDTH = 300;
     private static final float MAX_HEIGHT = 300;
     private final String JPG_TYPE = "jpg";
-    private final String JPG_MIME = "image/jpeg";
+    private final String JPG_MIME = "image/jpg";
     private final String JPEG_TYPE = "jpeg";
     private final String JPEG_MIME = "image/jpeg";
     private final String PNG_TYPE = "png";
@@ -40,7 +39,7 @@ public class Handler implements RequestHandler<S3Event, String> {
   public String handleRequest(S3Event s3event, Context context) {
     try {
       S3EventNotificationRecord record = s3event.getRecords().get(0);
-      
+
       String srcBucket = record.getS3().getBucket().getName();
 
       // Object key may have spaces or unicode non-ASCII characters.
@@ -92,31 +91,31 @@ public class Handler implements RequestHandler<S3Event, String> {
 
   private void putObject(S3Client s3Client, ByteArrayOutputStream outputStream,
     String bucket, String key, String imageType) {
-      Map<String, String> metadata = new HashMap<>();
-      metadata.put("Content-Length", Integer.toString(outputStream.size()));
+      ObjectMetadata metadata = new ObjectMetadata();
+      metadata.setContentLength(outputStream.size());
 
       imageType = imageType.toLowerCase();
-      String contentTypeHeader = "Content-Type";
 
       switch (imageType) {
           case JPG_TYPE:
-              metadata.put(contentTypeHeader, JPG_MIME);
+              metadata.setContentType(JPG_MIME);
               break;
           case PNG_TYPE:
-              metadata.put(contentTypeHeader, PNG_MIME);
+              metadata.setContentType(PNG_MIME);
               break;
           case JPEG_TYPE:
-              metadata.put(contentTypeHeader, JPEG_MIME);
+              metadata.setContentType(JPEG_MIME);
               break;
           case GIF_TYPE:
-              metadata.put(contentTypeHeader, GIF_MIME);
+              metadata.setContentType(GIF_MIME);
               break;
       }
 
       PutObjectRequest putObjectRequest = PutObjectRequest.builder()
         .bucket(bucket)
         .key(key)
-        .metadata(metadata)
+        .metadata(metadata.getUserMetadata())
+        .contentDisposition("inline")
         .build();
 
       // Uploading to S3 destination bucket
