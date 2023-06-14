@@ -1,6 +1,6 @@
 package com.team5.secondhand.global.exception;
 
-import com.team5.secondhand.global.exception.dto.ErrorResponse;
+import com.team5.secondhand.global.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

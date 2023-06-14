@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class GenericResponse<T> {
+
     private final String message;
     private final T data;
 
