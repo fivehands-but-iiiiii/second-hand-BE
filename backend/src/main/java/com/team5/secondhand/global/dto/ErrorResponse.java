@@ -1,4 +1,4 @@
-package com.team5.secondhand.global.exception.dto;
+package com.team5.secondhand.global.dto;
 
 import lombok.Getter;
 
