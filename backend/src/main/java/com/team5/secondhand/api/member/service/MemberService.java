@@ -59,7 +59,7 @@ public class MemberService implements JoinService {
 
     public MemberDetails loginByOAuth(UserProfile loginDTO) throws UnauthorizedException, EmptyBasedRegionException {
         Member member = memberRepository.findByMemberId(loginDTO.getLogin())
-                .orElseThrow(() -> new UnauthorizedException("가입되지 않은 회원입니다"));
+                .orElseThrow(() -> new UnauthorizedException("가입되지 않은 회원입니다", loginDTO));
 
         return MemberDetails.fromMember(member);
     }
