@@ -1,4 +1,9 @@
-import { useCallback, useRef, ComponentPropsWithRef } from 'react';
+import {
+  useCallback,
+  useRef,
+  ComponentPropsWithRef,
+  KeyboardEvent,
+} from 'react';
 
 import Icon from '@assets/Icon';
 import * as iconTypes from '@assets/svgs/index';
@@ -29,19 +34,28 @@ const Textarea = ({
   const textRef = useRef<HTMLTextAreaElement>(null);
 
   const handleResizeHeight = useCallback(() => {
-    if (singleLine) return;
-    if (textRef.current) {
+    if (!singleLine && textRef.current) {
       textRef.current.style.height = textRef.current.scrollHeight + 'px';
     }
   }, []);
+
+  const preventNewLineOnEnter = useCallback(
+    (event: KeyboardEvent<HTMLTextAreaElement>) => {
+      if (singleLine && event.key === 'Enter') {
+        event.preventDefault();
+      }
+    },
+    [],
+  );
 
   return (
     <MyTextareaContainer>
       <MyTextarea
         ref={textRef}
-        onInput={handleResizeHeight}
         value={value}
         singleLine={singleLine}
+        onInput={handleResizeHeight}
+        onKeyDown={preventNewLineOnEnter}
         {...rest}
       />
       {adorned && (
