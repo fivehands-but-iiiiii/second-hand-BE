@@ -12,7 +12,7 @@ import palette from '@styles/colors';
 import { styled } from 'styled-components';
 
 interface TextareaProps extends ComponentPropsWithRef<'textarea'> {
-  value: string;
+  value?: string;
   type?: 'default' | 'adorned' | 'chat';
   singleLine?: boolean;
   adorned?: keyof typeof iconTypes;
@@ -68,7 +68,9 @@ const Textarea = ({
 };
 
 const MyTextareaContainer = styled.div`
+  width: 100%;
   position: relative;
+  display: flex;
 `;
 
 const MyTextarea = styled.textarea<TextareaProps>`
