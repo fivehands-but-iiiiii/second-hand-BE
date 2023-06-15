@@ -1,4 +1,4 @@
-package com.team5.secondhand.global.oauth.config;
+package com.team5.secondhand.api.oauth.config;
 
 import lombok.Getter;
 import lombok.Setter;

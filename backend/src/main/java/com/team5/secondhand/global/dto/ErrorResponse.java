@@ -9,7 +9,7 @@ public class ErrorResponse {
     private final String errorInfo;
     private final String message;
 
-    private ErrorResponse(String errorInfo, String message) {
+    protected ErrorResponse(String errorInfo, String message) {
         this.errorInfo = errorInfo;
         this.message = message;
     }

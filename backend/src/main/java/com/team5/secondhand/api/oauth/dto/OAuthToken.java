@@ -1,4 +1,4 @@
-package com.team5.secondhand.global.oauth.dto;
+package com.team5.secondhand.api.oauth.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
