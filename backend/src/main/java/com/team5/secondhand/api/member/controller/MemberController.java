@@ -71,15 +71,14 @@ public class MemberController {
             tags = "Members",
             description = "사용자는 자신의 프로필 사진을 설정할 수 있다."
     )
-    @PatchMapping("/members/image")
-    public GenericResponse<Boolean> setMemberProfile (@RequestBody Long id,
-                                                      @RequestBody MemberProfileImageUpdate request) {
-        //TODO 임시로 파라미터로 member index 받기
+    @PatchMapping(value = "/members/image", consumes = "multipart/form-data")
+    public GenericResponse<ProfileImageInfo> setMemberProfile (@RequestParam Long id,
+                                                               @RequestPart MultipartFile profile) throws ImageHostingException {
+        ProfileImageInfo profileImageInfo = profileUploadUsecase.uploadMemberProfileImage(profile);
+        profileImageInfo.owned(id);
 
-        //TODO service 호출
-
-        //TODO response
-        return GenericResponse.send("Member update profile image Successfully", null);
+        memberService.updateProfileImage(id, profileImageInfo.getUploadUrl());
+        return GenericResponse.send("Member update profile image Successfully", profileImageInfo);
     }
 
     @Operation(
