@@ -54,13 +54,12 @@ public class MemberController {
         return GenericResponse.send("Member joined Successfully", joinedId);
     }
     @Operation(
-        summary = "로그인",
+        summary = "로그아웃",
         tags = "Members",
-        description = "사용자는 로그인을 할 수 있다."
+        description = "사용자는 로그아웃을 할 수 있다."
     )
-    @PostMapping("/login")
-    public GenericResponse<Member> login (MemberJoin request) {
-        //TODO service 호출
+    @PostMapping("/logout")
+    public GenericResponse<Long> logout (MemberJoin request) {
 
         //TODO response
         return GenericResponse.send("Member joined Successfully", null);
@@ -91,7 +90,6 @@ public class MemberController {
                                                      @RequestBody MemberRegionUpdate request) {
         //TODO 임시로 파라미터로 member index 받기
 
-        //TODO service 호출
 
         //TODO response
         return GenericResponse.send("Member update profile image Successfully", null);
