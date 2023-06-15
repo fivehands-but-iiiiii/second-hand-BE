@@ -5,9 +5,6 @@ import * as iconTypes from '@assets/svgs/index';
 import palette from '@styles/colors';
 
 import { styled } from 'styled-components';
-interface TextareaStyleProps extends TextareaProps {
-  hasAdorned?: boolean;
-}
 
 interface TextareaProps extends ComponentPropsWithRef<'textarea'> {
   value: string;
@@ -45,7 +42,6 @@ const Textarea = ({
         onInput={handleResizeHeight}
         value={value}
         singleLine={singleLine}
-        hasAdorned={!!adorned}
         {...rest}
       />
       {adorned && (
@@ -61,7 +57,7 @@ const MyTextareaContainer = styled.div`
   position: relative;
 `;
 
-const MyTextarea = styled.textarea<TextareaStyleProps>`
+const MyTextarea = styled.textarea<TextareaProps>`
   width: 100%;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.neutral.text};
