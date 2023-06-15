@@ -1,11 +1,16 @@
 import { Outlet } from 'react-router-dom';
 
+import NavBar from '@common/NavBar';
+import MainTabBar from '@common/TabBar/MainTabBar';
+
 import styled from 'styled-components';
 
 const MobileLayout = () => {
   return (
     <MyMobileLayout>
+      <NavBar>this is header!</NavBar>
       <Outlet />
+      <MainTabBar userId={1} />
     </MyMobileLayout>
   );
 };

@@ -12,8 +12,10 @@ const TabBar = ({ className, children }: TabBarProps) => {
 };
 
 const MyTabBar = styled.div`
-  height: 83px;
   display: flex;
+  position: sticky;
+  bottom: 0;
+  height: 83px;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;

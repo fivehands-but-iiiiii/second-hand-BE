@@ -21,9 +21,10 @@ export interface SaleItem {
 
 interface ItemProps {
   item: SaleItem;
+  onHistoryPage?: boolean;
 }
 
-const Item = ({ item }: ItemProps) => {
+const Item = ({ item, onHistoryPage = false }: ItemProps) => {
   const {
     id,
     title,
@@ -45,7 +46,7 @@ const Item = ({ item }: ItemProps) => {
         <MyItemTitle>
           <div>{title}</div>
           {/* TODO: add more info icon */}
-          <div>...</div>
+          {onHistoryPage && <div>...</div>}
         </MyItemTitle>
         <MyItemTime>
           {/* TODO: add region */}
