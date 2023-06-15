@@ -13,29 +13,36 @@ import java.util.List;
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends BaseTimeEntity {
+public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String memberId;
+    private String profileImgUrl;
 
-    private String profileImageUrl;
+    @Enumerated(EnumType.STRING)
+    private Oauth oauth;
 
     @Size(min = 1, max = 2)
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<BasedRegion> regions = new ArrayList<>();
 
     @Builder
-    public Member(Long id, String memberId, String profileImageUrl, List<BasedRegion> regions) {
+    public Member(Long id, String memberId, String profileImgUrl, Oauth oauth, List<BasedRegion> regions) {
         this.id = id;
         this.memberId = memberId;
-        this.profileImageUrl = profileImageUrl;
+        this.profileImgUrl = profileImgUrl;
+        this.oauth = oauth;
         this.regions = regions;
     }
 
-    public Member newMember() {
-        return new Member();
+    public static Member newBasicMember(String memberId, String profileImgUrl, List<BasedRegion> regions) {
+        return Member.builder()
+                .memberId(memberId)
+                .profileImgUrl(profileImgUrl)
+                .regions(regions)
+                .oauth(Oauth.NONE)
+                .build();
     }
 
     public Long getRepresentedRegionId() throws EmptyBasedRegionException {
@@ -56,4 +63,7 @@ public class Member extends BaseTimeEntity {
         }
     }
 
+    public void updateBasedRegions(List<BasedRegion> basedRegions) {
+        this.regions = basedRegions;
+    }
 }
