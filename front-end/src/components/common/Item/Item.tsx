@@ -1,3 +1,6 @@
+import Icon from '@assets/Icon';
+import Chip from '@common/Chip/Chip';
+
 import { styled } from 'styled-components';
 
 import ImgBox from '../ImgBox/ImgBox';
@@ -31,6 +34,8 @@ const Item = ({ item }: ItemProps) => {
     likesCount,
     isLike,
   } = item;
+  const hasChip = status !== 'onSale';
+  const formattedPrice = price.toLocaleString();
 
   return (
     <MyItem>
@@ -41,17 +46,25 @@ const Item = ({ item }: ItemProps) => {
           {/* TODO: add more info icon */}
           <div>...</div>
         </MyItemTitle>
-        {/* TODO: add region */}
-        <MyItemTime>{createdAt}</MyItemTime>
+        <MyItemTime>
+          {/* TODO: add region */}
+          <div>역삼1동 &middot;</div>
+          {createdAt}
+        </MyItemTime>
         <MyItemStatus>
-          {/* TODO: add chip component */}
-          <div>{status}</div>
-          <div>{price}원</div>
+          {hasChip && <Chip status={status} />}
+          <div>{formattedPrice}원</div>
         </MyItemStatus>
         <MyItemSubInfo>
-          {/* TODO: add chat, likes icon with isLike prop*/}
-          <div>{chatCount}</div>
-          <div>{likesCount}</div>
+          <MyItemIcon>
+            <Icon name="message" size="sm" />
+            {chatCount}
+          </MyItemIcon>
+          <MyItemIcon>
+            {/* TODO: when icon's like value is false add black icon*/}
+            <Icon name="heart" size="sm" />
+            {likesCount}
+          </MyItemIcon>
         </MyItemSubInfo>
       </MyItemInfo>
     </MyItem>
@@ -82,12 +95,15 @@ const MyItemTitle = styled.div`
 `;
 
 const MyItemTime = styled.div`
+  display: flex;
+  gap: 0 4px;
   color: ${({ theme }) => theme.colors.neutral.textWeak};
   ${({ theme }) => theme.fonts.footnote}
 `;
 
 const MyItemStatus = styled.div`
   display: flex;
+  align-items: center;
   gap: 0 4px;
   font-weight: 590;
   color: ${({ theme }) => theme.colors.neutral.textStrong};
@@ -98,7 +114,14 @@ const MyItemSubInfo = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
+  gap: 0 5px;
+`;
+
+const MyItemIcon = styled.div`
+  display: flex;
+  align-items: flex-end;
   gap: 0 4px;
+  ${({ theme }) => theme.fonts.footnote}
 `;
 
 export default Item;
