@@ -4,6 +4,7 @@ import com.team5.secondhand.api.member.dto.request.BasedRegionSummary;
 import com.team5.secondhand.api.member.dto.request.MemberJoin;
 import com.team5.secondhand.api.member.dto.request.MemberLogin;
 import com.team5.secondhand.api.member.dto.request.MemberRegionUpdate;
+import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.member.exception.ExistMemberIdException;
 import com.team5.secondhand.api.member.exception.UnauthorizedException;
 import com.team5.secondhand.api.member.service.MemberService;
@@ -16,6 +17,7 @@ import com.team5.secondhand.global.aws.dto.response.ProfileImageInfo;
 import com.team5.secondhand.global.aws.exception.ImageHostingException;
 import com.team5.secondhand.global.aws.service.ProfileUploadUsecase;
 import com.team5.secondhand.global.dto.GenericResponse;
+import com.team5.secondhand.global.exception.EmptyBasedRegionException;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -65,13 +67,12 @@ public class MemberController {
             description = "사용자는 로그인을 할 수 있다."
     )
     @PostMapping("/login")
-    public GenericResponse<?> login(MemberLogin request) {
-        //TODO service 호출
-        memberService.login(request);
+    public ResponseEntity<?> login(MemberLogin request) throws UnauthorizedException, EmptyBasedRegionException {
+        MemberDetails member = memberService.login(request);
 
-        return GenericResponse.send("Member joined Successfully", null);
+        return ResponseEntity.ok(GenericResponse.send("Member login Successfully", member));
     }
-      
+
     @Operation(
 
             summary = "로그아웃",
@@ -79,23 +80,19 @@ public class MemberController {
             description = "사용자는 로그아웃을 할 수 있다."
     )
     @PostMapping("/logout")
-    public GenericResponse<Long> logout (MemberJoin request) {
+    public GenericResponse<Long> logout(MemberJoin request) {
 
         //TODO response
         return GenericResponse.send("Member joined Successfully", null);
     }
 
     @GetMapping("/git/login")
-    public ResponseEntity<?> getGithubUser(@RequestParam String code) throws UnauthorizedException, ExistMemberIdException {
+    public ResponseEntity<?> getGithubUser(@RequestParam String code) throws UnauthorizedException, ExistMemberIdException, EmptyBasedRegionException {
         UserProfile user = oAuthService.getGithubUser(code);
+        MemberDetails member = memberService.loginByOAuth(user);
 
-        //가입된 멤버인지 확인
-        if (memberService.isExistMemberId(user.getLogin())) {
-            //todo : jwt 생성
-            return ResponseEntity.ok(GenericResponse.send("login success", user));
-        } else {
-            throw new UnauthorizedException("가입되어 있지 않은 회원입니다. 추가로 회원가입을 진행해주세요.", user);
-        }
+        //todo : jwt 생성
+        return ResponseEntity.ok(GenericResponse.send("Member login Successfully", member));
     }
 
     @Operation(
@@ -104,8 +101,8 @@ public class MemberController {
             description = "사용자는 자신의 프로필 사진을 설정할 수 있다."
     )
     @PatchMapping(value = "/members/image", consumes = "multipart/form-data")
-    public GenericResponse<ProfileImageInfo> setMemberProfile (@RequestParam Long id,
-                                                               @RequestPart MultipartFile profile) throws ImageHostingException {
+    public GenericResponse<ProfileImageInfo> setMemberProfile(@RequestParam Long id,
+                                                              @RequestPart MultipartFile profile) throws ImageHostingException {
         ProfileImageInfo profileImageInfo = profileUploadUsecase.uploadMemberProfileImage(profile);
         profileImageInfo.owned(id);
 
