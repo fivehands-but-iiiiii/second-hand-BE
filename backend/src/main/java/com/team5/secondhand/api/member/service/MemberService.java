@@ -4,10 +4,14 @@ import com.team5.secondhand.api.member.domain.BasedRegion;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.dto.request.MemberJoin;
 import com.team5.secondhand.api.member.dto.request.MemberLogin;
+import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.member.exception.ExistMemberIdException;
+import com.team5.secondhand.api.member.exception.UnauthorizedException;
 import com.team5.secondhand.api.member.repository.MemberBasedRegionRepository;
 import com.team5.secondhand.api.member.repository.MemberRepository;
 import com.team5.secondhand.api.model.Region;
+import com.team5.secondhand.api.oauth.dto.UserProfile;
+import com.team5.secondhand.global.exception.EmptyBasedRegionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,9 +49,19 @@ public class MemberService implements JoinService {
         return newMember.getId();
     }
 
-    public void login(MemberLogin loginDTO) {
+    public MemberDetails login(MemberLogin loginDTO) throws UnauthorizedException, EmptyBasedRegionException {
         //todo : 레포에 해당 id가 있는지 확인 -> 있으면 성공, 없으면 권한 없음
+        Member member = memberRepository.findByMemberId(loginDTO.getMemberId())
+                .orElseThrow(() -> new UnauthorizedException("가입되지 않은 회원입니다"));
 
+        return MemberDetails.fromMember(member);
+    }
+
+    public MemberDetails loginByOAuth(UserProfile loginDTO) throws UnauthorizedException, EmptyBasedRegionException {
+        Member member = memberRepository.findByMemberId(loginDTO.getLogin())
+                .orElseThrow(() -> new UnauthorizedException("가입되지 않은 회원입니다"));
+
+        return MemberDetails.fromMember(member);
     }
 
     public Boolean isExistMemberId(String memberId) throws ExistMemberIdException {
@@ -55,6 +69,6 @@ public class MemberService implements JoinService {
     }
 
     public boolean updateProfileImage(Long id, String uploadUrl) {
-        return memberRepository.updateMemberProfileImage(id,uploadUrl)==1;
+        return memberRepository.updateMemberProfileImage(id, uploadUrl) == 1;
     }
 }
