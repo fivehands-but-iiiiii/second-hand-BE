@@ -27,8 +27,15 @@ jobs:
     - run: |
         touch ./backend/src/main/resources/application-aws.yml
         echo "${{ secrets.APPLICATION_AWS }}" > ./backend/src/main/resources/application-aws.yml
-                touch ./backend/src/main/resources/application-prod.yml
+        
+        touch ./backend/src/main/resources/application-prod.yml
         echo "${{ secrets.APPLICATION_PROD }}" > ./backend/src/main/resources/application-prod.yml
+        
+        touch ./backend/src/main/resources/application-oauth.yml
+        echo "${{ secrets.APPLICATION_PROD }}" > ./backend/src/main/resources/application-oauth.yml
+     
+        touch ./backend/src/main/resources/application-jwt.yml
+        echo "${{ secrets.APPLICATION_PROD }}" > ./backend/src/main/resources/application-jwt.yml
      
 #     - name: make application-database.yaml
 #       run: |
