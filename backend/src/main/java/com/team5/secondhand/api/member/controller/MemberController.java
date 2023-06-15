@@ -3,25 +3,22 @@ package com.team5.secondhand.api.member.controller;
 import com.team5.secondhand.api.member.dto.request.BasedRegionSummary;
 import com.team5.secondhand.api.member.dto.request.MemberJoin;
 import com.team5.secondhand.api.member.dto.request.MemberLogin;
-import com.team5.secondhand.api.member.dto.request.MemberProfileImageUpdate;
 import com.team5.secondhand.api.member.dto.request.MemberRegionUpdate;
-
+import com.team5.secondhand.api.member.exception.ExistMemberIdException;
 import com.team5.secondhand.api.member.exception.UnauthorizedException;
-import com.team5.secondhand.api.oauth.dto.UserProfile;
-import com.team5.secondhand.api.oauth.service.OAuthService;
-import org.springframework.http.ResponseEntity;
 import com.team5.secondhand.api.member.service.MemberService;
 import com.team5.secondhand.api.model.Region;
+import com.team5.secondhand.api.oauth.dto.UserProfile;
+import com.team5.secondhand.api.oauth.service.OAuthService;
 import com.team5.secondhand.api.region.exception.NotValidRegionException;
 import com.team5.secondhand.api.region.service.RegionService;
 import com.team5.secondhand.global.aws.dto.response.ProfileImageInfo;
 import com.team5.secondhand.global.aws.exception.ImageHostingException;
-import com.team5.secondhand.global.aws.service.ImageHostService;
 import com.team5.secondhand.global.aws.service.ProfileUploadUsecase;
 import com.team5.secondhand.global.dto.GenericResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -68,12 +65,12 @@ public class MemberController {
             description = "사용자는 로그인을 할 수 있다."
     )
     @PostMapping("/login")
-    public GenericResponse<Member> login(MemberLogin request) {
+    public GenericResponse<?> login(MemberLogin request) {
         //TODO service 호출
         memberService.login(request);
-      
-      return GenericResponse.send("Member joined Successfully", null);
-    )
+
+        return GenericResponse.send("Member joined Successfully", null);
+    }
       
     @Operation(
 
@@ -89,11 +86,11 @@ public class MemberController {
     }
 
     @GetMapping("/git/login")
-    public ResponseEntity<?> getGithubUser(@RequestParam String code) throws UnauthorizedException {
+    public ResponseEntity<?> getGithubUser(@RequestParam String code) throws UnauthorizedException, ExistMemberIdException {
         UserProfile user = oAuthService.getGithubUser(code);
 
         //가입된 멤버인지 확인
-        if (memberService.existsByMemberId(user.getLogin())) {
+        if (memberService.isExistMemberId(user.getLogin())) {
             //todo : jwt 생성
             return ResponseEntity.ok(GenericResponse.send("login success", user));
         } else {
