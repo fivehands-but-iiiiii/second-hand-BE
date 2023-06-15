@@ -2,23 +2,31 @@ package com.team5.secondhand.api.member.controller;
 
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.dto.request.MemberJoin;
+import com.team5.secondhand.api.member.dto.request.MemberLogin;
 import com.team5.secondhand.api.member.dto.request.MemberProfileImageUpdate;
 import com.team5.secondhand.api.member.dto.request.MemberRegionUpdate;
-import com.team5.secondhand.api.member.dto.response.MemberDetails;
+import com.team5.secondhand.api.member.exception.UnauthorizedException;
+import com.team5.secondhand.api.member.service.MemberService;
+import com.team5.secondhand.api.oauth.dto.UserProfile;
+import com.team5.secondhand.api.oauth.service.OAuthService;
 import com.team5.secondhand.global.dto.GenericResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 public class MemberController {
-
+    private final OAuthService oAuthService;
+    private final MemberService memberService;
     @Operation(
-        summary = "회원가입",
-        tags = "Members",
-        description = "사용자는 회원가입을 할 수 있다."
+            summary = "회원가입",
+            tags = "Members",
+            description = "사용자는 회원가입을 할 수 있다."
     )
     @PostMapping("/join")
-    public GenericResponse<Long> join (MemberJoin request) {
+    public GenericResponse<Long> join(MemberJoin request) {
         //TODO service 호출
 
         //TODO response
@@ -26,16 +34,30 @@ public class MemberController {
     }
 
     @Operation(
-        summary = "로그인",
-        tags = "Members",
-        description = "사용자는 로그인을 할 수 있다."
+            summary = "로그인",
+            tags = "Members",
+            description = "사용자는 로그인을 할 수 있다."
     )
     @PostMapping("/login")
-    public GenericResponse<Member> login (MemberJoin request) {
+    public GenericResponse<Member> login(MemberLogin request) {
         //TODO service 호출
+        memberService.login(request);
 
         //TODO response
         return GenericResponse.send("Member joined Successfully", null);
+    }
+
+    @GetMapping("/git/login")
+    public ResponseEntity<?> getGithubUser(@RequestParam String code) throws UnauthorizedException {
+        UserProfile user = oAuthService.getGithubUser(code);
+
+        //가입된 멤버인지 확인
+        if (memberService.existsByMemberId(user.getLogin())) {
+            //todo : jwt 생성
+            return ResponseEntity.ok(GenericResponse.send("login success", user));
+        } else {
+            throw new UnauthorizedException("가입되어 있지 않은 회원입니다. 추가로 회원가입을 진행해주세요.", user);
+        }
     }
 
     @Operation(
@@ -44,8 +66,8 @@ public class MemberController {
             description = "사용자는 자신의 프로필 사진을 설정할 수 있다."
     )
     @PatchMapping("/members/image")
-    public GenericResponse<Boolean> setMemberProfile (@RequestBody Long id,
-                                                      @RequestBody MemberProfileImageUpdate request) {
+    public GenericResponse<Boolean> setMemberProfile(@RequestBody Long id,
+                                                     @RequestBody MemberProfileImageUpdate request) {
         //TODO 임시로 파라미터로 member index 받기
 
         //TODO service 호출
@@ -60,8 +82,8 @@ public class MemberController {
             description = "사용자는 자신의 프로필 사진을 설정할 수 있다."
     )
     @PatchMapping("/members/region")
-    public GenericResponse<Boolean> setMemberRegion (@RequestBody Long id,
-                                                     @RequestBody MemberRegionUpdate request) {
+    public GenericResponse<Boolean> setMemberRegion(@RequestBody Long id,
+                                                    @RequestBody MemberRegionUpdate request) {
         //TODO 임시로 파라미터로 member index 받기
 
         //TODO service 호출
