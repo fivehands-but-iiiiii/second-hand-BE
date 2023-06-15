@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "member_has_region")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BasedRegion {
@@ -41,6 +40,14 @@ public class BasedRegion {
 
     public void addBasedRegion(Region region) {
         this.region = region;
+    }
+
+    public void isRepresent() {
+        this.represented = true;
+    }
+
+    public void isNotRepresent() {
+        this.represented = false;
     }
 
     public static BasedRegion create(Member member, Region region) {
