@@ -4,9 +4,14 @@ import lombok.Getter;
 
 @Getter
 public class UnauthorizedException extends Exception {
-    private final Object body;
+    private Object body;
+
     public UnauthorizedException(String message, Object body) {
         super(message);
         this.body = body;
+    }
+
+    public UnauthorizedException(String message) {
+        super(message);
     }
 }
