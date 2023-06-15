@@ -1,8 +1,7 @@
 package com.team5.secondhand.api.member.dto.request;
 
-import com.team5.secondhand.api.member.domain.BasedRegion;
 import com.team5.secondhand.api.member.domain.Member;
-import com.team5.secondhand.api.model.Region;
+import com.team5.secondhand.api.member.domain.Oauth;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -15,16 +14,16 @@ public class MemberJoin {
     @NotNull
     @Size(min = 6, max = 16)
     private final String memberId;
-
+    @Size(max = 300)
     private final String profileImgUrl;
-
     @Size(min = 1, max = 2)
-    private final List<Long> regions;
+    private final List<BasedRegionSummary> regions;
 
     public Member toMember() {
         return Member.builder()
                 .memberId(memberId)
-                .profileImageUrl(profileImgUrl)
+                .profileImgUrl(profileImgUrl)
+                .oauth(Oauth.NONE)
                 .build();
     }
 }
