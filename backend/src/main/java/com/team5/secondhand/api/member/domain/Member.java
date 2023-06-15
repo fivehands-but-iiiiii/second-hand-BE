@@ -1,6 +1,5 @@
 package com.team5.secondhand.api.member.domain;
 
-import com.team5.secondhand.api.model.BaseTimeEntity;
 import com.team5.secondhand.global.exception.EmptyBasedRegionException;
 import lombok.*;
 
@@ -28,7 +27,7 @@ public class Member {
     private List<BasedRegion> regions = new ArrayList<>();
 
     @Builder
-    public Member(Long id, String memberId, String profileImgUrl, Oauth oauth, List<BasedRegion> regions) {
+    private Member(Long id, String memberId, String profileImgUrl, Oauth oauth, List<BasedRegion> regions) {
         this.id = id;
         this.memberId = memberId;
         this.profileImgUrl = profileImgUrl;

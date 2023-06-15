@@ -2,8 +2,7 @@
 
 SET @OLD_UNIQUE_CHECKS = @@UNIQUE_CHECKS, UNIQUE_CHECKS = 0;
 SET @OLD_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS = 0;
-SET @OLD_SQL_MODE = @@SQL_MODE, SQL_MODE =
-        'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+SET @OLD_SQL_MODE = @@SQL_MODE, SQL_MODE = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
 -- Schema secondhand-db
@@ -24,10 +23,11 @@ DROP TABLE IF EXISTS `secondhand-db`.`member`;
 CREATE TABLE IF NOT EXISTS `secondhand-db`.`member`
 (
     `id`              BIGINT       NOT NULL AUTO_INCREMENT,
-    `memberId`        VARCHAR(16)  NOT NULL,
-    `profile_img_url` VARCHAR(100) NULL,
+    `member_id`        VARCHAR(16)  NOT NULL,
+    `profile_img_url` VARCHAR(300) NULL,
+    `oauth`           ENUM('GITHUB', 'NONE'),
     PRIMARY KEY (`id`),
-    UNIQUE INDEX `memberId_UNIQUE` (`memberId` ASC) VISIBLE
+    UNIQUE INDEX `memberId_UNIQUE` (`member_id` ASC) VISIBLE
 )
     ENGINE = InnoDB;
 
@@ -241,7 +241,7 @@ DROP TABLE IF EXISTS `secondhand-db`.`based_region`;
 
 CREATE TABLE IF NOT EXISTS `secondhand-db`.`based_region`
 (
-    `id`          BIGINT  NOT NULL,
+    `id`          BIGINT  NOT NULL auto_increment,
     `member_id`   BIGINT  NOT NULL,
     `region_id`   BIGINT  NOT NULL,
     `represented` TINYINT NOT NULL,
