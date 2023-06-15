@@ -3,9 +3,10 @@ import Chip from '@common/Chip/Chip';
 
 import { styled } from 'styled-components';
 
+import { formatNumberToSI } from '../../../util/formatNumberToSI';
 import ImgBox from '../ImgBox/ImgBox';
 
-export interface saleItem {
+export interface SaleItem {
   id: number;
   title: string;
   price: number;
@@ -19,7 +20,7 @@ export interface saleItem {
 }
 
 interface ItemProps {
-  item: saleItem;
+  item: SaleItem;
 }
 
 const Item = ({ item }: ItemProps) => {
@@ -38,7 +39,7 @@ const Item = ({ item }: ItemProps) => {
   const formattedPrice = price.toLocaleString();
 
   return (
-    <MyItem>
+    <MyItem onClick={() => console.log(`move to item/${id}`)}>
       <ImgBox src={thumbnailUrl} />
       <MyItemInfo>
         <MyItemTitle>
@@ -56,15 +57,19 @@ const Item = ({ item }: ItemProps) => {
           <div>{formattedPrice}원</div>
         </MyItemStatus>
         <MyItemSubInfo>
-          <MyItemIcon>
-            <Icon name="message" size="sm" />
-            {chatCount}
-          </MyItemIcon>
-          <MyItemIcon>
-            {/* TODO: when icon's like value is false add black icon*/}
-            <Icon name="heart" size="sm" />
-            {likesCount}
-          </MyItemIcon>
+          {!!chatCount && (
+            <MyItemIcon>
+              <Icon name="message" size="sm" />
+              {formatNumberToSI(chatCount)}
+            </MyItemIcon>
+          )}
+          {!!likesCount && (
+            <MyItemIcon>
+              {/* TODO: when icon's like value is false add black icon*/}
+              {isLike ? '' : <Icon name="heart" size="sm" />}
+              {formatNumberToSI(likesCount)}
+            </MyItemIcon>
+          )}
         </MyItemSubInfo>
       </MyItemInfo>
     </MyItem>
@@ -79,6 +84,7 @@ const MyItem = styled.div`
   color: ${({ theme }) => theme.colors.neutral.text};
   ${({ theme }) => theme.fonts.subhead}
   border-top: 1px solid ${({ theme }) => theme.colors.neutral.border};
+  cursor: pointer;
 `;
 
 const MyItemInfo = styled.div`

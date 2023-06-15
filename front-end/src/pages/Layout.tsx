@@ -16,6 +16,7 @@ const MyMobileLayout = styled.div`
   height: 852px;
   margin: 0 auto;
   background-color: #fff;
+  overflow: auto;
 `;
 
 export default MobileLayout;

@@ -6,7 +6,6 @@ const GlobalStyle = createGlobalStyle`
 
   html,
   body {
-    overflow: hidden;
     background-color: tomato;
   }
 
