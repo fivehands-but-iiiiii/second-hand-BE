@@ -23,13 +23,13 @@ const Textarea = ({
   adorned,
   ...rest
 }: TextareaProps) => {
-  const textRef = useRef<HTMLTextAreaElement>(null);
   const textareaTypes = {
     default: MyDefaultTextarea,
     adorned: MyAdornedTextarea,
     chat: MyChatTextarea,
   };
   const MyTextarea = textareaTypes[type];
+  const textRef = useRef<HTMLTextAreaElement>(null);
 
   const handleResizeHeight = useCallback(() => {
     if (singleLine) return;
