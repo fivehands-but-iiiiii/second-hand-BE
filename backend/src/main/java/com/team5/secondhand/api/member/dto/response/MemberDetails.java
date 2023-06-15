@@ -25,7 +25,7 @@ public class MemberDetails {
         return MemberDetails.builder()
                 .id(member.getId())
                 .memberId(member.getMemberId())
-                .profileImgUrl(member.getProfileImageUrl())
+                .profileImgUrl(member.getProfileImgUrl())
                 .mainRegion(member.getRepresentedRegionId())
                 .subRegion(member.getSubRegionId())
                 .build();

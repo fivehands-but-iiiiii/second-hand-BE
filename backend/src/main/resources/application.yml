@@ -4,7 +4,7 @@ spring:
     group:
       local: [ db-local, local ] # localhost
       prod: [ prod ] # production
-      dev: [ dev ] #test
+#      dev: [ dev ] #test
     include: [ aws, jwt, oauth ]
   servlet:
     multipart:
