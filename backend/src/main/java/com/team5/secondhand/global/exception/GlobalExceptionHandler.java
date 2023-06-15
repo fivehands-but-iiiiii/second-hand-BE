@@ -1,8 +1,11 @@
 package com.team5.secondhand.global.exception;
 
+import com.team5.secondhand.api.member.exception.UnauthorizedException;
 import com.team5.secondhand.global.dto.ErrorResponse;
+import com.team5.secondhand.global.dto.ErrorResponseWithBody;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -15,5 +18,11 @@ public class GlobalExceptionHandler {
         log.error(e.getMessage());
         return ErrorResponse.occur(e);
     }
-    
+
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponseWithBody handleUnauthorizedException(UnauthorizedException e) {
+        log.error(e.getMessage());
+        return ErrorResponseWithBody.occur(e, e.getBody());
+    }
 }
