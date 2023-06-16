@@ -23,6 +23,11 @@ const NavBar = ({ left, center, right, children }: NavBarProps) => {
 };
 
 const MyNavBar = styled.div`
+  position: sticky;
+  top: 0;
+  background-color: ${({ theme }) => theme.colors.neutral.backgroundBlur};
+  backdrop-filter: blur(3px);
+
   border-bottom: 1px solid ${({ theme }) => theme.colors.neutral.border};
 `;
 

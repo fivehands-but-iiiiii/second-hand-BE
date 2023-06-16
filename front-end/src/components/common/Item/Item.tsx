@@ -1,8 +1,12 @@
+import Icon from '@assets/Icon';
+import Chip from '@common/Chip/Chip';
+
 import { styled } from 'styled-components';
 
+import { formatNumberToSI } from '../../../util/formatNumberToSI';
 import ImgBox from '../ImgBox/ImgBox';
 
-export interface saleItem {
+export interface SaleItem {
   id: number;
   title: string;
   price: number;
@@ -16,10 +20,11 @@ export interface saleItem {
 }
 
 interface ItemProps {
-  item: saleItem;
+  item: SaleItem;
+  onHistoryPage?: boolean;
 }
 
-const Item = ({ item }: ItemProps) => {
+const Item = ({ item, onHistoryPage = false }: ItemProps) => {
   const {
     id,
     title,
@@ -31,27 +36,41 @@ const Item = ({ item }: ItemProps) => {
     likesCount,
     isLike,
   } = item;
+  const hasChip = status !== 'onSale';
+  const formattedPrice = price.toLocaleString();
 
   return (
-    <MyItem>
+    <MyItem onClick={() => console.log(`move to item/${id}`)}>
       <ImgBox src={thumbnailUrl} />
       <MyItemInfo>
         <MyItemTitle>
           <div>{title}</div>
           {/* TODO: add more info icon */}
-          <div>...</div>
+          {onHistoryPage && <div>...</div>}
         </MyItemTitle>
-        {/* TODO: add region */}
-        <MyItemTime>{createdAt}</MyItemTime>
+        <MyItemTime>
+          {/* TODO: add region */}
+          <div>역삼1동 &middot;</div>
+          {createdAt}
+        </MyItemTime>
         <MyItemStatus>
-          {/* TODO: add chip component */}
-          <div>{status}</div>
-          <div>{price}원</div>
+          {hasChip && <Chip status={status} />}
+          <div>{formattedPrice}원</div>
         </MyItemStatus>
         <MyItemSubInfo>
-          {/* TODO: add chat, likes icon with isLike prop*/}
-          <div>{chatCount}</div>
-          <div>{likesCount}</div>
+          {!!chatCount && (
+            <MyItemIcon>
+              <Icon name="message" size="sm" />
+              {formatNumberToSI(chatCount)}
+            </MyItemIcon>
+          )}
+          {!!likesCount && (
+            <MyItemIcon>
+              {/* TODO: when icon's like value is false add black icon*/}
+              {isLike ? '' : <Icon name="heart" size="sm" />}
+              {formatNumberToSI(likesCount)}
+            </MyItemIcon>
+          )}
         </MyItemSubInfo>
       </MyItemInfo>
     </MyItem>
@@ -66,6 +85,7 @@ const MyItem = styled.div`
   color: ${({ theme }) => theme.colors.neutral.text};
   ${({ theme }) => theme.fonts.subhead}
   border-top: 1px solid ${({ theme }) => theme.colors.neutral.border};
+  cursor: pointer;
 `;
 
 const MyItemInfo = styled.div`
@@ -82,12 +102,15 @@ const MyItemTitle = styled.div`
 `;
 
 const MyItemTime = styled.div`
+  display: flex;
+  gap: 0 4px;
   color: ${({ theme }) => theme.colors.neutral.textWeak};
   ${({ theme }) => theme.fonts.footnote}
 `;
 
 const MyItemStatus = styled.div`
   display: flex;
+  align-items: center;
   gap: 0 4px;
   font-weight: 590;
   color: ${({ theme }) => theme.colors.neutral.textStrong};
@@ -98,7 +121,14 @@ const MyItemSubInfo = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
+  gap: 0 5px;
+`;
+
+const MyItemIcon = styled.div`
+  display: flex;
+  align-items: flex-end;
   gap: 0 4px;
+  ${({ theme }) => theme.fonts.footnote}
 `;
 
 export default Item;
