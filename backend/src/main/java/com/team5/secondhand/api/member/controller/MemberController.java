@@ -67,7 +67,7 @@ public class MemberController {
             description = "사용자는 로그인을 할 수 있다."
     )
     @PostMapping("/login")
-    public ResponseEntity<?> login(MemberLogin request) throws UnauthorizedException, EmptyBasedRegionException {
+    public ResponseEntity<?> login(@RequestBody MemberLogin request) throws UnauthorizedException, EmptyBasedRegionException {
         MemberDetails member = memberService.login(request);
 
         return ResponseEntity.ok(GenericResponse.send("Member login Successfully", member));
