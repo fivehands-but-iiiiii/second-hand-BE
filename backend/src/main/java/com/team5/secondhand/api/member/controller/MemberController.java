@@ -94,9 +94,9 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "프로필 사진 설정",
+            summary = "프로필 사진 변경",
             tags = "Members",
-            description = "사용자는 자신의 프로필 사진을 설정할 수 있다."
+            description = "사용자는 자신의 프로필 사진을 변경할 수 있다."
     )
     @PatchMapping(value = "/members/image", consumes = {"multipart/form-data"})
     public GenericResponse<ProfileImageInfo> setMemberProfile (@RequestParam Long id,
@@ -109,7 +109,7 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "프로필 사진 설정",
+            summary = "사용자 지역 변경",
             tags = "Members",
             description = "사용자는 자신의 프로필 사진을 설정할 수 있다."
     )
