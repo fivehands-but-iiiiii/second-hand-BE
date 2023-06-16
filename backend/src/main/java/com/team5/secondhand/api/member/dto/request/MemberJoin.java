@@ -18,12 +18,14 @@ public class MemberJoin {
     private final String profileImgUrl;
     @Size(min = 1, max = 2)
     private final List<BasedRegionSummary> regions;
+    @NotNull
+    private final Oauth oauth;
 
     public Member toMember() {
         return Member.builder()
                 .memberId(memberId)
                 .profileImgUrl(profileImgUrl)
-                .oauth(Oauth.NONE)
+                .oauth(oauth)
                 .build();
     }
 }
