@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `secondhand-db`.`member`
     `profile_img_url` VARCHAR(300) NULL,
     `oauth`           ENUM('GITHUB', 'NONE'),
     PRIMARY KEY (`id`),
-    UNIQUE INDEX `memberId_UNIQUE` (`member_id` ASC) VISIBLE
+    INDEX `memberId_UNIQUE` (`member_id` ASC) VISIBLE
 )
     ENGINE = InnoDB;
 
