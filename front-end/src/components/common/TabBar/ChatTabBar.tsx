@@ -8,13 +8,13 @@ import { styled } from 'styled-components';
 const ChatTabBar = () => (
   <TabBar>
     <Textarea type="chat"></Textarea>
-    <MyChatTebBarButton icon active circle="md">
+    <MyChatTabBarButton icon active circle="md">
       <Icon name="arrowUp" size="xs" fill="#fff" />
-    </MyChatTebBarButton>
+    </MyChatTabBarButton>
   </TabBar>
 );
 
-const MyChatTebBarButton = styled(Button)`
+const MyChatTabBarButton = styled(Button)`
   padding: 0;
   margin-left: 8px;
 `;
