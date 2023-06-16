@@ -81,7 +81,7 @@ public class MemberController {
     }
 
     @GetMapping("/git/login")
-    public ResponseEntity<?> getGithubUser(@RequestParam String code) throws UnauthorizedException, ExistMemberIdException, EmptyBasedRegionException {
+    public ResponseEntity<?> getGithubUser(String code) throws UnauthorizedException, ExistMemberIdException, EmptyBasedRegionException {
         UserProfile user = oAuthService.getGithubUser(code);
         MemberDetails member = memberService.loginByOAuth(user);
 
