@@ -14,8 +14,8 @@ import com.team5.secondhand.api.oauth.dto.UserProfile;
 import com.team5.secondhand.global.exception.EmptyBasedRegionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +27,8 @@ public class MemberService implements JoinService {
     private final MemberRepository memberRepository;
     private final MemberBasedRegionRepository basedRegionRepository;
 
-    @Transactional
     @Override
+    @Transactional
     public Long join(MemberJoin joinDto, Map<Region, Boolean> regions) {
 
         Member newMember = joinDto.toMember();
@@ -68,7 +68,8 @@ public class MemberService implements JoinService {
         return memberRepository.existsByMemberId(memberId);
     }
 
-    public boolean updateProfileImage(Long id, String uploadUrl) {
-        return memberRepository.updateMemberProfileImage(id, uploadUrl) == 1;
+    @Transactional
+    public int updateProfileImage(Long id, String uploadUrl) {
+        return memberRepository.updateMemberProfileImage(id,uploadUrl);
     }
 }

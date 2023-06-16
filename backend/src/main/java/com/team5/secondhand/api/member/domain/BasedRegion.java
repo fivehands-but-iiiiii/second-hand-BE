@@ -1,5 +1,6 @@
 package com.team5.secondhand.api.member.domain;
 
+import com.team5.secondhand.api.member.dto.request.BasedRegionSummary;
 import com.team5.secondhand.api.model.Region;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -7,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -32,6 +36,17 @@ public class BasedRegion {
         this.member = member;
         this.region = region;
         this.represented = represented;
+    }
+
+    public static Map<Region, Boolean> mapping(Map<Long, Region> regions, List<BasedRegionSummary> regionSummaries) {
+       Map<Region, Boolean> basedRegions = new HashMap<>();
+
+        for (BasedRegionSummary regionSummary : regionSummaries) {
+            Region region = regions.get(regionSummary.getId());
+            basedRegions.put(region, regionSummary.getIsRepresent());
+        }
+
+        return basedRegions;
     }
 
     public void addMember(Member member) {
