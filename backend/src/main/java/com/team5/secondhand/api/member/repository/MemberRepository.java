@@ -1,6 +1,7 @@
 package com.team5.secondhand.api.member.repository;
 
 import com.team5.secondhand.api.member.domain.Member;
+import com.team5.secondhand.api.member.domain.Oauth;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,7 +18,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     int updateMemberProfileImage(@Param("id") Long id,
                                  @Param("url") String url);
 
-    boolean existsByMemberId(String memberId);
-
     Optional<Member> findByMemberId(String memberId);
+    boolean existsByMemberIdAndOauth(String memberId, Oauth oauth);
 }
