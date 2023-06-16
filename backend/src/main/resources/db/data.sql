@@ -3,7 +3,7 @@ VALUES ('new-pow', 'https://avatars.githubusercontent.com/u/103120173?v=4', 'GIT
        ('Lily', 'https://avatars.githubusercontent.com/u/88878874?v=4', 'GITHUB'),
        ('NANII', 'https://avatars.githubusercontent.com/u/107349637?v=4', 'GITHUB'),
        ('irin', 'https://avatars.githubusercontent.com/u/103120173?v=4', 'GITHUB'),
-       ('Dewey', 'https://ca.slack-edge.com/T74H5245A-U04FXMJ80BY-6ec5d36e2615-512', 'GITHUB'),
+       ('jaea-kim', 'https://ca.slack-edge.com/T74H5245A-U04FXMJ80BY-6ec5d36e2615-512', 'GITHUB'),
        ('HG-SONG', 'https://ca.slack-edge.com/T74H5245A-U04F3BARLB1-a572638186fe-512', 'GITHUB'),
        ('Haena', 'https://avatars.githubusercontent.com/u/97685264?v=4', 'GITHUB');
 

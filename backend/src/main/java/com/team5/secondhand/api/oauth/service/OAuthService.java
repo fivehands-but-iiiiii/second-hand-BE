@@ -1,8 +1,8 @@
-package com.team5.secondhand.global.oauth.service;
+package com.team5.secondhand.api.oauth.service;
 
-import com.team5.secondhand.global.oauth.config.OAuthProperties;
-import com.team5.secondhand.global.oauth.dto.OAuthToken;
-import com.team5.secondhand.global.oauth.dto.UserProfile;
+import com.team5.secondhand.api.oauth.dto.OAuthToken;
+import com.team5.secondhand.api.oauth.dto.UserProfile;
+import com.team5.secondhand.api.oauth.config.OAuthProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class OAuthService {
     private final OAuthProperties oAuthProperties;
 
-    public UserProfile join(String code) {
+    public UserProfile getGithubUser(String code) {
         //access token 가져오기
         OAuthToken oAuthToken = getToken(code);
         //github user 정보 가져오기
