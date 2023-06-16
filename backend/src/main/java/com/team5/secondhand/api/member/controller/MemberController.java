@@ -43,7 +43,11 @@ public class MemberController {
             description = "사용자는 회원가입을 할 수 있다."
     )
     @PostMapping("/join")
-    public GenericResponse<Long> join (@RequestBody MemberJoin request) throws NotValidRegionException {
+    public GenericResponse<Long> join (@RequestBody MemberJoin request) throws NotValidRegionException, NoMainRegionException, ExistMemberIdException {
+        if (memberService.isExistMemberId(request.getMemberId(), request.getOauth())) {
+            throw new ExistMemberIdException("이미 존재하는 회원 아이디입니다.");
+        }
+
         List<Long> ids = request.getRegions().stream()
                 .map(BasedRegionSummary::getId)
                 .collect(Collectors.toList());
