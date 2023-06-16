@@ -2,6 +2,7 @@ package com.team5.secondhand.api.member.service;
 
 import com.team5.secondhand.api.member.domain.BasedRegion;
 import com.team5.secondhand.api.member.domain.Member;
+import com.team5.secondhand.api.member.domain.Oauth;
 import com.team5.secondhand.api.member.dto.request.MemberJoin;
 import com.team5.secondhand.api.member.dto.request.MemberLogin;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
@@ -64,8 +65,8 @@ public class MemberService implements JoinService {
         return MemberDetails.fromMember(member);
     }
 
-    public Boolean isExistMemberId(String memberId) throws ExistMemberIdException {
-        return memberRepository.existsByMemberId(memberId);
+    public Boolean isExistMemberId(String memberId, Oauth oauth) throws ExistMemberIdException {
+        return memberRepository.existsByMemberIdAndOauth(memberId, oauth);
     }
 
     @Transactional
