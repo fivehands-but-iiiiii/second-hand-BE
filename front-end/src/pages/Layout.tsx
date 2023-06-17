@@ -1,14 +1,12 @@
 import { Outlet } from 'react-router-dom';
 
-import NavBar from '@common/NavBar';
 import MainTabBar from '@common/TabBar/MainTabBar';
 
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 
 const MobileLayout = () => {
   return (
     <MyMobileLayout>
-      <NavBar>this is header!</NavBar>
       <Outlet />
       <MainTabBar userId={1} />
     </MyMobileLayout>
@@ -16,10 +14,8 @@ const MobileLayout = () => {
 };
 
 const MyMobileLayout = styled.div`
-  position: relative;
-  width: 393px;
-  height: 852px;
-  margin: 0 auto;
+  width: 100vw;
+  height: 100vh;
   background-color: #fff;
   overflow: auto;
 `;
