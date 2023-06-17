@@ -28,8 +28,9 @@
       "@constants/*": ["constants/*"],
       "@assets/*": ["assets/*"],
       "@styles/*": ["styles/*"],
-      "@routes/*": ["routes/*"],
-      "@utils/*": ["utils/*"]
+      "@utils/*": ["utils/*"],
+      "@hooks/*": ["hooks/*"],
+      "@routes/*": ["routes/*"]
     }
   },
   "include": ["src"],

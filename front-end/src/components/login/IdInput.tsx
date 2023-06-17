@@ -1,3 +1,5 @@
+import { ChangeEvent, KeyboardEvent } from 'react';
+
 import Textarea from '@common/Textarea';
 
 import { styled } from 'styled-components';
@@ -5,10 +7,8 @@ import { styled } from 'styled-components';
 interface IdInputProps {
   inputValue: string;
   validIdInfo: string;
-  handleChangeInputValue: (
-    event: React.ChangeEvent<HTMLTextAreaElement>,
-  ) => void;
-  handleValidateId: (event: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+  handleChangeInputValue: (event: ChangeEvent<HTMLTextAreaElement>) => void;
+  handleValidateId: (event: KeyboardEvent<HTMLTextAreaElement>) => void;
 }
 
 const IdInput = ({
