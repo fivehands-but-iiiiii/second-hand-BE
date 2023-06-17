@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
+import { setStorageValue } from '@utils/sessionStorage';
+
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 interface UserInfo {
@@ -54,7 +56,7 @@ const OAuthCallback = () => {
           // 상태코드 200 : 가입된 유저
           const jsonResponse = await response.json();
           const userInfo: UserInfo = jsonResponse.data;
-          sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
+          setStorageValue({ key: 'userInfo', value: userInfo });
           navigate('/');
           // console.log(userInfo, '200번 코드');
         } else if (response.status === 401) {

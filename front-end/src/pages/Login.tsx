@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, KeyboardEvent, ChangeEvent } from 'react';
 
 const CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID;
 const REDIRECT_URL = import.meta.env.VITE_REDIRECT_URL;
@@ -8,6 +8,7 @@ import NavBar from '@common/NavBar';
 import IdInput from '@components/login/IdInput';
 import LoginButtons from '@components/login/LoginButtons';
 import UserProfile from '@components/login/UserProfile';
+import { getStoredValue, removeStorageValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
 
@@ -16,13 +17,11 @@ const Login = () => {
   const [inputValue, setInputValue] = useState('');
   const [validIdInfo, setValidIdInfo] = useState('');
 
-  const getUserInfo = sessionStorage.getItem('userInfo');
-  const userInfo = getUserInfo && JSON.parse(getUserInfo);
+  const storedUserInfo = getStoredValue({ key: 'userInfo' });
+
   const OAUTH_URL = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_url=${REDIRECT_URL}`;
 
-  const handleValidateId = ({
-    target,
-  }: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleValidateId = ({ target }: KeyboardEvent<HTMLTextAreaElement>) => {
     const regExp = /[^0-9a-z]/g;
     const input = target as HTMLTextAreaElement;
     const { value } = input;
@@ -33,6 +32,7 @@ const Login = () => {
 
     if (value.length < 6 || value.length > 12) {
       setValidIdInfo('6~12자 이내로 입력하세요');
+      // TODO: 아이디 중복확인
     } else {
       setValidIdInfo('');
     }
@@ -40,7 +40,7 @@ const Login = () => {
 
   const handleChangeInputValue = ({
     target,
-  }: React.ChangeEvent<HTMLTextAreaElement>) => {
+  }: ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(target.value);
   };
 
@@ -51,13 +51,13 @@ const Login = () => {
 
   const handleLogout = () => {
     setIsLogin(false);
-    sessionStorage.removeItem('userInfo');
+    removeStorageValue({ key: 'userInfo' });
     location.reload();
   };
 
   useEffect(() => {
-    setIsLogin(!!userInfo);
-  }, [userInfo]);
+    setIsLogin(!!storedUserInfo);
+  }, [storedUserInfo]);
 
   return (
     <>
@@ -65,7 +65,7 @@ const Login = () => {
       <MyLogin>
         {isLogin ? (
           <>
-            <UserProfile {...userInfo} />
+            <UserProfile {...storedUserInfo} />
           </>
         ) : (
           <>
