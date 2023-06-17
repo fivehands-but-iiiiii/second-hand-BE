@@ -26,7 +26,8 @@
       "@components/*": ["components/*"],
       "@constants/*": ["constants/*"],
       "@assets/*": ["assets/*"],
-      "@styles/*": ["styles/*"]
+      "@styles/*": ["styles/*"],
+      "@hooks/*": ["hooks/*"]
     }
   },
   "include": ["src"],
