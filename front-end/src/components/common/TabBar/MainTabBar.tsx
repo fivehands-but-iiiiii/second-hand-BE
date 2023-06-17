@@ -50,7 +50,7 @@ const MainTabBar = ({ userId }: MainTabBarProps) => {
       id: 5,
       icon: 'person',
       label: '내 계정',
-      path: '/members',
+      path: '/login',
     },
   ];
 
