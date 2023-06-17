@@ -18,7 +18,7 @@ const Login = () => {
 
   const getUserInfo = sessionStorage.getItem('userInfo');
   const userInfo = getUserInfo && JSON.parse(getUserInfo);
-  const LOGIN_URI = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_url=${REDIRECT_URL}`;
+  const OAUTH_URL = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_url=${REDIRECT_URL}`;
 
   const handleValidateId = ({
     target,
@@ -44,10 +44,6 @@ const Login = () => {
     setInputValue(target.value);
   };
 
-  const handleGitHubLogin = () => {
-    window.location.href = LOGIN_URI;
-  };
-
   // TODO: DB에 아이디가 있는지 확인
   const handleIdLogin = () => {
     console.log('DB에 아이디가 있는지 확인');
@@ -56,6 +52,7 @@ const Login = () => {
   const handleLogout = () => {
     setIsLogin(false);
     sessionStorage.removeItem('userInfo');
+    location.reload();
   };
 
   useEffect(() => {
@@ -89,7 +86,7 @@ const Login = () => {
             </Button>
           ) : (
             <>
-              <LoginButtons {...{ handleIdLogin, handleGitHubLogin }} />
+              <LoginButtons {...{ handleIdLogin, OAUTH_URL }} />
             </>
           )}
         </MyButtons>
