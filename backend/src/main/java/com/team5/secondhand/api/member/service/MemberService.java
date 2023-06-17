@@ -10,7 +10,7 @@ import com.team5.secondhand.api.member.exception.ExistMemberIdException;
 import com.team5.secondhand.api.member.exception.UnauthorizedException;
 import com.team5.secondhand.api.member.repository.MemberBasedRegionRepository;
 import com.team5.secondhand.api.member.repository.MemberRepository;
-import com.team5.secondhand.api.model.Region;
+import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.oauth.dto.UserProfile;
 import com.team5.secondhand.global.exception.EmptyBasedRegionException;
 import lombok.RequiredArgsConstructor;

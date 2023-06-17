@@ -1,7 +1,7 @@
 package com.team5.secondhand.api.member.domain;
 
 import com.team5.secondhand.api.member.dto.request.BasedRegionSummary;
-import com.team5.secondhand.api.model.Region;
+import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.region.exception.NoMainRegionException;
 import lombok.AccessLevel;
 import lombok.Builder;

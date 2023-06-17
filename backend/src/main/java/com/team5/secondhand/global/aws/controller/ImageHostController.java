@@ -23,7 +23,7 @@ public class ImageHostController {
     @PostMapping(value = "/profile/image", consumes = {"multipart/form-data"})
     public GenericResponse<ProfileImageInfo> setMemberProfile (@RequestPart MultipartFile profile) throws ImageHostingException {
         ProfileImageInfo profileImageInfo = imageHostService.uploadMemberProfileImage(profile);
-        return GenericResponse.send("Member update profile image Successfully", profileImageInfo);
+        return GenericResponse.send("Member upload profile image Successfully", profileImageInfo);
     }
 
 }

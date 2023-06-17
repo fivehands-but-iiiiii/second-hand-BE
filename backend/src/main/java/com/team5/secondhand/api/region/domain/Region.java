@@ -1,4 +1,4 @@
-package com.team5.secondhand.api.model;
+package com.team5.secondhand.api.region.domain;
 
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -2,7 +2,7 @@ package com.team5.secondhand.api.member.service;
 
 import com.team5.secondhand.api.member.dto.request.MemberJoin;
 import com.team5.secondhand.api.member.exception.ExistMemberIdException;
-import com.team5.secondhand.api.model.Region;
+import com.team5.secondhand.api.region.domain.Region;
 
 import java.util.Map;
 

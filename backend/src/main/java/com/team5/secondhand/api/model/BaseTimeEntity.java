@@ -20,9 +20,9 @@ import java.time.Instant;
 public class BaseTimeEntity {
 
     @CreatedDate
-    private Instant createdDateTime;
+    private Instant createdAt;
 
     @LastModifiedDate
-    private Instant updatedDateTime;
+    private Instant updatedAt;
 
 }
