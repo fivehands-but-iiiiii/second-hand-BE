@@ -2,7 +2,7 @@ import { Outlet } from 'react-router-dom';
 
 import MainTabBar from '@common/TabBar/MainTabBar';
 
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 
 const MobileLayout = () => {
   return (
