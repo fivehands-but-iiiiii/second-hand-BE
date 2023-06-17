@@ -27,6 +27,7 @@
       "@constants/*": ["constants/*"],
       "@assets/*": ["assets/*"],
       "@styles/*": ["styles/*"],
+      "@utils/*": ["utils/*"],
       "@hooks/*": ["hooks/*"]
     }
   },
