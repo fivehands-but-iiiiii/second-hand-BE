@@ -1,4 +1,4 @@
-import { HTMLAttributes, ReactNode } from 'react';
+import { ComponentPropsWithRef, ReactNode, forwardRef } from 'react';
 
 import { css, styled } from 'styled-components';
 
@@ -10,7 +10,7 @@ interface ButtonStyleProps extends ButtonProps {
   circleSize?: number;
 }
 
-interface ButtonProps extends HTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends ComponentPropsWithRef<'button'> {
   active?: boolean;
   category?: boolean;
   icon?: boolean;
@@ -21,44 +21,50 @@ interface ButtonProps extends HTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
 }
 
-const Button = ({
-  active = false,
-  category = false,
-  icon = false,
-  circle,
-  fullWidth = false,
-  spaceBetween = false,
-  disabled = false,
-  children,
-  ...rest
-}: ButtonProps) => {
-  const circleTypes = (circle: keyof Circle) => {
-    const circleSize: Circle = {
-      sm: 20,
-      md: 28,
-      lg: 56,
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      active = false,
+      category = false,
+      icon = false,
+      circle,
+      fullWidth = false,
+      spaceBetween = false,
+      disabled = false,
+      children,
+      ...rest
+    }: ButtonProps,
+    ref,
+  ) => {
+    const circleTypes = (circle: keyof Circle) => {
+      const circleSize: Circle = {
+        sm: 20,
+        md: 28,
+        lg: 56,
+      };
+
+      if (circle) {
+        return circleSize[circle];
+      }
     };
 
-    if (circle) {
-      return circleSize[circle];
-    }
-  };
-
-  return (
-    <MyButton
-      active={active}
-      category={category}
-      icon={icon}
-      circleSize={circle && circleTypes(circle)}
-      fullWidth={fullWidth}
-      spaceBetween={spaceBetween}
-      disabled={disabled}
-      {...rest}
-    >
-      {children}
-    </MyButton>
-  );
-};
+    return (
+      <MyButton
+        active={active}
+        category={category}
+        icon={icon}
+        circleSize={circle && circleTypes(circle)}
+        fullWidth={fullWidth}
+        spaceBetween={spaceBetween}
+        disabled={disabled}
+        ref={ref}
+        {...rest}
+      >
+        {children}
+      </MyButton>
+    );
+  },
+);
 
 const MyButton = styled.button<ButtonStyleProps>`
   display: flex;
