@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
+@Order(Ordered.LOWEST_PRECEDENCE)
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

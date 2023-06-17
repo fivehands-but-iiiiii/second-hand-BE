@@ -9,9 +9,10 @@ import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.member.exception.ExistMemberIdException;
 import com.team5.secondhand.api.member.exception.UnauthorizedException;
 import com.team5.secondhand.api.member.service.MemberService;
-import com.team5.secondhand.api.model.Region;
+import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.oauth.dto.UserProfile;
 import com.team5.secondhand.api.oauth.service.OAuthService;
+import com.team5.secondhand.api.region.exception.NoMainRegionException;
 import com.team5.secondhand.api.region.exception.NotValidRegionException;
 import com.team5.secondhand.api.region.service.GetValidRegionsUsecase;
 import com.team5.secondhand.global.aws.dto.response.ProfileImageInfo;
@@ -21,7 +22,6 @@ import com.team5.secondhand.global.dto.GenericResponse;
 import com.team5.secondhand.global.exception.EmptyBasedRegionException;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,7 +43,11 @@ public class MemberController {
             description = "사용자는 회원가입을 할 수 있다."
     )
     @PostMapping("/join")
-    public GenericResponse<Long> join (@RequestBody MemberJoin request) throws NotValidRegionException {
+    public GenericResponse<Long> join (@RequestBody MemberJoin request) throws NotValidRegionException, ExistMemberIdException, NoMainRegionException {
+        if (memberService.isExistMemberId(request.getMemberId(), request.getOauth())) {
+            throw new ExistMemberIdException("이미 존재하는 회원 아이디입니다.");
+        }
+
         List<Long> ids = request.getRegions().stream()
                 .map(BasedRegionSummary::getId)
                 .collect(Collectors.toList());
@@ -61,10 +65,10 @@ public class MemberController {
             description = "사용자는 로그인을 할 수 있다."
     )
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody MemberLogin request) throws UnauthorizedException, EmptyBasedRegionException {
+    public GenericResponse<MemberDetails> login(MemberLogin request) throws UnauthorizedException, EmptyBasedRegionException {
         MemberDetails member = memberService.login(request);
 
-        return ResponseEntity.ok(GenericResponse.send("Member login Successfully", member));
+        return GenericResponse.send("Member login Successfully", member);
     }
 
     @Operation(
@@ -81,18 +85,18 @@ public class MemberController {
     }
 
     @GetMapping("/git/login")
-    public ResponseEntity<?> getGithubUser(String code) throws UnauthorizedException, ExistMemberIdException, EmptyBasedRegionException {
+    public GenericResponse<MemberDetails> getGithubUser(String code) throws UnauthorizedException, ExistMemberIdException, EmptyBasedRegionException {
         UserProfile user = oAuthService.getGithubUser(code);
         MemberDetails member = memberService.loginByOAuth(user);
 
         //todo : jwt 생성
-        return ResponseEntity.ok(GenericResponse.send("Member login Successfully", member));
+        return GenericResponse.send("Member login Successfully", member);
     }
 
     @Operation(
-            summary = "프로필 사진 설정",
+            summary = "프로필 사진 변경",
             tags = "Members",
-            description = "사용자는 자신의 프로필 사진을 설정할 수 있다."
+            description = "사용자는 자신의 프로필 사진을 변경할 수 있다."
     )
     @PatchMapping(value = "/members/image", consumes = {"multipart/form-data"})
     public GenericResponse<ProfileImageInfo> setMemberProfile (@RequestParam Long id,
@@ -105,7 +109,7 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "프로필 사진 설정",
+            summary = "사용자 지역 변경",
             tags = "Members",
             description = "사용자는 자신의 프로필 사진을 설정할 수 있다."
     )

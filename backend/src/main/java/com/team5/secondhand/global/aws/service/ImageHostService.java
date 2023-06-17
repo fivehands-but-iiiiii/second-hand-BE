@@ -43,7 +43,7 @@ public class ImageHostService implements ProfileUploadUsecase{
     public ProfileImageInfo uploadMemberProfileImage(MultipartFile file) throws ImageHostingException {
         String imageUrl = "";
 
-        if (file.getSize() > 1e+8) {
+        if (file.getSize() > (1e+8*2)) {
             throw new TooLargeImageException("사진 용량이 10MB를 초과해 업로드에 실패하였습니다.");
         }
 

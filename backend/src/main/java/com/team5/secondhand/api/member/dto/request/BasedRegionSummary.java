@@ -5,5 +5,5 @@ import lombok.Getter;
 @Getter
 public class BasedRegionSummary {
     private Long id;
-    private Boolean isRepresent;
+    private Boolean onFocus;
 }

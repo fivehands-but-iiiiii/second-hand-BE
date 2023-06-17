@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `secondhand-db`.`member`
     `profile_img_url` VARCHAR(300) NULL,
     `oauth`           ENUM('GITHUB', 'NONE'),
     PRIMARY KEY (`id`),
-    UNIQUE INDEX `memberId_UNIQUE` (`member_id` ASC) VISIBLE
+    INDEX `memberId_UNIQUE` (`member_id` ASC) VISIBLE
 )
     ENGINE = InnoDB;
 
@@ -73,8 +73,8 @@ CREATE TABLE IF NOT EXISTS `secondhand-db`.`item_counts`
 (
     `id`          BIGINT      NOT NULL AUTO_INCREMENT,
     `hits`        BIGINT      NOT NULL,
-    `like_counts` VARCHAR(45) NOT NULL,
-    `chat_counts` VARCHAR(45) NOT NULL,
+    `like_counts` BIGINT NOT NULL,
+    `chat_counts` BIGINT NOT NULL,
     PRIMARY KEY (`id`)
 )
     ENGINE = InnoDB;
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `secondhand-db`.`item_contents`
 (
     `id`               BIGINT        NOT NULL AUTO_INCREMENT,
     `contents`         TEXT          NULL,
-    `detail_image_url` VARCHAR(2000) NULL,
+    `detail_image_url` VARCHAR(3000) NULL,
     PRIMARY KEY (`id`)
 )
     ENGINE = InnoDB;
