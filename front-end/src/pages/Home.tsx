@@ -23,9 +23,7 @@ const Home = () => {
       if (page > maxPage) return;
       setIsLoading(true);
 
-      const { data } = await axios.get(
-        `http://13.125.243.239/items?page=${page}&region=1`,
-      );
+      const { data } = await axios.get(`/items?page=${page}&region=1`);
 
       setSaleItems((prevItems) => [...prevItems, ...data.items]);
       setMaxPage(data.maxPage);
