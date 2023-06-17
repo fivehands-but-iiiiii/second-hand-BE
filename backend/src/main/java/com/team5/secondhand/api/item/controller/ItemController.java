@@ -20,8 +20,8 @@ public class ItemController {
     private final GetValidRegionsUsecase getValidRegions;
 
     @GetMapping
-    public ItemList getItemList(@RequestParam int page, @RequestParam long regionIndex) throws NotValidRegionException {
-        Map<Long, Region> regions = getValidRegions.getRegions(List.of(regionIndex));
-        return itemService.getItemList(page, regions.get(regionIndex));
+    public ItemList getItemList(@RequestParam int page, @RequestParam long region) throws NotValidRegionException {
+        Map<Long, Region> regions = getValidRegions.getRegions(List.of(region));
+        return itemService.getItemList(page, regions.get(region));
     }
 }
