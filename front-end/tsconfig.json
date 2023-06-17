@@ -5,6 +5,7 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "types": ["vite/client"],
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -26,7 +27,9 @@
       "@components/*": ["components/*"],
       "@constants/*": ["constants/*"],
       "@assets/*": ["assets/*"],
-      "@styles/*": ["styles/*"]
+      "@styles/*": ["styles/*"],
+      "@routes/*": ["routes/*"],
+      "@utils/*": ["utils/*"]
     }
   },
   "include": ["src"],

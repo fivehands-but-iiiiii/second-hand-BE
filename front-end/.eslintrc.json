@@ -43,6 +43,7 @@
       }
     ],
     "import/no-unresolved": "off",
+    "import/no-named-as-default": "off",
     "import/export": "off",
     "react/react-in-jsx-scope": "off",
     "camelcase": "error",
