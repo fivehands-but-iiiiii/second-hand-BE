@@ -1,10 +1,10 @@
 import Icon from '@assets/Icon';
-import Chip from '@common/Chip/Chip';
+import Chip from '@common/Chip';
+import { formatNumberToSI } from '@utils/formatNumberToSI';
 
 import { styled } from 'styled-components';
 
-import { formatNumberToSI } from '../../../util/formatNumberToSI';
-import ImgBox from '../ImgBox/ImgBox';
+import ImgBox from '../ImgBox';
 
 export interface SaleItem {
   id: number;
@@ -15,7 +15,7 @@ export interface SaleItem {
   createdAt: string;
   hits: number;
   chatCount: number;
-  likesCount: number;
+  likeCount: number;
   isLike: boolean;
 }
 
@@ -33,7 +33,7 @@ const Item = ({ item, onHistoryPage = false }: ItemProps) => {
     status,
     createdAt,
     chatCount,
-    likesCount,
+    likeCount,
     isLike,
   } = item;
   const hasChip = status !== 'onSale';
@@ -64,11 +64,11 @@ const Item = ({ item, onHistoryPage = false }: ItemProps) => {
               {formatNumberToSI(chatCount)}
             </MyItemIcon>
           )}
-          {!!likesCount && (
+          {!!likeCount && (
             <MyItemIcon>
               {/* TODO: when icon's like value is false add black icon*/}
               {isLike ? '' : <Icon name="heart" size="sm" />}
-              {formatNumberToSI(likesCount)}
+              {formatNumberToSI(likeCount)}
             </MyItemIcon>
           )}
         </MyItemSubInfo>
