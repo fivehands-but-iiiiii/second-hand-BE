@@ -4,7 +4,7 @@ const CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID;
 const REDIRECT_URL = import.meta.env.VITE_REDIRECT_URL;
 
 import Button from '@common/Button';
-import NavBar from '@common/NavBar/NavBar';
+import NavBar from '@common/NavBar';
 import IdInput from '@components/login/IdInput';
 import LoginButtons from '@components/login/LoginButtons';
 import UserProfile from '@components/login/UserProfile';
@@ -102,8 +102,8 @@ const MyLogin = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 10vh 2.7vw 2vh;
-  min-height: 500px;
+  padding: 5vh 2.7vw;
+  height: 80vh;
 `;
 
 const MyButtons = styled.div`
