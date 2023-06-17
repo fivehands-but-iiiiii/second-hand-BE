@@ -5,11 +5,11 @@ import Button from '@common/Button/Button';
 import { styled } from 'styled-components';
 
 interface LoginButtonsProps {
-  handleIdLogin: () => void;
   OAUTH_URL: string;
+  handleIdLogin: () => void;
 }
 
-const LoginButtons = ({ handleIdLogin, OAUTH_URL }: LoginButtonsProps) => {
+const LoginButtons = ({ OAUTH_URL, handleIdLogin }: LoginButtonsProps) => {
   return (
     <>
       <Button active fullWidth onClick={handleIdLogin}>

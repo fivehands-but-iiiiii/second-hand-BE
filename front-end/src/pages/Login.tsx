@@ -86,7 +86,7 @@ const Login = () => {
             </Button>
           ) : (
             <>
-              <LoginButtons {...{ handleIdLogin, OAUTH_URL }} />
+              <LoginButtons {...{ OAUTH_URL, handleIdLogin }} />
             </>
           )}
         </MyButtons>
