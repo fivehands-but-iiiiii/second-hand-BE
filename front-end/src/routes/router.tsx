@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 
-import Callback from '@components/login/Callback';
+import OAuthCallback from '@components/login/OAuthCallback';
 import ErrorPage from '@pages/ErrorPage';
 import Home from '@pages/Home';
 import MobileLayout from '@pages/Layout';
@@ -24,7 +24,7 @@ const router = createBrowserRouter([
   },
   {
     path: 'login/oauth2/code/github',
-    element: <Callback />,
+    element: <OAuthCallback />,
   },
 ]);
 

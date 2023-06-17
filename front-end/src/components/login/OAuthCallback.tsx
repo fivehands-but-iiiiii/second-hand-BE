@@ -8,7 +8,7 @@ interface UserInfo {
   avatar_url: string;
 }
 
-const Callback = () => {
+const OAuthCallback = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const OAUTH_URL = `${BASE_URL}/git/login`;
@@ -73,4 +73,4 @@ const Callback = () => {
   return <></>;
 };
 
-export default Callback;
+export default OAuthCallback;
