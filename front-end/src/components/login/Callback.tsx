@@ -28,10 +28,10 @@ const Callback = () => {
           profileImgUrl: user.avatar_url,
           regions: [
             // TODO: 지역설정 추가하여 POST 요청
-            {
-              id: 1,
-              onFocus: true,
-            },
+            // {
+            //   id: `${id}`,
+            //   onFocus: true,
+            // },
           ],
         }),
       });

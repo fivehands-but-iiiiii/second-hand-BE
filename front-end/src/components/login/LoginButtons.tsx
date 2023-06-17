@@ -1,6 +1,6 @@
 import Button from '@common/Button/Button';
 
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 
 interface LoginButtonsProps {
   handleIdLogin: () => void;

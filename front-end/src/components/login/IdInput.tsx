@@ -1,6 +1,6 @@
 import Textarea from '@common/Textarea';
 
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 
 interface IdInputProps {
   inputValue: string;

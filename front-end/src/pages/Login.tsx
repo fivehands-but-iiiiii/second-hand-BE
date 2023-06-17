@@ -9,7 +9,7 @@ import IdInput from '@components/login/IdInput';
 import LoginButtons from '@components/login/LoginButtons';
 import UserProfile from '@components/login/UserProfile';
 
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(false);
