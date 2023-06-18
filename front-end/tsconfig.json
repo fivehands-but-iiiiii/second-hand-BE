@@ -29,8 +29,7 @@
       "@assets/*": ["assets/*"],
       "@styles/*": ["styles/*"],
       "@utils/*": ["utils/*"],
-      "@hooks/*": ["hooks/*"],
-      "@routes/*": ["routes/*"]
+      "@hooks/*": ["hooks/*"]
     }
   },
   "include": ["src"],
