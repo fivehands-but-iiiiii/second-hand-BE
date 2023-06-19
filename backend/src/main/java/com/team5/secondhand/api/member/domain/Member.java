@@ -14,7 +14,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String memberId;
     private String profileImgUrl;
@@ -64,5 +65,18 @@ public class Member {
 
     public void updateBasedRegions(List<BasedRegion> basedRegions) {
         this.regions = basedRegions;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Member other = (Member) obj;
+        return this.memberId.equals(other.memberId) && this.profileImgUrl.equals(other.profileImgUrl);
+    }
+
+    public void updatePlatform(Oauth joinPlatform) {
+        this.oauth = joinPlatform;
     }
 }
