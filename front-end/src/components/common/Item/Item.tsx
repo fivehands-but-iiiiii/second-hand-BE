@@ -41,7 +41,7 @@ const Item = ({ item, onHistoryPage = false }: ItemProps) => {
 
   return (
     <MyItem onClick={() => console.log(`move to item/${id}`)}>
-      <ImgBox src={thumbnailUrl} />
+      <ImgBox src={thumbnailUrl} alt={title} />
       <MyItemInfo>
         <MyItemTitle>
           <div>{title}</div>
