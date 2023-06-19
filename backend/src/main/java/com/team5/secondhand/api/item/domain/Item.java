@@ -29,7 +29,7 @@ public class Item extends BaseTimeEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     private Status status;
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id")
     private Member seller;
 
@@ -37,11 +37,11 @@ public class Item extends BaseTimeEntity {
     @JoinColumn(name = "region_id")
     private Region region;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "item_counts_id")
     private ItemCounts count;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "item_contents_id")
     private ItemContents contents;
 

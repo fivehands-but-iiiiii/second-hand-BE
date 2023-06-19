@@ -11,7 +11,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,13 +25,20 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
 
+    @Transactional(readOnly = true)
     public ItemList getItemList(int page, Region region) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").descending());
 
         Page<Item> pageResult = itemRepository.findAllByRegion(region, pageable);
-        List<ItemSummary> items = pageResult.getContent().stream()
-                .map(i -> ItemSummary.of(i, false))
-                .collect(Collectors.toList());
+
+        int number = 1;
+
+        //TODO 해당 로직 ItemSummary로 회원의 관심 여부와 함께 편입시킬 것
+        List<ItemSummary> items = new ArrayList<>();
+
+        for (Item item : pageResult.getContent()) {
+            items.add(ItemSummary.of(item, number++ == 3));
+        }
 
         return ItemList.getPage(pageResult.getTotalPages(), items);
     }
