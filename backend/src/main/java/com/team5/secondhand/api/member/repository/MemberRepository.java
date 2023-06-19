@@ -18,6 +18,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     int updateMemberProfileImage(@Param("id") Long id,
                                  @Param("url") String url);
 
-    Optional<Member> findByMemberId(String memberId);
+    Optional<Member> findByMemberIdAndOauth(String memberId, Oauth oauth);
+
     boolean existsByMemberIdAndOauth(String memberId, Oauth oauth);
 }

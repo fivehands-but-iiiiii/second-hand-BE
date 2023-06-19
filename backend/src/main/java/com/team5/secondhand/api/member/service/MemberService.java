@@ -51,15 +51,14 @@ public class MemberService implements JoinService {
     }
 
     public MemberDetails login(MemberLogin loginDTO) throws UnauthorizedException, EmptyBasedRegionException {
-        //todo : 레포에 해당 id가 있는지 확인 -> 있으면 성공, 없으면 권한 없음
-        Member member = memberRepository.findByMemberId(loginDTO.getMemberId())
+        Member member = memberRepository.findByMemberIdAndOauth(loginDTO.getMemberId(), Oauth.NONE)
                 .orElseThrow(() -> new UnauthorizedException("가입되지 않은 회원입니다"));
 
         return MemberDetails.fromMember(member);
     }
 
     public MemberDetails loginByOAuth(UserProfile loginDTO) throws UnauthorizedException, EmptyBasedRegionException {
-        Member member = memberRepository.findByMemberId(loginDTO.getLogin())
+        Member member = memberRepository.findByMemberIdAndOauth(loginDTO.getLogin(), Oauth.GITHUB)
                 .orElseThrow(() -> new UnauthorizedException("가입되지 않은 GITHUB 회원입니다", loginDTO));
 
         return MemberDetails.fromMember(member);
