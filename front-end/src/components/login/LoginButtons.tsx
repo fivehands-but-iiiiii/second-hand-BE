@@ -7,9 +7,14 @@ import { styled } from 'styled-components';
 interface LoginButtonsProps {
   OAUTH_URL: string;
   handleIdLogin: () => void;
+  handleCreateAccount: () => void;
 }
 
-const LoginButtons = ({ OAUTH_URL, handleIdLogin }: LoginButtonsProps) => {
+const LoginButtons = ({
+  OAUTH_URL,
+  handleIdLogin,
+  handleCreateAccount,
+}: LoginButtonsProps) => {
   return (
     <>
       <Button active fullWidth onClick={handleIdLogin}>
@@ -18,7 +23,7 @@ const LoginButtons = ({ OAUTH_URL, handleIdLogin }: LoginButtonsProps) => {
       <MyGitHubButton fullWidth>
         <Link to={OAUTH_URL}>GitHub으로 로그인</Link>
       </MyGitHubButton>
-      <Button fullWidth icon>
+      <Button fullWidth icon onClick={handleCreateAccount}>
         회원가입
       </Button>
     </>
@@ -28,6 +33,7 @@ const LoginButtons = ({ OAUTH_URL, handleIdLogin }: LoginButtonsProps) => {
 const MyGitHubButton = styled(Button)`
   background-color: ${({ theme }) => theme.colors.accent.textWeak};
   > a {
+    width: 100%;
     color: ${({ theme }) => theme.colors.accent.text};
   }
 `;

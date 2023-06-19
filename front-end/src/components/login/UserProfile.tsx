@@ -1,24 +1,32 @@
-import Icon from '@assets/Icon';
-import Button from '@common/Button/Button';
+import { useState, Dispatch, SetStateAction } from 'react';
+
+import FileInput from '@common/FileInput';
 
 import { styled } from 'styled-components';
 interface UserProfileProps {
   profileImgUrl?: string;
   memberId?: string;
+  setValue: Dispatch<SetStateAction<string>>;
 }
 
-const UserProfile = ({ profileImgUrl, memberId }: UserProfileProps) => {
+const UserProfile = ({
+  profileImgUrl,
+  memberId,
+  setValue,
+}: UserProfileProps) => {
+  const [uploadImg, setUploadImg] = useState('');
+
   return (
-    // TODO: 이미지 수정 기능 추가
     <MyUserProfile>
       {profileImgUrl ? (
         <MyUserImg src={profileImgUrl} alt={memberId} />
       ) : (
-        <MyDefaultImg>
-          <Button icon>
-            <Icon name={'camera'} />
-          </Button>
-        </MyDefaultImg>
+        <>
+          <MyDefaultImgBox>
+            {uploadImg && <MyPreviewFile src={uploadImg} alt="미리 보기" />}
+            <FileInput setUploadImg={setUploadImg} />
+          </MyDefaultImgBox>
+        </>
       )}
       <p>{memberId}</p>
     </MyUserProfile>
@@ -35,7 +43,8 @@ const MyUserImg = styled.img`
   border-radius: 50%;
 `;
 
-const MyDefaultImg = styled.div`
+const MyDefaultImgBox = styled.div`
+  position: relative;
   width: 80px;
   height: 80px;
   border-radius: 50%;
@@ -45,6 +54,16 @@ const MyDefaultImg = styled.div`
   > button {
     display: inline-block;
   }
+`;
+
+const MyPreviewFile = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
 `;
 
 export default UserProfile;
