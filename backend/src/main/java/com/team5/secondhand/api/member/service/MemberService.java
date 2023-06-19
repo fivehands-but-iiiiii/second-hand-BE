@@ -1,28 +1,23 @@
 package com.team5.secondhand.api.member.service;
 
-import com.team5.secondhand.api.member.domain.BasedRegion;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.domain.Oauth;
+import com.team5.secondhand.api.member.dto.request.BasedRegionSummary;
 import com.team5.secondhand.api.member.dto.request.MemberJoin;
 import com.team5.secondhand.api.member.dto.request.MemberLogin;
+import com.team5.secondhand.api.member.dto.request.MemberRegion;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
-import com.team5.secondhand.api.member.exception.ExistMemberIdException;
-import com.team5.secondhand.api.member.exception.UnauthorizedException;
-import com.team5.secondhand.api.member.exception.UnauthorizedGithubMemberException;
-import com.team5.secondhand.api.member.exception.NotValidMemberIdException;
-import com.team5.secondhand.api.member.repository.MemberBasedRegionRepository;
+import com.team5.secondhand.api.member.exception.*;
 import com.team5.secondhand.api.member.repository.MemberRepository;
-import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.oauth.dto.UserProfile;
-import com.team5.secondhand.api.member.exception.MemberDataCorruptedException;
+import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.global.exception.EmptyBasedRegionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
 @Service
@@ -32,7 +27,6 @@ public class MemberService implements JoinService {
     private final String ID_PATTERN = "^[a-z0-9]+$";
 
     private final MemberRepository memberRepository;
-    private final MemberBasedRegionRepository basedRegionRepository;
 
     @Override
     @Transactional
@@ -40,18 +34,8 @@ public class MemberService implements JoinService {
 
         Member newMember = joinDto.toMember();
         newMember.updatePlatform(joinPlatform);
-        List<BasedRegion> basedRegions = new ArrayList<>();
 
-        regions.keySet().forEach(region -> {
-            if (regions.get(region)) {
-                basedRegions.add(BasedRegion.create(newMember, region));
-            }
-            if (!regions.get(region)) {
-                basedRegions.add(BasedRegion.addSubRegion(newMember, region));
-            }
-        });
-
-        newMember.updateBasedRegions(basedRegions);
+        newMember.updateBasedRegions(regions);
         memberRepository.save(newMember);
 
         return newMember.getId();
@@ -77,7 +61,7 @@ public class MemberService implements JoinService {
 
     @Transactional
     public int updateProfileImage(Long id, String uploadUrl) {
-        return memberRepository.updateMemberProfileImage(id,uploadUrl);
+        return memberRepository.updateMemberProfileImage(id, uploadUrl);
     }
 
     public void isValidMemberId(String memberId) throws ExistMemberIdException, NotValidMemberIdException {
@@ -96,6 +80,23 @@ public class MemberService implements JoinService {
     public void checkDataCorruption(MemberJoin request, UserProfile tempMember) throws MemberDataCorruptedException {
         if (!request.toMember().equals(tempMember.toMember())) {
             throw new MemberDataCorruptedException("유효하지 않은 회원가입 요청입니다.");
+        }
+    }
+
+    @Transactional
+    public void updateRegions(Long id, Map<Region, Boolean> basedRegions) {
+        Member member = memberRepository.findById(id).orElseThrow(() -> new NoSuchElementException("해당하는 회원이 없습니다."));
+
+        member.updateBasedRegions(basedRegions);
+        memberRepository.save(member);
+    }
+
+    @Transactional
+    public void switchRegions(Long id, MemberRegion memberRegion) {
+        for (BasedRegionSummary region : memberRegion.getRegions()) {
+            if (memberRepository.switchBasedRegion(region.isOnFocus(), id, region.getId()) != 1) {
+                throw new IllegalArgumentException("대표지역을 변경할 수 없습니다.");
+            }
         }
     }
 }
