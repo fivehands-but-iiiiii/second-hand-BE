@@ -37,7 +37,7 @@ public class ItemService {
         List<ItemSummary> items = new ArrayList<>();
 
         for (Item item : pageResult.getContent()) {
-            items.add(ItemSummary.of(item, number++ == 3));
+            items.add(ItemSummary.of(item, number++ % 3 == 0));
         }
 
         return ItemList.getPage(pageResult.getTotalPages(), items);
