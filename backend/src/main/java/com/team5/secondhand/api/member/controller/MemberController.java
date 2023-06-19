@@ -4,7 +4,7 @@ import com.team5.secondhand.api.member.domain.BasedRegion;
 import com.team5.secondhand.api.member.domain.Oauth;
 import com.team5.secondhand.api.member.dto.request.MemberJoin;
 import com.team5.secondhand.api.member.dto.request.MemberLogin;
-import com.team5.secondhand.api.member.dto.request.MemberRegionUpdate;
+import com.team5.secondhand.api.member.dto.request.MemberRegion;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.member.exception.MemberException;
 import com.team5.secondhand.api.member.service.MemberService;
@@ -126,13 +126,28 @@ public class MemberController {
     @Operation(
             summary = "사용자 지역 변경",
             tags = "Members",
-            description = "사용자는 자신의 프로필 사진을 설정할 수 있다."
+            description = "사용자는 내 동네 설정을 할 수 있다."
+    )
+    @PostMapping("/members/region")
+    public GenericResponse<Boolean> setMemberRegion(@RequestBody MemberRegion memberRegion) throws NotValidRegionException, NoMainRegionException {
+        //region id 적합 확인
+        Map<Region, Boolean> basedRegions = BasedRegion.mapping(validRegions.getRegions(memberRegion.getRegionsId()), memberRegion.getRegions());
+
+        memberService.updateRegions(memberRegion.getId(), basedRegions);
+
+        //TODO response
+        return GenericResponse.send("Member update profile image Successfully", null);
+    }
+
+    @Operation(
+            summary = "사용자 지역 스위치",
+            tags = "Members",
+            description = "사용자는 내 동네 전환을 할 수 있다."
     )
     @PatchMapping("/members/region")
-    public GenericResponse<Boolean> setMemberRegion(@RequestBody Long id,
-                                                    @RequestBody MemberRegionUpdate request) {
-        //TODO 임시로 파라미터로 member index 받기
-
+    public GenericResponse<Boolean> switchMemberRegion(@RequestBody MemberRegion memberRegion) {
+        //TODO: 지역 검증은 추후에 validator 로 검증
+        memberService.switchRegions(memberRegion.getId(), memberRegion);
 
         //TODO response
         return GenericResponse.send("Member update profile image Successfully", null);
