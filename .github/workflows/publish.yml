@@ -35,7 +35,7 @@ jobs:
         echo "${{ secrets.APPICATION_OAUTH }}" > ./backend/src/main/resources/application-oauth.yml
      
         touch ./backend/src/main/resources/application-jwt.yml
-        echo "${{ secrets.APPLICATION_PROD }}" > ./backend/src/main/resources/application-jwt.yml
+        echo "${{ secrets.APPLICATION_JWT }}" > ./backend/src/main/resources/application-jwt.yml
      
 #     - name: make application-database.yaml
 #       run: |
