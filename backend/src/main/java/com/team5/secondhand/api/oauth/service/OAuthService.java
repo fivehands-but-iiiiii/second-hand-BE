@@ -17,11 +17,8 @@ public class OAuthService {
     private final OAuthProperties oAuthProperties;
 
     public UserProfile getGithubUser(String code) {
-        //access token 가져오기
         OAuthToken oAuthToken = getToken(code);
-        //github user 정보 가져오기
         UserProfile user = getUserProfile(oAuthToken);
-
         return user;
     }
 
