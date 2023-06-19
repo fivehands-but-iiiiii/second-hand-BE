@@ -27,6 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
+import static com.team5.secondhand.api.member.exception.MemberExceptionHandler.JOIN_SESSION_KEY;
+
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
@@ -42,7 +44,7 @@ public class MemberController {
     )
     @PostMapping("/join")
     public GenericResponse<Long> join(@RequestBody MemberJoin request, HttpSession session) throws MemberException, NotValidRegionException, NoMainRegionException {
-        UserProfile tempMember = (UserProfile) session.getAttribute("tempMember");
+        UserProfile tempMember = (UserProfile) session.getAttribute(JOIN_SESSION_KEY);
         Oauth joinPlatform = Oauth.NONE;
 
         if (tempMember == null) {

@@ -20,7 +20,7 @@ import javax.servlet.http.HttpSession;
 @RestControllerAdvice(basePackageClasses = {MemberController.class})
 public class MemberExceptionHandler {
 
-    private final String JOIN_SESSION_KEY = "tempMember";
+    public static final String JOIN_SESSION_KEY = "tempMember";
     private final int JOIN_SESSION_TIMEOUT = 5 * 60;
     private final HttpSession session;
 
