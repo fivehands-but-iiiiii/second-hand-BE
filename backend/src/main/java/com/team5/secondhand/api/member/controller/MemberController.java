@@ -1,6 +1,8 @@
 package com.team5.secondhand.api.member.controller;
 
 import com.team5.secondhand.api.member.domain.BasedRegion;
+import com.team5.secondhand.api.member.domain.Member;
+import com.team5.secondhand.api.member.domain.Oauth;
 import com.team5.secondhand.api.member.dto.request.BasedRegionSummary;
 import com.team5.secondhand.api.member.dto.request.MemberJoin;
 import com.team5.secondhand.api.member.dto.request.MemberLogin;
@@ -9,9 +11,9 @@ import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.member.exception.ExistMemberIdException;
 import com.team5.secondhand.api.member.exception.UnauthorizedException;
 import com.team5.secondhand.api.member.service.MemberService;
-import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.oauth.dto.UserProfile;
 import com.team5.secondhand.api.oauth.service.OAuthService;
+import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.region.exception.NoMainRegionException;
 import com.team5.secondhand.api.region.exception.NotValidRegionException;
 import com.team5.secondhand.api.region.service.GetValidRegionsUsecase;
@@ -57,9 +59,21 @@ public class MemberController {
 
         return GenericResponse.send("Member joined Successfully", joinedId);
     }
-  
-    @Operation(
 
+    @Operation(
+            summary = "아이디 중복검사",
+            tags = "Members",
+            description = "사용자는 회원가입 하기 위해서 아이디 중복검사를 해야한다."
+    )
+    @GetMapping("/join/availability")
+    public GenericResponse<Boolean> checkDuplicateId(String memberId) throws ExistMemberIdException {
+        Boolean isDuplicate = memberService.isExistMemberId(memberId, Oauth.NONE);
+
+        return GenericResponse.send("아이디 중복검사", isDuplicate);
+    }
+
+
+    @Operation(
             summary = "로그인",
             tags = "Members",
             description = "사용자는 로그인을 할 수 있다."
