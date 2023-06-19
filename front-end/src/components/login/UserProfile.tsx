@@ -1,4 +1,4 @@
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 
 import FileInput from '@common/FileInput';
 
@@ -16,6 +16,10 @@ const UserProfile = ({
 }: UserProfileProps) => {
   const [uploadImg, setUploadImg] = useState('');
 
+  useEffect(() => {
+    setValue(uploadImg);
+  }, [uploadImg]);
+
   return (
     <MyUserProfile>
       {profileImgUrl ? (
@@ -28,7 +32,8 @@ const UserProfile = ({
           </MyDefaultImgBox>
         </>
       )}
-      <p>{memberId}</p>
+
+      {memberId && <p>{memberId}</p>}
     </MyUserProfile>
   );
 };
@@ -47,9 +52,9 @@ const MyDefaultImgBox = styled.div`
   position: relative;
   width: 80px;
   height: 80px;
+  margin: 0 auto;
   border-radius: 50%;
   line-height: 80px;
-  text-align: center;
   border: 1px solid ${({ theme }) => theme.colors.neutral.border};
   > button {
     display: inline-block;

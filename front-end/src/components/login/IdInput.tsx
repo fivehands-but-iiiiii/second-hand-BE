@@ -1,41 +1,57 @@
-import { ChangeEvent, KeyboardEvent } from 'react';
+import { ChangeEvent, KeyboardEvent, useState } from 'react';
 
 import Textarea from '@common/Textarea';
 
 import { styled } from 'styled-components';
 
 interface IdInputProps {
-  inputValue: string;
-  validIdInfo: string;
-  handleChangeInputValue: (event: ChangeEvent<HTMLTextAreaElement>) => void;
-  handleValidateId: (event: KeyboardEvent<HTMLTextAreaElement>) => void;
+  validIdInfo?: string;
+  setValue: (value: string) => void;
 }
 
-const IdInput = ({
-  inputValue,
-  handleChangeInputValue,
-  handleValidateId,
-  validIdInfo,
-}: IdInputProps) => {
+const IdInput = ({ validIdInfo, setValue }: IdInputProps) => {
+  const [input, setInput] = useState('');
+
+  const handleChangeInput = ({ target }: ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = target;
+    setInput(value);
+    setValue(value);
+  };
+
+  const handleFormatInput = ({
+    target,
+  }: KeyboardEvent<HTMLTextAreaElement>) => {
+    const regExp = /[^0-9a-z]/g;
+    const { value } = target as HTMLTextAreaElement;
+    if (regExp.test(value)) {
+      setInput(value.replace(regExp, ''));
+    }
+  };
+
   return (
-    <div>
+    <MyInputContainer>
       <MyIdInput>
         <label htmlFor="idInput">아이디</label>
         <Textarea
           name="idInput"
           singleLine
           placeholder={'아이디를 입력하세요'}
-          value={inputValue}
+          value={input}
           maxLength={12}
           rows={1}
-          onChange={handleChangeInputValue}
-          onKeyUp={handleValidateId}
+          onChange={handleChangeInput}
+          onKeyUp={handleFormatInput}
         />
       </MyIdInput>
       {validIdInfo && <MyLoginInfo>{validIdInfo}</MyLoginInfo>}
-    </div>
+    </MyInputContainer>
   );
 };
+
+const MyInputContainer = styled.div`
+  padding: 2vh 0;
+  height: 120px;
+`;
 
 const MyIdInput = styled.div`
   display: flex;
