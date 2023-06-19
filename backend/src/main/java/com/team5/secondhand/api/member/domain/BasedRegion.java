@@ -49,7 +49,7 @@ public class BasedRegion {
 
         for (BasedRegionSummary regionSummary : regionSummaries) {
             Region region = regions.get(regionSummary.getId());
-            basedRegions.put(region, regionSummary.getOnFocus());
+            basedRegions.put(region, regionSummary.isOnFocus());
         }
 
         if (!basedRegions.containsValue(true)) {
