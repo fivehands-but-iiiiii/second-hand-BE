@@ -6,13 +6,13 @@ import lombok.Getter;
 public class ErrorResponseWithBody extends ErrorResponse {
     private final Object body;
 
-    private ErrorResponseWithBody(Object body, String errorInfo, String message) {
+    private ErrorResponseWithBody(String errorInfo, String message, Object body) {
         super(errorInfo, message);
         this.body = body;
     }
 
     public static ErrorResponseWithBody occur (Exception e, Object body) {
-        return new ErrorResponseWithBody(body, e.toString(), e.getMessage());
+        return new ErrorResponseWithBody(e.toString(), e.getMessage(), body);
     }
 
 }

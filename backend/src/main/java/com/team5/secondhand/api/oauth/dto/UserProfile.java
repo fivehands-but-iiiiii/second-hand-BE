@@ -1,5 +1,7 @@
 package com.team5.secondhand.api.oauth.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.team5.secondhand.api.member.domain.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,5 +10,13 @@ import lombok.NoArgsConstructor;
 public class UserProfile {
     private String id;
     private String login;
-    private String avatar_url;
+    @JsonProperty("avatar_url")
+    private String avatarUrl;
+
+    public Member toMember() {
+        return Member.builder()
+                .memberId(login)
+                .profileImgUrl(avatarUrl)
+                .build();
+    }
 }

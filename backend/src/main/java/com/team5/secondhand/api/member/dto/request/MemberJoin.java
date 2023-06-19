@@ -1,14 +1,14 @@
 package com.team5.secondhand.api.member.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team5.secondhand.api.member.domain.Member;
-import com.team5.secondhand.api.member.domain.Oauth;
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @RequiredArgsConstructor
@@ -21,14 +21,16 @@ public class MemberJoin {
     private final String profileImgUrl;
     @Size(min = 1, max = 2)
     private final List<BasedRegionSummary> regions;
-    @NotNull
-    private final Oauth oauth;
+
+    @JsonIgnore
+    public List<Long> getRegionsId() {
+        return regions.stream().map(BasedRegionSummary::getId).collect(Collectors.toList());
+    }
 
     public Member toMember() {
         return Member.builder()
                 .memberId(memberId)
                 .profileImgUrl(profileImgUrl)
-                .oauth(oauth)
                 .build();
     }
 }

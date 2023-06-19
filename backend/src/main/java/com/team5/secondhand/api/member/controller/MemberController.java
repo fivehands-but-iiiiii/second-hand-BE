@@ -1,15 +1,12 @@
 package com.team5.secondhand.api.member.controller;
 
 import com.team5.secondhand.api.member.domain.BasedRegion;
-import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.domain.Oauth;
-import com.team5.secondhand.api.member.dto.request.BasedRegionSummary;
 import com.team5.secondhand.api.member.dto.request.MemberJoin;
 import com.team5.secondhand.api.member.dto.request.MemberLogin;
 import com.team5.secondhand.api.member.dto.request.MemberRegionUpdate;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
-import com.team5.secondhand.api.member.exception.ExistMemberIdException;
-import com.team5.secondhand.api.member.exception.UnauthorizedException;
+import com.team5.secondhand.api.member.exception.MemberException;
 import com.team5.secondhand.api.member.service.MemberService;
 import com.team5.secondhand.api.oauth.dto.UserProfile;
 import com.team5.secondhand.api.oauth.service.OAuthService;
@@ -27,9 +24,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import javax.servlet.http.HttpSession;
 import java.util.Map;
-import java.util.stream.Collectors;
+
+import static com.team5.secondhand.api.member.exception.MemberExceptionHandler.JOIN_SESSION_KEY;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,18 +43,22 @@ public class MemberController {
             description = "사용자는 회원가입을 할 수 있다."
     )
     @PostMapping("/join")
-    public GenericResponse<Long> join (@RequestBody MemberJoin request) throws NotValidRegionException, ExistMemberIdException, NoMainRegionException {
-        if (memberService.isExistMemberId(request.getMemberId(), request.getOauth())) {
-            throw new ExistMemberIdException("이미 존재하는 회원 아이디입니다.");
+    public GenericResponse<Long> join(@RequestBody MemberJoin request, HttpSession session) throws MemberException, NotValidRegionException, NoMainRegionException {
+        UserProfile tempMember = (UserProfile) session.getAttribute(JOIN_SESSION_KEY);
+        Oauth joinPlatform = Oauth.NONE;
+
+        if (tempMember == null) {
+            memberService.isValidMemberId(request.getMemberId());
+        } else {
+            joinPlatform = Oauth.GITHUB;
+            memberService.checkDataCorruption(request, tempMember);
+            memberService.isExistMemberId(request.getMemberId(), joinPlatform);
         }
 
-        List<Long> ids = request.getRegions().stream()
-                .map(BasedRegionSummary::getId)
-                .collect(Collectors.toList());
-        Map<Region, Boolean> basedRegions = BasedRegion.mapping(validRegions.getRegions(ids), request.getRegions());
+        Map<Region, Boolean> basedRegions = BasedRegion.mapping(validRegions.getRegions(request.getRegionsId()), request.getRegions());
+        Long joinedId = memberService.join(request, basedRegions, joinPlatform);
 
-        Long joinedId = memberService.join(request, basedRegions);
-
+        session.invalidate();
         return GenericResponse.send("Member joined Successfully", joinedId);
     }
 
@@ -66,9 +68,8 @@ public class MemberController {
             description = "사용자는 회원가입 하기 위해서 아이디 중복검사를 해야한다."
     )
     @GetMapping("/join/availability")
-    public GenericResponse<Boolean> checkDuplicateId(String memberId) throws ExistMemberIdException {
+    public GenericResponse<Boolean> checkDuplicateId(String memberId) {
         Boolean isDuplicate = memberService.isExistMemberId(memberId, Oauth.NONE);
-
         return GenericResponse.send("아이디 중복검사", isDuplicate);
     }
 
@@ -79,7 +80,7 @@ public class MemberController {
             description = "사용자는 로그인을 할 수 있다."
     )
     @PostMapping("/login")
-    public GenericResponse<MemberDetails> login(MemberLogin request) throws UnauthorizedException, EmptyBasedRegionException {
+    public GenericResponse<MemberDetails> login(MemberLogin request) throws MemberException, EmptyBasedRegionException {
         MemberDetails member = memberService.login(request);
 
         return GenericResponse.send("Member login Successfully", member);
@@ -93,13 +94,13 @@ public class MemberController {
     )
     @PostMapping("/logout")
     public GenericResponse<Long> logout(MemberJoin request) {
-
+        //TODO Auth 헤더 만료
         //TODO response
         return GenericResponse.send("Member joined Successfully", null);
     }
 
     @GetMapping("/git/login")
-    public GenericResponse<MemberDetails> getGithubUser(String code) throws UnauthorizedException, ExistMemberIdException, EmptyBasedRegionException {
+    public GenericResponse<MemberDetails> getGithubUser(String code) throws MemberException, EmptyBasedRegionException {
         UserProfile user = oAuthService.getGithubUser(code);
         MemberDetails member = memberService.loginByOAuth(user);
 
@@ -113,8 +114,8 @@ public class MemberController {
             description = "사용자는 자신의 프로필 사진을 변경할 수 있다."
     )
     @PatchMapping(value = "/members/image", consumes = {"multipart/form-data"})
-    public GenericResponse<ProfileImageInfo> setMemberProfile (@RequestParam Long id,
-                                                               @RequestPart MultipartFile profile) throws ImageHostingException {
+    public GenericResponse<ProfileImageInfo> setMemberProfile(@RequestParam Long id,
+                                                              @RequestPart MultipartFile profile) throws ImageHostingException {
         ProfileImageInfo profileImageInfo = profileUpload.uploadMemberProfileImage(profile);
         profileImageInfo.owned(id);
 
