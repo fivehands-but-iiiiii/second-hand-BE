@@ -2,6 +2,7 @@ package com.team5.secondhand.api.member.dto.response;
 
 import com.team5.secondhand.api.member.domain.BasedRegion;
 import com.team5.secondhand.api.member.domain.Member;
+import com.team5.secondhand.api.member.domain.Oauth;
 import com.team5.secondhand.global.exception.EmptyBasedRegionException;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class MemberDetails {
     private final String profileImgUrl;
     private final Long mainRegion;
     private final Long subRegion;
+    private final Oauth oauth;
 
     public static MemberDetails fromMember(Member member) throws EmptyBasedRegionException {
 
@@ -28,6 +30,7 @@ public class MemberDetails {
                 .profileImgUrl(member.getProfileImgUrl())
                 .mainRegion(member.getRepresentedRegionId())
                 .subRegion(member.getSubRegionId())
+                .oauth(member.getOauth())
                 .build();
     }
 }
