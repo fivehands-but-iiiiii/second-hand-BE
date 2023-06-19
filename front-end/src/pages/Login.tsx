@@ -1,5 +1,7 @@
-import { useState, useEffect, KeyboardEvent, ChangeEvent } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID;
 const REDIRECT_URL = import.meta.env.VITE_REDIRECT_URL;
 
@@ -13,46 +15,33 @@ import { getStoredValue, removeStorageValue } from '@utils/sessionStorage';
 import { styled } from 'styled-components';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
-  const [inputValue, setInputValue] = useState('');
-  const [validIdInfo, setValidIdInfo] = useState('');
+  const [userId, setUserId] = useState('');
 
   const storedUserInfo = getStoredValue({ key: 'userInfo' });
-
   const OAUTH_URL = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_url=${REDIRECT_URL}`;
-
-  const handleValidateId = ({ target }: KeyboardEvent<HTMLTextAreaElement>) => {
-    const regExp = /[^0-9a-z]/g;
-    const input = target as HTMLTextAreaElement;
-    const { value } = input;
-
-    if (regExp.test(value)) {
-      setInputValue(value.replace(regExp, ''));
-    }
-
-    if (value.length < 6 || value.length > 12) {
-      setValidIdInfo('6~12자 이내로 입력하세요');
-      // TODO: 아이디 중복확인
-    } else {
-      setValidIdInfo('');
-    }
-  };
-
-  const handleChangeInputValue = ({
-    target,
-  }: ChangeEvent<HTMLTextAreaElement>) => {
-    setInputValue(target.value);
-  };
-
-  // TODO: DB에 아이디가 있는지 확인
-  const handleIdLogin = () => {
-    console.log('DB에 아이디가 있는지 확인');
-  };
 
   const handleLogout = () => {
     setIsLogin(false);
     removeStorageValue({ key: 'userInfo' });
     location.reload();
+  };
+
+  const handleUserIdLogin = async () => {
+    const response = await fetch(`${BASE_URL}/login`, {
+      method: 'POST',
+      body: JSON.stringify({
+        memberId: userId,
+      }),
+    });
+    const userInfo = await response.json();
+    console.log(userId, '로그인완료한', userInfo);
+  };
+
+  // TODO: 페이지 이동 아닌 Portal 띄우기로 변경
+  const handleCreateAccount = () => {
+    navigate('/Join');
   };
 
   useEffect(() => {
@@ -69,14 +58,7 @@ const Login = () => {
           </>
         ) : (
           <>
-            <IdInput
-              {...{
-                inputValue,
-                handleChangeInputValue,
-                handleValidateId,
-                validIdInfo,
-              }}
-            />
+            <IdInput setValue={setUserId} />
           </>
         )}
         <MyButtons>
@@ -86,7 +68,9 @@ const Login = () => {
             </Button>
           ) : (
             <>
-              <LoginButtons {...{ OAUTH_URL, handleIdLogin }} />
+              <LoginButtons
+                {...{ OAUTH_URL, handleUserIdLogin, handleCreateAccount }}
+              />
             </>
           )}
         </MyButtons>
