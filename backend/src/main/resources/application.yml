@@ -15,4 +15,3 @@ spring:
       hibernate:
         jdbc:
         default_batch_fetch_size: 100
-          batch_size: 100
