@@ -8,9 +8,9 @@ import axios from 'axios';
 
 const Home = () => {
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
-  const [maxPage, setMaxPage] = useState<number>(1);
-  const [page, setPage] = useState<number>(1);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [maxPage, setMaxPage] = useState(1);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onIntersect: IntersectionObserverCallback = ([{ isIntersecting }]) => {
     if (isIntersecting) fetchItems();
@@ -38,7 +38,7 @@ const Home = () => {
   return (
     <>
       <ItemList saleItems={saleItems} />
-      <div id="onFetchItems" ref={setTarget}></div>
+      {/* <div id="onFetchItems" ref={setTarget}></div> */}
       {isLoading && <Spinner />}
     </>
   );
