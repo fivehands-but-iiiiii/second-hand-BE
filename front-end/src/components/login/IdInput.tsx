@@ -6,16 +6,16 @@ import { styled } from 'styled-components';
 
 interface IdInputProps {
   validIdInfo?: string;
-  setValue: (value: string) => void;
+  handleUserInput: (value: string) => void;
 }
 
-const IdInput = ({ validIdInfo, setValue }: IdInputProps) => {
+const IdInput = ({ validIdInfo, handleUserInput }: IdInputProps) => {
   const [input, setInput] = useState('');
 
   const handleChangeInput = ({ target }: ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = target;
     setInput(value);
-    setValue(value);
+    handleUserInput(value);
   };
 
   const handleFormatInput = ({

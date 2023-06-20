@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 const CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID;
 const REDIRECT_URL = import.meta.env.VITE_REDIRECT_URL;
 
@@ -10,9 +9,15 @@ import NavBar from '@common/NavBar';
 import IdInput from '@components/login/IdInput';
 import LoginButtons from '@components/login/LoginButtons';
 import UserProfile from '@components/login/UserProfile';
-import { getStoredValue, removeStorageValue } from '@utils/sessionStorage';
+import {
+  setStorageValue,
+  getStoredValue,
+  removeStorageValue,
+} from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
+
+import api from '../api';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -22,6 +27,10 @@ const Login = () => {
   const storedUserInfo = getStoredValue({ key: 'userInfo' });
   const OAUTH_URL = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_url=${REDIRECT_URL}`;
 
+  const handleUserInput = (userId: string) => {
+    setUserId(userId);
+  };
+
   const handleLogout = () => {
     setIsLogin(false);
     removeStorageValue({ key: 'userInfo' });
@@ -29,14 +38,21 @@ const Login = () => {
   };
 
   const handleUserIdLogin = async () => {
-    const response = await fetch(`${BASE_URL}/login`, {
-      method: 'POST',
-      body: JSON.stringify({
-        memberId: userId,
-      }),
+    // const response = await fetch(`${BASE_URL}/login`, {
+    //   method: 'POST',
+    //   body: JSON.stringify({
+    //     memberId: userId,
+    //   }),
+    // });
+    // const userInfo = await response.json();
+    // console.log(userId, '로그인완료한', userInfo);
+    // setStorageValue({ key: 'userInfo', value: userInfo });
+
+    const { data } = await api.post('/login', {
+      memberId: userId,
     });
-    const userInfo = await response.json();
-    console.log(userId, '로그인완료한', userInfo);
+    setStorageValue({ key: 'userInfo', value: data.data });
+    navigate('/');
   };
 
   // TODO: 페이지 이동 아닌 Portal 띄우기로 변경
@@ -58,7 +74,7 @@ const Login = () => {
           </>
         ) : (
           <>
-            <IdInput setValue={setUserId} />
+            <IdInput handleUserInput={handleUserInput} />
           </>
         )}
         <MyButtons>

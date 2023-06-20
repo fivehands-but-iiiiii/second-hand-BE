@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, useRef, Dispatch, SetStateAction } from 'react';
+import { useState, ChangeEvent, useRef } from 'react';
 
 import Icon from '@assets/Icon';
 import Button from '@common/Button/Button';
@@ -7,19 +7,15 @@ import { styled } from 'styled-components';
 
 interface FileInputProps {
   fileCount?: string;
-  setUploadImg: Dispatch<SetStateAction<string>>;
-  handleUpload?: () => void;
+  handleUpload: (fileURL: string) => void;
 }
 
-const FileInput = ({
-  fileCount,
-  setUploadImg,
-  handleUpload,
-}: FileInputProps) => {
+const FileInput = ({ fileCount, handleUpload }: FileInputProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
   const [previewURL, setPreviewURL] = useState('');
 
+  // TODO: custom hook 으로 분리하면 좋겠다 !
   const handleClick = () => {
     fileInputRef.current?.click();
   };
@@ -32,14 +28,10 @@ const FileInput = ({
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewURL(reader.result as string);
-        setUploadImg(reader.result as string);
-        handleUpload && handleUpload();
+        handleUpload(reader.result as string);
       };
       reader.readAsDataURL(file);
-    } else {
-      setPreviewURL('');
-      setUploadImg('');
-    }
+    } else setPreviewURL('');
   };
 
   return (
@@ -48,12 +40,7 @@ const FileInput = ({
         <Icon name="camera" size="xl" />
         {fileCount && <label>{fileCount}</label>}
       </MyFileButton>
-      <input
-        type="file"
-        ref={fileInputRef}
-        // accept="image/jpg, image/png, image/jpeg"
-        onChange={handleFileChange}
-      />
+      <input type="file" ref={fileInputRef} onChange={handleFileChange} />
     </MyFileInput>
   );
 };

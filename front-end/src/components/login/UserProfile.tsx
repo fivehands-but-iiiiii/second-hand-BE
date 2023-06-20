@@ -1,4 +1,4 @@
-import { useState, Dispatch, SetStateAction, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import FileInput from '@common/FileInput';
 
@@ -6,18 +6,22 @@ import { styled } from 'styled-components';
 interface UserProfileProps {
   profileImgUrl?: string;
   memberId?: string;
-  setValue: Dispatch<SetStateAction<string>>;
+  handleUploadImg: (fileURL: string) => void;
 }
 
 const UserProfile = ({
   profileImgUrl,
   memberId,
-  setValue,
+  handleUploadImg,
 }: UserProfileProps) => {
   const [uploadImg, setUploadImg] = useState('');
 
+  const handleUpload = (fileURL: string) => {
+    setUploadImg(fileURL);
+  };
+
   useEffect(() => {
-    setValue(uploadImg);
+    handleUploadImg(uploadImg);
   }, [uploadImg]);
 
   return (
@@ -28,11 +32,10 @@ const UserProfile = ({
         <>
           <MyDefaultImgBox>
             {uploadImg && <MyPreviewFile src={uploadImg} alt="미리 보기" />}
-            <FileInput setUploadImg={setUploadImg} />
+            <FileInput handleUpload={handleUpload} />
           </MyDefaultImgBox>
         </>
       )}
-
       {memberId && <p>{memberId}</p>}
     </MyUserProfile>
   );

@@ -50,6 +50,7 @@ const MyRightTitle = styled.p`
 `;
 
 const MyCenter = styled.p`
+  min-width: 80px;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.neutral.textStrong};
   text-align: center;
