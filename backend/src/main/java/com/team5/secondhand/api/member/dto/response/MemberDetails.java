@@ -7,16 +7,18 @@ import com.team5.secondhand.global.exception.EmptyBasedRegionException;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
 @Builder
+@ToString
 @RequiredArgsConstructor
 public class MemberDetails {
 
-    private final long id;
+    private final Long id;
     private final String memberId;
     private final String profileImgUrl;
     private final Oauth oauth;

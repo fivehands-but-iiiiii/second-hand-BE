@@ -32,6 +32,7 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk-core:1.12.472'
     implementation 'com.amazonaws:aws-java-sdk-s3:1.12.470'
     implementation 'p6spy:p6spy:3.9.1'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
 }
 
 tasks.named('test') {
