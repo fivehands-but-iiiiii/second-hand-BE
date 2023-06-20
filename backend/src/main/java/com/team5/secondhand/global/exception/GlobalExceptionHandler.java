@@ -21,6 +21,12 @@ public class GlobalExceptionHandler {
         return ErrorResponse.occur(e);
     }
 
+    @ExceptionHandler(JwtException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleJwtException(JwtException e) {
+        return ErrorResponse.occur(e);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalArgumentException(IllegalArgumentException e) {
