@@ -17,7 +17,7 @@ public class JwtUtils {
         Date expiryDate = new Date(now.getTime() + jwtProperties.getExpiration());
 
         return Jwts.builder()
-                .claim(jwtProperties.getClaimKey(), object)
+                .claim(jwtProperties.getClaimKey(), objectMapper.writeValueAsString(object))
                 .setExpiration(expiryDate)
                 .setIssuedAt(now)
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
