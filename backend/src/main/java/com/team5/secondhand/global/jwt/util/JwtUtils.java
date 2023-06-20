@@ -1,10 +1,15 @@
 package com.team5.secondhand.global.jwt.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.json.JsonParser;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Date;
 
 @Component
@@ -12,7 +17,9 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtUtils {
     private final JwtProperties jwtProperties;
-    public String generateToken(Object object) {
+    private final ObjectMapper objectMapper;
+
+    public String generateToken(Object object) throws IOException {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtProperties.getExpiration());
 
@@ -41,4 +48,3 @@ public class JwtUtils {
         throw new JwtException("잘못된 토큰입니당");
     }
 }
-
