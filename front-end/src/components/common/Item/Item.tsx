@@ -37,7 +37,7 @@ const Item = ({ item, onHistoryPage = false }: ItemProps) => {
     isLike,
   } = item;
   const hasChip = status !== 'onSale';
-  const formattedPrice = price.toLocaleString();
+  const formattedPrice = price ? `${price.toLocaleString()}원` : '가격없음';
 
   return (
     <MyItem onClick={() => console.log(`move to item/${id}`)}>
@@ -55,7 +55,7 @@ const Item = ({ item, onHistoryPage = false }: ItemProps) => {
         </MyItemTime>
         <MyItemStatus>
           {hasChip && <Chip status={status} />}
-          <div>{formattedPrice}원</div>
+          <div>{formattedPrice}</div>
         </MyItemStatus>
         <MyItemSubInfo>
           {!!chatCount && (
