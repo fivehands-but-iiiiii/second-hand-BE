@@ -1,8 +1,6 @@
 package com.team5.secondhand.global.auth.interceptor;
 
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
-import com.team5.secondhand.global.jwt.util.JwtProperties;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.security.sasl.AuthenticationException;
