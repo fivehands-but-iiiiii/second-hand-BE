@@ -1,16 +1,20 @@
+import { ComponentType } from 'react';
+
+import { ItemStatus } from '@components/ItemStatus';
+
 import { styled } from 'styled-components';
 
 interface ChipProps {
-  status: 'reservation' | 'soldOut';
+  status: Exclude<ItemStatus, ItemStatus.ON_SALE>;
 }
 
 const Chip = ({ status }: ChipProps) => {
   const chipTypes = {
-    reservation: {
+    [ItemStatus.RESERVATION]: {
       text: '예약중',
       style: MyReservedChip,
     },
-    soldOut: {
+    [ItemStatus.SOLD_OUT]: {
       text: '판매완료',
       style: MySoldOutChip,
     },
@@ -20,7 +24,7 @@ const Chip = ({ status }: ChipProps) => {
   return <MyChip>{chipTypes[status].text}</MyChip>;
 };
 
-const MyChip = styled.div`
+const MyChip = styled.div<ComponentType>`
   display: flex;
   justify-content: center;
   align-items: center;

@@ -1,5 +1,6 @@
 import Icon from '@assets/Icon';
 import Chip from '@common/Chip';
+import { ItemStatus } from '@components/ItemStatus';
 import { formatNumberToSI } from '@utils/formatNumberToSI';
 
 import { styled } from 'styled-components';
@@ -11,7 +12,7 @@ export interface SaleItem {
   title: string;
   price: number;
   thumbnailUrl: string;
-  status: 'onSale' | 'reservation' | 'soldOut';
+  status: ItemStatus;
   createdAt: string;
   hits: number;
   chatCount: number;
@@ -36,7 +37,7 @@ const Item = ({ item, onHistoryPage = false }: ItemProps) => {
     likeCount,
     isLike,
   } = item;
-  const hasChip = status !== 'onSale';
+  const hasChip = status !== ItemStatus.ON_SALE;
   const formattedPrice = price ? `${price.toLocaleString()}원` : '가격없음';
 
   return (
@@ -66,8 +67,7 @@ const Item = ({ item, onHistoryPage = false }: ItemProps) => {
           )}
           {!!likeCount && (
             <MyItemIcon>
-              {/* TODO: when icon's like value is false add black icon*/}
-              {isLike ? '' : <Icon name="heart" size="sm" />}
+              {<Icon name={isLike ? 'fullHeart' : 'heart'} size="sm" />}
               {formatNumberToSI(likeCount)}
             </MyItemIcon>
           )}

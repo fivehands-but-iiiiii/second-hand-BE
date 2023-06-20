@@ -1,6 +1,6 @@
 import { useState, Dispatch, SetStateAction } from 'react';
 
-import FileInput from '@common/FileInput';
+// import FileInput from '@common/FileInput';
 
 import { styled } from 'styled-components';
 interface UserProfileProps {
@@ -24,7 +24,7 @@ const UserProfile = ({
         <>
           <MyDefaultImgBox>
             {uploadImg && <MyPreviewFile src={uploadImg} alt="미리 보기" />}
-            <FileInput setUploadImg={setUploadImg} />
+            {/* <FileInput setUploadImg={setUploadImg} /> */}
           </MyDefaultImgBox>
         </>
       )}
