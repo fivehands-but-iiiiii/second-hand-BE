@@ -1,6 +1,5 @@
 package com.team5.secondhand.api.member.exception;
 
-import com.team5.secondhand.api.member.controller.MemberController;
 import com.team5.secondhand.global.dto.ErrorResponse;
 import com.team5.secondhand.global.dto.ErrorResponseWithBody;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,7 @@ import javax.servlet.http.HttpSession;
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @RequiredArgsConstructor
-@RestControllerAdvice(basePackageClasses = {MemberController.class})
+@RestControllerAdvice
 public class MemberExceptionHandler {
 
     public static final String JOIN_SESSION_KEY = "tempMember";

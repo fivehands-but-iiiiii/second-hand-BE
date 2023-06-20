@@ -1,8 +1,7 @@
 package com.team5.secondhand.global.exception;
 
-import com.team5.secondhand.global.aws.exception.ImageHostingException;
-import com.team5.secondhand.global.aws.exception.TooLargeImageException;
 import com.team5.secondhand.global.dto.ErrorResponse;
+import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -15,11 +14,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Order(Ordered.LOWEST_PRECEDENCE)
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(TooLargeImageException.class)
-    @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
-    public ErrorResponse handleTooLargeImageException(TooLargeImageException e) {
-        return ErrorResponse.occur(e);
-    }
 
     @ExceptionHandler(JwtException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -33,11 +27,6 @@ public class GlobalExceptionHandler {
         return ErrorResponse.occur(e);
     }
 
-    @ExceptionHandler(ImageHostingException.class)
-    @ResponseStatus(HttpStatus.BAD_GATEWAY)
-    public ErrorResponse handleImageUploadException(ImageHostingException e) {
-        return ErrorResponse.occur(e);
-    }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
