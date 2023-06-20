@@ -5,6 +5,7 @@ interface IconProps {
   name: keyof typeof iconTypes;
   size?: keyof typeof iconSizes;
   fill?: string;
+  className?: string;
 }
 
 const iconSizes = {
@@ -19,11 +20,19 @@ const Icon = ({
   name,
   size = 'md',
   fill = palette.neutral.text,
+  className,
 }: IconProps) => {
   const IconComponent = iconTypes[name];
   const iconSize = iconSizes[size];
 
-  return <IconComponent width={iconSize} height={iconSize} fill={fill} />;
+  return (
+    <IconComponent
+      width={iconSize}
+      height={iconSize}
+      fill={fill}
+      className={className}
+    />
+  );
 };
 
 export default Icon;
