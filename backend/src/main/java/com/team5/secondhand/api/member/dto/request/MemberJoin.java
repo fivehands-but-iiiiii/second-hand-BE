@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,7 @@ public class MemberJoin {
         return Member.builder()
                 .memberId(memberId)
                 .profileImgUrl(profileImgUrl)
+                .regions(new ArrayList<>())
                 .build();
     }
 }

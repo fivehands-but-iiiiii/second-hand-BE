@@ -57,12 +57,12 @@ public class MemberController {
             joinPlatform = Oauth.GITHUB;
             memberService.checkDataCorruption(request, tempMember);
             memberService.isExistMemberId(request.getMemberId(), joinPlatform);
+            session.invalidate();
         }
 
         Map<Region, Boolean> basedRegions = BasedRegion.mapping(validRegions.getRegions(request.getRegionsId()), request.getRegions());
         Long joinedId = memberService.join(request, basedRegions, joinPlatform);
 
-        session.invalidate();
         return GenericResponse.send("Member joined Successfully", joinedId);
     }
 
