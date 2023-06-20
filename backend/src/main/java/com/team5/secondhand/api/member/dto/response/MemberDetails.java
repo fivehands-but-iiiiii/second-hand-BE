@@ -3,7 +3,7 @@ package com.team5.secondhand.api.member.dto.response;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.domain.Oauth;
 import com.team5.secondhand.api.member.dto.request.BasedRegionSummary;
-import com.team5.secondhand.global.exception.EmptyBasedRegionException;
+import com.team5.secondhand.api.region.exception.EmptyBasedRegionException;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.team5.secondhand.api.region.exception;
 
-public class NotValidRegionException extends RegionServiceException {
+public class NotValidRegionException extends RegionException {
     public NotValidRegionException(String message) {
         super(message);
     }

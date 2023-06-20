@@ -4,9 +4,10 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.team5.secondhand.global.aws.domain.Directory;
-import com.team5.secondhand.global.aws.dto.request.ProfileImageUpload;
+import com.team5.secondhand.global.aws.domain.Type;
 import com.team5.secondhand.global.aws.dto.response.ProfileImageInfo;
-import com.team5.secondhand.global.aws.exception.ImageHostingException;
+import com.team5.secondhand.global.aws.exception.ImageHostException;
+import com.team5.secondhand.global.aws.exception.NotValidImageTypeException;
 import com.team5.secondhand.global.aws.exception.TooLargeImageException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,18 +41,22 @@ public class ImageHostService implements ProfileUploadUsecase{
     }
 
     @Override
-    public ProfileImageInfo uploadMemberProfileImage(MultipartFile file) throws ImageHostingException {
+    public ProfileImageInfo uploadMemberProfileImage(MultipartFile file) throws ImageHostException {
         String imageUrl = "";
 
         if (file.getSize() > (1e+8*2)) {
             throw new TooLargeImageException("사진 용량이 10MB를 초과해 업로드에 실패하였습니다.");
         }
 
+        if (Type.isValidType(file.getName())) {
+            throw new NotValidImageTypeException("잘못된 확장자입니다.");
+        }
+
         try {
             String upload = upload(file, Directory.MEMBER_PROFILE_ORIGIN);
             imageUrl = upload.replace("/origin", "");
         } catch (IOException e) {
-            throw new ImageHostingException("회원 사진 업로드에 실패하였습니다.");
+            throw new ImageHostException("회원 사진 업로드에 실패하였습니다.");
         }
 
         return ProfileImageInfo.createNewImageInfo(file.getName(), imageUrl);

@@ -1,7 +1,7 @@
 package com.team5.secondhand.api.member.domain;
 
 import com.team5.secondhand.api.region.domain.Region;
-import com.team5.secondhand.global.exception.EmptyBasedRegionException;
+import com.team5.secondhand.api.region.exception.EmptyBasedRegionException;
 import lombok.*;
 
 import javax.persistence.*;

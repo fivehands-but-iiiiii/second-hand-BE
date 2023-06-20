@@ -11,7 +11,7 @@ import com.team5.secondhand.api.member.exception.*;
 import com.team5.secondhand.api.member.repository.MemberRepository;
 import com.team5.secondhand.api.oauth.dto.UserProfile;
 import com.team5.secondhand.api.region.domain.Region;
-import com.team5.secondhand.global.exception.EmptyBasedRegionException;
+import com.team5.secondhand.api.region.exception.EmptyBasedRegionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

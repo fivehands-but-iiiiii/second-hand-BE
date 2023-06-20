@@ -15,10 +15,10 @@ import com.team5.secondhand.api.region.exception.NoMainRegionException;
 import com.team5.secondhand.api.region.exception.NotValidRegionException;
 import com.team5.secondhand.api.region.service.GetValidRegionsUsecase;
 import com.team5.secondhand.global.aws.dto.response.ProfileImageInfo;
-import com.team5.secondhand.global.aws.exception.ImageHostingException;
+import com.team5.secondhand.global.aws.exception.ImageHostException;
 import com.team5.secondhand.global.aws.service.ProfileUploadUsecase;
 import com.team5.secondhand.global.dto.GenericResponse;
-import com.team5.secondhand.global.exception.EmptyBasedRegionException;
+import com.team5.secondhand.api.region.exception.EmptyBasedRegionException;
 import com.team5.secondhand.global.jwt.service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -106,12 +106,12 @@ public class MemberController {
             description = "사용자는 자신의 프로필 사진을 변경할 수 있다."
     )
     @PatchMapping(value = "/members/image", consumes = {"multipart/form-data"})
-    public GenericResponse<ProfileImageInfo> setMemberProfile(@RequestParam Long id,
-                                                              @RequestPart MultipartFile profile) throws ImageHostingException {
+    public GenericResponse<ProfileImageInfo> setMemberProfile(@RequestAttribute MemberDetails member,
+                                                              @RequestPart MultipartFile profile) throws ImageHostException {
         ProfileImageInfo profileImageInfo = profileUpload.uploadMemberProfileImage(profile);
-        profileImageInfo.owned(id);
+        profileImageInfo.owned(member.getId());
 
-        memberService.updateProfileImage(id, profileImageInfo.getUploadUrl());
+        memberService.updateProfileImage(member.getId(), profileImageInfo.getUploadUrl());
         return GenericResponse.send("Member update profile image Successfully", profileImageInfo);
     }
 
@@ -120,14 +120,13 @@ public class MemberController {
             tags = "Members",
             description = "사용자는 내 동네 설정을 할 수 있다."
     )
-    @PostMapping("/members/region")
+    @PutMapping("/members/region")
     public GenericResponse<Boolean> setMemberRegion(@RequestBody MemberRegion memberRegion) throws NotValidRegionException, NoMainRegionException {
         //region id 적합 확인
         Map<Region, Boolean> basedRegions = BasedRegion.mapping(validRegions.getRegions(memberRegion.getRegionsId()), memberRegion.getRegions());
 
         memberService.updateRegions(memberRegion.getId(), basedRegions);
 
-        //TODO response
         return GenericResponse.send("Member update profile image Successfully", null);
     }
 
@@ -141,7 +140,6 @@ public class MemberController {
         //TODO: 지역 검증은 추후에 validator 로 검증
         memberService.switchRegions(memberRegion.getId(), memberRegion);
 
-        //TODO response
         return GenericResponse.send("Member update profile image Successfully", null);
     }
 
