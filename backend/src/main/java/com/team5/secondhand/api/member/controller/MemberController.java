@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.Map;
 
 import static com.team5.secondhand.api.member.exception.MemberExceptionHandler.JOIN_SESSION_KEY;
@@ -83,28 +84,15 @@ public class MemberController {
             description = "사용자는 로그인을 할 수 있다."
     )
     @PostMapping("/login")
-    public GenericResponse<MemberDetails> login(MemberLogin request, HttpServletResponse response) throws MemberException, EmptyBasedRegionException {
+    public GenericResponse<MemberDetails> login(MemberLogin request, HttpServletResponse response) throws MemberException, EmptyBasedRegionException, IOException {
         MemberDetails member = memberService.login(request);
         jwtService.setTokenHeader(member, response);
 
         return GenericResponse.send("Member login Successfully", member);
     }
 
-    @Operation(
-
-            summary = "로그아웃",
-            tags = "Members",
-            description = "사용자는 로그아웃을 할 수 있다."
-    )
-    @PostMapping("/logout")
-    public GenericResponse<Long> logout(MemberJoin request) {
-        //TODO Auth 헤더 만료
-        //TODO response
-        return GenericResponse.send("Member joined Successfully", null);
-    }
-
     @GetMapping("/git/login")
-    public GenericResponse<MemberDetails> getGithubUser(String code, HttpServletResponse response) throws MemberException, EmptyBasedRegionException {
+    public GenericResponse<MemberDetails> getGithubUser(String code, HttpServletResponse response) throws MemberException, EmptyBasedRegionException, IOException {
         UserProfile profile = oAuthService.getGithubUser(code);
         MemberDetails member = memberService.loginByOAuth(profile);
         jwtService.setTokenHeader(member, response);
