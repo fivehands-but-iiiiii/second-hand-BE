@@ -6,10 +6,7 @@ import com.team5.secondhand.api.item.dto.response.ItemSummary;
 import com.team5.secondhand.api.item.repository.ItemRepository;
 import com.team5.secondhand.api.region.domain.Region;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +25,7 @@ public class ItemService {
     public ItemList getItemList(int page, Region region) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").descending());
 
-        Page<Item> pageResult = itemRepository.findAllByRegion(region, pageable);
+        Slice<Item> pageResult = itemRepository.findAllByRegion(region, pageable);
 
         int number = 1;
 
@@ -39,6 +36,6 @@ public class ItemService {
             items.add(ItemSummary.of(item, number++ % 3 == 0));
         }
 
-        return ItemList.getPage(pageResult.getTotalPages(), items);
+        return ItemList.getSlice(pageResult.getNumber(), pageResult.hasPrevious(), pageResult.hasNext(), items);
     }
 }

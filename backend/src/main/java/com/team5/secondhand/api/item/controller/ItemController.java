@@ -5,6 +5,7 @@ import com.team5.secondhand.api.item.service.ItemService;
 import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.region.exception.NotValidRegionException;
 import com.team5.secondhand.api.region.service.GetValidRegionsUsecase;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,11 @@ public class ItemController {
     private final ItemService itemService;
     private final GetValidRegionsUsecase getValidRegions;
 
+    @Operation(
+            summary = "특정 동네 판매중인 상품 목록",
+            tags = "Items",
+            description = "사용자는 자신의 동네의 상품 목록을 볼 수 있다."
+    )
     @GetMapping
     public ItemList getItemList(@RequestParam int page, @RequestParam long region) throws NotValidRegionException {
         Map<Long, Region> regions = getValidRegions.getRegions(List.of(region));
