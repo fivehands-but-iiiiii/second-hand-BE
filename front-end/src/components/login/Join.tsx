@@ -1,21 +1,40 @@
 import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
 import Button from '@common/Button';
 import NavBar from '@common/NavBar';
+import { setStorageValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
 
+import api from '../../api';
+
 import IdInput from './IdInput';
+import { UserInfo } from './OAuthCallback';
 import UserProfile from './UserProfile';
 
-const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
-
-// TODO: handleUpload (마지막으로 저장된 file src 저장하는 함수, 프로필에선 1개 & 새상품등록일땐 여러개 배열)
 const Join = () => {
-  const [inputId, setInputId] = useState('');
-  const [uploadProfileImg, setUploadProfileImg] = useState('');
+  const navigate = useNavigate();
+  const OAuthInfo = useLocation();
+  const [userInfo, setUserInfo] = useState<UserInfo | undefined>(
+    OAuthInfo.state,
+  );
+  const [uploadImgPath, setUploadImgPath] = useState<FormData | undefined>(
+    undefined,
+  );
   const [validIdInfo, setValidIdInfo] = useState('');
+  const [inputId, setInputId] = useState('');
+  const [userAccount, setUserAccount] = useState({
+    memberId: userInfo?.login,
+    profileImgUrl: userInfo?.avatar_url || null,
+    regions: [
+      {
+        id: 2,
+        onFocus: true,
+      },
+    ],
+  });
 
   const validateUserId = async (value: string) => {
     if (value.length && (value.length < 5 || value.length > 12)) {
@@ -31,48 +50,50 @@ const Join = () => {
   };
 
   const checkUserIdAvailability = async () => {
-    const response = await fetch(
-      `${BASE_URL}/join/availability?memberId=${inputId}`,
-    );
-    const isMemberIdAvailable = await response.json();
-    return isMemberIdAvailable.data;
-  };
-
-  // TODO: 로그인, 회원가입 fetch 로직 분리하기
-  const handlePostUserInfo = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/join`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          memberId: inputId,
-          profileImgUrl: uploadProfileImg,
-          regions: [
-            {
-              id: 1,
-              onFocus: true,
-            },
-          ],
-        }),
-      });
-      const message = await response.json();
-      if (message.status === 200) {
-        console.log('회원가입 완료');
-      } else if (message.status === 409) {
-        console.log('중복아이디');
-      } else if (message.status === 400) {
-        console.log('형식에 맞게 입력하세요');
-      }
+      const { data } = await api.get(`/join/availability?memberId=${inputId}`);
+      return data.data;
     } catch (error) {
-      console.error(error);
+      console.error('유저 아이디 중복 체크 에러', error);
     }
   };
 
+  // TODO: 전송조건 : 위치를 무조건 1개 이상 선택 해야함
+  const handlePostUserInfo = async () => {
+    try {
+      const { status, data } = await api.post('/join', userAccount);
+      if (status === 200) {
+        setStorageValue({
+          key: 'userInfo',
+          value: {
+            id: data.data,
+            memberId: userAccount.memberId,
+            profileImgUrl: userAccount.profileImgUrl,
+            regin: userAccount.regions,
+          },
+        });
+        navigate('/login');
+        // TODO: home 으로 변경
+      }
+    } catch (error) {
+      const { response } = error;
+      if (response.status === 409) {
+        console.log(response.data.message);
+      } else if (response.status === 400) {
+        console.log(response.data.message);
+      } else console.log(error);
+    }
+  };
+
+  const handleUploadImg = (filePath: FormData | undefined) => {
+    if (!filePath) return;
+    setUploadImgPath(filePath);
+  };
+
   const handleInputChange = (value: string) => {
-    setInputId(value);
     validateUserId(value);
+    setInputId(value);
+    setUserAccount({ ...userAccount, memberId: value });
   };
 
   useEffect(() => {
@@ -82,7 +103,7 @@ const Join = () => {
   return (
     <MyBack>
       <NavBar
-        left={<button onClick={() => console.log('포탈 닫기')}>닫기</button>}
+        left={<button onClick={() => navigate('/login')}>닫기</button>}
         center={'회원가입'}
         right={
           <button type="submit" onClick={handlePostUserInfo}>
@@ -91,8 +112,20 @@ const Join = () => {
         }
       />
       <MyJoin>
-        <UserProfile setValue={setUploadProfileImg} />
-        <IdInput setValue={handleInputChange} validIdInfo={validIdInfo} />
+        <MyUserInfo>
+          <UserProfile
+            profileImgUrl={userInfo?.avatar_url}
+            memberId={userInfo?.login}
+            handleUploadImg={handleUploadImg}
+          />
+          {!!userInfo || (
+            <IdInput
+              validIdInfo={validIdInfo}
+              handleUserInput={handleInputChange}
+            />
+          )}
+        </MyUserInfo>
+        {/* TODO: 위치 추가 */}
         <Button fullWidth>
           <Icon name={'plus'} />
           위치추가
@@ -106,6 +139,11 @@ const Join = () => {
 const MyBack = styled.div`
   background-color: white;
 `;
+
+const MyUserInfo = styled.div`
+  height: 200px;
+`;
+
 const MyJoin = styled.div`
   height: 100vh;
   padding: 5vh 2.7vw;

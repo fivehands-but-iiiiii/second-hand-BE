@@ -6,7 +6,7 @@ import { styled } from 'styled-components';
 interface UserProfileProps {
   profileImgUrl?: string;
   memberId?: string;
-  handleUploadImg: (fileURL: string) => void;
+  handleUploadImg?: (file: FormData | undefined) => void;
 }
 
 const UserProfile = ({
@@ -14,15 +14,24 @@ const UserProfile = ({
   memberId,
   handleUploadImg,
 }: UserProfileProps) => {
-  const [uploadImg, setUploadImg] = useState('');
+  const [previewURL, setPreviewURL] = useState('');
+  const [imgPath, setImgPath] = useState<File | undefined>(undefined);
 
-  const handleUpload = (fileURL: string) => {
-    setUploadImg(fileURL);
+  const handleUpload = (fileURL: string, file: File) => {
+    setPreviewURL(fileURL);
+    setImgPath(file);
+  };
+  // TODO: 사용가능한 filePath 로 POST (현재는 미리보기만 가능)
+  const getFilePath = (file: File) => {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    return formData;
   };
 
   useEffect(() => {
-    handleUploadImg(uploadImg);
-  }, [uploadImg]);
+    handleUploadImg && handleUploadImg(imgPath && getFilePath(imgPath));
+  }, [previewURL]);
 
   return (
     <MyUserProfile>
@@ -31,7 +40,7 @@ const UserProfile = ({
       ) : (
         <>
           <MyDefaultImgBox>
-            {uploadImg && <MyPreviewFile src={uploadImg} alt="미리 보기" />}
+            {previewURL && <MyPreviewFile src={previewURL} alt="미리 보기" />}
             <FileInput handleUpload={handleUpload} />
           </MyDefaultImgBox>
         </>

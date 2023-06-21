@@ -23,6 +23,7 @@ const Login = () => {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
   const [userId, setUserId] = useState('');
+  const [validIdInfo, setValidIdInfo] = useState('');
 
   const storedUserInfo = getStoredValue({ key: 'userInfo' });
   const OAUTH_URL = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_url=${REDIRECT_URL}`;
@@ -38,21 +39,18 @@ const Login = () => {
   };
 
   const handleUserIdLogin = async () => {
-    // const response = await fetch(`${BASE_URL}/login`, {
-    //   method: 'POST',
-    //   body: JSON.stringify({
-    //     memberId: userId,
-    //   }),
-    // });
-    // const userInfo = await response.json();
-    // console.log(userId, '로그인완료한', userInfo);
-    // setStorageValue({ key: 'userInfo', value: userInfo });
-
-    const { data } = await api.post('/login', {
-      memberId: userId,
-    });
-    setStorageValue({ key: 'userInfo', value: data.data });
-    navigate('/');
+    try {
+      const { data } = await api.post('/login', {
+        memberId: userId,
+      });
+      setStorageValue({ key: 'userInfo', value: data.data });
+      navigate('/');
+      console.log('유저 로그인 완료', data.data);
+    } catch (error) {
+      if (error.response.status === 401) {
+        setValidIdInfo(error.response.data.message);
+      }
+    }
   };
 
   // TODO: 페이지 이동 아닌 Portal 띄우기로 변경
@@ -74,7 +72,10 @@ const Login = () => {
           </>
         ) : (
           <>
-            <IdInput handleUserInput={handleUserInput} />
+            <IdInput
+              validIdInfo={validIdInfo}
+              handleUserInput={handleUserInput}
+            />
           </>
         )}
         <MyButtons>

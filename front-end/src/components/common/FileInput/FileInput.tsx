@@ -7,7 +7,7 @@ import { styled } from 'styled-components';
 
 interface FileInputProps {
   fileCount?: string;
-  handleUpload: (fileURL: string) => void;
+  handleUpload: (fileURL: string, file: File) => void;
 }
 
 const FileInput = ({ fileCount, handleUpload }: FileInputProps) => {
@@ -28,7 +28,7 @@ const FileInput = ({ fileCount, handleUpload }: FileInputProps) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewURL(reader.result as string);
-        handleUpload(reader.result as string);
+        file && handleUpload(reader.result as string, file);
       };
       reader.readAsDataURL(file);
     } else setPreviewURL('');
