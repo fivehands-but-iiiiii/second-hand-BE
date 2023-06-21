@@ -16,7 +16,10 @@ const WishList = () => {
 
   const getWishList = async () => {
     try {
-      const { data } = await api.get('/wishlist');
+      // const { data } = await api.get('/wishlist');
+      // TODO: 위시목록 데이터 나오면 path 수정
+      const { data } = await api.get('/items?page=1&region=1');
+
       setWishItems(data.items);
       data.categories && setCategories([...categories, data.categories]);
     } catch (error) {
