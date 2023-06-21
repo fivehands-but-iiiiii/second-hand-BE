@@ -2,6 +2,7 @@ package com.team5.secondhand.api.item.dto.response;
 
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.domain.Status;
+import com.team5.secondhand.api.region.dto.RegionSummary;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ public class ItemSummary {
     private final Long id;
     private final String title;
     private final String thumbnailUrl;
+    private final RegionSummary region;
     private final Instant createdAt;
     private final Integer price;
     private final Status status;
@@ -28,6 +30,7 @@ public class ItemSummary {
                 .id(item.getId())
                 .title(item.getTitle())
                 .thumbnailUrl(item.getThumbnailUrl())
+                .region(RegionSummary.fromRegion(item.getRegion()))
                 .createdAt(item.getCreatedAt())
                 .price(item.getPrice())
                 .status(item.getStatus())
