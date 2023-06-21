@@ -2,6 +2,8 @@ package com.team5.secondhand.api.item.service;
 
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.dto.request.ItemPost;
+import com.team5.secondhand.api.item.domain.Status;
+import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
 import com.team5.secondhand.api.item.dto.response.ItemList;
 import com.team5.secondhand.api.item.dto.response.ItemSummary;
 import com.team5.secondhand.api.item.exception.ExistItemException;
@@ -9,10 +11,7 @@ import com.team5.secondhand.api.item.repository.ItemRepository;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.region.domain.Region;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,10 +27,10 @@ public class ItemService {
     private final ItemRepository itemRepository;
 
     @Transactional(readOnly = true)
-    public ItemList getItemList(int page, Region region) {
-        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").descending());
+    public ItemList getItemList(ItemFilteredSlice request, Region region) {
+        Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
 
-        Page<Item> pageResult = itemRepository.findAllByRegion(region, pageable);
+        Slice<Item> pageResult = itemRepository.findAllByBasedRegion(request.getCategoryId(), request.getSellerId(), Status.isSales(request.getIsSales()), region, pageable);
 
         int number = 1;
 
@@ -42,7 +41,7 @@ public class ItemService {
             items.add(ItemSummary.of(item, number++ % 3 == 0));
         }
 
-        return ItemList.getPage(pageResult.getTotalPages(), items);
+        return ItemList.getSlice(pageResult.getNumber(), pageResult.hasPrevious(), pageResult.hasNext(), items);
     }
 
     public Long postItem(ItemPost itemPost, Member member, Region region) {

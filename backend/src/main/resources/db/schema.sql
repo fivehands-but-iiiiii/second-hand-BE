@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS `secondhand-db`.`region`
     PRIMARY KEY (`id`)
 )
     ENGINE = InnoDB;
-
+ALTER TABLE region ADD FULLTEXT INDEX fulltext_address (city, county, district) with parser ngram;
 
 -- -----------------------------------------------------
 -- Table `secondhand-db`.`category`
