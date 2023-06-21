@@ -9,6 +9,7 @@ interface IconProps {
 }
 
 const iconSizes = {
+  xxs: 8,
   xs: 14,
   sm: 17,
   md: 20,
