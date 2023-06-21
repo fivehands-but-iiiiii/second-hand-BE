@@ -16,6 +16,7 @@ const MobileLayout = () => {
 const MyMobileLayout = styled.div`
   width: 100vw;
   height: 100vh;
+  min-width: 400px;
   background-color: #fff;
   text-align: center;
   overflow: auto;

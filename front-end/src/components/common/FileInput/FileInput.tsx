@@ -40,7 +40,12 @@ const FileInput = ({ fileCount, handleUpload }: FileInputProps) => {
         <Icon name="camera" size="xl" />
         {fileCount && <label>{fileCount}</label>}
       </MyFileButton>
-      <input type="file" ref={fileInputRef} onChange={handleFileChange} />
+      <input
+        type="file"
+        ref={fileInputRef}
+        accept="image/jpg, image/png, image/jpeg, image/gif"
+        onChange={handleFileChange}
+      />
     </MyFileInput>
   );
 };
