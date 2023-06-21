@@ -8,4 +8,6 @@ import java.util.Map;
 
 public interface GetValidRegionsUsecase {
     Map<Long, Region> getRegions(List<Long> ids) throws NotValidRegionException;
+
+    Region getRegion(Long id) throws NotValidRegionException;
 }

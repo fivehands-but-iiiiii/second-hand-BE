@@ -59,6 +59,10 @@ public class MemberService implements JoinService {
         return memberRepository.existsByMemberIdAndOauth(memberId, oauth);
     }
 
+    public Member findByid(Long id) throws ExistMemberIdException {
+        return memberRepository.findById(id).orElseThrow(() -> new ExistMemberIdException("잘못된 회원입니다."));
+    }
+
     @Transactional
     public int updateProfileImage(Long id, String uploadUrl) {
         return memberRepository.updateMemberProfileImage(id, uploadUrl);

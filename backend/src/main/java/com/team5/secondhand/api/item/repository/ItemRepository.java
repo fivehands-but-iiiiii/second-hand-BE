@@ -6,8 +6,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ItemRepository extends JpaRepository<Item, Long>, ItemSliceRepository {
+import java.util.Optional;
 
-    Slice<Item> findAllByRegion(Region region, Pageable pageable);
+public interface ItemRepository extends JpaRepository<Item, Long> {
+    Optional<Item> findById(Long id);
+
+    Page<Item> findAllByRegion(Region region, Pageable pageable);
+
     int countAllByRegion(Region region);
 }
