@@ -84,7 +84,7 @@ public class MemberController {
             description = "사용자는 로그인을 할 수 있다."
     )
     @PostMapping("/login")
-    public GenericResponse<MemberDetails> login(MemberLogin request, HttpServletResponse response) throws MemberException, EmptyBasedRegionException, IOException {
+    public GenericResponse<MemberDetails> login(@RequestBody MemberLogin request, HttpServletResponse response) throws MemberException, EmptyBasedRegionException, IOException {
         MemberDetails member = memberService.login(request);
         jwtService.setTokenHeader(member, response);
 
