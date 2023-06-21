@@ -11,6 +11,7 @@ import com.team5.secondhand.api.member.service.MemberService;
 import com.team5.secondhand.api.oauth.dto.UserProfile;
 import com.team5.secondhand.api.oauth.service.OAuthService;
 import com.team5.secondhand.api.region.domain.Region;
+import com.team5.secondhand.api.region.exception.EmptyBasedRegionException;
 import com.team5.secondhand.api.region.exception.NoMainRegionException;
 import com.team5.secondhand.api.region.exception.NotValidRegionException;
 import com.team5.secondhand.api.region.service.GetValidRegionsUsecase;
@@ -18,7 +19,6 @@ import com.team5.secondhand.global.aws.dto.response.ProfileImageInfo;
 import com.team5.secondhand.global.aws.exception.ImageHostException;
 import com.team5.secondhand.global.aws.service.ProfileUploadUsecase;
 import com.team5.secondhand.global.dto.GenericResponse;
-import com.team5.secondhand.api.region.exception.EmptyBasedRegionException;
 import com.team5.secondhand.global.jwt.service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +56,6 @@ public class MemberController {
         } else {
             joinPlatform = Oauth.GITHUB;
             memberService.checkDataCorruption(request, tempMember);
-            memberService.isExistMemberId(request.getMemberId(), joinPlatform);
             session.invalidate();
         }
 
@@ -91,6 +90,11 @@ public class MemberController {
         return GenericResponse.send("Member login Successfully", member);
     }
 
+    @Operation(
+            summary = "깃허브 로그인",
+            tags = "Members",
+            description = "사용자는 깃허브로 로그인을 할 수 있다."
+    )
     @GetMapping("/git/login")
     public GenericResponse<MemberDetails> getGithubUser(String code, HttpServletResponse response) throws MemberException, EmptyBasedRegionException, IOException {
         UserProfile profile = oAuthService.getGithubUser(code);
