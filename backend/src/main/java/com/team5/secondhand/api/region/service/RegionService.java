@@ -16,10 +16,6 @@ public class RegionService implements GetValidRegionsUsecase {
 
     private final RegionRepository regionRepository;
 
-    public boolean isValidRegion(List<Long> regions) {
-        return regionRepository.existsAllByIdIn(regions);
-    }
-
     @Override
     public Map<Long, Region> getRegions(List<Long> ids) throws NotValidRegionException {
         Map<Long, Region> regions = new HashMap<>();
@@ -32,5 +28,9 @@ public class RegionService implements GetValidRegionsUsecase {
         }
 
         return regions;
+    }
+
+    public List<Region> findRegionByAddress (String address) {
+        return regionRepository.findAllByAddress(address);
     }
 }
