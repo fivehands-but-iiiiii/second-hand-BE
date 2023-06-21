@@ -18,7 +18,7 @@ const WishList = () => {
     try {
       const { data } = await api.get('/wishlist');
       setWishItems(data.items);
-      setCategories([...categories, data.categories]);
+      data.categories && setCategories([...categories, data.categories]);
     } catch (error) {
       console.error(`Failed to get wishList: ${error}`);
     }
