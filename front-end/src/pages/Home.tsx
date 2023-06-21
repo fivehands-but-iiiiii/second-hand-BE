@@ -7,6 +7,8 @@ import useIntersectionObserver from '@hooks/useIntersectionObserver';
 
 import api from '../api';
 
+import ItemDetail from './ItemDetail';
+
 const Home = () => {
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
   const [maxPage, setMaxPage] = useState(1);
@@ -36,11 +38,25 @@ const Home = () => {
     }
   };
 
+  const item = {
+    id: 1,
+    title: '빈티지 롤러 스케이트',
+    price: 12312331,
+    thumbnailUrl: 'https://picsum.photos/200',
+    status: 0,
+    createdAt: '2021-08-01',
+    hits: 123,
+    chatCount: 2,
+    likeCount: 2,
+    isLike: false,
+  };
+
   return (
     <>
-      <ItemList saleItems={saleItems} />
+      {/* <ItemList saleItems={saleItems} />
       {saleItems && <div id="onFetchItems" ref={setTarget}></div>}
-      {isLoading && <Spinner />}
+      {isLoading && <Spinner />} */}
+      <ItemDetail saleItem={item} />
     </>
   );
 };
