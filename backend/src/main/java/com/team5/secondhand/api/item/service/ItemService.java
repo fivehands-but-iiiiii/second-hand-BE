@@ -1,9 +1,12 @@
 package com.team5.secondhand.api.item.service;
 
 import com.team5.secondhand.api.item.domain.Item;
+import com.team5.secondhand.api.item.dto.request.ItemPost;
 import com.team5.secondhand.api.item.dto.response.ItemList;
 import com.team5.secondhand.api.item.dto.response.ItemSummary;
+import com.team5.secondhand.api.item.exception.ExistItemException;
 import com.team5.secondhand.api.item.repository.ItemRepository;
+import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.region.domain.Region;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -40,5 +43,18 @@ public class ItemService {
         }
 
         return ItemList.getPage(pageResult.getTotalPages(), items);
+    }
+
+    public Long postItem(ItemPost itemPost, Member member, Region region) {
+        Item item = Item.create(itemPost, member, region);
+        itemRepository.save(item);
+
+        return item.getId();
+    }
+
+    public void updateItem(Long id, ItemPost itemPost) throws ExistItemException {
+        Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
+        Item newItem = item.updatePost(itemPost);
+        itemRepository.save(newItem);
     }
 }
