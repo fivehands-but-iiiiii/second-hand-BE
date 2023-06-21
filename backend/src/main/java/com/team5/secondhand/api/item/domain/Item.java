@@ -8,19 +8,19 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.List;
 
 @Entity
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Item extends BaseTimeEntity {
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotNull
     @Size(min = 1, max = 45)
     private String title;
-    private Integer price;
+    private int price;
     @NotNull
     private Long category;
     @NotNull
@@ -29,11 +29,12 @@ public class Item extends BaseTimeEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     private Status status;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id")
     private Member seller;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id")
     private Region region;
 
@@ -59,17 +60,15 @@ public class Item extends BaseTimeEntity {
         this.contents = contents;
     }
 
-    public static Item create(String title, Integer price, Long category, String thumbnailUrl, Member seller, Region region, String contents, List<ItemDetailImage> images) {
+    public static Item create(ItemPost newItem, Member seller, Region region) {
         return Item.builder()
-                .title(title)
-                .price(price)
-                .category(category)
-                .thumbnailUrl(thumbnailUrl)
-                .status(Status.ON_SALE)
-                .seller(seller)
-                .region(region)
-                .count(ItemCounts.createRelated())
-                .contents(ItemContents.createdRelated(contents, images))
+                .title(newItem.getTitle())
+                .price(newItem.getPrice())
+                .category(newItem.getCategory())
+                .thumbnailUrl(newItem.getThumbnailUrl())
+                .status(Status.ON_SALE).seller(seller)
+                .region(region).count(ItemCounts.createRelated())
+                .contents(ItemContents.createdRelated(newItem.getContents(), newItem.getImages()))
                 .build();
     }
 }
