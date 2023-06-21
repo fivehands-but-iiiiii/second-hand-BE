@@ -1,6 +1,8 @@
 package com.team5.secondhand.api.item.service;
 
 import com.team5.secondhand.api.item.domain.Item;
+import com.team5.secondhand.api.item.domain.Status;
+import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
 import com.team5.secondhand.api.item.dto.response.ItemList;
 import com.team5.secondhand.api.item.dto.response.ItemSummary;
 import com.team5.secondhand.api.item.repository.ItemRepository;
@@ -22,10 +24,10 @@ public class ItemService {
     private final ItemRepository itemRepository;
 
     @Transactional(readOnly = true)
-    public ItemList getItemList(int page, Region region) {
-        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").descending());
+    public ItemList getItemList(ItemFilteredSlice request, Region region) {
+        Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
 
-        Slice<Item> pageResult = itemRepository.findAllByRegion(region, pageable);
+        Slice<Item> pageResult = itemRepository.findAllByBasedRegion(request.getCategoryId(), request.getSellerId(), Status.isSales(request.getIsSales()), region, pageable);
 
         int number = 1;
 

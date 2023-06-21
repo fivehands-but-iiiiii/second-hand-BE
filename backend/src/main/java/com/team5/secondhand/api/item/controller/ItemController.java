@@ -1,5 +1,6 @@
 package com.team5.secondhand.api.item.controller;
 
+import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
 import com.team5.secondhand.api.item.dto.response.ItemList;
 import com.team5.secondhand.api.item.service.ItemService;
 import com.team5.secondhand.api.region.domain.Region;
@@ -26,8 +27,10 @@ public class ItemController {
             description = "사용자는 자신의 동네의 상품 목록을 볼 수 있다."
     )
     @GetMapping
-    public ItemList getItemList(@RequestParam int page, @RequestParam long region) throws NotValidRegionException {
-        Map<Long, Region> regions = getValidRegions.getRegions(List.of(region));
-        return itemService.getItemList(page, regions.get(region));
+    public ItemList getItemList(ItemFilteredSlice itemSlice) throws NotValidRegionException {
+        Map<Long, Region> regions = getValidRegions.getRegions(List.of(itemSlice.getRegionId()));
+        //TODO Category 유효성 검사
+        return itemService.getItemList(itemSlice, regions.get(itemSlice.getPage()));
     }
+
 }
