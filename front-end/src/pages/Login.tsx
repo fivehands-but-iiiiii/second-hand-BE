@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 
 const CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID;
 const REDIRECT_URL = import.meta.env.VITE_REDIRECT_URL;
-
 import Button from '@common/Button';
 import NavBar from '@common/NavBar';
 import IdInput from '@components/login/IdInput';
@@ -24,7 +23,6 @@ const Login = () => {
   const [isLogin, setIsLogin] = useState(false);
   const [userId, setUserId] = useState('');
   const [validIdInfo, setValidIdInfo] = useState('');
-
   const storedUserInfo = getStoredValue({ key: 'userInfo' });
   const OAUTH_URL = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_url=${REDIRECT_URL}`;
 
@@ -45,10 +43,10 @@ const Login = () => {
       });
       setStorageValue({ key: 'userInfo', value: data.data });
       navigate('/');
-      console.log('유저 로그인 완료', data.data);
     } catch (error) {
-      if (error.response.status === 401) {
-        setValidIdInfo(error.response.data.message);
+      const { response } = error;
+      if (response.status === 401) {
+        setValidIdInfo(response.data.message);
       }
     }
   };

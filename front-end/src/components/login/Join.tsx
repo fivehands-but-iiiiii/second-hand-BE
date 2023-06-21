@@ -72,8 +72,7 @@ const Join = () => {
             regin: userAccount.regions,
           },
         });
-        navigate('/login');
-        // TODO: home 으로 변경
+        navigate('/');
       }
     } catch (error) {
       const { response } = error;

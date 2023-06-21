@@ -19,24 +19,33 @@ const OAuthCallback = () => {
     const getToken = async () => {
       try {
         const { data } = await api.get(`/git/login?code=${queryCode}`);
-        console.log(data);
         if (data.status === 200) {
-          console.log(data);
           const userInfo: UserInfo = data.data;
           setStorageValue({ key: 'userInfo', value: userInfo });
           navigate('/');
         }
-        console.log(data, '200번 코드');
       } catch (error) {
-        if (error.response.status === 401) {
-          const gitUserInfo: UserInfo = error.response.data.body;
-          navigate('/Join', { state: { ...gitUserInfo }, replace: true });
-          console.log(gitUserInfo, '401번 코드 : 회원가입요망');
-        } else console.log(error.response.data.message);
+        const { response } = error;
+        if (response.status === 401) {
+          const gitUserInfo: UserInfo = response.data.body;
+          try {
+            const { data } = await api.post('/login', {
+              memberId: gitUserInfo.login,
+            });
+            setStorageValue({ key: 'userInfo', value: data.data });
+            navigate('/');
+          } catch {
+            const { response } = error;
+            if (response.status === 401) {
+              navigate('/Join', { state: { ...gitUserInfo }, replace: true });
+            } else console.log(response.data.message);
+          }
+        } else console.log(response.data.message);
       }
     };
     getToken();
   }, [location, navigate, queryCode]);
+
   return <></>;
 };
 
