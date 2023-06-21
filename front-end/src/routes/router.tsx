@@ -5,6 +5,7 @@ import ErrorPage from '@pages/ErrorPage';
 import Home from '@pages/Home';
 import MobileLayout from '@pages/Layout';
 import Login from '@pages/Login';
+import WishList from '@pages/WishList';
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
       {
         path: 'login',
         element: <Login />,
+      },
+      {
+        path: 'wishlist',
+        element: <WishList />,
       },
     ],
   },
