@@ -1,6 +1,5 @@
 package com.team5.secondhand.api.region.controller;
 
-import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.region.dto.RegionSummary;
 import com.team5.secondhand.api.region.service.RegionService;
 import lombok.RequiredArgsConstructor;

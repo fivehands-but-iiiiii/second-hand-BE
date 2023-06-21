@@ -131,7 +131,7 @@ public class MemberController {
 
         memberService.updateRegions(memberRegion.getId(), basedRegions);
 
-        return GenericResponse.send("Member update profile image Successfully", null);
+        return GenericResponse.send("Member update profile image Successfully", true);
     }
 
     @Operation(
@@ -144,7 +144,7 @@ public class MemberController {
         //TODO: 지역 검증은 추후에 validator 로 검증
         memberService.switchRegions(memberRegion.getId(), memberRegion);
 
-        return GenericResponse.send("Member update profile image Successfully", null);
+        return GenericResponse.send("Member update profile image Successfully", true);
     }
 
 }
