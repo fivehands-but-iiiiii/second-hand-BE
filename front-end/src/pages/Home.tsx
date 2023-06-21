@@ -4,7 +4,8 @@ import { SaleItem } from '@common/Item';
 import Spinner from '@common/Spinner/Spinner';
 import ItemList from '@components/home/ItemList';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
-import axios from 'axios';
+
+import api from '../api';
 
 const Home = () => {
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
@@ -23,7 +24,7 @@ const Home = () => {
       if (page > maxPage) return;
       setIsLoading(true);
 
-      const { data } = await axios.get(`/items?page=${page}&region=1`);
+      const { data } = await api.get(`/items?page=${page}&region=1`);
 
       setSaleItems((prevItems) => [...prevItems, ...data.items]);
       setMaxPage(data.maxPage);
