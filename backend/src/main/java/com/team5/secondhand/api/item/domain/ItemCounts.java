@@ -16,7 +16,7 @@ public class ItemCounts {
 
     private static final long INIT_COUNT_NUMBER = 0L;
 
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Min(0)
