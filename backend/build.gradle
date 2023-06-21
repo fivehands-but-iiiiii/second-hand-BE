@@ -33,6 +33,16 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk-s3:1.12.470'
     implementation 'p6spy:p6spy:3.9.1'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation "com.querydsl:querydsl-jpa:5.0.0"
+    annotationProcessor(
+            "javax.persistence:javax.persistence-api",
+            "javax.annotation:javax.annotation-api",
+            "com.querydsl:querydsl-apt:5.0.0:jpa"
+    )
+}
+
+clean {
+    delete file('src/main/generated')
 }
 
 tasks.named('test') {
