@@ -40,4 +40,11 @@ public class ItemContents {
                 .detailImageUrl(images)
                 .build();
     }
+
+    public ItemContents update(String contents, List<ItemImage> itemImages) {
+        this.contents = contents;
+        this.detailImageUrl = itemImages.stream().map(ItemDetailImage::of).collect(Collectors.toList());
+
+        return this;
+    }
 }
