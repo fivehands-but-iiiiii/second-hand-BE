@@ -3,7 +3,6 @@ package com.team5.secondhand.api.region.service;
 import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.region.exception.NotValidRegionException;
 import com.team5.secondhand.api.region.repository.RegionRepository;
-import com.team5.secondhand.api.region.util.AddressMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +15,6 @@ import java.util.Map;
 public class RegionService implements GetValidRegionsUsecase {
 
     private final RegionRepository regionRepository;
-    private final AddressMapper addressMapper;
-
-    public boolean isValidRegion(List<Long> regions) {
-        return regionRepository.existsAllByIdIn(regions);
-    }
 
     @Override
     public Map<Long, Region> getRegions(List<Long> ids) throws NotValidRegionException {
@@ -37,7 +31,6 @@ public class RegionService implements GetValidRegionsUsecase {
     }
 
     public List<Region> findRegionByAddress (String address) {
-        String key = addressMapper.mapAddress(address);
-        return regionRepository.findAllByAddress(key);
+        return regionRepository.findAllByAddress(address);
     }
 }
