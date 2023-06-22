@@ -72,7 +72,6 @@ public class Item extends BaseTimeEntity {
                 .region(region).count(ItemCounts.createRelated())
                 .contents(ItemContents.createdRelated(newItem.getContents(), newItem.getImages()))
                 .build();
-
     }
 
     public Item updatePost(ItemPost itemPost, String thumbanilUrl) {
