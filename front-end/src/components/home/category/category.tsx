@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 
+import Icon from '@assets/Icon';
 import Button from '@common/Button';
 import ImgBox from '@common/ImgBox';
+import NavBar from '@common/NavBar/NavBar';
 
 import { styled } from 'styled-components';
 
@@ -14,8 +16,18 @@ interface Category {
   iconUrl: string;
 }
 
-const Category = () => {
+interface CategoryProps {
+  handleCategoryModal: () => void;
+  onCategoryClick?: (categoryId: number) => void;
+}
+
+const Category = ({ handleCategoryModal, onCategoryClick }: CategoryProps) => {
   const [categoryIcons, setCategoryIcons] = useState<Category[]>([]);
+  // TODO: Main Tabbar 안 보이게 하기
+
+  const handleCategoryClick = (categoryId: number) => {
+    onCategoryClick && onCategoryClick(categoryId);
+  };
 
   const getCategoryIcons = async () => {
     try {
@@ -33,16 +45,36 @@ const Category = () => {
 
   
   return (
-    <MyCategoryContainer>
-      {categoryIcons?.map((icon) => (
-        <MyCategory key={icon.id} icon>
-          <ImgBox src={icon.iconUrl} size="sm" alt={icon.title} />
-          {icon.title}
-        </MyCategory>
-      ))}
-    </MyCategoryContainer>
+    <MyCategoryModal>
+      <NavBar
+        left={
+          <MyCategoryCloseBtn onClick={handleCategoryModal}>
+            <Icon name={'chevronLeft'} />
+            닫기
+          </MyCategoryCloseBtn>}
+        center={'카테고리'}
+      />
+      <MyCategoryContainer>
+        {categoryIcons?.map((icon) => (
+          <MyCategory key={icon.id} icon onClick={() => handleCategoryClick(icon.id)}>
+            <ImgBox src={icon.iconUrl} size="sm" alt={icon.title} />
+            {icon.title}
+          </MyCategory>
+        ))}
+      </MyCategoryContainer>
+    </MyCategoryModal>
   );
 };
+
+const MyCategoryModal = styled.div`
+  position: absolute;
+  top: 0;
+`;
+
+const MyCategoryCloseBtn = styled.button`
+  display: flex;
+  gap: 5px;
+`;
 
 const MyCategoryContainer = styled.div`
   width: 100%;
