@@ -17,10 +17,4 @@ public class ItemDetailImage {
         this.url = url;
     }
 
-    public static ItemDetailImage of(ItemImage itemImage) {
-        return ItemDetailImage.builder()
-                .order(itemImage.getOrder())
-                .url(itemImage.getUrl())
-                .build();
-    }
 }

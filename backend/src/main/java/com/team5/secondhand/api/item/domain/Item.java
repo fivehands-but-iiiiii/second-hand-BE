@@ -1,5 +1,6 @@
 package com.team5.secondhand.api.item.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team5.secondhand.api.item.dto.request.ItemPost;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.model.BaseTimeEntity;
@@ -81,6 +82,22 @@ public class Item extends BaseTimeEntity {
         this.thumbnailUrl = thumbanilUrl;
         this.contents = contents.update(itemPost.getContents(), itemPost.getImages());
 
+        return this;
+    }
+
+    @JsonIgnore
+    public ItemDetailImage getFirstDetailImage() {
+        return contents.getFirstDetailImage();
+    }
+
+    public Item sellerInfo(Member member, Region region) {
+        this.seller = member;
+        this.region = region;
+        return this;
+    }
+
+    public Item updateThumbnail(String thumbanilUrl) {
+        this.thumbnailUrl = thumbanilUrl;
         return this;
     }
 }

@@ -7,6 +7,7 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,10 @@ public class ItemContents {
     }
 
     public static ItemContents createdRelated(String contents, List<ItemImage> itemImages) {
-        List<ItemDetailImage> images = itemImages.stream().map(ItemDetailImage::of).collect(Collectors.toList());
+        List<ItemDetailImage> images = itemImages.stream().map(ItemImage::toEntity)
+                .sorted(Comparator.comparing(ItemDetailImage::getOrder))
+                .collect(Collectors.toList());
+
         return ItemContents.builder()
                 .contents(contents)
                 .detailImageUrl(images)
@@ -43,8 +47,12 @@ public class ItemContents {
 
     public ItemContents update(String contents, List<ItemImage> itemImages) {
         this.contents = contents;
-        this.detailImageUrl = itemImages.stream().map(ItemDetailImage::of).collect(Collectors.toList());
+        this.detailImageUrl = itemImages.stream().map(ItemImage::toEntity).collect(Collectors.toList());
 
         return this;
+    }
+
+    public ItemDetailImage getFirstDetailImage() {
+        return detailImageUrl.get(0);
     }
 }
