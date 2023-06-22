@@ -1,25 +1,43 @@
+import { useEffect, useState } from 'react';
+
 import Button from '@common/Button';
-import ImgBox from '@common/ImgBox/ImgBox';
+import ImgBox from '@common/ImgBox';
 
 import { styled } from 'styled-components';
+
+import api from '../../../api';
+
 
 interface Category {
   id: number;
   title: string;
-  imgUrl: string;
+  iconUrl: string;
 }
 
-interface CategoryProps {
-  category: Category[];
-}
+const Category = () => {
+  const [categoryIcons, setCategoryIcons] = useState<Category[]>([]);
 
-const Category = (category: CategoryProps) => {
+  const getCategoryIcons = async () => {
+    try {
+      const { data: { data } } = await api.get('/resources/categories');
+
+      setCategoryIcons(data.categories);
+    } catch (error) {
+      console.error(`Failed to get category icons: ${error}`);
+    }
+  };
+
+  useEffect(() => {
+    getCategoryIcons()
+  },[]);
+
+  
   return (
     <MyCategoryContainer>
-      {category.category.map((category) => (
-        <MyCategory key={category.id} icon>
-          <ImgBox src={category.imgUrl} size="sm" />
-          {category.title}
+      {categoryIcons?.map((icon) => (
+        <MyCategory key={icon.id} icon>
+          <ImgBox src={icon.iconUrl} size="sm" alt={icon.title} />
+          {icon.title}
         </MyCategory>
       ))}
     </MyCategoryContainer>
