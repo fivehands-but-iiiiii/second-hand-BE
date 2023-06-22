@@ -82,11 +82,15 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
 
     @Override
     public ImageInfo uploadItemThumbnailImage(String key) throws ImageHostException {
+
+        if (!key.contains(Directory.ITEM_DETAIL.getPrefix())) {
+            return ImageInfo.create(key);
+        }
+
         String newKey = key.replace(Directory.ITEM_DETAIL.getPrefix(), Directory.ITEM_THUMBNAIL_ORIGIN.getPrefix());
-
         amazonS3.copyObject(bucket, key, bucket, newKey);
-        URL url = amazonS3.getUrl(bucket, newKey);
+        String url = amazonS3.getUrl(bucket, newKey).toString().replace("/origin", "");
 
-        return ImageInfo.create(url.toString().replace("/origin", ""));
+        return ImageInfo.create(url);
     }
 }
