@@ -1,6 +1,7 @@
 package com.team5.secondhand.global.aws.service;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.team5.secondhand.global.aws.domain.Directory;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.UUID;
 
 @Service
@@ -81,16 +81,21 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
     }
 
     @Override
-    public ImageInfo uploadItemThumbnailImage(String key) throws ImageHostException {
-
-        if (!key.contains(Directory.ITEM_DETAIL.getPrefix())) {
-            return ImageInfo.create(key);
-        }
-
+    public String uploadItemThumbnailImage(String url) throws ImageHostException {
+        String key = getKey(url);
         String newKey = key.replace(Directory.ITEM_DETAIL.getPrefix(), Directory.ITEM_THUMBNAIL_ORIGIN.getPrefix());
-        amazonS3.copyObject(bucket, key, bucket, newKey);
-        String url = amazonS3.getUrl(bucket, newKey).toString().replace("/origin", "");
+        try {
+            amazonS3.copyObject(bucket, key, bucket, newKey);
+            return amazonS3.getUrl(bucket, newKey).toString().replace("/origin", "");
+        } catch (AmazonS3Exception e) {
+            return url;
+        }
+    }
 
-        return ImageInfo.create(url);
+    private String getKey(String url) {
+        if (url.contains(Directory.ITEM_DETAIL.getPrefix())) {
+            return url.split("amazonaws.com/")[1];
+        }
+        return url;
     }
 }
