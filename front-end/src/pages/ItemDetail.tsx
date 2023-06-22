@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useOutletContext, useParams } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
 import Button from '@common/Button';
@@ -74,6 +74,7 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
     hits,
     price,
   } = itemDetailInfo;
+  const handleMainTabBar: (status: boolean) => void = useOutletContext();
   const [isStatusPopupOpen, setIsStatusPopupOpen] = useState(false);
   const [isMoreViewPopupOpen, setIsMoreViewPopupOpen] = useState(false);
   const userInfo: UserInfo = getStoredValue({ key: 'userInfo' });
@@ -82,6 +83,8 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
   // const isMyItem = userInfo.memberId === seller.name;
   const likeIcon = isLike ? 'fullHeart' : 'heart';
   const formattedPrice = price ? `${price.toLocaleString()}원` : '가격없음';
+
+  handleMainTabBar(false);
 
   const statusLabel = (() => {
     switch (status) {
