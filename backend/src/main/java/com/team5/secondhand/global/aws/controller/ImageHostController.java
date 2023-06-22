@@ -26,14 +26,4 @@ public class ImageHostController {
         return GenericResponse.send("Member upload profile image Successfully", profileImageInfo);
     }
 
-    @Operation(
-            summary = "아이템 사진 업로드",
-            tags = "Test"
-    )
-    @PostMapping("/thumbnail/image")
-    public GenericResponse<ImageInfo> setItemThumbnail (@RequestBody String url) throws ImageHostException {
-        ImageInfo imageInfo = imageHostService.uploadItemThumbnailImage(url);
-        return GenericResponse.send("Member upload profile image Successfully", imageInfo);
-    }
-
 }
