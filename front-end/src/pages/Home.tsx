@@ -36,10 +36,12 @@ const Home = () => {
     }
   };
 
+  console.log(!!saleItems.length)
+
   return (
     <>
       <ItemList saleItems={saleItems} />
-      {saleItems && <div id="onFetchItems" ref={setTarget}></div>}
+      {!!saleItems.length && <div id="onFetchItems" ref={setTarget}></div>}
       {isLoading && <Spinner />}
     </>
   );
