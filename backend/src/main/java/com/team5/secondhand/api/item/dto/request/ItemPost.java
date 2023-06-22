@@ -1,10 +1,13 @@
 package com.team5.secondhand.api.item.dto.request;
 
+import com.team5.secondhand.api.item.domain.Item;
+import com.team5.secondhand.api.item.domain.ItemContents;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @RequiredArgsConstructor
@@ -19,4 +22,17 @@ public class ItemPost {
     private final int price;
     @NotNull
     private final List<ItemImage> images;
+
+    public Optional<ItemImage> getFirstImageUrl() {
+        return images.stream().sorted().findAny();
+    }
+
+    public Item toEntity() {
+        return Item.builder()
+                .title(title)
+                .contents(ItemContents.createdRelated(contents, images))
+                .category(category)
+                .price(price)
+                .build();
+    }
 }
