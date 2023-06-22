@@ -61,12 +61,12 @@ public class Item extends BaseTimeEntity {
         this.contents = contents;
     }
 
-    public static Item create(ItemPost newItem, Member seller, Region region) {
+    public static Item create(ItemPost newItem, String thumbanilUrl, Member seller, Region region) {
         return Item.builder()
                 .title(newItem.getTitle())
                 .price(newItem.getPrice())
                 .category(newItem.getCategory())
-                .thumbnailUrl(newItem.getThumbnailUrl())
+                .thumbnailUrl(thumbanilUrl)
                 .status(Status.ON_SALE).seller(seller)
                 .region(region).count(ItemCounts.createRelated())
                 .contents(ItemContents.createdRelated(newItem.getContents(), newItem.getImages()))
@@ -74,11 +74,11 @@ public class Item extends BaseTimeEntity {
 
     }
 
-    public Item updatePost(ItemPost itemPost) {
+    public Item updatePost(ItemPost itemPost, String thumbanilUrl) {
         this.title = itemPost.getTitle();
         this.category = itemPost.getCategory();
         this.price = itemPost.getPrice();
-        this.thumbnailUrl = itemPost.getThumbnailUrl();
+        this.thumbnailUrl = thumbanilUrl;
         this.contents = contents.update(itemPost.getContents(), itemPost.getImages());
 
         return this;

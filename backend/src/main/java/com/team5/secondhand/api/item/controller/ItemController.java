@@ -1,7 +1,8 @@
 package com.team5.secondhand.api.item.controller;
 
-import com.team5.secondhand.api.item.dto.request.ItemPost;
 import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
+import com.team5.secondhand.api.item.dto.request.ItemImage;
+import com.team5.secondhand.api.item.dto.request.ItemPost;
 import com.team5.secondhand.api.item.dto.response.ItemList;
 import com.team5.secondhand.api.item.exception.ExistItemException;
 import com.team5.secondhand.api.item.service.ItemService;
@@ -41,23 +42,35 @@ public class ItemController {
         return itemService.getItemList(itemSlice, regions.get(itemSlice.getPage()));
     }
 
+    @Operation(
+            summary = "특정 동네 상품 팬매글 등록",
+            tags = "Items",
+            description = "사용자는 새로운 상품을 등록할 수 있다."
+    )
     @PostMapping
     public GenericResponse<Long> postItem(@RequestAttribute MemberDetails loginMember, @RequestBody ItemPost itemPost) throws ExistMemberIdException, NotValidRegionException {
         Member seller = memberService.findByid(loginMember.getId());
         Region region = getValidRegions.getRegion(itemPost.getRegion());
         //TODO: order 1 -> 썸네일 이미지 서비스
-        Long id = itemService.postItem(itemPost, seller, region);
+        String thumbanilUrl = itemPost.getImages().stream().filter(i -> i.getOrder() == 1).map(ItemImage::getUrl).toString();
+        Long id = itemService.postItem(itemPost, thumbanilUrl, seller, region);
 
         return GenericResponse.send("상품 등록이 완료되었습니다.", id);
     }
 
+    @Operation(
+            summary = "특정 동네 상품 판매글 수정",
+            tags = "Items",
+            description = "사용자는 상품 정보를 수정할 수 있다."
+    )
     @PutMapping("/{id}")
     public GenericResponse<Long> updateItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemPost itemPost) throws ExistMemberIdException, NotValidRegionException, ExistItemException, ExistItemException {
         //의문: seller, region이 기존이랑 달라져도 되나?
         Member seller = memberService.findByid(loginMember.getId());
         Region region = getValidRegions.getRegion(itemPost.getRegion());
         //TODO: order 1 썸네일 이미지 서비스
-        itemService.updateItem(id, itemPost);
+        String thumbanilUrl = itemPost.getImages().stream().filter(i -> i.getOrder() == 1).map(ItemImage::getUrl).toString();
+        itemService.updateItem(id, itemPost, thumbanilUrl);
 
         return GenericResponse.send("상품 수정이 완료되었습니다.", id);
     }
