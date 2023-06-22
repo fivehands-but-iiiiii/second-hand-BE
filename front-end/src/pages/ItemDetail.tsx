@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
 import Button from '@common/Button';
@@ -74,9 +74,12 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
     hits,
     price,
   } = itemDetailInfo;
-  const handleMainTabBar: (status: boolean) => void = useOutletContext();
   const [isStatusPopupOpen, setIsStatusPopupOpen] = useState(false);
   const [isMoreViewPopupOpen, setIsMoreViewPopupOpen] = useState(false);
+
+  const handleMainTabBar: (status: boolean) => void = useOutletContext();
+  const navigate = useNavigate();
+
   const userInfo: UserInfo = getStoredValue({ key: 'userInfo' });
   const { id } = useParams();
   const isMyItem = true;
@@ -86,7 +89,7 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
 
   handleMainTabBar(false);
 
-  const statusLabel = (() => {
+  const statusLabel = useMemo(() => {
     switch (status) {
       case ItemStatus.ON_SALE:
         return '판매중';
@@ -97,7 +100,7 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
       default:
         return '';
     }
-  })();
+  }, [status]);
 
   const handleStatusSheet = async (status: ItemStatus) => {
     try {
@@ -162,7 +165,11 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
     <>
       <MyItemDetail>
         <MyNavBar
-          left={<Icon name={'chevronLeft'} />}
+          left={
+            <button onClick={() => navigate(-1)}>
+              <Icon name={'chevronLeft'} />
+            </button>
+          }
           right={
             isMyItem && (
               <button onClick={handleViewMorePopup}>
