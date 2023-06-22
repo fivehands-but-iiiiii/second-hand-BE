@@ -1,10 +1,10 @@
 package com.team5.secondhand.api.item.controller;
 
 import com.team5.secondhand.api.item.domain.Item;
-import com.team5.secondhand.api.item.domain.ItemDetailImage;
 import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
 import com.team5.secondhand.api.item.dto.request.ItemImage;
 import com.team5.secondhand.api.item.dto.request.ItemPost;
+import com.team5.secondhand.api.item.dto.response.ItemDetail;
 import com.team5.secondhand.api.item.dto.response.ItemList;
 import com.team5.secondhand.api.item.exception.ExistItemException;
 import com.team5.secondhand.api.item.service.ItemService;
@@ -23,11 +23,13 @@ import com.team5.secondhand.global.aws.service.usecase.ItemThumbnailImageUpload;
 import com.team5.secondhand.global.dto.GenericResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
@@ -96,5 +98,17 @@ public class ItemController {
         itemService.updateItem(id, itemPost, thumbanilUrl);
 
         return GenericResponse.send("상품 수정이 완료되었습니다.", id);
+    }
+
+    @Operation(
+            summary = "상품 글 상세조회",
+            tags = "Items",
+            description = "사용자는 상품의 상세 정보를 볼 수 있다."
+    )
+    @GetMapping("/{id}")
+    public GenericResponse<ItemDetail> getItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember) throws ExistMemberIdException, ExistItemException {
+        ItemDetail item = itemService.getItem(id, loginMember.getId());
+
+        return GenericResponse.send("상품 상세정보를 볼 수 있습니다.", item);
     }
 }
