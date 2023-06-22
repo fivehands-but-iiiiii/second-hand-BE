@@ -44,10 +44,10 @@ public class ItemService {
         return ItemList.getSlice(pageResult.getNumber(), pageResult.hasPrevious(), pageResult.hasNext(), items);
     }
 
-    public Long postItem(ItemPost itemPost, String thumbanilUrl, Member member, Region region) {
-        Item item = Item.create(itemPost, thumbanilUrl, member, region);
+    public Long postItem(Item itemPost, String thumbanilUrl, Member member, Region region) {
+        Item item = itemPost.sellerInfo(member, region)
+                            .updateThumbnail(thumbanilUrl);
         itemRepository.save(item);
-
         return item.getId();
     }
 
