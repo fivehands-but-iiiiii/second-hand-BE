@@ -4,6 +4,7 @@ import com.team5.secondhand.api.member.domain.BasedRegion;
 import com.team5.secondhand.api.member.domain.Oauth;
 import com.team5.secondhand.api.member.dto.request.MemberJoin;
 import com.team5.secondhand.api.member.dto.request.MemberLogin;
+import com.team5.secondhand.api.member.dto.request.MemberProfileImageUpdate;
 import com.team5.secondhand.api.member.dto.request.MemberRegion;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.member.exception.MemberException;
@@ -17,7 +18,7 @@ import com.team5.secondhand.api.region.exception.NotValidRegionException;
 import com.team5.secondhand.api.region.service.GetValidRegionsUsecase;
 import com.team5.secondhand.global.aws.dto.response.ProfileImageInfo;
 import com.team5.secondhand.global.aws.exception.ImageHostException;
-import com.team5.secondhand.global.aws.service.ProfileUploadUsecase;
+import com.team5.secondhand.global.aws.service.usecase.ProfileUpload;
 import com.team5.secondhand.global.dto.GenericResponse;
 import com.team5.secondhand.global.jwt.service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,7 +38,7 @@ import static com.team5.secondhand.api.member.exception.MemberExceptionHandler.J
 public class MemberController {
     private final OAuthService oAuthService;
     private final MemberService memberService;
-    private final ProfileUploadUsecase profileUpload;
+    private final ProfileUpload profileUpload;
     private final GetValidRegionsUsecase validRegions;
     private final JwtService jwtService;
 
@@ -111,8 +112,8 @@ public class MemberController {
     )
     @PatchMapping(value = "/members/image", consumes = {"multipart/form-data"})
     public GenericResponse<ProfileImageInfo> setMemberProfile(@RequestAttribute MemberDetails member,
-                                                              @RequestPart MultipartFile profile) throws ImageHostException {
-        ProfileImageInfo profileImageInfo = profileUpload.uploadMemberProfileImage(profile);
+                                                              @ModelAttribute MemberProfileImageUpdate profile) throws ImageHostException {
+        ProfileImageInfo profileImageInfo = profileUpload.uploadMemberProfileImage(profile.getProfileImage());
         profileImageInfo.owned(member.getId());
 
         memberService.updateProfileImage(member.getId(), profileImageInfo.getUploadUrl());
