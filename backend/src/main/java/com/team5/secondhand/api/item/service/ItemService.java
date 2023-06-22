@@ -4,6 +4,7 @@ import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.dto.request.ItemPost;
 import com.team5.secondhand.api.item.domain.Status;
 import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
+import com.team5.secondhand.api.item.dto.response.ItemDetail;
 import com.team5.secondhand.api.item.dto.response.ItemList;
 import com.team5.secondhand.api.item.dto.response.ItemSummary;
 import com.team5.secondhand.api.item.exception.ExistItemException;
@@ -44,10 +45,10 @@ public class ItemService {
         return ItemList.getSlice(pageResult.getNumber(), pageResult.hasPrevious(), pageResult.hasNext(), items);
     }
 
-    public Long postItem(ItemPost itemPost, String thumbanilUrl, Member member, Region region) {
-        Item item = Item.create(itemPost, thumbanilUrl, member, region);
+    public Long postItem(Item itemPost, String thumbanilUrl, Member member, Region region) {
+        Item item = itemPost.sellerInfo(member, region)
+                            .updateThumbnail(thumbanilUrl);
         itemRepository.save(item);
-
         return item.getId();
     }
 
@@ -55,5 +56,17 @@ public class ItemService {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
         Item newItem = item.updatePost(itemPost, thumbanilUrl);
         itemRepository.save(newItem);
+    }
+
+    public ItemDetail getItem(Long id, Long memberId) throws ExistItemException {
+        Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
+        ItemDetail itemDetail;
+        if (item.getSeller().getId().equals(memberId)) {
+            itemDetail = ItemDetail.of(item, true);
+        } else {
+            itemDetail = ItemDetail.of(item, false);
+        }
+
+        return itemDetail;
     }
 }

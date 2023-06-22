@@ -2,6 +2,7 @@ package com.team5.secondhand.api.region.controller;
 
 import com.team5.secondhand.api.region.dto.RegionSummary;
 import com.team5.secondhand.api.region.service.RegionService;
+import com.team5.secondhand.global.dto.GenericResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,9 +17,10 @@ public class RegionController {
     private final RegionService regionService;
 
     @GetMapping("/regions")
-    public List<RegionSummary> getRegions (String keyword) {
-        return regionService.findRegionByAddress(keyword).stream()
+    public GenericResponse<List<RegionSummary>> getRegions (String keyword) {
+        List<RegionSummary> regions = regionService.findRegionByAddress(keyword).stream()
                 .map(RegionSummary::fromRegion)
                 .collect(Collectors.toList());
+        return GenericResponse.send("Regions searched Successfully", regions);
     }
 }
