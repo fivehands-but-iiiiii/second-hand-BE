@@ -17,7 +17,6 @@ public class ItemPost {
     @NotNull
     private final Long region;
     private final int price;
-    private final String thumbnailUrl;
     @NotNull
     private final List<ItemImage> images;
 }

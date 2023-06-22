@@ -44,16 +44,16 @@ public class ItemService {
         return ItemList.getSlice(pageResult.getNumber(), pageResult.hasPrevious(), pageResult.hasNext(), items);
     }
 
-    public Long postItem(ItemPost itemPost, Member member, Region region) {
-        Item item = Item.create(itemPost, member, region);
+    public Long postItem(ItemPost itemPost, String thumbanilUrl, Member member, Region region) {
+        Item item = Item.create(itemPost, thumbanilUrl, member, region);
         itemRepository.save(item);
 
         return item.getId();
     }
 
-    public void updateItem(Long id, ItemPost itemPost) throws ExistItemException {
+    public void updateItem(Long id, ItemPost itemPost, String thumbanilUrl) throws ExistItemException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
-        Item newItem = item.updatePost(itemPost);
+        Item newItem = item.updatePost(itemPost, thumbanilUrl);
         itemRepository.save(newItem);
     }
 }
