@@ -12,7 +12,7 @@ spring:
       max-request-size: 100MB
     session:
       cookie:
-        domain: localhost
+        domain: 13.125.243.239
   jpa:
     properties:
       hibernate:
