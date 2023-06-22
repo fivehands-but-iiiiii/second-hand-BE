@@ -1,12 +1,22 @@
+import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+
 import Icon from '@assets/Icon';
 import Button from '@common/Button';
 import NavBar from '@common/NavBar';
+import {
+  DETAIL_STATUS_MENU,
+  DETAIL_VIEWMORE_MENU,
+} from '@common/PopupSheet/constants';
+import PopupSheet from '@common/PopupSheet/PopupSheet';
 import SubTabBar from '@common/TabBar/SubTabBar';
 import { ItemStatus } from '@components/ItemStatus';
 import { formatNumberToSI } from '@utils/formatNumberToSI';
 import { getStoredValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
+
+import api from '../api';
 
 export interface UserInfo {
   id: 0;
@@ -64,9 +74,13 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
     hits,
     price,
   } = itemDetailInfo;
+  const [isStatusPopupOpen, setIsStatusPopupOpen] = useState(false);
+  const [isMoreViewPopupOpen, setIsMoreViewPopupOpen] = useState(false);
   const userInfo: UserInfo = getStoredValue({ key: 'userInfo' });
+  const { id } = useParams();
   const isMyItem = true;
   // const isMyItem = userInfo.memberId === seller.name;
+  const likeIcon = isLike ? 'fullHeart' : 'heart';
   const formattedPrice = price ? `${price.toLocaleString()}원` : '가격없음';
 
   const statusLabel = (() => {
@@ -82,6 +96,55 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
     }
   })();
 
+  const handleStatusSheet = async (status: ItemStatus) => {
+    try {
+      await api.patch(`/items/${id}/status`, { status: status });
+    } catch (error) {
+      console.error(`Failed to request: ${error}`);
+    }
+  };
+
+  const handleViewMoreSheet = async (type: string) => {
+    if (type === 'delete') {
+      try {
+        await api.delete(`/items/${id}`);
+      } catch (error) {
+        console.error(`Failed to request: ${error}`);
+      }
+    } else if (type === 'edit') {
+      // TODO: 수정 페이지로 이동
+    }
+  };
+
+  const handleLike = async () => {
+    // TODO: 추후 API 확인해서 path 수정하기
+    try {
+      await api.post(`/items/${id}/like`);
+    } catch (error) {
+      console.error(`Failed to request: ${error}`);
+    }
+  };
+
+  const statusPopupSheetMenu = DETAIL_STATUS_MENU.filter(
+    (menu) => menu.id !== status,
+  ).map((menu) => ({
+    ...menu,
+    onClick: () => handleStatusSheet(menu.id),
+  }));
+
+  const viewMorePopupSheetMenu = DETAIL_VIEWMORE_MENU.map((menu) => ({
+    ...menu,
+    onClick: () => handleViewMoreSheet(menu.id),
+  }));
+
+  const handleStatusPopup = () => {
+    setIsStatusPopupOpen(!isStatusPopupOpen);
+  };
+
+  const handleViewMorePopup = () => {
+    setIsMoreViewPopupOpen(!isMoreViewPopupOpen);
+  };
+
   return (
     <>
       <MyItemDetail>
@@ -89,7 +152,7 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
           left={<Icon name={'chevronLeft'} />}
           right={
             isMyItem && (
-              <button onClick={() => console.log('open modal')}>
+              <button onClick={handleViewMorePopup}>
                 <Icon name={'ellipsis'} />
               </button>
             )
@@ -114,7 +177,7 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
             </MySellerDetail>
           )}
           {isMyItem && (
-            <MyStatus onClick={() => console.log('open modal')}>
+            <MyStatus onClick={handleStatusPopup}>
               <div>{statusLabel}</div>
               <Icon name={'chevronDown'} size="xs" />
             </MyStatus>
@@ -127,21 +190,31 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
             <MyContents>{contents}</MyContents>
             <MyCountInfo>
               {!!chatCount && <div>채팅 {formatNumberToSI(chatCount)}</div>}
-              {!!likesCount && (
-                <div>
-                  {isLike} 관심 {formatNumberToSI(likesCount)}
-                </div>
-              )}
+              {!!likesCount && <div>관심 {formatNumberToSI(likesCount)}</div>}
               {!!hits && <div>조회 {formatNumberToSI(hits)}</div>}
             </MyCountInfo>
           </MyItemInfoDetail>
         </MyItemInfo>
       </MyItemDetail>
-      <SubTabBar icon={'heart'} content={formattedPrice}>
+      <SubTabBar icon={likeIcon} content={formattedPrice}>
         <Button active onClick={() => console.log('move to chat')}>
           {isMyItem ? `대화 중인 채팅방 ${chatCount}` : '채팅하기'}
         </Button>
       </SubTabBar>
+      {isStatusPopupOpen && (
+        <PopupSheet
+          type={'slideUp'}
+          menu={statusPopupSheetMenu}
+          onSheetClose={handleStatusPopup}
+        ></PopupSheet>
+      )}
+      {isMoreViewPopupOpen && (
+        <PopupSheet
+          type={'slideUp'}
+          menu={viewMorePopupSheetMenu}
+          onSheetClose={handleViewMorePopup}
+        ></PopupSheet>
+      )}
     </>
   );
 };
@@ -172,11 +245,9 @@ const MyImgDetail = styled.div`
 `;
 
 const MyImages = styled.div`
-  width: 100%;
-  height: 100%;
+  overflow: hidden;
   > img {
     object-fit: cover;
-    width: 100%;
     height: 100%;
   }
 `;
