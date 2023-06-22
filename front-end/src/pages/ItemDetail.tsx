@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useOutletContext, useParams } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
@@ -132,12 +132,18 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
     (menu) => menu.id !== status,
   ).map((menu) => ({
     ...menu,
-    onClick: () => handleStatusSheet(menu.id),
+    onClick: () => {
+      handleStatusSheet(menu.id);
+      setIsStatusPopupOpen(false);
+    },
   }));
 
   const viewMorePopupSheetMenu = DETAIL_VIEWMORE_MENU.map((menu) => ({
     ...menu,
-    onClick: () => handleViewMoreSheet(menu.id),
+    onClick: () => {
+      handleViewMoreSheet(menu.id);
+      setIsMoreViewPopupOpen(false);
+    },
   }));
 
   const handleStatusPopup = () => {
@@ -147,6 +153,10 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
   const handleViewMorePopup = () => {
     setIsMoreViewPopupOpen(!isMoreViewPopupOpen);
   };
+
+  useEffect(() => {
+    // TODO: 아이템 상세 정보 API 호출
+  }, []);
 
   return (
     <>
@@ -199,7 +209,11 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
           </MyItemInfoDetail>
         </MyItemInfo>
       </MyItemDetail>
-      <SubTabBar icon={likeIcon} content={formattedPrice}>
+      <SubTabBar
+        icon={likeIcon}
+        content={formattedPrice}
+        onIconClick={handleLike}
+      >
         <Button active onClick={() => console.log('move to chat')}>
           {isMyItem ? `대화 중인 채팅방 ${chatCount}` : '채팅하기'}
         </Button>

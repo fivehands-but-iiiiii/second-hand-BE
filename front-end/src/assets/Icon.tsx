@@ -6,6 +6,7 @@ interface IconProps {
   size?: keyof typeof iconSizes;
   fill?: string;
   className?: string;
+  onClick?: () => void;
 }
 
 const iconSizes = {
@@ -22,6 +23,7 @@ const Icon = ({
   size = 'md',
   fill = palette.neutral.text,
   className,
+  onClick,
 }: IconProps) => {
   const IconComponent = iconTypes[name];
   const iconSize = iconSizes[size];
@@ -32,6 +34,7 @@ const Icon = ({
       height={iconSize}
       fill={fill}
       className={className}
+      onClick={onClick}
     />
   );
 };
