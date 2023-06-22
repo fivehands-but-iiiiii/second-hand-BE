@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.UUID;
 
 @Service
@@ -80,10 +81,12 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
     }
 
     @Override
-    public ImageInfo uploadItemThumbnailImage(String imageUrl) throws ImageHostException {
-        String newUrl = imageUrl.replace(Directory.ITEM_DETAIL.getPrefix(), Directory.ITEM_THUMBNAIL_ORIGIN.getPrefix());
-        amazonS3.copyObject(bucket, imageUrl, bucket, newUrl);
+    public ImageInfo uploadItemThumbnailImage(String key) throws ImageHostException {
+        String newKey = key.replace(Directory.ITEM_DETAIL.getPrefix(), Directory.ITEM_THUMBNAIL_ORIGIN.getPrefix());
 
-        return ImageInfo.create(newUrl.replace("/origin", ""));
+        amazonS3.copyObject(bucket, key, bucket, newKey);
+        URL url = amazonS3.getUrl(bucket, newKey);
+
+        return ImageInfo.create(url.toString().replace("/origin", ""));
     }
 }
