@@ -24,6 +24,7 @@ const Category = ({ handleCategoryModal, onCategoryClick }: CategoryProps) => {
   const [categoryIcons, setCategoryIcons] = useState<Category[]>([]);
 
   const handleCategoryClick = (categoryId: number) => {
+    handleCategoryModal();
     onCategoryClick && onCategoryClick(categoryId);
   };
 
