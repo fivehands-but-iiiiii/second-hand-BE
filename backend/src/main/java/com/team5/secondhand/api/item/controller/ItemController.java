@@ -58,7 +58,7 @@ public class ItemController {
     @Operation(
             summary = "상품 상세 이미지 업로드",
             tags = "Items",
-            description = "사용자는 상품 이미지를 첨부할 수 있다."
+            description = "사용자는 상품 이미지를 추가로 첨부할 수 있다."
     )
     @PostMapping(value = "/image", consumes = {"multipart/form-data"})
     public GenericResponse<ImageInfo> uploadItemImage(@ModelAttribute ItemImageUpload file) throws ImageHostException {
