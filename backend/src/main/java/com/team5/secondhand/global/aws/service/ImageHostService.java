@@ -4,6 +4,9 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.team5.secondhand.api.item.domain.Item;
+import com.team5.secondhand.api.item.domain.ItemDetailImage;
+import com.team5.secondhand.api.item.dto.request.ItemImage;
 import com.team5.secondhand.global.aws.domain.Directory;
 import com.team5.secondhand.global.aws.domain.Type;
 import com.team5.secondhand.global.aws.dto.response.ImageInfo;
@@ -20,7 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -81,7 +84,8 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
     }
 
     @Override
-    public String uploadItemThumbnailImage(String url) throws ImageHostException {
+    public String uploadItemThumbnailImage(Item item) throws ImageHostException {
+        String url = item.getFirstDetailImage().getUrl();
         String key = getKey(url);
         String newKey = key.replace(Directory.ITEM_DETAIL.getPrefix(), Directory.ITEM_THUMBNAIL_ORIGIN.getPrefix());
         try {
@@ -97,5 +101,17 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
             return url.split("amazonaws.com/")[1];
         }
         return url;
+    }
+
+    @Override
+    public List<ItemDetailImage> uploadItemDetailImages(List<MultipartFile> request) throws ImageHostException {
+        List<ItemDetailImage> images = new ArrayList<>();
+
+        for (int i=0; i<request.size(); i++) {
+            ImageInfo imageInfo = uploadItemDetailImage(request.get(i));
+            images.add(ItemDetailImage.create(i, imageInfo.getImageUrl()));
+        }
+
+        return images;
     }
 }
