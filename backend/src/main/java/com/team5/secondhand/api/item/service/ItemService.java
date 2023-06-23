@@ -1,7 +1,7 @@
 package com.team5.secondhand.api.item.service;
 
 import com.team5.secondhand.api.item.domain.Item;
-import com.team5.secondhand.api.item.dto.request.ItemPost;
+import com.team5.secondhand.api.item.dto.request.ItemPostWithUrl;
 import com.team5.secondhand.api.item.domain.Status;
 import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
 import com.team5.secondhand.api.item.dto.response.ItemDetail;
@@ -45,14 +45,12 @@ public class ItemService {
         return ItemList.getSlice(pageResult.getNumber(), pageResult.hasPrevious(), pageResult.hasNext(), items);
     }
 
-    public Long postItem(Item itemPost, String thumbanilUrl, Member member, Region region) {
-        Item item = itemPost.sellerInfo(member, region)
-                            .updateThumbnail(thumbanilUrl);
-        itemRepository.save(item);
+    public Long postItem(Item item, Member seller, Region region) {
+        itemRepository.save(item.owned(seller, region));
         return item.getId();
     }
 
-    public void updateItem(Long id, ItemPost itemPost, String thumbanilUrl) throws ExistItemException {
+    public void updateItem(Long id, ItemPostWithUrl itemPost, String thumbanilUrl) throws ExistItemException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
         Item newItem = item.updatePost(itemPost, thumbanilUrl);
         itemRepository.save(newItem);
