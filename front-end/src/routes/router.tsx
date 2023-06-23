@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 
+import Join from '@components/login/Join';
 import OAuthCallback from '@components/login/OAuthCallback';
 import ErrorPage from '@pages/ErrorPage';
 import Home from '@pages/Home';
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
   {
     path: 'login/oauth2/code/github',
     element: <OAuthCallback />,
+  },
+  {
+    path: 'join',
+    element: <Join />,
   },
 ]);
 

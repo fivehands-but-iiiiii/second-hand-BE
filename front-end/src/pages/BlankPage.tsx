@@ -1,6 +1,6 @@
 import Icon from '@assets/Icon';
 
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 
 interface BlankPageProps {
   title: string;
