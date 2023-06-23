@@ -6,12 +6,13 @@ interface NavBarProps {
   left?: ReactNode;
   center?: ReactNode;
   right?: ReactNode;
+  className?: string;
   children?: ReactNode;
 }
 
-const NavBar = ({ left, center, right, children }: NavBarProps) => {
+const NavBar = ({ left, center, right, className, children }: NavBarProps) => {
   return (
-    <MyNavBar>
+    <MyNavBar className={className}>
       <MyNavBarTitle>
         <MyLeftTitle>{left}</MyLeftTitle>
         <MyCenter>{center}</MyCenter>

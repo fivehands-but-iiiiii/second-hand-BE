@@ -7,6 +7,8 @@ import useIntersectionObserver from '@hooks/useIntersectionObserver';
 
 import api from '../api';
 
+import ItemDetail from './ItemDetail';
+
 const Home = () => {
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
   const [maxPage, setMaxPage] = useState(1);
@@ -35,8 +37,6 @@ const Home = () => {
       setIsLoading(false);
     }
   };
-
-  console.log(!!saleItems.length)
 
   return (
     <>
