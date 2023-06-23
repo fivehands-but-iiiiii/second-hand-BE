@@ -9,7 +9,6 @@ import { styled } from 'styled-components';
 
 import api from '../../../api';
 
-
 interface Category {
   id: number;
   title: string;
@@ -31,7 +30,9 @@ const Category = ({ handleCategoryModal, onCategoryClick }: CategoryProps) => {
 
   const getCategoryIcons = async () => {
     try {
-      const { data: { data } } = await api.get('/resources/categories');
+      const {
+        data: { data },
+      } = await api.get('/resources/categories');
 
       setCategoryIcons(data.categories);
     } catch (error) {
@@ -40,10 +41,9 @@ const Category = ({ handleCategoryModal, onCategoryClick }: CategoryProps) => {
   };
 
   useEffect(() => {
-    getCategoryIcons()
-  },[]);
+    getCategoryIcons();
+  }, []);
 
-  
   return (
     <MyCategoryModal>
       <NavBar
@@ -51,15 +51,20 @@ const Category = ({ handleCategoryModal, onCategoryClick }: CategoryProps) => {
           <MyCategoryCloseBtn onClick={handleCategoryModal}>
             <Icon name={'chevronLeft'} />
             닫기
-          </MyCategoryCloseBtn>}
+          </MyCategoryCloseBtn>
+        }
         center={'카테고리'}
       />
       <MyCategoryContainer>
         {categoryIcons?.map((icon) => (
-          <MyCategory key={icon.id} icon onClick={() => handleCategoryClick(icon.id)}>
+          <Button
+            key={icon.id}
+            icon
+            onClick={() => handleCategoryClick(icon.id)}
+          >
             <ImgBox src={icon.iconUrl} size="sm" alt={icon.title} />
-            {icon.title}
-          </MyCategory>
+            <MyCategoryTitle>{icon.title}</MyCategoryTitle>
+          </Button>
         ))}
       </MyCategoryContainer>
     </MyCategoryModal>
@@ -85,7 +90,7 @@ const MyCategoryContainer = styled.div`
   gap: 20px 0;
 `;
 
-const MyCategory = styled(Button)`
+const MyCategoryTitle = styled.span`
   ${({ theme }) => theme.fonts.footnote};
 `;
 

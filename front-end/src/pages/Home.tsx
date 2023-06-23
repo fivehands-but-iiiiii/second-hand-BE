@@ -30,6 +30,7 @@ type HomePageInfo = Omit<HomeInfo, 'items'>;
 const Home = () => {
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [filterInfo, setFilterInfo] = useState<HomeFilterInfo>({
     sellerId: null,
     regionId: 1,
@@ -57,16 +58,16 @@ const Home = () => {
 
     return filterQuery;
   };
-  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+
   const handleCategoryModal = () => {
     setIsCategoryModalOpen((prev) => !prev);
   };
+
   const handleFilterCategory = (categoryId: number) => {
-    // TODO: 카테고리로 필터 기능 setState 하기
-    // setFilterInfo((prevFilterInfo) => ({
-    //   ...prevFilterInfo,
-    //   categoryId,
-    // }));
+    setFilterInfo((prevFilterInfo) => ({
+      ...prevFilterInfo,
+      categoryId,
+    }));
   };
 
   const fetchItems = async () => {
