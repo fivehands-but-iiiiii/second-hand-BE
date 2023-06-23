@@ -10,9 +10,6 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 100MB
-    session:
-      cookie:
-        domain: 3.37.51.148
   jpa:
     properties:
       hibernate:
