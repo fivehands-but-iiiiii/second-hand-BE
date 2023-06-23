@@ -11,12 +11,18 @@ interface SubTabBarProps {
   icon: keyof typeof iconTypes;
   content: string;
   children: ReactNode;
+  onIconClick?: () => void;
 }
 
-const SubTabBar = ({ icon, content, children }: SubTabBarProps) => (
+const SubTabBar = ({
+  icon,
+  content,
+  children,
+  onIconClick,
+}: SubTabBarProps) => (
   <TabBar>
     <MyTabBarIconButton icon>
-      <Icon name={icon} size="lg" />
+      <Icon name={icon} size="lg" onClick={onIconClick} />
       <span>{content}</span>
     </MyTabBarIconButton>
     <div>{children}</div>
