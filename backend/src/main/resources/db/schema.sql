@@ -76,6 +76,7 @@ CREATE TABLE IF NOT EXISTS `secondhand-db`.`item_counts`
     `hits`        BIGINT      NOT NULL,
     `like_counts` BIGINT NOT NULL,
     `chat_counts` BIGINT NOT NULL,
+    `isDelete`    TINYINT      NOT NULL,
     PRIMARY KEY (`id`)
 )
     ENGINE = InnoDB;
@@ -91,6 +92,7 @@ CREATE TABLE IF NOT EXISTS `secondhand-db`.`item_contents`
     `id`               BIGINT        NOT NULL AUTO_INCREMENT,
     `contents`         TEXT          NULL,
     `detail_image_url` TEXT          NULL,
+    `isDelete`         TINYINT      NOT NULL,
     PRIMARY KEY (`id`)
 )
     ENGINE = InnoDB;
@@ -115,6 +117,7 @@ CREATE TABLE IF NOT EXISTS `secondhand-db`.`item`
     `item_counts_id`   BIGINT       NOT NULL,
     `region_id`        BIGINT       NOT NULL,
     `item_contents_id` BIGINT       NOT NULL,
+    `isDelete`         TINYINT      NOT NULL,
     PRIMARY KEY (`id`),
     INDEX `fk_item_member_idx` (`seller_id` ASC) VISIBLE,
     INDEX `fk_item_item_image1_idx` (`item_counts_id` ASC) VISIBLE,
