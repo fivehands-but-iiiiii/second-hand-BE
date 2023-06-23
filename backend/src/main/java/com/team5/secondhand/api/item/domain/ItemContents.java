@@ -42,11 +42,7 @@ public class ItemContents {
         this.isDeleted = isDeleted;
     }
 
-    public static ItemContents createdRelated(String contents, List<ItemImage> itemImages) {
-        List<ItemDetailImage> images = itemImages.stream().map(ItemImage::toEntity)
-                .sorted(Comparator.comparing(ItemDetailImage::getOrder))
-                .collect(Collectors.toList());
-
+    public static ItemContents createdRelated(String contents, List<ItemDetailImage> images) {
         return ItemContents.builder()
                 .contents(contents)
                 .detailImageUrl(images)
