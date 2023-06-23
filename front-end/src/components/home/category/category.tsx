@@ -22,7 +22,6 @@ interface CategoryProps {
 
 const Category = ({ handleCategoryModal, onCategoryClick }: CategoryProps) => {
   const [categoryIcons, setCategoryIcons] = useState<Category[]>([]);
-  // TODO: Main Tabbar 안 보이게 하기
 
   const handleCategoryClick = (categoryId: number) => {
     onCategoryClick && onCategoryClick(categoryId);
@@ -74,6 +73,9 @@ const Category = ({ handleCategoryModal, onCategoryClick }: CategoryProps) => {
 const MyCategoryModal = styled.div`
   position: absolute;
   top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: ${({ theme }) => theme.colors.neutral.background};
 `;
 
 const MyCategoryCloseBtn = styled.button`
