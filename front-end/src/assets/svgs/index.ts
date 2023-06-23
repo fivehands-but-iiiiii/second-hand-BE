@@ -17,3 +17,5 @@ export { ReactComponent as search } from './search.svg';
 export { ReactComponent as x } from './x.svg';
 export { ReactComponent as fullHeart } from './fullHeart.svg';
 export { ReactComponent as carrot } from './carrot.svg';
+export { ReactComponent as selected } from './selected.svg';
+export { ReactComponent as unselected } from './unselected.svg';

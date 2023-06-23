@@ -1,9 +1,4 @@
-import {
-  useCallback,
-  useRef,
-  ComponentPropsWithRef,
-  KeyboardEvent,
-} from 'react';
+import { useRef, ComponentPropsWithRef, KeyboardEvent } from 'react';
 
 import Icon from '@assets/Icon';
 import * as iconTypes from '@assets/svgs/index';
@@ -13,40 +8,39 @@ import { styled } from 'styled-components';
 
 interface TextareaProps extends ComponentPropsWithRef<'textarea'> {
   value?: string;
-  type?: 'default' | 'adorned' | 'chat';
+  type?: 'default' | 'icon' | 'chat';
   singleLine?: boolean;
-  adorned?: keyof typeof iconTypes;
+  icon?: keyof typeof iconTypes;
 }
 
 const Textarea = ({
   value,
   type = 'default',
   singleLine = false,
-  adorned,
+  icon,
   ...rest
 }: TextareaProps) => {
   const textareaTypes = {
     default: MyDefaultTextarea,
-    adorned: MyAdornedTextarea,
+    icon: MyIconTextarea,
     chat: MyChatTextarea,
   };
   const MyTextarea = textareaTypes[type];
   const textRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleResizeHeight = useCallback(() => {
+  const handleResizeHeight = () => {
     if (!singleLine && textRef.current) {
       textRef.current.style.height = textRef.current.scrollHeight + 'px';
     }
-  }, []);
+  };
 
-  const preventNewLineOnEnter = useCallback(
-    (event: KeyboardEvent<HTMLTextAreaElement>) => {
-      if (singleLine && event.key === 'Enter') {
-        event.preventDefault();
-      }
-    },
-    [],
-  );
+  const handlePrevNewLineOnEnter = (
+    event: KeyboardEvent<HTMLTextAreaElement>,
+  ) => {
+    if (singleLine && event.key === 'Enter') {
+      event.preventDefault();
+    }
+  };
 
   return (
     <MyTextareaContainer>
@@ -55,13 +49,13 @@ const Textarea = ({
         value={value}
         singleLine={singleLine}
         onInput={handleResizeHeight}
-        onKeyDown={preventNewLineOnEnter}
+        onKeyDown={handlePrevNewLineOnEnter}
         {...rest}
       />
-      {adorned && (
-        <MyAdorned>
-          <Icon name={adorned} fill={palette.neutral.textWeak} />
-        </MyAdorned>
+      {icon && (
+        <MyIcon>
+          <Icon name={icon} fill={palette.neutral.textWeak} />
+        </MyIcon>
       )}
     </MyTextareaContainer>
   );
@@ -92,14 +86,14 @@ const MyDefaultTextarea = styled(MyTextarea)`
   padding: 15px;
 `;
 
-const MyAdornedTextarea = styled(MyTextarea)`
+const MyIconTextarea = styled(MyTextarea)`
   height: 36px;
   padding: 7px 32px;
   background-color: ${({ theme }) => theme.colors.system.backgroundWeak};
   border-radius: 10px;
 `;
 
-const MyAdorned = styled.div`
+const MyIcon = styled.div`
   position: absolute;
   margin: 7px;
   top: 0;

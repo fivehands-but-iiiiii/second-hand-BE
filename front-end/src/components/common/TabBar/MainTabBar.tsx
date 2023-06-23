@@ -1,11 +1,9 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
 import * as iconTypes from '@assets/svgs/index';
-import Button from '@common/Button';
-import palette from '@styles/colors';
 
-import { styled } from 'styled-components';
+import { css, styled } from 'styled-components';
 
 import TabBar from './TabBar';
 
@@ -20,12 +18,14 @@ interface MainTabBarProps {
   userId: number;
 }
 
-interface TabBarStyleProps {
-  tabColor: string;
+interface IconStyleProps {
+  name: keyof typeof iconTypes;
+  size?: string;
+  fill?: string;
+  isActive?: boolean;
 }
 
 const MainTabBar = ({ userId }: MainTabBarProps) => {
-  // TODO: 상수는 별도의 파일로 분리 예정
   const tabBarInfo: TabBarInfo[] = [
     { id: 1, icon: 'home', label: '홈화면', path: '/' },
     {
@@ -54,35 +54,53 @@ const MainTabBar = ({ userId }: MainTabBarProps) => {
     },
   ];
 
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
-  const tabColor = (isClicked: boolean) => {
-    return isClicked
-      ? `${palette.neutral.textStrong}`
-      : `${palette.neutral.textWeak}`;
-  };
-
   return (
     <MyTabBar>
-      {tabBarInfo.map(({ id, icon, label, path }) => {
-        const isClicked = pathname === path;
-        return (
-          <Button icon fullWidth key={id} onClick={() => navigate(path)}>
-            <Icon name={icon} size="md" fill={tabColor(isClicked)}></Icon>
-            <MyTabLabel tabColor={tabColor(isClicked)}>{label}</MyTabLabel>
-          </Button>
-        );
-      })}
+      {tabBarInfo.map(({ id, icon, label, path }) => (
+        <MyNavLink key={id} to={path}>
+          {({ isActive }) => (
+            <>
+              <MyIcon name={icon} size="md" isActive={isActive} />
+              <MyTabLabel>{label}</MyTabLabel>
+            </>
+          )}
+        </MyNavLink>
+      ))}
     </MyTabBar>
   );
 };
 
 const MyTabBar = styled(TabBar)`
-  padding: 11px 0 40px 0;
+  padding-top: 7px;
 `;
 
-const MyTabLabel = styled.span<TabBarStyleProps>`
-  color: ${({ tabColor }) => tabColor};
+const MyNavLink = styled(NavLink)`
+  min-width: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px;
+  color: ${({ theme }) => theme.colors.neutral.textWeak};
+  gap: 7px;
+
+  &.active {
+    color: ${({ theme }) => theme.colors.neutral.textStrong};
+  }
+`;
+
+const MyIcon = styled(Icon)<IconStyleProps>`
+  ${({ isActive, theme }) =>
+    isActive
+      ? css`
+          fill: ${theme.colors.neutral.textStrong};
+        `
+      : css`
+          fill: ${theme.colors.neutral.textWeak};
+        `}
+`;
+
+const MyTabLabel = styled.span`
+  color: inherit;
   font-size: 10px;
   font-weight: 510;
 `;

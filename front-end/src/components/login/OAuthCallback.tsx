@@ -4,7 +4,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { setStorageValue } from '@utils/sessionStorage';
 
 import api from '../../api';
-export interface UserInfo {
+
+interface UserGithubInfo {
   id: number;
   login: string;
   avatar_url: string;
@@ -20,14 +21,14 @@ const OAuthCallback = () => {
       try {
         const { data } = await api.get(`/git/login?code=${queryCode}`);
         if (data.status === 200) {
-          const userInfo: UserInfo = data.data;
+          const userInfo: UserGithubInfo = data.data;
           setStorageValue({ key: 'userInfo', value: userInfo });
           navigate('/');
         }
       } catch (error) {
         const { response } = error;
         if (response.status === 401) {
-          const gitUserInfo: UserInfo = response.data.body;
+          const gitUserInfo: UserGithubInfo = response.data.body;
           try {
             const { data } = await api.post('/login', {
               memberId: gitUserInfo.login,

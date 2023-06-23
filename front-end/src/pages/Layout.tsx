@@ -1,14 +1,25 @@
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import MainTabBar from '@common/TabBar/MainTabBar';
 
 import { styled } from 'styled-components';
 
+export interface OutletContext {
+  handleMainTabBar: (status: boolean) => void;
+}
+
 const MobileLayout = () => {
+  const [isMainTabBarOpen, setIsMainTabBarOpen] = useState(true);
+
+  const handleMainTabBar = (status: boolean) => {
+    setIsMainTabBarOpen(status);
+  };
+
   return (
     <MyMobileLayout>
-      <Outlet />
-      <MainTabBar userId={1} />
+      <Outlet context={handleMainTabBar} />
+      {isMainTabBarOpen && <MainTabBar userId={1} />}
     </MyMobileLayout>
   );
 };

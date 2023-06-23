@@ -3,7 +3,7 @@ import Button from '@common/Button';
 import { styled, css } from 'styled-components';
 
 interface MenuItem {
-  id: string;
+  id: string | number;
   title: string;
   style?: string;
   onClick: () => void;

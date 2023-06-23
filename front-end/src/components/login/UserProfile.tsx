@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 
-import FileInput from '@common/FileInput';
-
 import { styled } from 'styled-components';
+
 interface UserProfileProps {
   profileImgUrl?: string;
   memberId?: string;

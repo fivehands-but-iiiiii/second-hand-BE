@@ -1,18 +1,27 @@
 import Icon from '@assets/Icon';
 import Chip from '@common/Chip';
+import { ItemStatus } from '@components/ItemStatus';
 import { formatNumberToSI } from '@utils/formatNumberToSI';
 
 import { styled } from 'styled-components';
 
 import ImgBox from '../ImgBox';
 
+export interface Region {
+  id: number;
+  city: string;
+  county: string;
+  district: string;
+}
+
 export interface SaleItem {
   id: number;
   title: string;
   price: number;
   thumbnailUrl: string;
-  status: 'onSale' | 'reservation' | 'soldOut';
+  status: ItemStatus;
   createdAt: string;
+  region: Region;
   hits: number;
   chatCount: number;
   likeCount: number;
@@ -36,12 +45,12 @@ const Item = ({ item, onHistoryPage = false }: ItemProps) => {
     likeCount,
     isLike,
   } = item;
-  const hasChip = status !== 'onSale';
-  const formattedPrice = price.toLocaleString();
+  const hasChip = status !== ItemStatus.ON_SALE;
+  const formattedPrice = price ? `${price.toLocaleString()}원` : '가격없음';
 
   return (
     <MyItem onClick={() => console.log(`move to item/${id}`)}>
-      <ImgBox src={thumbnailUrl} />
+      <ImgBox src={thumbnailUrl} alt={title} />
       <MyItemInfo>
         <MyItemTitle>
           <div>{title}</div>
@@ -55,7 +64,7 @@ const Item = ({ item, onHistoryPage = false }: ItemProps) => {
         </MyItemTime>
         <MyItemStatus>
           {hasChip && <Chip status={status} />}
-          <div>{formattedPrice}원</div>
+          <div>{formattedPrice}</div>
         </MyItemStatus>
         <MyItemSubInfo>
           {!!chatCount && (
@@ -66,8 +75,7 @@ const Item = ({ item, onHistoryPage = false }: ItemProps) => {
           )}
           {!!likeCount && (
             <MyItemIcon>
-              {/* TODO: when icon's like value is false add black icon*/}
-              {isLike ? '' : <Icon name="heart" size="sm" />}
+              {<Icon name={isLike ? 'fullHeart' : 'heart'} size="sm" />}
               {formatNumberToSI(likeCount)}
             </MyItemIcon>
           )}

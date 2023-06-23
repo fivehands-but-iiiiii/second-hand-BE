@@ -3,12 +3,17 @@ import palette from '@styles/colors';
 // TODO: 페이지별에서 onClick 함수 다르게 설정하기
 export const DETAIL_STATUS_MENU = [
   {
-    id: 'reservation',
-    title: '예약중 상태로 전환',
-    style: `color: ${palette.neutral.text}; `,
+    id: 0,
+    title: '판매중 상태로 전환',
+    style: `color: ${palette.neutral.text};`,
   },
   {
-    id: 'soldOut',
+    id: 1,
+    title: '예약중 상태로 전환',
+    style: `color: ${palette.neutral.text};`,
+  },
+  {
+    id: 2,
     title: '판매 완료 상태로 전환',
     style: `color: ${palette.neutral.text}`,
   },
