@@ -7,6 +7,13 @@ import { styled } from 'styled-components';
 
 import ImgBox from '../ImgBox';
 
+export interface Region {
+  id: number;
+  city: string;
+  county: string;
+  district: string;
+}
+
 export interface SaleItem {
   id: number;
   title: string;
@@ -14,6 +21,7 @@ export interface SaleItem {
   thumbnailUrl: string;
   status: ItemStatus;
   createdAt: string;
+  region: Region;
   hits: number;
   chatCount: number;
   likeCount: number;
