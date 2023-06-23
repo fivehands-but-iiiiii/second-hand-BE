@@ -52,22 +52,22 @@ const Home = () => {
     const filterQuery = `?page=${homePageInfo.page}${sellerQuery}&regionId=${regionId}&isSales=${isSales}${categoryQuery}`;
 
     return filterQuery;
-}
+  };
 
   const fetchItems = async () => {
-    if(!homePageInfo.hasNext) return
-    
-    const filterQuery = createFilterQuery()
+    if (!homePageInfo.hasNext) return;
+
+    const filterQuery = createFilterQuery();
 
     try {
       setIsLoading(true);
 
       const { data } = await api.get(`items/${filterQuery}`);
-      
+
       setSaleItems((prevItems) => {
-        const newSet = new Set(prevItems)
-        data.items.forEach((item: SaleItem) => newSet.add(item))
-        return [...newSet]
+        const newSet = new Set(prevItems);
+        data.items.forEach((item: SaleItem) => newSet.add(item));
+        return [...newSet];
       });
       setHomePageInfo({
         page: data.number,
@@ -83,7 +83,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchItems();
-  }, [filterInfo])
+  }, [filterInfo]);
 
   return (
     <>

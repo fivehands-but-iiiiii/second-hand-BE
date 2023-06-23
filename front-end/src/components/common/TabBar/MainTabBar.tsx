@@ -38,13 +38,13 @@ const MainTabBar = ({ userId }: MainTabBarProps) => {
       id: 3,
       icon: 'heart',
       label: '관심목록',
-      path: '/wishlist',
+      path: '/wishList',
     },
     {
       id: 4,
       icon: 'message',
       label: '채팅',
-      path: '/messages',
+      path: `chatList/${userId}`,
     },
     {
       id: 5,

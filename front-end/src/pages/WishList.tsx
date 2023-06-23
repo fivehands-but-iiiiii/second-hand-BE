@@ -10,6 +10,7 @@ import { styled } from 'styled-components';
 import api from '../api';
 
 const WishList = () => {
+  const title = '관심 목록';
   const [wishItems, setWishItems] = useState<SaleItem[]>([]);
   const [categories, setCategories] = useState([{ id: 0, title: '전체' }]);
   const [currentCategoryId, setCurrentCategoryId] = useState(0);
@@ -47,7 +48,7 @@ const WishList = () => {
 
   return (
     <>
-      <NavBar center={'관심 목록'} />
+      <NavBar center={title} />
       <MyWishList>
         <MyCategories>
           {categories.map(({ id, title }) => {

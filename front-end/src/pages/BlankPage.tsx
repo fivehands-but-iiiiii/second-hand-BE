@@ -19,6 +19,7 @@ const MyBlankPage = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  height: calc(90vh - 83px);
   color: ${({ theme }) => theme.colors.neutral.textWeak};
 `;
 

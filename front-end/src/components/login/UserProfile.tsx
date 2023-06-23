@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 
+import FileInput from '@common/FileInput/FileInput';
+
 import { styled } from 'styled-components';
 
 interface UserProfileProps {
