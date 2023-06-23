@@ -4,6 +4,7 @@ import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
 import com.team5.secondhand.api.item.dto.request.ItemImage;
 import com.team5.secondhand.api.item.dto.request.ItemPost;
+import com.team5.secondhand.api.item.dto.request.ItemStatusUpdate;
 import com.team5.secondhand.api.item.dto.response.ItemDetail;
 import com.team5.secondhand.api.item.dto.response.ItemList;
 import com.team5.secondhand.api.item.exception.ExistItemException;
@@ -110,5 +111,17 @@ public class ItemController {
         ItemDetail item = itemService.getItem(id, loginMember.getId());
 
         return GenericResponse.send("상품 상세정보를 볼 수 있습니다.", item);
+    }
+
+
+    @Operation(
+            summary = "상품 상태 수정",
+            tags = "Items",
+            description = "판매자는 상품 판매 상태만 별도로 수정할 수 있다."
+    )
+    @PatchMapping("/{id}/status")
+    public GenericResponse<Boolean> getItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemStatusUpdate request) {
+        boolean result = itemService.updateItemStatus(id, request.getStatus());
+        return GenericResponse.send("상품 상세정보를 볼 수 있습니다.", result);
     }
 }
