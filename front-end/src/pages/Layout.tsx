@@ -20,7 +20,7 @@ const MobileLayout = () => {
   return (
     <MyMobileLayout>
       <Outlet context={handleMainTabBar} />
-      {isMainTabBarOpen && <MainTabBar userId={userId.id} />}
+      {isMainTabBarOpen && <MainTabBar userId={userId?.id} />}
     </MyMobileLayout>
   );
 };
