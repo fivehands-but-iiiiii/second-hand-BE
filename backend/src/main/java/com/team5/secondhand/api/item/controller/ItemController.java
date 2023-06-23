@@ -91,12 +91,12 @@ public class ItemController {
             description = "사용자는 상품 정보를 수정할 수 있다."
     )
     @PutMapping("/{id}")
-    public GenericResponse<Long> updateItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemPost itemPost) throws ExistMemberIdException, NotValidRegionException, ExistItemException, ExistItemException {
+    public GenericResponse<Long> updateItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemPostWithUrl itemPost) throws ExistMemberIdException, NotValidRegionException, ExistItemException, ExistItemException {
         //의문: seller, region이 기존이랑 달라져도 되나?
         Member seller = memberService.findByid(loginMember.getId());
         Region region = getValidRegions.getRegion(itemPost.getRegion());
         //TODO: order 1 썸네일 이미지 서비스
-        String thumbanilUrl = itemPost.getImages().stream().filter(i -> i.getOrder() == 1).map(ItemImage::getUrl).toString();
+        String thumbanilUrl = itemPost.getImages().get(0).getUrl();
         itemService.updateItem(id, itemPost, thumbanilUrl);
 
         return GenericResponse.send("상품 수정이 완료되었습니다.", id);
