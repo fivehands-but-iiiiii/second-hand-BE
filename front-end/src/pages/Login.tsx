@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useId } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID;
 const REDIRECT_URL = import.meta.env.VITE_REDIRECT_URL;
 import Button from '@common/Button';
 import NavBar from '@common/NavBar';
-import IdInput from '@components/login/IdInput';
+import LabelInput from '@components/common/LabelInput';
 import LoginButtons from '@components/login/LoginButtons';
 import UserProfile from '@components/login/UserProfile';
+import useAPI from '@hooks/useAPI';
 import {
   setStorageValue,
   getStoredValue,
@@ -16,45 +17,58 @@ import {
 
 import { styled } from 'styled-components';
 
-import api from '../api';
-
 const Login = () => {
   const navigate = useNavigate();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [isLogin, setIsLogin] = useState(false);
   const [userId, setUserId] = useState('');
   const [validIdInfo, setValidIdInfo] = useState('');
   const storedUserInfo = getStoredValue({ key: 'userInfo' });
   const OAUTH_URL = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_url=${REDIRECT_URL}`;
 
-  const handleUserInput = (userId: string) => {
-    setUserId(userId);
+  const { response, error, request } = useAPI({
+    url: '/login',
+    method: 'post',
+    config: {
+      data: {
+        memberId: userId,
+      },
+    },
+  });
+
+  const handleLogin = () => {
+    inputRef.current && setUserId(inputRef.current.value);
   };
 
   const handleLogout = () => {
     setIsLogin(false);
     removeStorageValue({ key: 'userInfo' });
-    location.reload();
   };
 
-  const handleUserIdLogin = async () => {
-    try {
-      const { data } = await api.post('/login', {
-        memberId: userId,
-      });
-      setStorageValue({ key: 'userInfo', value: data.data });
-      navigate('/');
-    } catch (error) {
-      const { response } = error;
-      if (response.status === 401) {
-        setValidIdInfo(response.data.message);
-      }
-    }
-  };
-
-  // TODO: 페이지 이동 아닌 Portal 띄우기로 변경
   const handleCreateAccount = () => {
-    navigate('/Join');
+    navigate('/join');
   };
+
+  const handleInputChage = ({ target }: { target: HTMLInputElement }) => {
+    !target.value && setValidIdInfo('');
+  };
+
+  useEffect(() => {
+    if (userId) {
+      if (userId.length < 6 || userId.length > 12) {
+        setValidIdInfo('6~12자 이내로 입력하세요');
+      } else request();
+    } else setValidIdInfo('');
+  }, [userId]);
+
+  useEffect(() => {
+    if (response) {
+      setStorageValue({ key: 'userInfo', value: response.data });
+      navigate('/');
+    } else if (error) {
+      if (userId) setValidIdInfo(error.message);
+    }
+  }, [response, error]);
 
   useEffect(() => {
     setIsLogin(!!storedUserInfo);
@@ -70,9 +84,13 @@ const Login = () => {
           </>
         ) : (
           <>
-            <IdInput
-              validIdInfo={validIdInfo}
-              handleUserInput={handleUserInput}
+            <LabelInput
+              label={'아이디'}
+              type={'text'}
+              maxLength={12}
+              subText={validIdInfo}
+              ref={inputRef}
+              onChange={handleInputChage}
             />
           </>
         )}
@@ -84,7 +102,7 @@ const Login = () => {
           ) : (
             <>
               <LoginButtons
-                {...{ OAUTH_URL, handleUserIdLogin, handleCreateAccount }}
+                {...{ OAUTH_URL, handleLogin, handleCreateAccount }}
               />
             </>
           )}
@@ -98,15 +116,15 @@ const MyLogin = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 5vh 2.7vw;
-  height: 80vh;
+  padding: 1vh 2.7vw;
+  height: calc(90vh - 83px);
 `;
 
 const MyButtons = styled.div`
   display: flex;
   flex-direction: column;
   height: 170px;
-  gap: 7px;
+  gap: 10px;
 `;
 
 export default Login;
