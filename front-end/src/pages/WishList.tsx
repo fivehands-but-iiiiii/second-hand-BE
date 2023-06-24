@@ -8,46 +8,45 @@ import ItemList from '@components/home/ItemList/ItemList';
 import { styled } from 'styled-components';
 
 import api from '../api';
-
+// TODO: wishList api 연결
 const WishList = () => {
+  const title = '관심 목록';
   const [wishItems, setWishItems] = useState<SaleItem[]>([]);
   const [categories, setCategories] = useState([{ id: 0, title: '전체' }]);
   const [currentCategoryId, setCurrentCategoryId] = useState(0);
 
-  const getWishList = async () => {
-    try {
-      // const { data } = await api.get('/wishlist');
-      // TODO: 위시목록 데이터 나오면 path 수정
-      const { data } = await api.get('/items?page=1&region=1');
-
-      setWishItems(data.items);
-      data.categories && setCategories([...categories, data.categories]);
-    } catch (error) {
-      console.error(`Failed to get wishList: ${error}`);
-    }
-  };
+  // const getWishList = async () => {
+  //   try {
+  // const { data } = await api.get('/wishlist');
+  // TODO: 위시목록 데이터 나오면 path 수정
+  // setWishItems(data.items);
+  // data.categories && setCategories([...categories, data.categories]);
+  //   } catch (error) {
+  //     console.error(`Failed to get wishList: ${error}`);
+  //   }
+  // };
 
   const handleFilterCategories = (categoryId: number) => {
     setCurrentCategoryId(categoryId);
-    getFilteredItems();
+    // getFilteredItems();
   };
 
-  const getFilteredItems = async () => {
-    try {
-      const { data } = await api.get(`/wishlist?category=${currentCategoryId}`);
-      setWishItems(data?.items);
-    } catch (error) {
-      console.error(`Failed to filter categories: ${error}`);
-    }
-  };
+  // const getFilteredItems = async () => {
+  //   try {
+  //     const { data } = await api.get(`/wishlist?category=${currentCategoryId}`);
+  //     setWishItems(data?.items);
+  //   } catch (error) {
+  //     console.error(`Failed to filter categories: ${error}`);
+  //   }
+  // };
 
   useEffect(() => {
-    getWishList();
+    // getWishList();
   }, []);
 
   return (
     <>
-      <NavBar center={'관심 목록'} />
+      <NavBar center={title} />
       <MyWishList>
         <MyCategories>
           {categories.map(({ id, title }) => {

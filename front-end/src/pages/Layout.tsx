@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import MainTabBar from '@common/TabBar/MainTabBar';
+import { getStoredValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
 
@@ -11,7 +12,7 @@ export interface OutletContext {
 
 const MobileLayout = () => {
   const [isMainTabBarOpen, setIsMainTabBarOpen] = useState(true);
-
+  const userId = getStoredValue({ key: 'userInfo' });
   const handleMainTabBar = (status: boolean) => {
     setIsMainTabBarOpen(status);
   };
@@ -19,7 +20,7 @@ const MobileLayout = () => {
   return (
     <MyMobileLayout>
       <Outlet context={handleMainTabBar} />
-      {isMainTabBarOpen && <MainTabBar userId={1} />}
+      {isMainTabBarOpen && <MainTabBar userId={userId?.id} />}
     </MyMobileLayout>
   );
 };
@@ -27,6 +28,7 @@ const MobileLayout = () => {
 const MyMobileLayout = styled.div`
   width: 100vw;
   height: 100vh;
+  min-width: 400px;
   background-color: #fff;
   text-align: center;
   overflow: auto;
