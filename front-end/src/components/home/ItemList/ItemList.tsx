@@ -2,17 +2,19 @@ import Item, { SaleItem } from '@common/Item';
 
 import { styled } from 'styled-components';
 
-interface SaleItems {
+interface ItemListProps {
   saleItems: SaleItem[];
 }
 
-const ItemList = ({ saleItems }: SaleItems) => {
+const ItemList = ({ saleItems }: ItemListProps) => {
   return (
-    <MyItemList>
-      {saleItems.map((item) => (
-        <Item key={item.id} item={item}></Item>
-      ))}
-    </MyItemList>
+    <>
+      <MyItemList>
+        {saleItems.map((item) => (
+          <Item key={item.id} item={item}></Item>
+        ))}
+      </MyItemList>
+    </>
   );
 };
 
