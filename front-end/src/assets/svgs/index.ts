@@ -19,3 +19,4 @@ export { ReactComponent as fullHeart } from './fullHeart.svg';
 export { ReactComponent as carrot } from './carrot.svg';
 export { ReactComponent as selected } from './selected.svg';
 export { ReactComponent as unselected } from './unselected.svg';
+export { ReactComponent as chevronRight } from './chevronRight.svg';
