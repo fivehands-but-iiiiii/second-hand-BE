@@ -12,10 +12,10 @@ import { styled } from 'styled-components';
 
 import api from '../../api';
 
-import { gitHubUserInfoProps } from './OAuthCallback';
+import { gitHubUserInfo } from './OAuthCallback';
 import UserProfile from './UserProfile';
 
-export interface userInfoProps {
+export interface userInfo {
   memberId: string;
   profileImgUrl: string | null;
   regions: {
@@ -24,22 +24,22 @@ export interface userInfoProps {
   }[];
 }
 
-export interface InputFileProps {
+export interface InputFile {
   preview: string;
-  file: File;
+  file?: File;
 }
 // TODO: 지역 선택 안됐을때 선택하라는 알람띄우기
 const Join = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [gitHubUserInfo, setGitHubUserInfo] = useState<gitHubUserInfoProps>(
+  const [gitHubUserInfo, setGitHubUserInfo] = useState<gitHubUserInfo>(
     location.state,
   );
   const [userInputId, setUserInputId] = useState('');
   const [validationMessage, setValidationMessage] = useState('');
-  const [files, setFiles] = useState<InputFileProps>();
+  const [files, setFiles] = useState<InputFile>();
   const [regionId, setRegionId] = useState(1);
-  const [userAccount, setUserAccount] = useState<userInfoProps>({
+  const [userAccount, setUserAccount] = useState<userInfo>({
     memberId: gitHubUserInfo?.login,
     profileImgUrl: gitHubUserInfo?.avatar_url,
     regions: [
@@ -89,7 +89,7 @@ const Join = () => {
     }
   };
 
-  const handleProfile = (file: InputFileProps) => {
+  const handleProfile = (file: InputFile) => {
     setFiles({
       preview: file.preview,
       file: file.file,

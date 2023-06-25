@@ -71,7 +71,7 @@ const MyPopupBackground = styled.div`
   z-index: 1;
   top: 50%;
   left: 50%;
-  width: 393px;
+  width: 100%;
   height: 100%;
   background-color: ${({ theme }) => theme.colors.neutral.overlay};
   opacity: 0.5;

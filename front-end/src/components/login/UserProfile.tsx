@@ -5,12 +5,12 @@ import { getPreviewURL } from '@utils/getConvertedFile';
 
 import { styled } from 'styled-components';
 
-import { InputFileProps } from './Join';
+import { InputFile } from './Join';
 
 interface UserProfileProps {
   profileImgUrl?: string;
   memberId?: string;
-  onChange?: (file: InputFileProps) => void;
+  onChange?: (file: InputFile) => void;
 }
 // TODO: 등록된 이미지 없는 유저일 경우 이미지 변경 가능 버튼 생성하고, PATCH 요청
 const UserProfile = ({
@@ -27,12 +27,13 @@ const UserProfile = ({
     if (!file) return;
     const newPreviewURL = await getPreviewURL(file);
     newPreviewURL && setPreviewURL(newPreviewURL);
-    const newFormData: InputFileProps = {
+    const newFormData: InputFile = {
       preview: newPreviewURL,
       file: file,
     };
     onChange && onChange(newFormData);
   };
+
   return (
     <MyUserProfile>
       {profileImgUrl ? (

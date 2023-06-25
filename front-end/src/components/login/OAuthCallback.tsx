@@ -6,7 +6,7 @@ import { AxiosError } from 'axios';
 
 import api from '../../api';
 
-export interface gitHubUserInfoProps {
+export interface gitHubUserInfo {
   id: number;
   login: string;
   avatar_url: string;
@@ -24,8 +24,7 @@ const OAuthCallback = () => {
       } catch (error) {
         if (error instanceof AxiosError) {
           if (error.response?.status === 401) {
-            const gitHubUserInfo: gitHubUserInfoProps =
-              error.response.data.body;
+            const gitHubUserInfo: gitHubUserInfo = error.response.data.body;
             try {
               const { data } = await api.post('/login', {
                 memberId: gitHubUserInfo.login,

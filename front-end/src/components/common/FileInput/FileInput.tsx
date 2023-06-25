@@ -10,7 +10,7 @@ interface FileInputProps {
   onChage: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const FileInput2 = ({ fileCount, onChage }: FileInputProps) => {
+const FileInput = ({ fileCount, onChage }: FileInputProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const handleInputFile = () => {
     fileInputRef.current?.click();
@@ -59,4 +59,4 @@ const MyFileButton = styled(Button)`
   }
 `;
 
-export default FileInput2;
+export default FileInput;
