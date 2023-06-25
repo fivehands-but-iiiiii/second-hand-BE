@@ -21,7 +21,7 @@ const LabelInput = forwardRef<HTMLInputElement, LabelInputProps>(
             {...rest}
           />
         </MyLabelInput>
-        {subText && <MySubTextInfo>{subText}</MySubTextInfo>}
+        {subText && <MySubText>{subText}</MySubText>}
       </MyLabelInputBox>
     );
   },
@@ -50,7 +50,7 @@ const MyLabelInput = styled.div`
   }
 `;
 
-const MySubTextInfo = styled.p`
+const MySubText = styled.p`
   margin: 3px 0;
   color: ${({ theme }) => theme.colors.accent.backgroundPrimary};
   ${({ theme }) => theme.fonts.caption2};

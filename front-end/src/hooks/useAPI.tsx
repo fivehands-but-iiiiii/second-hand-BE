@@ -11,12 +11,12 @@ interface APIProps {
   config?: AxiosRequestConfig;
 }
 
-const useAPI = ({ url, method, config }: APIProps) => {
+const useAPI = () => {
   const [response, setResponse] = useState<AxiosResponse>();
   const [error, setError] = useState<AxiosError>();
   const [loading, setLoading] = useState(false);
 
-  const request = async () => {
+  const request = async ({ url, method, config }: APIProps) => {
     setLoading(true);
     try {
       const requestConfig = {
@@ -24,13 +24,18 @@ const useAPI = ({ url, method, config }: APIProps) => {
         method,
         ...config,
       };
-      const res: AxiosResponse = await api(requestConfig);
-      setResponse(res.data);
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        if (err.response?.status === 401) {
-          setError(err.response.data || '알 수 없는 에러가 발생했습니다.');
-        } else setError(err);
+      const { data }: AxiosResponse = await api(requestConfig);
+      setResponse(data);
+      return data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 401) {
+          setError(error.response.data);
+        } else if (error.response?.status === 409) {
+          setError(error.response.data);
+        } else {
+          setError(error.response?.data || '알 수 없는 에러가 발생했습니다.');
+        }
       }
     } finally {
       setLoading(false);

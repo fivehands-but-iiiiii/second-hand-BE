@@ -24,6 +24,7 @@ const NavBar = ({ left, center, right, className, children }: NavBarProps) => {
 };
 
 const MyNavBar = styled.div`
+  min-height: 70px;
   position: sticky;
   top: 0;
   background-color: ${({ theme }) => theme.colors.neutral.backgroundBlur};

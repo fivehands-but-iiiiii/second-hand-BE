@@ -1,103 +1,132 @@
-import { useState, useEffect } from 'react';
+import { useState, ChangeEvent, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
 import Button from '@common/Button';
+import LabelInput from '@common/LabelInput/LabelInput';
 import NavBar from '@common/NavBar';
-import { setStorageValue } from '@utils/sessionStorage';
+import useJoin from '@hooks/useJoin';
+import { getFormattedId } from '@utils/formatText';
 
 import { styled } from 'styled-components';
 
 import api from '../../api';
 
-import IdInput from './IdInput';
-import { UserInfo } from './OAuthCallback';
+import { UserGithubInfo } from './OAuthCallback';
 import UserProfile from './UserProfile';
 
+export interface userInfoProps {
+  memberId: string;
+  profileImgUrl: string | null;
+  regions: {
+    id: number;
+    onFocus: boolean;
+  }[];
+}
+
+export interface InputFileProps {
+  preview: string;
+  file: File;
+}
+// TODO: 지역 선택 안됐을때 선택하라는 알람띄우기
 const Join = () => {
   const navigate = useNavigate();
-  const OAuthInfo = useLocation();
-  const [userInfo, setUserInfo] = useState<UserInfo | undefined>(
-    OAuthInfo.state,
+  const location = useLocation();
+  const [gitHubUserInfo, setGitHubUserInfo] = useState<UserGithubInfo>(
+    location.state,
   );
-  const [uploadImgPath, setUploadImgPath] = useState<FormData | undefined>(
-    undefined,
-  );
-  const [validIdInfo, setValidIdInfo] = useState('');
-  const [inputId, setInputId] = useState('');
-  const [userAccount, setUserAccount] = useState({
-    memberId: userInfo?.login,
-    profileImgUrl: userInfo?.avatar_url || null,
+  const [userInputId, setUserInputId] = useState('');
+  const [validationMessage, setValidationMessage] = useState('');
+  const [files, setFiles] = useState<InputFileProps>();
+  const [regionId, setRegionId] = useState(1);
+  const [userAccount, setUserAccount] = useState<userInfoProps>({
+    memberId: gitHubUserInfo?.login,
+    profileImgUrl: gitHubUserInfo?.avatar_url,
     regions: [
       {
-        id: 2,
+        id: regionId,
         onFocus: true,
       },
     ],
   });
+  const [isReadyToSubmit, setIsReadyToSubmit] = useState(false);
+  const [idExists, setIdExists] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const { join } = useJoin();
 
-  const validateUserId = async (value: string) => {
-    if (value.length && (value.length < 5 || value.length > 12)) {
-      setValidIdInfo('5~12자 이내로 입력하세요');
-    } else if (value.length >= 5 && value.length <= 12) {
-      const isMemberIdAvailable = await checkUserIdAvailability();
-      setValidIdInfo(
-        isMemberIdAvailable
-          ? '이미 사용중인 아이디예요'
-          : '사용 가능한 아이디예요',
-      );
-    } else setValidIdInfo('');
+  const handleInputChange = async ({
+    target,
+  }: ChangeEvent<HTMLInputElement>) => {
+    const { value } = target;
+    const regExp = /[^0-9a-z]/;
+    if (regExp.test(value)) {
+      setValidationMessage('영문 소문자와 숫자만 입력하세요');
+      return;
+    }
+    const inputValue = value;
+    const formattedId = getFormattedId(inputValue);
+    const formattedValue = formattedId !== undefined ? formattedId : inputValue;
+    setUserInputId(formattedValue);
+    if (value.length < 6) return;
+    validateThrottling(value);
   };
 
-  const checkUserIdAvailability = async () => {
+  const validateThrottling = (value: string) => {
+    clearTimeout(timerRef.current);
+    const timerId = setTimeout(async () => {
+      const idExists = await checkUserIdAvailability(value);
+      setIdExists(idExists);
+    }, 500);
+    timerRef.current = timerId;
+  };
+
+  const checkUserIdAvailability = async (value: string) => {
     try {
-      const { data } = await api.get(`/join/availability?memberId=${inputId}`);
+      const { data } = await api.get(`/join/availability?memberId=${value}`);
       return data.data;
     } catch (error) {
-      console.error('유저 아이디 중복 체크 에러', error);
+      return false;
     }
   };
 
-  // TODO: 전송조건 : 위치를 무조건 1개 이상 선택 해야함
-  const handlePostUserInfo = async () => {
+  const handleProfile = (file: InputFileProps) => {
+    setFiles({
+      preview: file.preview,
+      file: file.file,
+    });
+  };
+
+  const handlePostUserAccount = async () => {
     try {
-      const { status, data } = await api.post('/join', userAccount);
-      if (status === 200) {
-        setStorageValue({
-          key: 'userInfo',
-          value: {
-            id: data.data,
-            memberId: userAccount.memberId,
-            profileImgUrl: userAccount.profileImgUrl,
-            regin: userAccount.regions,
+      const response = await join({ files, account: userAccount });
+      if (response.success) {
+        navigate('/login', {
+          state: {
+            memberId: userInputId,
+            validationMessage: '회원가입이 완료되었어요! 로그인을 진행하세요',
           },
         });
-        navigate('/');
       }
     } catch (error) {
-      const { response } = error;
-      if (response.status === 409) {
-        console.log(response.data.message);
-      } else if (response.status === 400) {
-        console.log(response.data.message);
-      } else console.log(error);
+      setValidationMessage('회원가입에 실패했어요');
+      console.error('회원가입 실패', error);
     }
-  };
-
-  const handleUploadImg = (filePath: FormData | undefined) => {
-    if (!filePath) return;
-    setUploadImgPath(filePath);
-  };
-
-  const handleInputChange = (value: string) => {
-    validateUserId(value);
-    setInputId(value);
-    setUserAccount({ ...userAccount, memberId: value });
   };
 
   useEffect(() => {
-    validateUserId(inputId);
-  }, [inputId]);
+    if (userInputId.length < 3) {
+      setValidationMessage('');
+    } else if (userInputId.length >= 3 && userInputId.length < 6) {
+      setValidationMessage('6~12자 이내로 입력하세요');
+    } else if (idExists) {
+      setValidationMessage('이미 사용중인 아이디예요');
+      setIsReadyToSubmit(false);
+    } else {
+      setValidationMessage('사용 가능한 아이디예요');
+      setIsReadyToSubmit(true);
+      setUserAccount({ ...userAccount, memberId: userInputId });
+    }
+  }, [userInputId, idExists]);
 
   return (
     <MyBack>
@@ -105,7 +134,11 @@ const Join = () => {
         left={<button onClick={() => navigate('/login')}>닫기</button>}
         center={'회원가입'}
         right={
-          <button type="submit" onClick={handlePostUserInfo}>
+          <button
+            disabled={!isReadyToSubmit}
+            type="submit"
+            onClick={handlePostUserAccount}
+          >
             완료
           </button>
         }
@@ -113,18 +146,20 @@ const Join = () => {
       <MyJoin>
         <MyUserInfo>
           <UserProfile
-            profileImgUrl={userInfo?.avatar_url}
-            memberId={userInfo?.login}
-            handleUploadImg={handleUploadImg}
+            profileImgUrl={gitHubUserInfo?.avatar_url}
+            memberId={gitHubUserInfo?.login}
+            onChange={handleProfile}
           />
-          {!!userInfo || (
-            <IdInput
-              validIdInfo={validIdInfo}
-              handleUserInput={handleInputChange}
+          {!!gitHubUserInfo || (
+            <LabelInput
+              label={'아이디'}
+              subText={validationMessage}
+              maxLength={12}
+              value={userInputId}
+              onChange={handleInputChange}
             />
           )}
         </MyUserInfo>
-        {/* TODO: 위치 추가 */}
         <Button fullWidth>
           <Icon name={'plus'} />
           위치추가
@@ -134,17 +169,17 @@ const Join = () => {
   );
 };
 
-// TODO: Portal 생성하게 되면 빼야될 수 있음
 const MyBack = styled.div`
   background-color: white;
 `;
 
 const MyUserInfo = styled.div`
   height: 200px;
+  margin-bottom: 20px;
 `;
 
 const MyJoin = styled.div`
-  height: 100vh;
+  height: 90vh;
   padding: 5vh 2.7vw;
 `;
 

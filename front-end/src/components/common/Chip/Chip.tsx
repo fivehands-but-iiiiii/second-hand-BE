@@ -1,5 +1,3 @@
-import { ComponentType } from 'react';
-
 import { ItemStatus } from '@components/ItemStatus';
 
 import { styled } from 'styled-components';
@@ -24,7 +22,7 @@ const Chip = ({ status }: ChipProps) => {
   return <MyChip>{chipTypes[status].text}</MyChip>;
 };
 
-const MyChip = styled.div<ComponentType>`
+const MyChip = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
