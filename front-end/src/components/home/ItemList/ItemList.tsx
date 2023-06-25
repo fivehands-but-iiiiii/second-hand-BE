@@ -19,9 +19,8 @@ const ItemList = ({ saleItems }: ItemListProps) => {
 };
 
 const MyItemList = styled.div`
-  /* TODO: 마지막 아이템 border: none 적용시키기 (아래 코드 작동 안 함) */
-  &:last-child {
-    border: none;
+  > div:not(:last-child) {
+    border-bottom: 1px solid ${({ theme }) => theme.colors.neutral.border};
   }
 `;
 export default ItemList;

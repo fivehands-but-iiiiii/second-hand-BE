@@ -1,6 +1,5 @@
 import palette from '@styles/colors';
 
-// TODO: 페이지별에서 onClick 함수 다르게 설정하기
 export const DETAIL_STATUS_MENU = [
   {
     id: 0,

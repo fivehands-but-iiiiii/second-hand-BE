@@ -93,7 +93,6 @@ const MyItem = styled.div`
   gap: 0 15px;
   color: ${({ theme }) => theme.colors.neutral.text};
   ${({ theme }) => theme.fonts.subhead}
-  border-top: 1px solid ${({ theme }) => theme.colors.neutral.border};
   cursor: pointer;
 `;
 
