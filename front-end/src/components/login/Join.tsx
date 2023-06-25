@@ -12,7 +12,7 @@ import { styled } from 'styled-components';
 
 import api from '../../api';
 
-import { UserGithubInfo } from './OAuthCallback';
+import { gitHubUserInfoProps } from './OAuthCallback';
 import UserProfile from './UserProfile';
 
 export interface userInfoProps {
@@ -32,7 +32,7 @@ export interface InputFileProps {
 const Join = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [gitHubUserInfo, setGitHubUserInfo] = useState<UserGithubInfo>(
+  const [gitHubUserInfo, setGitHubUserInfo] = useState<gitHubUserInfoProps>(
     location.state,
   );
   const [userInputId, setUserInputId] = useState('');

@@ -1,7 +1,7 @@
 import { useRef, ChangeEvent } from 'react';
 
 import Icon from '@assets/Icon';
-import Button from '@common/Button/Button';
+import Button from '@common/Button';
 
 import { styled } from 'styled-components';
 
