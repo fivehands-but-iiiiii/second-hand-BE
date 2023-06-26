@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID;
 const REDIRECT_URL = import.meta.env.VITE_REDIRECT_URL;
-
 import Button from '@common/Button';
 import NavBar from '@common/NavBar';
 import LabelInput from '@components/common/LabelInput';
@@ -49,6 +48,7 @@ const Login = () => {
   const handleLogout = () => {
     setIsLogin(false);
     removeStorageValue({ key: 'userInfo' });
+    removeStorageValue({ key: 'token' });
   };
 
   const handleCreateAccount = () => {
@@ -76,7 +76,19 @@ const Login = () => {
 
   useEffect(() => {
     if (response) {
-      setStorageValue({ key: 'userInfo', value: response.data });
+      setStorageValue({
+        key: 'userInfo',
+        value: {
+          id: response.data.id,
+          memberId: response.data.memberId,
+          profileImgUrl: response.data.profileImgUrl,
+          regions: response.data.regions,
+        },
+      });
+      setStorageValue({
+        key: 'token',
+        value: response.data.token,
+      });
       navigate('/');
     } else if (error) {
       if (userId) setValidationMessage(error.message);
