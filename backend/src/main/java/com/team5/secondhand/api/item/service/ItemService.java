@@ -75,4 +75,9 @@ public class ItemService {
     public boolean updateItemStatus(Long id, Status status) {
         return itemRepository.updateStatus(id, status) == 1;
     }
+
+    public boolean isValidSeller(Long id, long memberId) {
+        Item item = itemRepository.findById(id).orElseThrow();
+        return item.isSeller(memberId);
+    }
 }
