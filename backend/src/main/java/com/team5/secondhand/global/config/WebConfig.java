@@ -25,8 +25,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://127.0.0.1:5173", "http://localhost:5173")
                 .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS", "HEAD")
                 .allowedHeaders("*")
-                .allowCredentials(true)
-                .maxAge(3600);
+                .maxAge(36000);
     }
 
     @Bean
