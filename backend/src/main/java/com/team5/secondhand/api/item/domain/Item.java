@@ -99,4 +99,8 @@ public class Item extends BaseTimeEntity {
         this.thumbnailUrl = thumbanilUrl;
         return this;
     }
+
+    public boolean isSeller(long memberId) {
+        return this.seller.equals(memberId);
+    }
 }

@@ -89,4 +89,8 @@ public class Member {
     public void updatePlatform(Oauth joinPlatform) {
         this.oauth = joinPlatform;
     }
+
+    public boolean equals(long memberId) {
+        return this.id == memberId;
+    }
 }
