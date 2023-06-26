@@ -2,7 +2,6 @@ package com.team5.secondhand.api.item.domain;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,7 +11,7 @@ public enum Status {
     RESERVATION(true),
     SOLD(false);
 
-    private boolean isSales;
+    private final boolean isSales;
 
     Status(boolean isSales) {
         this.isSales = isSales;
