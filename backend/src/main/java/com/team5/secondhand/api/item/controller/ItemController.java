@@ -26,6 +26,7 @@ import com.team5.secondhand.global.dto.GenericResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.sasl.AuthenticationException;
@@ -61,7 +62,7 @@ public class ItemController {
             tags = "Items",
             description = "사용자는 상품 이미지를 추가로 첨부할 수 있다."
     )
-    @PostMapping(value = "/image", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public GenericResponse<ImageInfo> uploadItemImage(@ModelAttribute ItemImageUpload file) throws ImageHostException {
         ImageInfo imageInfo = detailImageUpload.uploadItemDetailImage(file.getItemImages());
         return GenericResponse.send("Image uploaded Successfully", imageInfo);
@@ -72,7 +73,7 @@ public class ItemController {
             tags = "Items",
             description = "사용자는 새로운 상품을 등록할 수 있다."
     )
-    @PostMapping(consumes = {"multipart/form-data"})
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public GenericResponse<Long> postItem(@RequestAttribute MemberDetails loginMember, @RequestBody ItemPost itemPost) throws ExistMemberIdException, NotValidRegionException, ImageHostException, AuthenticationException {
         if (loginMember == null) {
             throw new AuthenticationException("로그인이 필요한 기능입니다.");
