@@ -1,7 +1,7 @@
 package com.team5.secondhand.api.item.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.team5.secondhand.api.item.dto.request.ItemPost;
+import com.team5.secondhand.api.item.dto.request.ItemPostWithUrl;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.model.BaseTimeEntity;
 import com.team5.secondhand.api.region.domain.Region;
@@ -62,19 +62,7 @@ public class Item extends BaseTimeEntity {
         this.contents = contents;
     }
 
-    public static Item create(ItemPost newItem, String thumbanilUrl, Member seller, Region region) {
-        return Item.builder()
-                .title(newItem.getTitle())
-                .price(newItem.getPrice())
-                .category(newItem.getCategory())
-                .thumbnailUrl(thumbanilUrl)
-                .status(Status.ON_SALE).seller(seller)
-                .region(region).count(ItemCounts.createRelated())
-                .contents(ItemContents.createdRelated(newItem.getContents(), newItem.getImages()))
-                .build();
-    }
-
-    public Item updatePost(ItemPost itemPost, String thumbanilUrl) {
+    public Item updatePost(ItemPostWithUrl itemPost, String thumbanilUrl) {
         this.title = itemPost.getTitle();
         this.category = itemPost.getCategory();
         this.price = itemPost.getPrice();
@@ -97,6 +85,12 @@ public class Item extends BaseTimeEntity {
 
     public Item updateThumbnail(String thumbanilUrl) {
         this.thumbnailUrl = thumbanilUrl;
+        return this;
+    }
+
+    public Item owned(Member seller, Region region) {
+        this.seller = seller;
+        this.region = region;
         return this;
     }
 }
