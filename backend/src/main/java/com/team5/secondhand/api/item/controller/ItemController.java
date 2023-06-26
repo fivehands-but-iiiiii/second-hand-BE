@@ -66,7 +66,7 @@ public class ItemController {
     }
 
     @Operation(
-            summary = "특정 동네 상품 팬매글 등록",
+            summary = "특정 동네 상품 판매글 등록",
             tags = "Items",
             description = "사용자는 새로운 상품을 등록할 수 있다."
     )
