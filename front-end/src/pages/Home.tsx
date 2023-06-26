@@ -5,7 +5,7 @@ import Icon from '@assets/Icon';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
 import Spinner from '@common/Spinner/Spinner';
-import Category from '@components/home/Category';
+import Category from '@components/home/category';
 import ItemList from '@components/home/ItemList';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
 
@@ -70,8 +70,9 @@ const Home = () => {
   const handleFilterCategory = (categoryId: number) => {
     setFilterInfo((prevFilterInfo) => ({
       ...prevFilterInfo,
-      categoryId,
+      categoryId: categoryId,
     }));
+    console.log('-------', filterInfo);
     setSaleItems([]);
   };
 
@@ -83,7 +84,6 @@ const Home = () => {
       setIsLoading(true);
 
       const { data } = await api.get(`items/${filterQuery}`);
-
       setSaleItems((prevItems) => {
         const newSet = new Set(prevItems);
         data.items.forEach((item: SaleItem) => newSet.add(item));
@@ -91,7 +91,7 @@ const Home = () => {
       });
 
       setHomePageInfo({
-        page: data.number,
+        page: data.number + 1,
         hasPrevious: data.hasPrevious,
         hasNext: data.hasNext,
       });
