@@ -3,21 +3,21 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
 import Button from '@common/Button';
-import LabelInput from '@common/LabelInput/LabelInput';
+import LabelInput from '@common/LabelInput';
 import NavBar from '@common/NavBar';
 import useJoin from '@hooks/useJoin';
+import UserInfo from '@pages/ItemDetail';
 import { getFormattedId } from '@utils/formatText';
 
 import { styled } from 'styled-components';
 
 import api from '../../api';
 
-import { gitHubUserInfo } from './OAuthCallback';
+import { GitHubUserInfo } from './OAuthCallback';
 import UserProfile from './UserProfile';
-
-export interface userInfo {
+export interface UserInfo {
   memberId: string;
-  profileImgUrl: string | null;
+  profileImgUrl?: string;
   regions: {
     id: number;
     onFocus: boolean;
@@ -28,18 +28,18 @@ export interface InputFile {
   preview: string;
   file?: File;
 }
-// TODO: 지역 선택 안됐을때 선택하라는 알람띄우기
+
 const Join = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [gitHubUserInfo, setGitHubUserInfo] = useState<gitHubUserInfo>(
+  const [gitHubUserInfo, setGitHubUserInfo] = useState<GitHubUserInfo>(
     location.state,
   );
   const [userInputId, setUserInputId] = useState('');
   const [validationMessage, setValidationMessage] = useState('');
   const [files, setFiles] = useState<InputFile>();
   const [regionId, setRegionId] = useState(1);
-  const [userAccount, setUserAccount] = useState<userInfo>({
+  const [userAccount, setUserAccount] = useState<UserInfo>({
     memberId: gitHubUserInfo?.login,
     profileImgUrl: gitHubUserInfo?.avatar_url,
     regions: [
@@ -65,7 +65,7 @@ const Join = () => {
     }
     const inputValue = value;
     const formattedId = getFormattedId(inputValue);
-    const formattedValue = formattedId !== undefined ? formattedId : inputValue;
+    const formattedValue = formattedId ? formattedId : inputValue;
     setUserInputId(formattedValue);
     if (value.length < 6) return;
     validateThrottling(value);
@@ -108,7 +108,6 @@ const Join = () => {
         });
       }
     } catch (error) {
-      setValidationMessage('회원가입에 실패했어요');
       console.error('회원가입 실패', error);
     }
   };

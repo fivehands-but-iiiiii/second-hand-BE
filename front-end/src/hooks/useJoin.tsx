@@ -1,16 +1,16 @@
-import { userInfoProps, InputFileProps } from '@components/login/Join';
+import { UserInfo, InputFile } from '@components/login/Join';
 
 import useAPI from './useAPI';
 
-interface useJoinProps {
-  files: InputFileProps | undefined;
-  account: userInfoProps;
+interface UseJoinProps {
+  files?: InputFile;
+  account: UserInfo;
 }
 
 const useJoin = () => {
   const { request } = useAPI();
 
-  const join = async ({ files, account }: useJoinProps) => {
+  const join = async ({ files, account }: UseJoinProps) => {
     try {
       if (files?.file) {
         const formData = new FormData();
@@ -25,7 +25,7 @@ const useJoin = () => {
             },
           },
         });
-        const updatedAccount: userInfoProps = {
+        const updatedAccount: UserInfo = {
           ...account,
           profileImgUrl: image.uploadUrl,
         };

@@ -58,24 +58,21 @@ const Login = () => {
   const handleInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const { value } = target;
     const regExp = /[^0-9a-z]/;
-    if (value) setValidationMessage('');
+    const regRange = /^.{6,12}$/;
     if (regExp.test(value)) {
       setValidationMessage('영문 소문자와 숫자만 입력하세요');
       return;
     }
+    if (value.length < 3) {
+      setValidationMessage('');
+    } else if (!regRange.test(value)) {
+      setValidationMessage('6~12자 이내로 입력하세요');
+    } else setValidationMessage('');
     const inputValue = value;
     const formattedId = getFormattedId(inputValue);
-    const formattedValue = formattedId !== undefined ? formattedId : inputValue;
+    const formattedValue = formattedId ? formattedId : inputValue;
     setUserId(formattedValue);
   };
-
-  useEffect(() => {
-    if (userId) {
-      if (userId.length < 6 || userId.length > 12) {
-        setValidationMessage('6~12자 이내로 입력하세요');
-      }
-    } else setValidationMessage('');
-  }, [userId]);
 
   useEffect(() => {
     if (response) {

@@ -5,7 +5,6 @@ import { styled } from 'styled-components';
 interface LabelInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   subText?: string;
-  placeholder?: string;
 }
 
 const LabelInput = forwardRef<HTMLInputElement, LabelInputProps>(

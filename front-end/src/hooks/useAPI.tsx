@@ -29,13 +29,7 @@ const useAPI = () => {
       return data;
     } catch (error) {
       if (error instanceof AxiosError) {
-        if (error.response?.status === 401) {
-          setError(error.response.data);
-        } else if (error.response?.status === 409) {
-          setError(error.response.data);
-        } else {
-          setError(error.response?.data || '알 수 없는 에러가 발생했습니다.');
-        }
+        setError(error.response?.data || '알 수 없는 에러가 발생했습니다.');
       }
     } finally {
       setLoading(false);
