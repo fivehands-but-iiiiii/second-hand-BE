@@ -24,7 +24,7 @@ public class WebConfig implements WebMvcConfigurer {
                 //TODO front server domain으로 변경할 것
                 .allowedOrigins("http://127.0.0.1:5173")
                 .allowedOrigins("http://localhost:5173")
-                .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE")
+                .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)
                 .maxAge(3600);
