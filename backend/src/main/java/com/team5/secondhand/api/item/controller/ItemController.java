@@ -1,10 +1,12 @@
 package com.team5.secondhand.api.item.controller;
 
 import com.team5.secondhand.api.item.domain.Item;
+import com.team5.secondhand.api.item.domain.ItemDetailImage;
 import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
 import com.team5.secondhand.api.item.dto.request.ItemImage;
 import com.team5.secondhand.api.item.dto.request.ItemPost;
 import com.team5.secondhand.api.item.dto.request.ItemStatusUpdate;
+import com.team5.secondhand.api.item.dto.request.ItemPostWithUrl;
 import com.team5.secondhand.api.item.dto.response.ItemDetail;
 import com.team5.secondhand.api.item.dto.response.ItemList;
 import com.team5.secondhand.api.item.exception.ExistItemException;
@@ -58,7 +60,7 @@ public class ItemController {
     @Operation(
             summary = "상품 상세 이미지 업로드",
             tags = "Items",
-            description = "사용자는 상품 이미지를 첨부할 수 있다."
+            description = "사용자는 상품 이미지를 추가로 첨부할 수 있다."
     )
     @PostMapping(value = "/image", consumes = {"multipart/form-data"})
     public GenericResponse<ImageInfo> uploadItemImage(@ModelAttribute ItemImageUpload file) throws ImageHostException {
@@ -71,16 +73,16 @@ public class ItemController {
             tags = "Items",
             description = "사용자는 새로운 상품을 등록할 수 있다."
     )
-    @PostMapping
+    @PostMapping(consumes = {"multipart/form-data"})
     public GenericResponse<Long> postItem(@RequestAttribute("loginMember") MemberDetails loginMember, @RequestBody ItemPost itemPost) throws ExistMemberIdException, NotValidRegionException, ImageHostException {
         Member seller = memberService.findByid(loginMember.getId());
         Region region = getValidRegions.getRegion(itemPost.getRegion());
+        List<ItemDetailImage> itemDetailImages = detailImageUpload.uploadItemDetailImages(itemPost.getImages());
 
-        Item item = itemPost.toEntity();
-        String firstImageUrl = item.getFirstDetailImage().getUrl();
+        Item item = itemPost.toEntity(itemDetailImages);
+        String thumbnailUrl = thumbnailImageUpload.uploadItemThumbnailImage(item);
 
-        String thumbnailUrl = thumbnailImageUpload.uploadItemThumbnailImage(firstImageUrl);
-        Long id = itemService.postItem(item, thumbnailUrl, seller, region);
+        Long id = itemService.postItem(item, seller, region);
 
         return GenericResponse.send("상품 등록이 완료되었습니다.", id);
     }
@@ -91,12 +93,12 @@ public class ItemController {
             description = "사용자는 상품 정보를 수정할 수 있다."
     )
     @PutMapping("/{id}")
-    public GenericResponse<Long> updateItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemPost itemPost) throws ExistMemberIdException, NotValidRegionException, ExistItemException, ExistItemException {
+    public GenericResponse<Long> updateItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemPostWithUrl itemPost) throws ExistMemberIdException, NotValidRegionException, ExistItemException, ExistItemException {
         //의문: seller, region이 기존이랑 달라져도 되나?
         Member seller = memberService.findByid(loginMember.getId());
         Region region = getValidRegions.getRegion(itemPost.getRegion());
         //TODO: order 1 썸네일 이미지 서비스
-        String thumbanilUrl = itemPost.getImages().stream().filter(i -> i.getOrder() == 1).map(ItemImage::getUrl).toString();
+        String thumbanilUrl = itemPost.getImages().get(0).getUrl();
         itemService.updateItem(id, itemPost, thumbanilUrl);
 
         return GenericResponse.send("상품 수정이 완료되었습니다.", id);
