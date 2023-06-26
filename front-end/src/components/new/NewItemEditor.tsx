@@ -19,7 +19,7 @@ import { styled, keyframes } from 'styled-components';
 
 import api from '../../api';
 
-import ItemImageEditor from './itemEditor/itemImageEditor';
+import ImageEditor from './itemEditor/ImageEditor';
 import TitleEditor from './itemEditor/TitleEditor';
 
 export interface Category {
@@ -211,7 +211,7 @@ const NewItemEditor = ({
         right={<button onClick={handleSubmit}>완료</button>}
       />
       <MyNew>
-        <ItemImageEditor
+        <ImageEditor
           files={files}
           onChage={handleFiles}
           onClick={handleDeleteFile}

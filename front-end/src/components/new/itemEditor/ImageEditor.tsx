@@ -9,13 +9,13 @@ import palette from '@styles/colors';
 
 import { styled } from 'styled-components';
 
-interface ItemImageEditorProps {
+interface ImageEditorProps {
   files: InputFile[];
   onChage: (e: ChangeEvent<HTMLInputElement>) => void;
   onClick: (e: MouseEvent<HTMLButtonElement>) => void;
 }
 
-const ItemImageEditor = ({ files, onChage, onClick }: ItemImageEditorProps) => {
+const ImageEditor = ({ files, onChage, onClick }: ImageEditorProps) => {
   return (
     <MyImagesList>
       <MyImageBox>
@@ -84,4 +84,4 @@ const MyThumbnail = styled.div`
   text-align: center;
 `;
 
-export default ItemImageEditor;
+export default ImageEditor;

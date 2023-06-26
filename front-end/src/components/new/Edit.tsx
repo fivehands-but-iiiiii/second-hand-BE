@@ -14,8 +14,7 @@ const Edit = ({ id, onClick }: NewProps) => {
   const [origin, setOrigin] = useState<ItemInfo>();
   // TODO: 유저지역정보가져오기 (로직 확인 필요함)
   const userInfo = getStoredValue({ key: 'userInfo' });
-  const userRegion = userInfo.regions.filter(
-    (region: string) => region.onFocus)[0];
+  const userRegion = userInfo.regions.filter(({ id, onFocus }) => onFocus)[0];
 
   request({
     url: `/items/${id}`,

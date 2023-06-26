@@ -36,11 +36,18 @@ const MyPortalBackground = styled.div`
 `;
 
 const MyPortalLayout = styled.div`
+  position: absolute;
+  bottom: 0;
   width: 100vw;
-  height: 100vh;
+  height: 95vh;
   min-width: 400px;
-  background-color: #fff;
-  text-align: center;
+  background-color: ${({ theme }) => theme.colors.neutral.background};
+  color: ${({ theme }) => theme.colors.neutral.text};
+  animation: ${slideInAnimation} 0.3s ease-in-out;
+  border-radius: 10px 10px 0px 0px;
+  > div {
+    width: 100%;
+  }
 `;
 
 // const slideOutAnimation = keyframes`

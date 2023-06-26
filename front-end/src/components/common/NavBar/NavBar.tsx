@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { styled } from 'styled-components';
 
 interface NavBarProps {
+  type?: 'default' | 'portal';
   left?: ReactNode;
   center?: ReactNode;
   right?: ReactNode;
@@ -10,9 +11,16 @@ interface NavBarProps {
   children?: ReactNode;
 }
 
-const NavBar = ({ left, center, right, className, children }: NavBarProps) => {
+const NavBar = ({
+  type = 'default',
+  left,
+  center,
+  right,
+  className,
+  children,
+}: NavBarProps) => {
   return (
-    <MyNavBar className={className}>
+    <MyNavBar className={className} type={type}>
       <MyNavBarTitle>
         <MyLeftTitle>{left}</MyLeftTitle>
         <MyCenter>{center}</MyCenter>
@@ -23,12 +31,15 @@ const NavBar = ({ left, center, right, className, children }: NavBarProps) => {
   );
 };
 
-const MyNavBar = styled.div`
+const MyNavBar = styled.div<NavBarProps>`
+  width: 100vw;
+  min-height: 70px;
   position: sticky;
   top: 0;
   background-color: ${({ theme }) => theme.colors.neutral.backgroundBlur};
   backdrop-filter: blur(3px);
   border-bottom: 1px solid ${({ theme }) => theme.colors.neutral.border};
+  ${({ type }) => type === 'portal' && 'border-radius: 10px 10px 0px 0px;'}
 `;
 
 const MyNavBarTitle = styled.div`
@@ -39,7 +50,6 @@ const MyNavBarTitle = styled.div`
   padding: 10px 10px;
   color: ${({ theme }) => theme.colors.neutral.textWeak};
   ${({ theme }) => theme.fonts.body};
-  /* border-radius: 10px 10px 0px 0px; */ // TODO: 팝업 애니메이션 적용시 필요함
 `;
 
 const MyLeftTitle = styled.p`
