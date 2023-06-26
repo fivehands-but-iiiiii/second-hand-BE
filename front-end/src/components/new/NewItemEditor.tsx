@@ -7,15 +7,11 @@ import {
 } from 'react';
 
 import Icon from '@assets/Icon';
-import Button from '@common/Button/Button';
-import Fileinput from '@common/FileInput';
-import ImgBox from '@common/ImgBox/ImgBox';
 import LabelInput from '@common/LabelInput';
 import NavBar from '@common/NavBar';
 import SubTabBar from '@common/TabBar/SubTabBar';
 import Textarea from '@common/Textarea/Textarea';
 import { InputFile } from '@components/login/Join';
-import palette from '@styles/colors';
 import { getPreviewURL } from '@utils/convertFile';
 import { getFormattedPrice } from '@utils/formatText';
 
@@ -23,9 +19,18 @@ import { styled, keyframes } from 'styled-components';
 
 import api from '../../api';
 
-interface Category {
+import ItemImageEditor from './itemEditor/itemImageEditor';
+import TitleEditor from './itemEditor/TitleEditor';
+
+export interface Category {
   id: number;
   title: string;
+}
+
+export interface CategoryInfo {
+  categories: Category[];
+  recommendedCategory: Category[];
+  currentId: number;
 }
 
 interface ImageFile {
@@ -37,6 +42,7 @@ export interface ItemInfo {
   id?: number;
   title: string;
   contents: string;
+  region: number;
   category: number;
   price: string;
   images: ImageFile[];
@@ -53,16 +59,17 @@ const NewItemEditor = ({
   origin,
   handleClose,
 }: NewItemEditorProps) => {
-  const userRegion = '현재 지역'; // TODO: 유저 정보에서 region 받아오기
-  const [firstClickCategory, setFirstClickCategory] = useState(false);
-  const [currentCategoryId, setCurrentCategoryId] = useState(0);
-  const [recommendedCategory, setRecommendedCategory] = useState<Category[]>(
-    [],
-  );
+  const [firstClickCTitle, setFirstClickCTitle] = useState(false);
+  const [categoryInfo, setCategoryInfo] = useState<CategoryInfo>({
+    categories: [],
+    recommendedCategory: [],
+    currentId: 0,
+  });
   const [files, setFiles] = useState<InputFile[]>([]);
   const [item, setItem] = useState<ItemInfo>({
     title: '',
     contents: '',
+    region: 0,
     category: 0,
     price: '',
     images: [],
@@ -92,15 +99,19 @@ const NewItemEditor = ({
     // formData.append('contents', item.contents);
     // formData.append('category', item.category.toString());
     // formData.append('price', item.price.toString());
-    // // formData.append('region', item.region.toString());
-    // // formData.append('firstImageUrl', item.firstImageUrl.url);
-    // if (isEdit && origin) {
-    //   await api.put(`/items/${origin.id}`, formData);
-    // } else {
-    //   await api.post('/items', formData);
+    // formData.append('region', item.region.toString());
+    // try {
+    //   await api.post('/items', formData, {
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data',
+    //     },
+    //   });
+    // } catch (error) {
+    //   console.log(error);
     // }
     // handleClose();
-    console.log(item);
+    // console.log(item);
+    // console.log(files);
   };
 
   const handleDeleteFile = ({
@@ -119,6 +130,7 @@ const NewItemEditor = ({
     const RANDOM_COUNT = 3;
     const randomCategories: Set<Category> = new Set();
     while (randomCategories.size < RANDOM_COUNT) {
+      const recommendedCategory = categoryInfo.recommendedCategory;
       const randomIndex = Math.floor(
         Math.random() * recommendedCategory.length,
       );
@@ -126,14 +138,17 @@ const NewItemEditor = ({
     }
     const titleCategories = [...randomCategories];
     return titleCategories;
-  }, [recommendedCategory]);
+  }, [categoryInfo.recommendedCategory]);
 
   const handleRecommendation = () => {
     if (isEdit) return;
-    setFirstClickCategory(true);
+    setFirstClickCTitle(true);
     const timeOutId = setTimeout(() => {
       const category = getRandomCategories();
-      setRecommendedCategory(category);
+      setCategoryInfo((prev) => ({
+        ...prev,
+        recommendedCategory: category,
+      }));
     }, 1500);
     return () => {
       clearTimeout(timeOutId);
@@ -141,7 +156,10 @@ const NewItemEditor = ({
   };
 
   const handleCategory = (categoryId: number) => {
-    setCurrentCategoryId(categoryId);
+    setCategoryInfo((prev) => ({
+      ...prev,
+      currentId: categoryId,
+    }));
     setItem((prev) => ({ ...prev, category: categoryId }));
   };
 
@@ -159,7 +177,10 @@ const NewItemEditor = ({
   useEffect(() => {
     const getCategories = async () => {
       const { data } = await api.get('/resources/categories');
-      setRecommendedCategory(data.data.categories);
+      setCategoryInfo((prev) => ({
+        ...prev,
+        categories: data.data.categories,
+      }));
     };
     getCategories();
   }, []);
@@ -170,6 +191,7 @@ const NewItemEditor = ({
         title: origin.title,
         contents: origin.contents,
         category: origin.category,
+        region: origin.region,
         price: origin.price,
         images: origin.images,
       });
@@ -189,91 +211,33 @@ const NewItemEditor = ({
         right={<button onClick={handleSubmit}>완료</button>}
       />
       <MyNew>
-        <MyImagesList>
-          <MyImageBox>
-            <Fileinput fileCount={`${files.length}/10`} onChage={handleFiles} />
-          </MyImageBox>
-          {files &&
-            files.map((img, index) => (
-              <li key={index}>
-                <ImgBox
-                  key={index}
-                  src={img.preview}
-                  alt={img.file?.name || `${index} 첨부파일`}
-                  size="md"
-                />
-                {!index && <MyThumbnail>대표사진</MyThumbnail>}
-                <Button
-                  value={index}
-                  icon
-                  circle={'sm'}
-                  onClick={handleDeleteFile}
-                >
-                  <Icon
-                    name={'x'}
-                    size={'xs'}
-                    fill={palette.neutral.background}
-                  />
-                </Button>
-              </li>
-            ))}
-        </MyImagesList>
-        <MyTitleBox>
-          <Textarea
-            name={'title'}
-            value={item.title}
-            placeholder="글 제목"
-            rows={item.title.length > 30 ? 2 : 1}
-            maxLength={64}
-            onChange={handleTitle}
-            onClick={handleRecommendation}
-          />
-          {recommendedCategory.length === 3 && (
-            <MyTitleCategories>
-              <MyCategories>
-                {recommendedCategory.map(({ id, title }) => {
-                  const isActive = currentCategoryId === id;
-                  return (
-                    <Button
-                      key={id}
-                      active={isActive}
-                      category
-                      onClick={() => handleCategory(id)}
-                    >
-                      {title}
-                    </Button>
-                  );
-                })}
-              </MyCategories>
-              <Icon
-                name={'chevronRight'}
-                size={'xs'}
-                onClick={() => {
-                  console.log('카테고리 포탈띄우기');
-                }}
-              />
-            </MyTitleCategories>
-          )}
-        </MyTitleBox>
-        <>
-          <LabelInput
-            label={'₩'}
-            name={'price'}
-            value={item.price}
-            placeholder={'가격(선택사항)'}
-            onChange={handlePrice}
-          />
-        </>
-        <>
-          <Textarea
-            name={'contents'}
-            value={item.contents}
-            placeholder={`${userRegion}에 올릴 게시물 내용을 작성해주세요.`}
-            onChange={handleContents}
-          />
-        </>
+        <ItemImageEditor
+          files={files}
+          onChage={handleFiles}
+          onClick={handleDeleteFile}
+        />
+        <TitleEditor
+          title={item.title}
+          categoryInfo={categoryInfo}
+          onChageTitle={handleTitle}
+          onClickTitle={handleRecommendation}
+          onClickCategory={handleCategory}
+        />
+        <LabelInput
+          label={'₩'}
+          name={'price'}
+          value={item.price}
+          placeholder={'가격(선택사항)'}
+          onChange={handlePrice}
+        />
+        <Textarea
+          name={'contents'}
+          value={item.contents}
+          placeholder={`${item.region}에 올릴 게시물 내용을 작성해주세요.`}
+          onChange={handleContents}
+        />
       </MyNew>
-      <SubTabBar icon={'location'} content={`${userRegion}`}>
+      <SubTabBar icon={'location'} content={`${item.region}`}>
         <Icon name="keyboard" />
       </SubTabBar>
     </MyNewContainer>
@@ -321,66 +285,6 @@ const MyNew = styled.div`
       overflow: auto;
     }
   }
-`;
-
-const MyImagesList = styled.ul`
-  display: flex;
-  overflow-x: auto;
-  -ms-overflow-style: none;
-  padding: 16px 0;
-  gap: 16px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.neutral.border};
-  > li {
-    position: relative;
-    > button {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      background-color: ${({ theme }) => theme.colors.neutral.textStrong};
-      > svg {
-        position: absolute;
-      }
-    }
-  }
-`;
-
-const MyImageBox = styled.li`
-  width: 80px;
-  height: 80px;
-  border-radius: 10px;
-  border: 1px solid ${({ theme }) => theme.colors.neutral.border};
-  object-fit: cover;
-  > div {
-    width: 80px;
-  }
-`;
-
-const MyThumbnail = styled.div`
-  position: absolute;
-  width: 100%;
-  bottom: 5px;
-  padding: 4px 8px;
-  border-radius: 0 0 10px 10px;
-  background-color: ${({ theme }) => theme.colors.neutral.overlay};
-  color: ${({ theme }) => theme.colors.accent.text};
-  ${({ theme }) => theme.fonts.caption2};
-  text-align: center;
-`;
-
-const MyTitleBox = styled.div`
-  border-bottom: 1px solid ${({ theme }) => theme.colors.neutral.border};
-`;
-
-const MyTitleCategories = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 15px;
-`;
-
-const MyCategories = styled.div`
-  display: flex;
-  gap: 4px;
 `;
 
 export default NewItemEditor;
