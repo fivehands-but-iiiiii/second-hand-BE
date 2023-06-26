@@ -26,7 +26,7 @@ public class MemberDetails {
 
     public static MemberDetails fromMember(Member member) throws EmptyBasedRegionException {
         List<BasedRegionSummary> regions = member.getRegions().stream()
-                .map(region -> BasedRegionSummary.builder().id(region.getId()).onFocus(region.isRepresented()).build())
+                .map(BasedRegionSummary::of)
                 .collect(Collectors.toList());
 
         return MemberDetails.builder()
