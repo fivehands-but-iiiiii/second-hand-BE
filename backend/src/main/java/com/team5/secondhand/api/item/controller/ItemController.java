@@ -5,6 +5,7 @@ import com.team5.secondhand.api.item.domain.ItemDetailImage;
 import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
 import com.team5.secondhand.api.item.dto.request.ItemImage;
 import com.team5.secondhand.api.item.dto.request.ItemPost;
+import com.team5.secondhand.api.item.dto.request.ItemStatusUpdate;
 import com.team5.secondhand.api.item.dto.request.ItemPostWithUrl;
 import com.team5.secondhand.api.item.dto.response.ItemDetail;
 import com.team5.secondhand.api.item.dto.response.ItemList;
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.sasl.AuthenticationException;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +69,7 @@ public class ItemController {
     }
 
     @Operation(
-            summary = "특정 동네 상품 팬매글 등록",
+            summary = "특정 동네 상품 판매글 등록",
             tags = "Items",
             description = "사용자는 새로운 상품을 등록할 수 있다."
     )
@@ -113,4 +115,36 @@ public class ItemController {
 
         return GenericResponse.send("상품 상세정보를 볼 수 있습니다.", item);
     }
+
+
+    @Operation(
+            summary = "상품 상태 수정",
+            tags = "Items",
+            description = "판매자는 상품 판매 상태만 별도로 수정할 수 있다."
+    )
+    @PatchMapping("/{id}/status")
+    public GenericResponse<Boolean> updateItemStatus(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemStatusUpdate request) throws AuthenticationException {
+        if (!itemService.isValidSeller(id, loginMember.getId())) {
+            throw new AuthenticationException("글 작성자가 아닙니다.");
+        }
+
+        boolean result = itemService.updateItemStatus(id, request.getStatus());
+        return GenericResponse.send("상품 판매글 상태가 업데이트 되었습니다.", result);
+    }
+
+    @Operation(
+            summary = "상품 상태 삭제",
+            tags = "Items",
+            description = "판매자는 상품을 삭제할 수 있다."
+    )
+    @DeleteMapping("/{id}")
+    public GenericResponse<Long> deleteId(@PathVariable Long id, @RequestAttribute MemberDetails loginMember) throws AuthenticationException {
+        if (!itemService.isValidSeller(id, loginMember.getId())) {
+            throw new AuthenticationException("글 작성자가 아닙니다.");
+        }
+
+        itemService.deleteById(id);
+        return GenericResponse.send("상품 판매글 상태가 삭제 되었습니다.", id);
+    }
+
 }

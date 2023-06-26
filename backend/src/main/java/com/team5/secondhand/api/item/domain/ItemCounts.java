@@ -1,6 +1,10 @@
 package com.team5.secondhand.api.item.domain;
 
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,6 +16,8 @@ import javax.validation.constraints.Min;
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE item_counts SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false")
 public class ItemCounts {
 
     private static final long INIT_COUNT_NUMBER = 0L;
@@ -28,12 +34,15 @@ public class ItemCounts {
     @Min(0)
     private Long chatCounts;
 
+    private Boolean isDeleted;
+
     @Builder
-    private ItemCounts(Long id, Long hits, Long likeCounts, Long chatCounts) {
+    public ItemCounts(Long id, Long hits, Long likeCounts, Long chatCounts, Boolean isDeleted) {
         this.id = id;
         this.hits = hits;
         this.likeCounts = likeCounts;
         this.chatCounts = chatCounts;
+        this.isDeleted = isDeleted;
     }
 
     public static ItemCounts createRelated() {
@@ -41,6 +50,7 @@ public class ItemCounts {
                 .hits(INIT_COUNT_NUMBER)
                 .likeCounts(INIT_COUNT_NUMBER)
                 .chatCounts(INIT_COUNT_NUMBER)
+                .isDeleted(false)
                 .build();
     }
 }

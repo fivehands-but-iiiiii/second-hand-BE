@@ -56,6 +56,7 @@ public class ItemService {
         itemRepository.save(newItem);
     }
 
+    @Transactional(readOnly = true)
     public ItemDetail getItem(Long id, Long memberId) throws ExistItemException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
         ItemDetail itemDetail;
@@ -66,5 +67,19 @@ public class ItemService {
         }
 
         return itemDetail;
+    }
+
+    @Transactional
+    public boolean updateItemStatus(Long id, Status status) {
+        return itemRepository.updateStatus(id, status) == 1;
+    }
+
+    public boolean isValidSeller(Long id, long memberId) {
+        Item item = itemRepository.findById(id).orElseThrow();
+        return item.isSeller(memberId);
+    }
+
+    public void deleteById(Long id) {
+        itemRepository.deleteById(id);
     }
 }
