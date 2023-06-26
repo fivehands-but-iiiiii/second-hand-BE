@@ -120,8 +120,14 @@ public class ItemController {
             description = "판매자는 상품 판매 상태만 별도로 수정할 수 있다."
     )
     @PatchMapping("/{id}/status")
-    public GenericResponse<Boolean> getItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemStatusUpdate request) {
+    public GenericResponse<Boolean> updateItemStatus(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemStatusUpdate request) throws AuthenticationException {
+        if (!itemService.isValidSeller(id, loginMember.getId())) {
+            throw new AuthenticationException("글 작성자가 아닙니다.");
+        }
+
         boolean result = itemService.updateItemStatus(id, request.getStatus());
-        return GenericResponse.send("상품 상세정보를 볼 수 있습니다.", result);
+        return GenericResponse.send("상품 판매글 상태가 업데이트 되었습니다.", result);
+    }
+
     }
 }
