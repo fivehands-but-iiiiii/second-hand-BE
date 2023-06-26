@@ -73,7 +73,11 @@ public class ItemController {
             description = "사용자는 새로운 상품을 등록할 수 있다."
     )
     @PostMapping(consumes = {"multipart/form-data"})
-    public GenericResponse<Long> postItem(@RequestAttribute("loginMember") MemberDetails loginMember, @RequestBody ItemPost itemPost) throws ExistMemberIdException, NotValidRegionException, ImageHostException {
+    public GenericResponse<Long> postItem(@RequestAttribute MemberDetails loginMember, @RequestBody ItemPost itemPost) throws ExistMemberIdException, NotValidRegionException, ImageHostException, AuthenticationException {
+        if (loginMember == null) {
+            throw new AuthenticationException("로그인이 필요한 기능입니다.");
+        }
+
         Member seller = memberService.findByid(loginMember.getId());
         Region region = getValidRegions.getRegion(itemPost.getRegion());
         List<ItemDetailImage> itemDetailImages = detailImageUpload.uploadItemDetailImages(itemPost.getImages());
