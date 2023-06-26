@@ -15,10 +15,11 @@ public class JwtService {
     private final JwtUtils jwtUtils;
     private final JwtProperties jwtProperties;
 
-    public void setTokenHeader(MemberDetails member, HttpServletResponse response) throws IOException {
-        String token = jwtUtils.generateToken(member);
+    public String setTokenHeader(MemberDetails member, HttpServletResponse response) throws IOException {
+        String token = jwtProperties.getTokenType() + " " + jwtUtils.generateToken(member);
 
-        response.setHeader(jwtProperties.getAuthorizationHeader(), jwtProperties.getTokenType() + " " + token);
+        response.setHeader(jwtProperties.getAuthorizationHeader(), token);
+        return token;
     }
 
 }
