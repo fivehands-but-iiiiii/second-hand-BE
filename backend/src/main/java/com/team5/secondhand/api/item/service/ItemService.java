@@ -4,6 +4,7 @@ import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.dto.request.ItemPostWithUrl;
 import com.team5.secondhand.api.item.domain.Status;
 import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
+import com.team5.secondhand.api.item.dto.response.CategoryList;
 import com.team5.secondhand.api.item.dto.response.ItemDetail;
 import com.team5.secondhand.api.item.dto.response.ItemList;
 import com.team5.secondhand.api.item.dto.response.ItemSummary;
@@ -67,6 +68,11 @@ public class ItemService {
         }
 
         return itemDetail;
+    }
+
+    public CategoryList getCategoryList(Long regionId) {
+        List<Long> categories = itemRepository.countCategoryByRegion(regionId);
+        return CategoryList.of(categories);
     }
 
     @Transactional
