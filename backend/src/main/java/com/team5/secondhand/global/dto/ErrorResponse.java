@@ -20,6 +20,7 @@ public class ErrorResponse {
 
     public static ErrorResponse occur (Exception e) {
         log.error(e.getMessage());
+        e.printStackTrace();
         return new ErrorResponse(e.toString(), e.getMessage());
     }
 }

@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.sasl.AuthenticationException;
 import java.util.List;
 import java.util.Map;
 
@@ -129,5 +130,19 @@ public class ItemController {
         return GenericResponse.send("상품 판매글 상태가 업데이트 되었습니다.", result);
     }
 
+    @Operation(
+            summary = "상품 상태 삭제",
+            tags = "Items",
+            description = "판매자는 상품을 삭제할 수 있다."
+    )
+    @DeleteMapping("/{id}")
+    public GenericResponse<Long> deleteId(@PathVariable Long id, @RequestAttribute MemberDetails loginMember) throws AuthenticationException {
+        if (!itemService.isValidSeller(id, loginMember.getId())) {
+            throw new AuthenticationException("글 작성자가 아닙니다.");
+        }
+
+        itemService.deleteById(id);
+        return GenericResponse.send("상품 판매글 상태가 삭제 되었습니다.", id);
     }
+
 }

@@ -80,4 +80,8 @@ public class ItemService {
         Item item = itemRepository.findById(id).orElseThrow();
         return item.isSeller(memberId);
     }
+
+    public void deleteById(Long id) {
+        itemRepository.deleteById(id);
+    }
 }

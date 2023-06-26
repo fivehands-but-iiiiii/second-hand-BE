@@ -6,6 +6,8 @@ import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.model.BaseTimeEntity;
 import com.team5.secondhand.api.region.domain.Region;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -15,6 +17,9 @@ import javax.validation.constraints.Size;
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE item SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false")
+@Access(AccessType.FIELD)
 public class Item extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,8 +53,10 @@ public class Item extends BaseTimeEntity {
     @JoinColumn(name = "item_contents_id")
     private ItemContents contents;
 
+    private Boolean isDeleted = Boolean.FALSE;
+
     @Builder
-    private Item(Long id, String title, Integer price, Long category, String thumbnailUrl, Status status, Member seller, Region region, ItemCounts count, ItemContents contents) {
+    public Item(Long id, String title, int price, Long category, String thumbnailUrl, Status status, Member seller, Region region, ItemCounts count, ItemContents contents, Boolean isDeleted) {
         this.id = id;
         this.title = title;
         this.price = price;
@@ -60,6 +67,7 @@ public class Item extends BaseTimeEntity {
         this.region = region;
         this.count = count;
         this.contents = contents;
+        this.isDeleted = isDeleted;
     }
 
     public static Item create(ItemPost newItem, String thumbanilUrl, Member seller, Region region) {
