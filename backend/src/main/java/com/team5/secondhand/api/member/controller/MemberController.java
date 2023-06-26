@@ -7,6 +7,7 @@ import com.team5.secondhand.api.member.dto.request.MemberLogin;
 import com.team5.secondhand.api.member.dto.request.MemberProfileImageUpdate;
 import com.team5.secondhand.api.member.dto.request.MemberRegion;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
+import com.team5.secondhand.api.member.dto.response.MemberDetailsWithToken;
 import com.team5.secondhand.api.member.exception.MemberException;
 import com.team5.secondhand.api.member.service.MemberService;
 import com.team5.secondhand.api.oauth.dto.UserProfile;
@@ -85,9 +86,9 @@ public class MemberController {
     @PostMapping("/login")
     public GenericResponse<MemberDetails> login(@RequestBody MemberLogin request, HttpServletResponse response) throws MemberException, EmptyBasedRegionException, IOException {
         MemberDetails member = memberService.login(request);
-        jwtService.setTokenHeader(member, response);
+        String token = jwtService.setTokenHeader(member, response);
 
-        return GenericResponse.send("Member login Successfully", member);
+        return GenericResponse.send("Member login Successfully", new MemberDetailsWithToken(member, token));
     }
 
     @Operation(
