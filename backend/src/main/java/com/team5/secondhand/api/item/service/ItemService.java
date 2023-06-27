@@ -45,7 +45,8 @@ public class ItemService {
         return ItemList.getSlice(pageResult.getNumber(), pageResult.hasPrevious(), pageResult.hasNext(), items);
     }
 
-    public Long postItem(Item item, Member seller, Region region) {
+    public Long postItem(Item item, Member seller, Region region, String thumbnailUrl) {
+        item.updateThumbnail(thumbnailUrl);
         itemRepository.save(item.owned(seller, region));
         return item.getId();
     }

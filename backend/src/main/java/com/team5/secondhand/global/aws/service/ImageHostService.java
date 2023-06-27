@@ -105,6 +105,10 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
 
     @Override
     public List<ItemDetailImage> uploadItemDetailImages(List<MultipartFile> request) throws ImageHostException {
+        if (request.size() < 1 || request.size() > 10) {
+            throw new ImageHostException("이미지 첨부는 1개 이상 10개 이하로 해야합니다.");
+        }
+
         List<ItemDetailImage> images = new ArrayList<>();
 
         for (int i=0; i<request.size(); i++) {
