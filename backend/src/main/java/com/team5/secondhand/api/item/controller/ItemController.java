@@ -86,7 +86,7 @@ public class ItemController {
         Item item = itemPost.toEntity(itemDetailImages);
         String thumbnailUrl = thumbnailImageUpload.uploadItemThumbnailImage(item);
 
-        Long id = itemService.postItem(item, seller, region);
+        Long id = itemService.postItem(item, seller, region, thumbnailUrl);
 
         return GenericResponse.send("상품 등록이 완료되었습니다.", id);
     }

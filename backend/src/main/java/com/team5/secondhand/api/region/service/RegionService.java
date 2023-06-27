@@ -5,6 +5,7 @@ import com.team5.secondhand.api.region.exception.NotValidRegionException;
 import com.team5.secondhand.api.region.repository.RegionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,7 @@ public class RegionService implements GetValidRegionsUsecase {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Region getRegion(Long id) throws NotValidRegionException {
         return regionRepository.findById(id).orElseThrow(() -> new NotValidRegionException("해당하는 지역이 없습니다."));
     }
