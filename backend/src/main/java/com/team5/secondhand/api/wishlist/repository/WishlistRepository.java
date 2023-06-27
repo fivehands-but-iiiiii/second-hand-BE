@@ -13,4 +13,7 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
     Optional<Wishlist> findByMemberAndItem(Member member, Item item);
 
     boolean existsByMemberAndItem(Member member, Item item);
+
+    @Query("SELECT DISTINCT w.item.category from Wishlist w where w.member.id = :memberId")
+    List<Long> findByDistinctCategoryByMember(@Param("memberId") Long memberId);
 }
