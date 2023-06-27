@@ -80,7 +80,7 @@ public class ItemController {
             throw new AuthenticationException("로그인이 필요한 기능입니다.");
         }
 
-        Member seller = memberService.findByid(loginMember.getId());
+        Member seller = memberService.findById(loginMember.getId());
         Region region = getValidRegions.getRegion(itemPost.getRegion());
         List<ItemDetailImage> itemDetailImages = detailImageUpload.uploadItemDetailImages(itemPost.getImages());
 
@@ -100,7 +100,7 @@ public class ItemController {
     @PutMapping("/{id}")
     public GenericResponse<Long> updateItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemPostWithUrl itemPost) throws ExistMemberIdException, NotValidRegionException, ExistItemException, ExistItemException {
         //의문: seller, region이 기존이랑 달라져도 되나?
-        Member seller = memberService.findByid(loginMember.getId());
+        Member seller = memberService.findById(loginMember.getId());
         Region region = getValidRegions.getRegion(itemPost.getRegion());
         //TODO: order 1 썸네일 이미지 서비스
         String thumbanilUrl = itemPost.getImages().get(0).getUrl();

@@ -59,7 +59,7 @@ public class MemberService implements JoinService {
         return memberRepository.existsByMemberIdAndOauth(memberId, oauth);
     }
 
-    public Member findByid(Long id) throws ExistMemberIdException {
+    public Member findById(Long id) throws ExistMemberIdException {
         return memberRepository.findById(id).orElseThrow(() -> new ExistMemberIdException("잘못된 회원입니다."));
     }
 

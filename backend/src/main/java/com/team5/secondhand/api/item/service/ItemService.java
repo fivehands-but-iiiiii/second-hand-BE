@@ -88,4 +88,9 @@ public class ItemService {
     public void deleteById(Long id) {
         itemRepository.deleteById(id);
     }
+
+    public Item findById(Long itemId) throws ExistItemException {
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
+        return item;
+    }
 }
