@@ -19,4 +19,10 @@ public class ImageHostExceptionHandler {
     public ErrorResponse NotValidImageTypeException(NotValidImageTypeException e) {
         return ErrorResponse.occur(e);
     }
+
+    @ExceptionHandler(ImageHostException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse NotImageHostException(ImageHostException e) {
+        return ErrorResponse.occur(e);
+    }
 }
