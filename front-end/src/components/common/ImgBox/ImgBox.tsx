@@ -1,6 +1,8 @@
+import { ComponentPropsWithRef } from 'react';
+
 import { styled } from 'styled-components';
 
-interface ImgBoxProps {
+interface ImgBoxProps extends ComponentPropsWithRef<'img'> {
   src: string;
   alt: string;
   size?: 'sm' | 'md' | 'lg';

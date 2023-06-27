@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react';
-
 import Icon from '@assets/Icon';
 import Button from '@common/Button';
 import ImgBox from '@common/ImgBox';
@@ -7,42 +5,27 @@ import NavBar from '@common/NavBar/NavBar';
 
 import { styled } from 'styled-components';
 
-import api from '../../../api';
-
-interface Category {
+export interface CategoryInfo {
   id: number;
   title: string;
   iconUrl: string;
 }
 
 interface CategoryProps {
+  categoryInfo: CategoryInfo[];
   handleCategoryModal: () => void;
   onCategoryClick?: (categoryId: number) => void;
 }
 
-const Category = ({ handleCategoryModal, onCategoryClick }: CategoryProps) => {
-  const [categoryIcons, setCategoryIcons] = useState<Category[]>([]);
-
+const Category = ({
+  categoryInfo,
+  handleCategoryModal,
+  onCategoryClick,
+}: CategoryProps) => {
   const handleCategoryClick = (categoryId: number) => {
     handleCategoryModal();
     onCategoryClick && onCategoryClick(categoryId);
   };
-
-  const getCategoryIcons = async () => {
-    try {
-      const {
-        data: { data },
-      } = await api.get('/resources/categories');
-
-      setCategoryIcons(data.categories);
-    } catch (error) {
-      console.error(`Failed to get category icons: ${error}`);
-    }
-  };
-
-  useEffect(() => {
-    getCategoryIcons();
-  }, []);
 
   return (
     <MyCategoryModal>
@@ -56,13 +39,18 @@ const Category = ({ handleCategoryModal, onCategoryClick }: CategoryProps) => {
         center={'카테고리'}
       />
       <MyCategoryContainer>
-        {categoryIcons?.map((icon) => (
+        {categoryInfo?.map((icon) => (
           <Button
             key={icon.id}
             icon
             onClick={() => handleCategoryClick(icon.id)}
           >
-            <ImgBox src={icon.iconUrl} size="sm" alt={icon.title} />
+            <ImgBox
+              src={icon.iconUrl}
+              size="sm"
+              alt={icon.title}
+              loading="lazy"
+            />
             <MyCategoryTitle>{icon.title}</MyCategoryTitle>
           </Button>
         ))}

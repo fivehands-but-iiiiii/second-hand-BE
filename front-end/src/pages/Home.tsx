@@ -5,7 +5,7 @@ import Icon from '@assets/Icon';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
 import Spinner from '@common/Spinner/Spinner';
-import Category from '@components/home/category';
+import Category, { CategoryInfo } from '@components/home/category';
 import ItemList from '@components/home/ItemList';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
 
@@ -31,6 +31,7 @@ type HomePageInfo = Omit<HomeInfo, 'items'>;
 
 const Home = () => {
   // TODO: filterInfo가 변하면 -> saleItems를 한 번 비워야한다.
+  const [categoryInfo, setCategoryInfo] = useState<CategoryInfo[]>([]);
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
@@ -102,9 +103,27 @@ const Home = () => {
     }
   };
 
+  const getCategoryInfo = async () => {
+    if (categoryInfo.length) return;
+
+    try {
+      const {
+        data: { data },
+      } = await api.get('/resources/categories');
+
+      setCategoryInfo(data.categories);
+    } catch (error) {
+      console.error(`Failed to get category icons: ${error}`);
+    }
+  };
+
   useEffect(() => {
     fetchItems();
   }, [filterInfo]);
+
+  useEffect(() => {
+    getCategoryInfo();
+  }, []);
 
   return (
     <>
@@ -127,6 +146,7 @@ const Home = () => {
       {isCategoryModalOpen &&
         createPortal(
           <Category
+            categoryInfo={categoryInfo}
             handleCategoryModal={handleCategoryModal}
             onCategoryClick={handleFilterCategory}
           />,
