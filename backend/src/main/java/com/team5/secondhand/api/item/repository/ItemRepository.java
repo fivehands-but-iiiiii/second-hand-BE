@@ -8,8 +8,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -24,7 +22,7 @@ public interface ItemRepository extends JpaRepository<Item, Long>, ItemSliceRepo
 
     @Modifying
     @Query("SELECT DISTINCT category from Item where region.id = :regionId")
-    List<Long> countCategoryByRegion(Long regionId);
+    List<Long> countCategoryByRegion(@Param("regionId") Long regionId);
 
     @Modifying
     @Query("update Item i set i.status = :status where i.id = :id")
