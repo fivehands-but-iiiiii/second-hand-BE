@@ -3,7 +3,6 @@ import { ReactNode } from 'react';
 import { styled } from 'styled-components';
 
 interface NavBarProps {
-  type?: 'default' | 'portal';
   left?: ReactNode;
   center?: ReactNode;
   right?: ReactNode;
@@ -11,16 +10,9 @@ interface NavBarProps {
   children?: ReactNode;
 }
 
-const NavBar = ({
-  type = 'default',
-  left,
-  center,
-  right,
-  className,
-  children,
-}: NavBarProps) => {
+const NavBar = ({ left, center, right, className, children }: NavBarProps) => {
   return (
-    <MyNavBar className={className} type={type}>
+    <MyNavBar className={className}>
       <MyNavBarTitle>
         <MyLeftTitle>{left}</MyLeftTitle>
         <MyCenter>{center}</MyCenter>
@@ -31,7 +23,7 @@ const NavBar = ({
   );
 };
 
-const MyNavBar = styled.div<NavBarProps>`
+const MyNavBar = styled.div`
   width: 100vw;
   min-height: 70px;
   position: sticky;
@@ -39,7 +31,6 @@ const MyNavBar = styled.div<NavBarProps>`
   background-color: ${({ theme }) => theme.colors.neutral.backgroundBlur};
   backdrop-filter: blur(3px);
   border-bottom: 1px solid ${({ theme }) => theme.colors.neutral.border};
-  ${({ type }) => type === 'portal' && 'border-radius: 10px 10px 0px 0px;'}
 `;
 
 const MyNavBarTitle = styled.div`

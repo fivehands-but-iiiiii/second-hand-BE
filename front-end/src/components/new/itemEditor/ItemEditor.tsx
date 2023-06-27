@@ -10,7 +10,7 @@ import Icon from '@assets/Icon';
 import LabelInput from '@common/LabelInput';
 import NavBar from '@common/NavBar';
 import SubTabBar from '@common/TabBar/SubTabBar';
-import Textarea from '@common/Textarea/Textarea';
+import Textarea from '@common/Textarea';
 import { InputFile } from '@components/login/Join';
 import { getPreviewURL } from '@utils/convertFile';
 import { getFormattedPrice } from '@utils/formatText';
@@ -133,11 +133,9 @@ const ItemEditor = ({
     const RANDOM_COUNT = 3;
     const randomCategories: Set<Category> = new Set();
     while (randomCategories.size < RANDOM_COUNT) {
-      const recommendedCategory = categoryInfo.total;
-      const randomIndex = Math.floor(
-        Math.random() * recommendedCategory.length,
-      );
-      randomCategories.add(recommendedCategory[randomIndex]);
+      const categories = categoryInfo.total;
+      const randomIndex = Math.floor(Math.random() * categories.length);
+      randomCategories.add(categories[randomIndex]);
     }
     const titleCategories = [...randomCategories];
     return titleCategories;
@@ -160,13 +158,35 @@ const ItemEditor = ({
   }, [firstClickCTitle, getRandomCategories]);
 
   const handleCategory = (updatedCategory: Category) => {
-    if (updatedCategory.id === categoryInfo.currentId) return;
-    const updatedRecommendedCategory = categoryInfo.recommendedCategory;
-    setCategoryInfo((prev) => ({
-      ...prev,
-      recommendedCategory: updatedRecommendedCategory,
-      currentId: updatedCategory.id,
-    }));
+    if (updatedCategory.id === categoryInfo.currentId) {
+      return setCategoryInfo((prev) => ({
+        ...prev,
+        currentId: 0,
+      }));
+    } else if (
+      categoryInfo.recommendedCategory.some(({ id }) => {
+        return id === updatedCategory.id;
+      })
+    ) {
+      setCategoryInfo((prev) => ({
+        ...prev,
+        currentId: updatedCategory.id,
+      }));
+    } else {
+      const updatedRecommendedCategory = [
+        ...[
+          updatedCategory,
+          ...categoryInfo.recommendedCategory.filter(
+            (category) => category.id !== updatedCategory.id,
+          ),
+        ],
+      ].splice(0, 3);
+      setCategoryInfo((prev) => ({
+        ...prev,
+        recommendedCategory: updatedRecommendedCategory,
+        currentId: updatedCategory.id,
+      }));
+    }
     setItem((prev) => ({ ...prev, category: updatedCategory.id }));
   };
 
@@ -213,7 +233,6 @@ const ItemEditor = ({
   return (
     <>
       <NavBar
-        type={'portal'}
         left={<button onClick={handleClose}>닫기</button>}
         center={'새 상품 등록'}
         right={<button onClick={handleSubmit}>완료</button>}
@@ -263,8 +282,12 @@ const MyNew = styled.div`
   > div:last-child {
     > textarea {
       /* TODO: 최대높이 반응형으로 조절해야됨 */
-      max-height: 43vh;
+      height: 52vh;
       overflow: auto;
+      -ms-overflow-style: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
     }
   }
 `;

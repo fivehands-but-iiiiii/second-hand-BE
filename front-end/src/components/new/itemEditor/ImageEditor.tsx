@@ -42,11 +42,14 @@ const ImageEditor = ({ files, onChage, onClick }: ImageEditorProps) => {
 
 const MyImagesList = styled.ul`
   display: flex;
-  overflow-x: auto;
-  -ms-overflow-style: none;
   padding: 16px 0;
   gap: 16px;
   border-bottom: 1px solid ${({ theme }) => theme.colors.neutral.border};
+  overflow: auto;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
   > li {
     position: relative;
     > button {
