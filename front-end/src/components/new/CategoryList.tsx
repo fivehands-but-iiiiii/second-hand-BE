@@ -3,7 +3,7 @@ import PortalLayout from '@components/layout/PortalLayout';
 
 import { styled } from 'styled-components';
 
-import { Category } from './NewItemEditor';
+import { Category } from './itemEditor/ItemEditor';
 interface CategoryListProps {
   categories: Category[];
   selectedId: number;

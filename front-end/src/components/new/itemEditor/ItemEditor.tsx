@@ -15,12 +15,11 @@ import { InputFile } from '@components/login/Join';
 import { getPreviewURL } from '@utils/convertFile';
 import { getFormattedPrice } from '@utils/formatText';
 
-import { styled, keyframes } from 'styled-components';
+import { styled } from 'styled-components';
 
-import api from '../../api';
-
-import ImageEditor from './itemEditor/ImageEditor';
-import TitleEditor from './itemEditor/TitleEditor';
+import api from '../../../api';
+import ImageEditor from '../itemEditor/ImageEditor';
+import TitleEditor from '../itemEditor/TitleEditor';
 
 export interface Category {
   id: number;
@@ -28,7 +27,7 @@ export interface Category {
 }
 
 export interface CategoryInfo {
-  categories: Category[];
+  total: Category[];
   recommendedCategory: Category[];
   currentId: number;
 }
@@ -48,20 +47,26 @@ export interface ItemInfo {
   images: ImageFile[];
 }
 
-interface NewItemEditorProps {
+interface InputFile {
+  preview: string;
+  file?: File;
+}
+
+interface ItemEditorProps {
   isEdit?: boolean;
   origin?: ItemInfo;
   handleClose: () => void;
 }
 
-const NewItemEditor = ({
+const ItemEditor = ({
   isEdit = false,
   origin,
   handleClose,
-}: NewItemEditorProps) => {
+}: ItemEditorProps) => {
+  // 지역정보 가져오기
   const [firstClickCTitle, setFirstClickCTitle] = useState(false);
   const [categoryInfo, setCategoryInfo] = useState<CategoryInfo>({
-    categories: [],
+    total: [],
     recommendedCategory: [],
     currentId: 0,
   });
@@ -89,29 +94,27 @@ const NewItemEditor = ({
     ]);
   };
 
-  // TODO: api 변경에 따라 로직 수정 필요함
+  // TODO: 새상품등록, 수정 api 변경필요함
   const handleSubmit = async () => {
-    // const formData = new FormData();
-    // files.forEach(({ file }) => {
-    //   formData.append('images', file as Blob, file?.name);
-    // });
-    // formData.append('title', item.title);
-    // formData.append('contents', item.contents);
-    // formData.append('category', item.category.toString());
-    // formData.append('price', item.price.toString());
-    // formData.append('region', item.region.toString());
-    // try {
-    //   await api.post('/items', formData, {
-    //     headers: {
-    //       'Content-Type': 'multipart/form-data',
-    //     },
-    //   });
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    // handleClose();
-    // console.log(item);
-    // console.log(files);
+    const formData = new FormData();
+    files.forEach(({ file }) => {
+      formData.append('images', file as Blob, file?.name);
+    });
+    formData.append('title', item.title);
+    formData.append('contents', item.contents);
+    formData.append('category', item.category.toString());
+    formData.append('price', item.price.toString());
+    formData.append('region', item.region.toString());
+    try {
+      await api.post('/items', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    handleClose();
   };
 
   const handleDeleteFile = ({
@@ -130,7 +133,7 @@ const NewItemEditor = ({
     const RANDOM_COUNT = 3;
     const randomCategories: Set<Category> = new Set();
     while (randomCategories.size < RANDOM_COUNT) {
-      const recommendedCategory = categoryInfo.recommendedCategory;
+      const recommendedCategory = categoryInfo.total;
       const randomIndex = Math.floor(
         Math.random() * recommendedCategory.length,
       );
@@ -138,29 +141,33 @@ const NewItemEditor = ({
     }
     const titleCategories = [...randomCategories];
     return titleCategories;
-  }, [categoryInfo.recommendedCategory]);
+  }, [categoryInfo.total]);
 
-  const handleRecommendation = () => {
+  const handleRecommendation = useCallback(() => {
     if (isEdit) return;
-    setFirstClickCTitle(true);
+    if (firstClickCTitle) return;
     const timeOutId = setTimeout(() => {
       const category = getRandomCategories();
       setCategoryInfo((prev) => ({
         ...prev,
         recommendedCategory: category,
       }));
+      setFirstClickCTitle(true);
     }, 1500);
     return () => {
       clearTimeout(timeOutId);
     };
-  };
+  }, [firstClickCTitle, getRandomCategories]);
 
-  const handleCategory = (categoryId: number) => {
+  const handleCategory = (updatedCategory: Category) => {
+    if (updatedCategory.id === categoryInfo.currentId) return;
+    const updatedRecommendedCategory = categoryInfo.recommendedCategory;
     setCategoryInfo((prev) => ({
       ...prev,
-      currentId: categoryId,
+      recommendedCategory: updatedRecommendedCategory,
+      currentId: updatedCategory.id,
     }));
-    setItem((prev) => ({ ...prev, category: categoryId }));
+    setItem((prev) => ({ ...prev, category: updatedCategory.id }));
   };
 
   const handlePrice = ({ target }: ChangeEvent<HTMLInputElement>) => {
@@ -173,17 +180,6 @@ const NewItemEditor = ({
     const { value } = target;
     setItem((prev) => ({ ...prev, contents: value }));
   };
-
-  useEffect(() => {
-    const getCategories = async () => {
-      const { data } = await api.get('/resources/categories');
-      setCategoryInfo((prev) => ({
-        ...prev,
-        categories: data.data.categories,
-      }));
-    };
-    getCategories();
-  }, []);
 
   useEffect(() => {
     if (isEdit && origin) {
@@ -203,9 +199,21 @@ const NewItemEditor = ({
     }
   }, [isEdit, origin]);
 
+  useEffect(() => {
+    const getCategories = async () => {
+      const { data } = await api.get('/resources/categories');
+      setCategoryInfo((prev) => ({
+        ...prev,
+        total: data.data.categories,
+      }));
+    };
+    getCategories();
+  }, []);
+
   return (
-    <MyNewContainer>
+    <>
       <NavBar
+        type={'portal'}
         left={<button onClick={handleClose}>닫기</button>}
         center={'새 상품 등록'}
         right={<button onClick={handleSubmit}>완료</button>}
@@ -240,35 +248,9 @@ const NewItemEditor = ({
       <SubTabBar icon={'location'} content={`${item.region}`}>
         <Icon name="keyboard" />
       </SubTabBar>
-    </MyNewContainer>
+    </>
   );
 };
-
-const slideInAnimation = keyframes`
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
-`;
-
-const MyNewContainer = styled.div`
-  position: absolute;
-  bottom: 0;
-  width: 100vw;
-  height: 95vh;
-  background-color: ${({ theme }) => theme.colors.neutral.background};
-  color: ${({ theme }) => theme.colors.neutral.text};
-  animation: ${slideInAnimation} 0.3s ease-in-out;
-  border-radius: 10px 10px 0px 0px;
-  > div:nth-child(1) {
-    border-radius: 10px 10px 0px 0px;
-  }
-  input {
-    color: ${({ theme }) => theme.colors.neutral.text};
-  }
-`;
 
 const MyNew = styled.div`
   width: 100vw;
@@ -287,4 +269,4 @@ const MyNew = styled.div`
   }
 `;
 
-export default NewItemEditor;
+export default ItemEditor;

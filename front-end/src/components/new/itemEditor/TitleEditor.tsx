@@ -1,4 +1,5 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import Icon from '@assets/Icon';
 import Button from '@common/Button';
@@ -6,14 +7,15 @@ import Textarea from '@common/Textarea';
 
 import { styled } from 'styled-components';
 
-import { CategoryInfo, Category } from '../NewItemEditor';
+import CategoryList from '../CategoryList';
+import { CategoryInfo, Category } from '../itemEditor/ItemEditor';
 
 interface TitleEditorProps {
   title: string;
   categoryInfo: CategoryInfo;
   onChageTitle: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   onClickTitle: () => void;
-  onClickCategory: (categoryId: number) => void;
+  onClickCategory: (category: Category) => void;
 }
 
 const TitleEditor = ({
@@ -23,6 +25,11 @@ const TitleEditor = ({
   onClickTitle,
   onClickCategory,
 }: TitleEditorProps) => {
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const handleCategoryModal = () => {
+    setIsCategoryModalOpen((prev) => !prev);
+  };
+
   return (
     <MyTitleBox>
       <Textarea
@@ -34,7 +41,7 @@ const TitleEditor = ({
         onChange={onChageTitle}
         onClick={onClickTitle}
       />
-      {categoryInfo.recommendedCategory.length === 3 && (
+      {!!categoryInfo.recommendedCategory.length && (
         <MyTitleCategories>
           <MyCategories>
             {categoryInfo.recommendedCategory.map(({ id, title }: Category) => {
@@ -44,7 +51,7 @@ const TitleEditor = ({
                   key={id}
                   active={isActive}
                   category
-                  onClick={() => onClickCategory(id)}
+                  onClick={() => onClickCategory({ id, title })}
                 >
                   {title}
                 </Button>
@@ -54,12 +61,20 @@ const TitleEditor = ({
           <Icon
             name={'chevronRight'}
             size={'xs'}
-            onClick={() => {
-              console.log('카테고리 포탈띄우기');
-            }}
+            onClick={handleCategoryModal}
           />
         </MyTitleCategories>
       )}
+      {isCategoryModalOpen &&
+        createPortal(
+          <CategoryList
+            categories={categoryInfo.total}
+            selectedId={categoryInfo.currentId}
+            onClickCategory={onClickCategory}
+            onPortal={handleCategoryModal}
+          />,
+          document.body,
+        )}
     </MyTitleBox>
   );
 };

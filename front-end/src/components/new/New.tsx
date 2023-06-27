@@ -1,14 +1,16 @@
 import PortalLayout from '@components/layout/PortalLayout';
-import NewItemEditor from '@components/new/NewItemEditor';
+import ItemEditor from '@components/new/itemEditor/ItemEditor';
 
 interface NewProps {
   onClick: () => void;
 }
 
 const New = ({ onClick }: NewProps) => {
+  // TODO: isEdit, origin 여부 확인하고 에디터에 데이터 넣음
+
   return (
     <PortalLayout>
-      <NewItemEditor handleClose={onClick} />
+      <ItemEditor handleClose={onClick} />
     </PortalLayout>
   );
 };
