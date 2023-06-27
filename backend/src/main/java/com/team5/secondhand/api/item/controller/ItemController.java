@@ -6,6 +6,7 @@ import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
 import com.team5.secondhand.api.item.dto.request.ItemPost;
 import com.team5.secondhand.api.item.dto.request.ItemStatusUpdate;
 import com.team5.secondhand.api.item.dto.request.ItemPostWithUrl;
+import com.team5.secondhand.api.item.dto.response.CategoryList;
 import com.team5.secondhand.api.item.dto.response.ItemDetail;
 import com.team5.secondhand.api.item.dto.response.ItemList;
 import com.team5.secondhand.api.item.exception.ExistItemException;
@@ -79,7 +80,7 @@ public class ItemController {
             throw new AuthenticationException("로그인이 필요한 기능입니다.");
         }
 
-        Member seller = memberService.findByid(loginMember.getId());
+        Member seller = memberService.findById(loginMember.getId());
         Region region = getValidRegions.getRegion(itemPost.getRegion());
         List<ItemDetailImage> itemDetailImages = detailImageUpload.uploadItemDetailImages(itemPost.getImages());
 
@@ -99,7 +100,7 @@ public class ItemController {
     @PutMapping("/{id}")
     public GenericResponse<Long> updateItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemPostWithUrl itemPost) throws ExistMemberIdException, NotValidRegionException, ExistItemException, ExistItemException {
         //의문: seller, region이 기존이랑 달라져도 되나?
-        Member seller = memberService.findByid(loginMember.getId());
+        Member seller = memberService.findById(loginMember.getId());
         Region region = getValidRegions.getRegion(itemPost.getRegion());
         //TODO: order 1 썸네일 이미지 서비스
         String thumbanilUrl = itemPost.getImages().get(0).getUrl();
@@ -151,4 +152,16 @@ public class ItemController {
         return GenericResponse.send("상품 판매글 상태가 삭제 되었습니다.", id);
     }
 
+
+    @Operation(
+            summary = "판매중인 아이템의 카테고리 목록 보기",
+            tags = "Items",
+            description = "사용자는 자신의 동네의 판매중인 카테고리 목록을 볼 수 있다."
+    )
+    @GetMapping("/categories")
+    public GenericResponse<CategoryList> getCategoryList(@RequestParam Long regionId) {
+        CategoryList categoryList = itemService.getCategoryList(regionId);
+
+        return GenericResponse.send("카테고리 목록입니다.", categoryList);
+    }
 }
