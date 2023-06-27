@@ -29,7 +29,19 @@ const OAuthCallback = () => {
               const { data } = await api.post('/login', {
                 memberId: gitHubUserInfo.login,
               });
-              setStorageValue({ key: 'userInfo', value: data.data });
+              setStorageValue({
+                key: 'userInfo',
+                value: {
+                  id: data.data.id,
+                  memberId: data.data.memberId,
+                  profileImgUrl: data.data.profileImgUrl,
+                  regions: data.data.regions,
+                },
+              });
+              setStorageValue({
+                key: 'token',
+                value: data.data.token,
+              });
               navigate('/');
             } catch {
               const { response } = error;
