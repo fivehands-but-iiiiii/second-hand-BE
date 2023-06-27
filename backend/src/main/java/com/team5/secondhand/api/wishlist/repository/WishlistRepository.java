@@ -16,7 +16,7 @@ import java.util.Optional;
 @Repository
 public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
 
-    @Query("SELECT w FROM Wishlist w WHERE (:itemCategory IS NULL OR w.item.category = :itemCategory) ORDER BY w.id")
+    @Query("SELECT w FROM Wishlist w WHERE (:itemCategory IS NULL OR w.item.category = :itemCategory) ORDER BY w.id DESC")
     Slice<Wishlist> findAllByItemCategoryOrderById(Pageable page, Long itemCategory);
     Optional<Wishlist> findByMemberAndItem(Member member, Item item);
 
