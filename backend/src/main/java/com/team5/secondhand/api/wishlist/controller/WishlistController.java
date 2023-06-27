@@ -7,7 +7,10 @@ import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.member.exception.ExistMemberIdException;
 import com.team5.secondhand.api.member.service.MemberService;
-import com.team5.secondhand.api.wishlist.dto.request.WishListItem;
+import com.team5.secondhand.api.wishlist.dto.request.WishlistItem;
+import com.team5.secondhand.api.wishlist.dto.request.WishlistFilter;
+import com.team5.secondhand.api.wishlist.dto.response.CategoryList;
+import com.team5.secondhand.api.wishlist.dto.response.WishItemList;
 import com.team5.secondhand.api.wishlist.exception.ExistWishlistException;
 import com.team5.secondhand.api.wishlist.service.WishlistService;
 import com.team5.secondhand.global.dto.GenericResponse;
@@ -26,7 +29,7 @@ public class WishlistController {
     private final ItemService itemService;
 
     @PostMapping("/like")
-    public GenericResponse<Long> likeItem(@RequestAttribute MemberDetails loginMember, @RequestBody WishListItem wishListItem) throws ExistMemberIdException, ExistItemException, ExistWishlistException {
+    public GenericResponse<Long> likeItem(@RequestAttribute MemberDetails loginMember, @RequestBody WishlistItem wishListItem) throws ExistMemberIdException, ExistItemException, ExistWishlistException {
         //id 해당하는 item 있는지 확인
         Member member = memberService.findById(loginMember.getId());
         Item item = itemService.findById(wishListItem.getItemId());
@@ -44,5 +47,19 @@ public class WishlistController {
         wishlistService.unlikeItem(member, item);
 
         return GenericResponse.send("좋아요 등록이 취소되었습니다.", null);
+    }
+
+    @GetMapping("/categories")
+    public GenericResponse<CategoryList> getCategories(@RequestAttribute MemberDetails loginMember) throws ExistMemberIdException {
+        CategoryList categories = wishlistService.getCategories(loginMember.getId());
+
+        return GenericResponse.send("카테고리 목록입니다.", categories);
+    }
+
+    @GetMapping()
+    public GenericResponse<WishItemList> getWishlist(@RequestAttribute MemberDetails loginMember, WishlistFilter wishlistFilter) {
+        WishItemList wishlist = wishlistService.getWishlist(loginMember.getId(), wishlistFilter.getPage(), wishlistFilter.getCategory());
+
+        return GenericResponse.send("관심목록 리스트 조회에 성공하였습니다.", wishlist);
     }
 }
