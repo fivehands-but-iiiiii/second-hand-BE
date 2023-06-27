@@ -30,7 +30,6 @@ public class Item extends BaseTimeEntity {
     private int price;
     @NotNull
     private Long category;
-    @NotNull
     @Size(max = 300)
     private String thumbnailUrl;
     @NotNull
