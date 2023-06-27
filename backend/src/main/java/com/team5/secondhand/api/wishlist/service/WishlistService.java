@@ -47,7 +47,7 @@ public class WishlistService {
     }
 
     public WishItemList getWishlist(Long memberId, int page, Long category) {
-        PageRequest pageRequest = PageRequest.of(page, FILTER_SIZE, Sort.by(Sort.Direction.ASC, "id"));
+        PageRequest pageRequest = PageRequest.of(page, FILTER_SIZE, Sort.by(Sort.Direction.DESC, "id"));
         Slice<Wishlist> wishlistSlice = wishlistRepository.findAllByItemCategoryOrderById(pageRequest, category);
         List<WishItem> wishItems = wishlistSlice.getContent().stream()
                 .map(w -> WishItem.of(w.getItem()))
