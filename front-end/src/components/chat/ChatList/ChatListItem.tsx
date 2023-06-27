@@ -1,8 +1,13 @@
 import { ComponentPropsWithRef } from 'react';
 
+import Button from '@common/Button/Button';
+import ImgBox from '@common/ImgBox/ImgBox';
+import UserProfile from '@components/login/UserProfile';
+
 import { styled } from 'styled-components';
 
 interface ChatListItem extends ComponentPropsWithRef<'button'> {
+  id: string;
   userImage: string;
   userName: string;
   lastMessageTime: string;
@@ -11,17 +16,22 @@ interface ChatListItem extends ComponentPropsWithRef<'button'> {
   itemImage: string;
 }
 
-const ChatListItem = ({
-  userImage,
-  userName,
-  lastMessageTime,
-  lastMessage,
-  unreadCount,
-  itemImage,
-}: ChatListItem) => {
+interface ChatListProps {
+  chatItem: ChatListItem;
+}
+
+const ChatListItem = ({ chatItem }: ChatListProps) => {
+  const {
+    userImage,
+    userName,
+    lastMessageTime,
+    lastMessage,
+    unreadCount,
+    itemImage,
+  } = chatItem;
   return (
     <MyChatListItem>
-      <div>{userImage}</div>
+      <UserProfile size="s" profileImgUrl={userImage} />
       <MyChatInfo>
         <MyChatUserName>
           <div>{userName}</div>
@@ -29,8 +39,12 @@ const ChatListItem = ({
         </MyChatUserName>
         <MyChatLastMessage>{lastMessage}</MyChatLastMessage>
       </MyChatInfo>
-      <div>{unreadCount}</div>
-      <div>{itemImage}</div>
+      <MyChatItem>
+        <Button active circle="sm">
+          {unreadCount}
+        </Button>
+        <ImgBox src={itemImage} size="sm" alt={itemImage} />
+      </MyChatItem>
     </MyChatListItem>
   );
 };
@@ -60,15 +74,26 @@ const MyChatUserName = styled.div`
   display: flex;
   gap: 4px;
   color: ${({ theme }) => theme.colors.neutral.textStrong};
+  ${({ theme }) => theme.fonts.subhead};
+  > div:nth-child(2) {
+    color: ${({ theme }) => theme.colors.neutral.textWeak};
+    ${({ theme }) => theme.fonts.footnote};
+  }
 `;
 
 const MyChatLastMessage = styled.div`
   width: 100%;
   color: ${({ theme }) => theme.colors.neutral.text};
   ${({ theme }) => theme.fonts.footnote};
+  text-align: start;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+`;
+
+const MyChatItem = styled.div`
+  display: flex;
+  gap: 8px;
 `;
 
 export default ChatListItem;
