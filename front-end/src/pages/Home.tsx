@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import Icon from '@assets/Icon';
+import Button from '@common/Button/Button';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
 import Spinner from '@common/Spinner/Spinner';
 import Category from '@components/home/Category';
 import ItemList from '@components/home/ItemList';
+import New from '@components/new/New';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
+import palette from '@styles/colors';
 
 import { styled } from 'styled-components';
 
@@ -34,6 +37,7 @@ const Home = () => {
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [filterInfo, setFilterInfo] = useState<HomeFilterInfo>({
     sellerId: null,
     regionId: 1,
@@ -64,6 +68,10 @@ const Home = () => {
 
   const handleCategoryModal = () => {
     setIsCategoryModalOpen((prev) => !prev);
+  };
+
+  const handleNewModal = () => {
+    setIsNewModalOpen((prev) => !prev);
   };
 
   // 필터가 한 번 밖에 안 돼...
@@ -132,6 +140,11 @@ const Home = () => {
           />,
           document.body,
         )}
+      <MyNewBtn active circle={'lg'} onClick={handleNewModal}>
+        <Icon name={'plus'} fill={palette.neutral.backgroundWeak} />
+      </MyNewBtn>
+      {isNewModalOpen &&
+        createPortal(<New onClick={handleNewModal} />, document.body)}
     </>
   );
 };
@@ -143,6 +156,12 @@ const MyNavBarBtn = styled.button`
 
 const MyOnFetchItems = styled.div`
   margin-bottom: 75px;
+`;
+
+const MyNewBtn = styled(Button)`
+  position: fixed;
+  right: 9vw;
+  bottom: 120px;
 `;
 
 export default Home;
