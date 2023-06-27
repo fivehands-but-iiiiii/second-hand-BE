@@ -18,12 +18,12 @@ interface ImageEditorProps {
 const ImageEditor = ({ files, onChage, onClick }: ImageEditorProps) => {
   return (
     <MyImagesList>
-      <MyImageBox>
+      <MyFileBox>
         <FileInput fileCount={`${files.length}/10`} onChage={onChage} />
-      </MyImageBox>
+      </MyFileBox>
       {files &&
         files.map((img, index) => (
-          <li key={index}>
+          <MyImageBox key={index}>
             <ImgBox
               key={index}
               src={img.preview}
@@ -34,7 +34,7 @@ const ImageEditor = ({ files, onChage, onClick }: ImageEditorProps) => {
             <Button value={index} icon circle={'sm'} onClick={onClick}>
               <Icon name={'x'} size={'xs'} fill={palette.neutral.background} />
             </Button>
-          </li>
+          </MyImageBox>
         ))}
     </MyImagesList>
   );
@@ -50,21 +50,9 @@ const MyImagesList = styled.ul`
   &::-webkit-scrollbar {
     display: none;
   }
-  > li {
-    position: relative;
-    > button {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      background-color: ${({ theme }) => theme.colors.neutral.textStrong};
-      > svg {
-        position: absolute;
-      }
-    }
-  }
 `;
 
-const MyImageBox = styled.li`
+const MyFileBox = styled.li`
   width: 80px;
   height: 80px;
   border-radius: 10px;
@@ -72,6 +60,19 @@ const MyImageBox = styled.li`
   object-fit: cover;
   > div {
     width: 80px;
+  }
+`;
+
+const MyImageBox = styled.li`
+  position: relative;
+  > button {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: ${({ theme }) => theme.colors.neutral.textStrong};
+    > svg {
+      position: absolute;
+    }
   }
 `;
 

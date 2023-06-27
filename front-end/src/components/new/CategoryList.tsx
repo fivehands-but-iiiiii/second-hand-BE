@@ -53,11 +53,7 @@ const MyCategoryList = styled.ul`
   &::-webkit-scrollbar {
     display: none;
   }
-  > li {
-    height: 6vh;
-    line-height: 6vh;
-    padding: 0 2.7vw;
-    text-align: start;
+  > li:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.colors.neutral.border};
   }
 `;
@@ -65,6 +61,10 @@ const MyCategoryList = styled.ul`
 const MyCategory = styled.li<CategoryStyleProps>`
   color: ${({ theme, active }) =>
     active ? theme.colors.accent.backgroundPrimary : theme.colors.neutral.text};
+  height: 6vh;
+  line-height: 6vh;
+  padding: 0 2.7vw;
+  text-align: start;
 `;
 
 export default CategoryList;

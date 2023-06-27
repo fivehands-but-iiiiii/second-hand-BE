@@ -12,7 +12,7 @@ import { CategoryInfo, Category } from '../itemEditor/ItemEditor';
 
 interface TitleEditorProps {
   title: string;
-  categoryInfo: CategoryInfo;
+  category: CategoryInfo;
   onChageTitle: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   onClickTitle: () => void;
   onClickCategory: (category: Category) => void;
@@ -20,7 +20,7 @@ interface TitleEditorProps {
 
 const TitleEditor = ({
   title,
-  categoryInfo,
+  category,
   onChageTitle,
   onClickTitle,
   onClickCategory,
@@ -41,11 +41,11 @@ const TitleEditor = ({
         onChange={onChageTitle}
         onClick={onClickTitle}
       />
-      {!!categoryInfo.recommendedCategory.length && (
+      {!!category.recommendedCategory.length && (
         <MyTitleCategories>
           <MyCategories>
-            {categoryInfo.recommendedCategory.map(({ id, title }: Category) => {
-              const isActive = categoryInfo.currentId === id;
+            {category.recommendedCategory.map(({ id, title }: Category) => {
+              const isActive = category.currentId === id;
               return (
                 <Button
                   key={id}
@@ -68,8 +68,8 @@ const TitleEditor = ({
       {isCategoryModalOpen &&
         createPortal(
           <CategoryList
-            categories={categoryInfo.total}
-            selectedId={categoryInfo.currentId}
+            categories={category.total}
+            selectedId={category.currentId}
             onClickCategory={onClickCategory}
             onPortal={handleCategoryModal}
           />,

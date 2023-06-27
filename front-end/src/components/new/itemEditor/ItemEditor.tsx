@@ -4,6 +4,7 @@ import {
   ChangeEvent,
   MouseEvent,
   useCallback,
+  useRef,
 } from 'react';
 
 import Icon from '@assets/Icon';
@@ -53,32 +54,32 @@ interface InputFile {
 }
 
 interface ItemEditorProps {
+  categoryInfo: Category[];
   isEdit?: boolean;
   origin?: ItemInfo;
   handleClose: () => void;
 }
 
 const ItemEditor = ({
+  categoryInfo,
   isEdit = false,
   origin,
   handleClose,
 }: ItemEditorProps) => {
   // 지역정보 가져오기
+  const [title, setTitle] = useState('');
   const [firstClickCTitle, setFirstClickCTitle] = useState(false);
-  const [categoryInfo, setCategoryInfo] = useState<CategoryInfo>({
-    total: [],
+  const [contents, setContents] = useState('');
+  const [region, setRegion] = useState(2729060200); // TODO: 지역 유저정보에서 받아오기
+  const [price, setPrice] = useState('');
+  const priceRef = useRef<HTMLInputElement>(null);
+  const [category, setCategory] = useState<CategoryInfo>({
+    total: categoryInfo,
     recommendedCategory: [],
     currentId: 0,
   });
   const [files, setFiles] = useState<InputFile[]>([]);
-  const [item, setItem] = useState<ItemInfo>({
-    title: '',
-    contents: '',
-    region: 0,
-    category: 0,
-    price: '',
-    images: [],
-  });
+  const [isFormValid, setFormValid] = useState(true);
 
   const handleFiles = async ({ target }: ChangeEvent<HTMLInputElement>) => {
     const file = target.files?.[0];
@@ -94,17 +95,26 @@ const ItemEditor = ({
     ]);
   };
 
-  // TODO: 새상품등록, 수정 api 변경필요함
+  const validateForm = useCallback(() => {
+    if (!title || !category.currentId || !region || !files.length) return false;
+    else return true;
+  }, [title, region, category, files]);
+
+  // TODO: 수정 api 변경필요함
   const handleSubmit = async () => {
+    if (!contents || !priceRef.current) return;
     const formData = new FormData();
     files.forEach(({ file }) => {
       formData.append('images', file as Blob, file?.name);
     });
-    formData.append('title', item.title);
-    formData.append('contents', item.contents);
-    formData.append('category', item.category.toString());
-    formData.append('price', item.price.toString());
-    formData.append('region', item.region.toString());
+    formData.append('title', title);
+    formData.append('contents', contents);
+    formData.append('category', category.currentId.toString());
+    formData.append(
+      'price',
+      parseInt(priceRef.current.value.replace(/,/g, '')).toString(),
+    );
+    formData.append('region', region.toString());
     try {
       await api.post('/items', formData, {
         headers: {
@@ -126,27 +136,26 @@ const ItemEditor = ({
 
   const handleTitle = ({ target }: ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = target;
-    setItem((prev) => ({ ...prev, title: value }));
+    setTitle(value);
   };
 
   const getRandomCategories = useCallback((): Category[] => {
     const RANDOM_COUNT = 3;
     const randomCategories: Set<Category> = new Set();
     while (randomCategories.size < RANDOM_COUNT) {
-      const categories = categoryInfo.total;
-      const randomIndex = Math.floor(Math.random() * categories.length);
-      randomCategories.add(categories[randomIndex]);
+      const randomIndex = Math.floor(Math.random() * categoryInfo.length);
+      randomCategories.add(categoryInfo[randomIndex]);
     }
     const titleCategories = [...randomCategories];
     return titleCategories;
-  }, [categoryInfo.total]);
+  }, [categoryInfo]);
 
   const handleRecommendation = useCallback(() => {
     if (isEdit) return;
     if (firstClickCTitle) return;
     const timeOutId = setTimeout(() => {
       const category = getRandomCategories();
-      setCategoryInfo((prev) => ({
+      setCategory((prev) => ({
         ...prev,
         recommendedCategory: category,
       }));
@@ -157,18 +166,19 @@ const ItemEditor = ({
     };
   }, [firstClickCTitle, getRandomCategories]);
 
+  // TODO: 랜덤 3개 추출하는 함수 (BE API나오면 제거예정)
   const handleCategory = (updatedCategory: Category) => {
-    if (updatedCategory.id === categoryInfo.currentId) {
-      return setCategoryInfo((prev) => ({
+    const isSameCategory = category.currentId === updatedCategory.id;
+    const isExistingCategory = category.recommendedCategory.some(
+      ({ id }) => id === updatedCategory.id,
+    );
+    if (isSameCategory) {
+      return setCategory((prev) => ({
         ...prev,
         currentId: 0,
       }));
-    } else if (
-      categoryInfo.recommendedCategory.some(({ id }) => {
-        return id === updatedCategory.id;
-      })
-    ) {
-      setCategoryInfo((prev) => ({
+    } else if (isExistingCategory) {
+      setCategory((prev) => ({
         ...prev,
         currentId: updatedCategory.id,
       }));
@@ -176,66 +186,44 @@ const ItemEditor = ({
       const updatedRecommendedCategory = [
         ...[
           updatedCategory,
-          ...categoryInfo.recommendedCategory.filter(
+          ...category.recommendedCategory.filter(
             (category) => category.id !== updatedCategory.id,
           ),
         ],
       ].splice(0, 3);
-      setCategoryInfo((prev) => ({
+      setCategory((prev) => ({
         ...prev,
         recommendedCategory: updatedRecommendedCategory,
         currentId: updatedCategory.id,
       }));
     }
-    setItem((prev) => ({ ...prev, category: updatedCategory.id }));
   };
 
   const handlePrice = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const { value } = target;
     const formattedPrice = getFormattedPrice(value);
-    formattedPrice && setItem((prev) => ({ ...prev, price: formattedPrice }));
+    setPrice(formattedPrice);
   };
 
   const handleContents = ({ target }: ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = target;
-    setItem((prev) => ({ ...prev, contents: value }));
+    setContents(value);
   };
 
   useEffect(() => {
-    if (isEdit && origin) {
-      setItem({
-        title: origin.title,
-        contents: origin.contents,
-        category: origin.category,
-        region: origin.region,
-        price: origin.price,
-        images: origin.images,
-      });
-      setFiles(
-        origin.images.map((image: ImageFile) => ({
-          preview: image.url,
-        })),
-      );
-    }
-  }, [isEdit, origin]);
-
-  useEffect(() => {
-    const getCategories = async () => {
-      const { data } = await api.get('/resources/categories');
-      setCategoryInfo((prev) => ({
-        ...prev,
-        total: data.data.categories,
-      }));
-    };
-    getCategories();
-  }, []);
+    setFormValid(validateForm());
+  }, [title, region, category, files, validateForm]);
 
   return (
     <>
       <NavBar
         left={<button onClick={handleClose}>닫기</button>}
         center={'새 상품 등록'}
-        right={<button onClick={handleSubmit}>완료</button>}
+        right={
+          <button disabled={!isFormValid} onClick={handleSubmit}>
+            완료
+          </button>
+        }
       />
       <MyNew>
         <ImageEditor
@@ -244,27 +232,28 @@ const ItemEditor = ({
           onClick={handleDeleteFile}
         />
         <TitleEditor
-          title={item.title}
-          categoryInfo={categoryInfo}
+          title={title}
+          category={category}
           onChageTitle={handleTitle}
           onClickTitle={handleRecommendation}
           onClickCategory={handleCategory}
         />
-        <LabelInput
+        <MyPrice
           label={'₩'}
           name={'price'}
-          value={item.price}
+          value={price}
           placeholder={'가격(선택사항)'}
           onChange={handlePrice}
+          ref={priceRef}
         />
-        <Textarea
+        <MyContents
           name={'contents'}
-          value={item.contents}
-          placeholder={`${item.region}에 올릴 게시물 내용을 작성해주세요.`}
+          value={contents}
+          placeholder={`${region}에 올릴 게시물 내용을 작성해주세요.`}
           onChange={handleContents}
         />
       </MyNew>
-      <SubTabBar icon={'location'} content={`${item.region}`}>
+      <SubTabBar icon={'location'} content={`${region}`}>
         <Icon name="keyboard" />
       </SubTabBar>
     </>
@@ -279,15 +268,24 @@ const MyNew = styled.div`
   > div:nth-child(1) {
     padding: 15px 0;
   }
-  > div:last-child {
-    > textarea {
-      /* TODO: 최대높이 반응형으로 조절해야됨 */
-      height: 52vh;
-      overflow: auto;
-      -ms-overflow-style: none;
-      &::-webkit-scrollbar {
-        display: none;
-      }
+`;
+
+const MyPrice = styled(LabelInput)`
+  padding: 15px 15px 15px 0;
+  label {
+    padding-left: 15px;
+    ${({ theme }) => theme.colors.neutral.border};
+  }
+`;
+
+const MyContents = styled(Textarea)`
+  > textarea {
+    /* TODO: 최대높이 반응형으로 조절해야됨 */
+    height: 52vh;
+    overflow: auto;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+      display: none;
     }
   }
 `;
