@@ -61,8 +61,8 @@ const MyUserImg = styled.img<UserProfileProps>`
   ${({ size }) =>
     size === 's'
       ? css`
-          width: 40px;
-          height: 40px;
+          width: 48px;
+          height: 48px;
         `
       : css`
           width: 80px;
