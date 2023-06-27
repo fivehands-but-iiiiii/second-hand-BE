@@ -45,7 +45,7 @@ const TitleEditor = ({
         <MyTitleCategories>
           <MyCategories>
             {category.recommendedCategory.map(({ id, title }: Category) => {
-              const isActive = category.currentId === id;
+              const isActive = id === category.selectedId;
               return (
                 <Button
                   key={id}
@@ -69,7 +69,7 @@ const TitleEditor = ({
         createPortal(
           <CategoryList
             categories={category.total}
-            selectedId={category.currentId}
+            selectedId={category.selectedId}
             onClickCategory={onClickCategory}
             onPortal={handleCategoryModal}
           />,

@@ -30,7 +30,7 @@ export interface Category {
 export interface CategoryInfo {
   total: Category[];
   recommendedCategory: Category[];
-  currentId: number;
+  selectedId: number;
 }
 
 interface ImageFile {
@@ -39,7 +39,7 @@ interface ImageFile {
 }
 
 export interface ItemInfo {
-  id?: number;
+  id: number;
   title: string;
   contents: string;
   region: number;
@@ -76,7 +76,7 @@ const ItemEditor = ({
   const [category, setCategory] = useState<CategoryInfo>({
     total: categoryInfo,
     recommendedCategory: [],
-    currentId: 0,
+    selectedId: 0,
   });
   const [files, setFiles] = useState<InputFile[]>([]);
   const [isFormValid, setFormValid] = useState(true);
@@ -96,7 +96,7 @@ const ItemEditor = ({
   };
 
   const validateForm = useCallback(() => {
-    if (!title || !category.currentId || !region || !files.length) return false;
+    if (!title || !category.selectedId || !region || !files.length) return false;
     else return true;
   }, [title, region, category, files]);
 
@@ -109,7 +109,7 @@ const ItemEditor = ({
     });
     formData.append('title', title);
     formData.append('contents', contents);
-    formData.append('category', category.currentId.toString());
+    formData.append('category', category.selectedId.toString());
     formData.append(
       'price',
       parseInt(priceRef.current.value.replace(/,/g, '')).toString(),
@@ -168,19 +168,19 @@ const ItemEditor = ({
 
   // TODO: 랜덤 3개 추출하는 함수 (BE API나오면 제거예정)
   const handleCategory = (updatedCategory: Category) => {
-    const isSameCategory = category.currentId === updatedCategory.id;
+    const isSameCategory = category.selectedId === updatedCategory.id;
     const isExistingCategory = category.recommendedCategory.some(
       ({ id }) => id === updatedCategory.id,
     );
     if (isSameCategory) {
       return setCategory((prev) => ({
         ...prev,
-        currentId: 0,
+        selectedId: 0,
       }));
     } else if (isExistingCategory) {
       setCategory((prev) => ({
         ...prev,
-        currentId: updatedCategory.id,
+        selectedId: updatedCategory.id,
       }));
     } else {
       const updatedRecommendedCategory = [
@@ -194,7 +194,7 @@ const ItemEditor = ({
       setCategory((prev) => ({
         ...prev,
         recommendedCategory: updatedRecommendedCategory,
-        currentId: updatedCategory.id,
+        selectedId: updatedCategory.id,
       }));
     }
   };

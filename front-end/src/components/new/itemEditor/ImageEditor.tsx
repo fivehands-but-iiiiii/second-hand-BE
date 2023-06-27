@@ -21,21 +21,20 @@ const ImageEditor = ({ files, onChage, onClick }: ImageEditorProps) => {
       <MyFileBox>
         <FileInput fileCount={`${files.length}/10`} onChage={onChage} />
       </MyFileBox>
-      {files &&
-        files.map((img, index) => (
-          <MyImageBox key={index}>
-            <ImgBox
-              key={index}
-              src={img.preview}
-              alt={img.file?.name || `${index} 첨부파일`}
-              size="md"
-            />
-            {!index && <MyThumbnail>대표사진</MyThumbnail>}
-            <Button value={index} icon circle={'sm'} onClick={onClick}>
-              <Icon name={'x'} size={'xs'} fill={palette.neutral.background} />
-            </Button>
-          </MyImageBox>
-        ))}
+      {files.map((img, index) => (
+        <MyImageBox key={index}>
+          <ImgBox
+            key={index}
+            src={img.preview}
+            alt={img.file?.name || `${index} 첨부파일`}
+            size="md"
+          />
+          {!index && <MyThumbnail>대표사진</MyThumbnail>}
+          <Button value={index} icon circle={'sm'} onClick={onClick}>
+            <Icon name={'x'} size={'xs'} fill={palette.neutral.background} />
+          </Button>
+        </MyImageBox>
+      ))}
     </MyImagesList>
   );
 };
