@@ -74,7 +74,7 @@ public class ItemController {
             description = "사용자는 새로운 상품을 등록할 수 있다."
     )
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public GenericResponse<Long> postItem(@RequestAttribute MemberDetails loginMember, @RequestBody ItemPost itemPost) throws ExistMemberIdException, NotValidRegionException, ImageHostException, AuthenticationException {
+    public GenericResponse<Long> postItem(@RequestAttribute MemberDetails loginMember, ItemPost itemPost) throws ExistMemberIdException, NotValidRegionException, ImageHostException, AuthenticationException {
         if (loginMember == null) {
             throw new AuthenticationException("로그인이 필요한 기능입니다.");
         }
