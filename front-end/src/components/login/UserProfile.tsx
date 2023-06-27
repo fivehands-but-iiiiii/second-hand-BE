@@ -2,15 +2,17 @@ import { useState, useEffect } from 'react';
 
 import FileInput from '@common/FileInput/FileInput';
 
-import { styled } from 'styled-components';
+import { css, styled } from 'styled-components';
 
 interface UserProfileProps {
+  size?: 's' | 'm';
   profileImgUrl?: string;
   memberId?: string;
   handleUploadImg?: (file: FormData | undefined) => void;
 }
 
 const UserProfile = ({
+  size = 'm',
   profileImgUrl,
   memberId,
   handleUploadImg,
@@ -37,7 +39,7 @@ const UserProfile = ({
   return (
     <MyUserProfile>
       {profileImgUrl ? (
-        <MyUserImg src={profileImgUrl} alt={memberId} />
+        <MyUserImg src={profileImgUrl} alt={memberId} size={size} />
       ) : (
         <>
           <MyDefaultImgBox>
@@ -55,9 +57,17 @@ const MyUserProfile = styled.div`
   text-align: center;
 `;
 
-const MyUserImg = styled.img`
-  width: 80px;
-  height: 80px;
+const MyUserImg = styled.img<UserProfileProps>`
+  ${({ size }) =>
+    size === 's'
+      ? css`
+          width: 40px;
+          height: 40px;
+        `
+      : css`
+          width: 80px;
+          height: 80px;
+        `};
   border-radius: 50%;
 `;
 
