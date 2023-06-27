@@ -36,13 +36,6 @@ jobs:
      
         touch ./backend/src/main/resources/application-jwt.yml
         echo "${{ secrets.APPLICATION_JWT }}" > ./backend/src/main/resources/application-jwt.yml
-     
-#     - name: make application-database.yaml
-#       run: |
-#         cd ./src/main/resources
-#         touch ./application-database.yaml
-#         echo "${{ secrets.application_database }}" >> ./application-database.yaml
-#       shell: bash
 
     - name: Build with Gradle
       run: |
@@ -67,7 +60,7 @@ jobs:
           sudo docker rm -f $(docker ps -qa)
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/secondhand
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/secondhand-nginx
-          docker compose up -d
+          sudo docker compose up -d
           sudo docker image prune -a -f
           
           
