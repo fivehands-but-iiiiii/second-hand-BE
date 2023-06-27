@@ -72,7 +72,7 @@ const Home = () => {
       ...prevFilterInfo,
       categoryId: categoryId,
     }));
-    console.log('-------', filterInfo);
+
     setSaleItems([]);
   };
 
