@@ -1,40 +1,40 @@
-import { useState, useEffect } from 'react';
+import { useState, ChangeEvent } from 'react';
 
-import FileInput from '@common/FileInput/FileInput';
+import FileInput from '@common/FileInput';
+import { getPreviewURL } from '@utils/getConvertedFile';
 
 import { css, styled } from 'styled-components';
+
+import { InputFile } from './Join';
 
 interface UserProfileProps {
   size?: 's' | 'm';
   profileImgUrl?: string;
   memberId?: string;
-  handleUploadImg?: (file: FormData | undefined) => void;
+  onChange?: (file: InputFile) => void;
 }
-
+// TODO: 등록된 이미지 없는 유저일 경우 이미지 변경 가능 버튼 생성하고, PATCH 요청
 const UserProfile = ({
   size = 'm',
   profileImgUrl,
   memberId,
-  handleUploadImg,
+  onChange,
 }: UserProfileProps) => {
-  const [previewURL, setPreviewURL] = useState('');
-  const [imgPath, setImgPath] = useState<File | undefined>(undefined);
+  const [previewURL, setPreviewURL] = useState<string>('');
 
-  const handleUpload = (fileURL: string, file: File) => {
-    setPreviewURL(fileURL);
-    setImgPath(file);
-  };
-  // TODO: 사용가능한 filePath 로 POST (현재는 미리보기만 가능)
-  const getFilePath = (file: File) => {
+  const handleFileChange = async ({
+    target,
+  }: ChangeEvent<HTMLInputElement>) => {
+    const file = target.files?.[0];
     if (!file) return;
-    const formData = new FormData();
-    formData.append('file', file, file.name);
-    return formData;
+    const newPreviewURL = await getPreviewURL(file);
+    newPreviewURL && setPreviewURL(newPreviewURL);
+    const newFormData: InputFile = {
+      preview: newPreviewURL,
+      file: file,
+    };
+    onChange && onChange(newFormData);
   };
-
-  useEffect(() => {
-    handleUploadImg && handleUploadImg(imgPath && getFilePath(imgPath));
-  }, [previewURL]);
 
   return (
     <MyUserProfile>
@@ -44,7 +44,7 @@ const UserProfile = ({
         <>
           <MyDefaultImgBox>
             {previewURL && <MyPreviewFile src={previewURL} alt="미리 보기" />}
-            <FileInput handleUpload={handleUpload} />
+            <FileInput onChage={handleFileChange} />
           </MyDefaultImgBox>
         </>
       )}
@@ -53,9 +53,7 @@ const UserProfile = ({
   );
 };
 
-const MyUserProfile = styled.div`
-  text-align: center;
-`;
+const MyUserProfile = styled.div``;
 
 const MyUserImg = styled.img<UserProfileProps>`
   ${({ size }) =>
