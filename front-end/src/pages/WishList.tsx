@@ -1,47 +1,62 @@
+/* eslint-disable import/no-named-as-default-member */
 import { useEffect, useState } from 'react';
 
 import Button from '@common/Button';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
 import ItemList from '@components/home/ItemList/ItemList';
+import useAPI from '@hooks/useAPI';
+import api from 'api';
+import axios from 'axios';
 
 import { styled } from 'styled-components';
 
-import api from '../api';
-// TODO: wishList api 연결
 const WishList = () => {
   const title = '관심 목록';
   const [wishItems, setWishItems] = useState<SaleItem[]>([]);
   const [categories, setCategories] = useState([{ id: 0, title: '전체' }]);
-  const [currentCategoryId, setCurrentCategoryId] = useState(0);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(0);
+  const { response, request } = useAPI();
 
-  // const getWishList = async () => {
-  //   try {
-  // const { data } = await api.get('/wishlist');
-  // TODO: 위시목록 데이터 나오면 path 수정
-  // setWishItems(data.items);
-  // data.categories && setCategories([...categories, data.categories]);
-  //   } catch (error) {
-  //     console.error(`Failed to get wishList: ${error}`);
-  //   }
-  // };
-
-  const handleFilterCategories = (categoryId: number) => {
-    setCurrentCategoryId(categoryId);
-    // getFilteredItems();
+  const getWishList = async () => {
+    await axios
+      .all([
+        request({
+          url: 'wishlist?page=1',
+          method: 'get',
+        }),
+        request({
+          url: '/wishlist/categories',
+          method: 'get',
+        }),
+      ])
+      .then(
+        axios.spread((...responses) => {
+          const [wishList, categories] = responses;
+          setWishItems(wishList.data?.items);
+          setCategories([categories, ...categories.data.categories]);
+        }),
+      );
   };
 
-  // const getFilteredItems = async () => {
-  //   try {
-  //     const { data } = await api.get(`/wishlist?category=${currentCategoryId}`);
-  //     setWishItems(data?.items);
-  //   } catch (error) {
-  //     console.error(`Failed to filter categories: ${error}`);
-  //   }
-  // };
+  const handleFilterCategories = (categoryId: number) => {
+    setSelectedCategoryId(categoryId);
+    getFilteredItems();
+  };
+
+  const getFilteredItems = async () => {
+    try {
+      const { data } = await api.get(
+        `/wishlist?category=${selectedCategoryId}`,
+      );
+      setWishItems(data?.items);
+    } catch (error) {
+      console.error(`Failed to filter categories: ${error}`);
+    }
+  };
 
   useEffect(() => {
-    // getWishList();
+    getWishList();
   }, []);
 
   return (
@@ -50,7 +65,7 @@ const WishList = () => {
       <MyWishList>
         <MyCategories>
           {categories.map(({ id, title }) => {
-            const isActive = id === currentCategoryId;
+            const isActive = id === selectedCategoryId;
             return (
               <Button
                 key={id}
