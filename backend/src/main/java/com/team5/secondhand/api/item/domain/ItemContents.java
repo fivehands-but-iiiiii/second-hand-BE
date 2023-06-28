@@ -3,15 +3,12 @@ package com.team5.secondhand.api.item.domain;
 import com.team5.secondhand.api.item.dto.request.ItemImage;
 import com.team5.secondhand.api.item.util.ImageUrlConverter;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +21,8 @@ import java.util.stream.Collectors;
 @Where(clause = "is_deleted = false")
 public class ItemContents {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String contents;
 
