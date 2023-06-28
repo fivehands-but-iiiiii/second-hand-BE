@@ -15,7 +15,6 @@ const MyTabBar = styled.div`
   display: flex;
   position: fixed;
   bottom: 0;
-  min-width: 400px;
   width: 100%;
   height: 83px;
   flex-direction: row;

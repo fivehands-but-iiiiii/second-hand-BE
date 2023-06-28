@@ -24,7 +24,6 @@ const NavBar = ({ left, center, right, className, children }: NavBarProps) => {
 };
 
 const MyNavBar = styled.div`
-  width: 100vw;
   min-height: 70px;
   position: sticky;
   top: 0;

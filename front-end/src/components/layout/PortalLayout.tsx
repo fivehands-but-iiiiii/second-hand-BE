@@ -15,7 +15,6 @@ const MyPortalLayout = styled.div`
   bottom: 0;
   width: 100vw;
   height: 100vh;
-  min-width: 400px;
   background-color: ${({ theme }) => theme.colors.neutral.background};
   color: ${({ theme }) => theme.colors.neutral.text};
   overflow: auto;
