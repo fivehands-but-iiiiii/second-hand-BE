@@ -30,7 +30,7 @@ interface HomeFilterInfo {
   categoryId: number | null;
 }
 
-type HomePageInfo = Omit<HomeInfo, 'items'>;
+export type HomePageInfo = Omit<HomeInfo, 'items'>;
 
 const Home = () => {
   // TODO: filterInfo가 변하면 -> saleItems를 한 번 비워야한다.

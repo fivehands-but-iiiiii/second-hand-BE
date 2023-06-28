@@ -1,6 +1,6 @@
 import { forwardRef, InputHTMLAttributes } from 'react';
 
-import { styled } from 'styled-components';
+import { styled, css } from 'styled-components';
 
 interface LabelInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -8,13 +8,14 @@ interface LabelInputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 interface LabelInputStyleProps {
-  subText: boolean;
+  subText?: boolean;
 }
 
 const LabelInput = forwardRef<HTMLInputElement, LabelInputProps>(
   ({ label, subText, placeholder, ...rest }, ref) => {
+    const isSubText = typeof subText === 'string';
     return (
-      <MyLabelInput subText={!!subText}>
+      <MyLabelInput subText={isSubText}>
         <label htmlFor="labelInput">{label}</label>
         <input
           name="labelInput"
@@ -31,13 +32,22 @@ const LabelInput = forwardRef<HTMLInputElement, LabelInputProps>(
 const MyLabelInput = styled.div<LabelInputStyleProps>`
   position: relative;
   display: flex;
-  align-items: ${({ subText }) => (subText ? 'flex-end' : 'center')};
-  padding: 1vh 0;
   border-bottom: 1px solid ${({ theme }) => theme.colors.neutral.border};
+  ${({ subText }) =>
+    subText
+      ? css`
+          align-items: flex-end;
+          padding: 1vh 0;
+        `
+      : css`
+          align-items: center;
+          > label {
+            padding: 15px;
+          }
+        `};
   ${({ theme }) => theme.fonts.subhead};
   > label {
     min-width: max-content;
-    padding-left: ${({ subText }) => (subText ? '0' : '15px')};
     color: ${({ theme }) => theme.colors.neutral.text};
   }
   > input {

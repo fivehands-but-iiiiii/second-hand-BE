@@ -6,50 +6,50 @@ import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
 import ItemList from '@components/home/ItemList/ItemList';
 import useAPI from '@hooks/useAPI';
-import axios from 'axios';
+import useIntersectionObserver from '@hooks/useIntersectionObserver';
 
 import { styled } from 'styled-components';
 
-import api from '../api';
 import { HomePageInfo } from '../pages/Home';
 
 const WishList = () => {
   const title = '관심 목록';
-  const [homePageInfo, setHomePageInfo] = useState<HomePageInfo>({
+  const [wishItems, setWishItems] = useState<SaleItem[]>([]);
+  const [categories, setCategories] = useState([{ id: 0, title: '전체' }]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(0);
+  const [pageInfo, setPageInfo] = useState<HomePageInfo>({
     page: 0,
     hasPrevious: false,
     hasNext: true,
   });
-  const [wishItems, setWishItems] = useState<SaleItem[]>([]);
-  const [categories, setCategories] = useState([{ id: 0, title: '전체' }]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState(0);
   const { request } = useAPI();
 
-  const getWishList = async () => {
-    await axios
-      .all([
-        request({
-          url: `wishlist?page=${homePageInfo.page}`,
-          method: 'get',
-        }),
-        request({
-          url: '/wishlist/categories',
-          method: 'get',
-        }),
-      ])
-      .then(
-        axios.spread((...responses) => {
-          const [wishList, categories] = responses;
-          setWishItems(wishList.data?.items);
-          setCategories((pre) => [...pre, ...categories.data.categories]);
+  const onIntersect: IntersectionObserverCallback = ([{ isIntersecting }]) => {
+    if (isIntersecting) getWishListItems();
+  };
 
-          setHomePageInfo({
-            page: wishList.data.number + 1,
-            hasPrevious: wishList.data.hasPrevious,
-            hasNext: wishList.data.hasNext,
-          });
-        }),
-      );
+  const { setTarget } = useIntersectionObserver({ onIntersect });
+
+  const getWishListItems = async () => {
+    if (!pageInfo.hasNext) return;
+    const { data } = await request({
+      url: `wishlist?page=${pageInfo.page}`,
+      method: 'get',
+    });
+    setWishItems((pre) => [...pre, ...data.items]);
+    setPageInfo({
+      page: pageInfo.page + 1,
+      hasPrevious: data?.hasPrevious,
+      hasNext: data?.hasNext,
+    });
+  };
+
+  const getWishListCategories = async () => {
+    const { data } = await request({
+      url: '/wishlist/categories',
+      method: 'get',
+    });
+    setCategories((pre) => [...pre, ...data.categories]);
   };
 
   const handleFilterCategories = (categoryId: number) => {
@@ -58,18 +58,19 @@ const WishList = () => {
   };
 
   const getFilteredItems = async () => {
-    try {
-      const { data } = await api.get(
-        `/wishlist?category=${selectedCategoryId}`,
-      );
-      setWishItems(data?.items);
-    } catch (error) {
-      console.error(`Failed to filter categories: ${error}`);
-    }
+    const { data } = await request({
+      url: `wishlist?category=${selectedCategoryId}`,
+      method: 'get',
+    });
+    setWishItems(data.items);
   };
 
   useEffect(() => {
-    getWishList();
+    getWishListItems();
+  }, [pageInfo.page]);
+
+  useEffect(() => {
+    getWishListCategories();
   }, []);
 
   return (
@@ -92,6 +93,9 @@ const WishList = () => {
           })}
         </MyCategories>
         <ItemList saleItems={wishItems} />
+        {!!wishItems.length && (
+          <MyOnFetchItems ref={setTarget}></MyOnFetchItems>
+        )}
       </MyWishList>
     </>
   );
@@ -110,6 +114,10 @@ const MyCategories = styled.div`
   padding: 2vh 15px 0;
   display: flex;
   gap: 4px;
+`;
+
+const MyOnFetchItems = styled.div`
+  margin-bottom: 75px;
 `;
 
 export default WishList;
