@@ -24,4 +24,6 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
 
     @Query("SELECT DISTINCT w.item.category from Wishlist w where w.member.id = :memberId")
     List<Long> findByDistinctCategoryByMember(@Param("memberId") Long memberId);
+
+    boolean existsByMemberIdAndItemId(Long memberId, Long itemId);
 }
