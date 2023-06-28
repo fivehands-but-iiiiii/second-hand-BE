@@ -35,6 +35,7 @@ public class ItemPost {
                 .status(Status.ON_SALE)
                 .count(ItemCounts.createRelated())
                 .contents(ItemContents.createdRelated(contents, images))
+                .isDeleted(false)
                 .build();
     }
 }

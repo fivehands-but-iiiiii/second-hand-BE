@@ -15,256 +15,178 @@ DROP SCHEMA IF EXISTS `secondhand-db`;
 CREATE SCHEMA IF NOT EXISTS `secondhand-db` DEFAULT CHARACTER SET utf8mb4;
 USE `secondhand-db`;
 
--- -----------------------------------------------------
--- Table `secondhand-db`.`member`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `secondhand-db`.`member`;
-
-CREATE TABLE IF NOT EXISTS `secondhand-db`.`member`
+create table if not exists category
 (
-    `id`              BIGINT       NOT NULL AUTO_INCREMENT,
-    `member_id`        VARCHAR(16)  NOT NULL,
-    `profile_img_url` VARCHAR(300) NULL,
-    `oauth`           ENUM('GITHUB', 'NONE'),
-    PRIMARY KEY (`id`),
-    INDEX `memberId_UNIQUE` (`member_id` ASC) VISIBLE
-)
-    ENGINE = InnoDB;
+    id      bigint       not null,
+    title   varchar(16)  not null,
+    img_url varchar(300) not null,
+    primary key (id),
+    constraint title_UNIQUE
+        unique (title)
+);
 
-
--- -----------------------------------------------------
--- Table `secondhand-db`.`region`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `secondhand-db`.`region`;
-
-CREATE TABLE IF NOT EXISTS `secondhand-db`.`region`
+create table if not exists item_contents
 (
-    `id`       BIGINT      NOT NULL,
-    `city`     VARCHAR(45) NOT NULL,
-    `county`   VARCHAR(45) NOT NULL,
-    `district` VARCHAR(45) NOT NULL,
-    PRIMARY KEY (`id`)
-)
-    ENGINE = InnoDB;
+    id               bigint auto_increment
+        primary key,
+    contents         text             null,
+    detail_image_url text             null,
+    is_deleted       bit default b'0' null
+);
 
-ALTER TABLE region ADD FULLTEXT INDEX fulltext_address (city, county, district) with parser ngram;
-
--- -----------------------------------------------------
--- Table `secondhand-db`.`category`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `secondhand-db`.`category`;
-
-CREATE TABLE IF NOT EXISTS `secondhand-db`.`category`
+create table if not exists item_counts
 (
-    `id`      BIGINT       NOT NULL,
-    `title`   VARCHAR(16)  NOT NULL,
-    `img_url` VARCHAR(300) NOT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE INDEX `title_UNIQUE` (`title` ASC) VISIBLE
-)
-    ENGINE = InnoDB;
+    id          bigint auto_increment
+        primary key,
+    hits        bigint           not null,
+    like_counts bigint           not null,
+    chat_counts bigint           not null,
+    is_deleted  bit default b'0' null
+);
 
-
--- -----------------------------------------------------
--- Table `secondhand-db`.`item_counts`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `secondhand-db`.`item_counts`;
-
-CREATE TABLE IF NOT EXISTS `secondhand-db`.`item_counts`
+create table if not exists member
 (
-    `id`          BIGINT      NOT NULL AUTO_INCREMENT,
-    `hits`        BIGINT      NOT NULL,
-    `like_counts` BIGINT NOT NULL,
-    `chat_counts` BIGINT NOT NULL,
-    `is_deleted`    TINYINT      default 0 NOT NULL,
-    PRIMARY KEY (`id`)
-)
-    ENGINE = InnoDB;
+    id              bigint auto_increment
+        primary key,
+    member_id       varchar(16)             not null,
+    profile_img_url varchar(300)            null,
+    oauth           enum ('GITHUB', 'NONE') null
+);
 
+create index memberId_UNIQUE
+    on member (member_id);
 
--- -----------------------------------------------------
--- Table `secondhand-db`.`item_contents`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `secondhand-db`.`item_contents`;
-
-CREATE TABLE IF NOT EXISTS `secondhand-db`.`item_contents`
+create table if not exists region
 (
-    `id`               BIGINT        NOT NULL AUTO_INCREMENT,
-    `contents`         TEXT          NULL,
-    `detail_image_url` TEXT          NULL,
-    `is_deleted`         TINYINT     default 0 NOT NULL,
-    PRIMARY KEY (`id`)
-)
-    ENGINE = InnoDB;
+    id       bigint      not null,
+    city     varchar(45) not null,
+    county   varchar(45) null,
+    district varchar(45) not null,
+    primary key (id)
+);
 
-
--- -----------------------------------------------------
--- Table `secondhand-db`.`item`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `secondhand-db`.`item`;
-
-CREATE TABLE IF NOT EXISTS `secondhand-db`.`item`
+create table if not exists based_region
 (
-    `id`               BIGINT       NOT NULL AUTO_INCREMENT,
-    `title`            VARCHAR(45)  NOT NULL,
-    `price`            INT          NULL,
-    `status`           VARCHAR(16)  NOT NULL,
-    `category`         VARCHAR(45)  NOT NULL,
-    `thumbnail_url`    VARCHAR(300) NOT NULL,
-    `created_at`       DATETIME     NOT NULL,
-    `updated_at`       DATETIME     NULL,
-    `seller_id`        BIGINT       NOT NULL,
-    `item_counts_id`   BIGINT       NOT NULL,
-    `region_id`        BIGINT       NOT NULL,
-    `item_contents_id` BIGINT       NOT NULL,
-    `is_deleted`         TINYINT    default 0 NOT NULL,
-    PRIMARY KEY (`id`),
-    INDEX `fk_item_member_idx` (`seller_id` ASC) VISIBLE,
-    INDEX `fk_item_item_image1_idx` (`item_counts_id` ASC) VISIBLE,
-    INDEX `fk_item_region1_idx` (`region_id` ASC) VISIBLE,
-    INDEX `fk_item_item_contents1_idx` (`item_contents_id` ASC) VISIBLE,
-    CONSTRAINT `fk_item_member`
-        FOREIGN KEY (`seller_id`)
-            REFERENCES `secondhand-db`.`member` (`id`)
-            ON DELETE NO ACTION
-            ON UPDATE NO ACTION,
-    CONSTRAINT `fk_item_item_image1`
-        FOREIGN KEY (`item_counts_id`)
-            REFERENCES `secondhand-db`.`item_counts` (`id`)
-            ON DELETE NO ACTION
-            ON UPDATE NO ACTION,
-    CONSTRAINT `fk_item_region1`
-        FOREIGN KEY (`region_id`)
-            REFERENCES `secondhand-db`.`region` (`id`)
-            ON DELETE NO ACTION
-            ON UPDATE NO ACTION,
-    CONSTRAINT `fk_item_item_contents1`
-        FOREIGN KEY (`item_contents_id`)
-            REFERENCES `secondhand-db`.`item_contents` (`id`)
-            ON DELETE NO ACTION
-            ON UPDATE NO ACTION
-)
-    ENGINE = InnoDB;
+    id          bigint auto_increment
+        primary key,
+    member_id   bigint  not null,
+    region_id   bigint  not null,
+    represented tinyint not null,
+    constraint fk_member_has_region_member1
+        foreign key (member_id) references member (id),
+    constraint fk_member_has_region_region1
+        foreign key (region_id) references region (id)
+);
 
+create index fk_member_has_region_member1_idx
+    on based_region (member_id);
 
--- -----------------------------------------------------
--- Table `secondhand-db`.`member_like_item`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `secondhand-db`.`member_like_item`;
+create index fk_member_has_region_region1_idx
+    on based_region (region_id);
 
-CREATE TABLE IF NOT EXISTS `secondhand-db`.`member_like_item`
+create table if not exists item
 (
-    `id`         BIGINT   NOT NULL AUTO_INCREMENT,
-    `member_id`  BIGINT   NOT NULL,
-    `item_id`    BIGINT   NOT NULL,
-    `created_at` DATETIME NULL,
-    PRIMARY KEY (`id`),
-    INDEX `fk_member_has_item_item1_idx` (`item_id` ASC) VISIBLE,
-    INDEX `fk_member_has_item_member1_idx` (`member_id` ASC) VISIBLE,
-    CONSTRAINT `fk_member_has_item_member1`
-        FOREIGN KEY (`member_id`)
-            REFERENCES `secondhand-db`.`member` (`id`)
-            ON DELETE NO ACTION
-            ON UPDATE NO ACTION,
-    CONSTRAINT `fk_member_has_item_item1`
-        FOREIGN KEY (`item_id`)
-            REFERENCES `secondhand-db`.`item` (`id`)
-            ON DELETE NO ACTION
-            ON UPDATE NO ACTION
-)
-    ENGINE = InnoDB;
+    id               bigint auto_increment
+        primary key,
+    title            varchar(45)      not null,
+    price            int              null,
+    status           varchar(16)      not null,
+    category         varchar(45)      not null,
+    thumbnail_url    varchar(300)     null,
+    created_at       datetime         not null,
+    updated_at       datetime         null,
+    seller_id        bigint           not null,
+    item_counts_id   bigint           not null,
+    region_id        bigint           not null,
+    item_contents_id bigint           not null,
+    is_deleted       bit default b'0' null,
+    constraint fk_item_item_contents1
+        foreign key (item_contents_id) references item_contents (id),
+    constraint fk_item_item_image1
+        foreign key (item_counts_id) references item_counts (id),
+    constraint fk_item_member
+        foreign key (seller_id) references member (id),
+    constraint fk_item_region1
+        foreign key (region_id) references region (id)
+);
 
-
--- -----------------------------------------------------
--- Table `secondhand-db`.`chat_room`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `secondhand-db`.`chat_room`;
-
-CREATE TABLE IF NOT EXISTS `secondhand-db`.`chat_room`
+create table if not exists chat_room
 (
-    `id`         BIGINT   NOT NULL AUTO_INCREMENT,
-    `item_id`    BIGINT   NOT NULL,
-    `buyer_id`   BIGINT   NOT NULL,
-    `created_at` DATETIME NULL,
-    PRIMARY KEY (`id`),
-    INDEX `fk_item_has_member_member1_idx` (`buyer_id` ASC) VISIBLE,
-    INDEX `fk_item_has_member_item1_idx` (`item_id` ASC) VISIBLE,
-    CONSTRAINT `fk_item_has_member_item1`
-        FOREIGN KEY (`item_id`)
-            REFERENCES `secondhand-db`.`item` (`id`)
-            ON DELETE NO ACTION
-            ON UPDATE NO ACTION,
-    CONSTRAINT `fk_item_has_member_member1`
-        FOREIGN KEY (`buyer_id`)
-            REFERENCES `secondhand-db`.`member` (`id`)
-            ON DELETE NO ACTION
-            ON UPDATE NO ACTION
-)
-    ENGINE = InnoDB;
+    id         bigint auto_increment
+        primary key,
+    item_id    bigint   not null,
+    buyer_id   bigint   not null,
+    created_at datetime null,
+    constraint fk_item_has_member_item1
+        foreign key (item_id) references item (id),
+    constraint fk_item_has_member_member1
+        foreign key (buyer_id) references member (id)
+);
 
-
--- -----------------------------------------------------
--- Table `secondhand-db`.`chat_log`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `secondhand-db`.`chat_log`;
-
-CREATE TABLE IF NOT EXISTS `secondhand-db`.`chat_log`
+create table if not exists chat_log
 (
-    `id`           BIGINT       NOT NULL AUTO_INCREMENT,
-    `contents`     VARCHAR(300) NULL,
-    `sender_id`    BIGINT       NOT NULL,
-    `reciver_id`   BIGINT       NOT NULL,
-    `chat_room_id` BIGINT       NOT NULL,
-    PRIMARY KEY (`id`),
-    INDEX `fk_chat_log_member1_idx` (`sender_id` ASC) VISIBLE,
-    INDEX `fk_chat_log_member2_idx` (`reciver_id` ASC) VISIBLE,
-    INDEX `fk_chat_log_member_chat_about_item1_idx` (`chat_room_id` ASC) VISIBLE,
-    CONSTRAINT `fk_chat_log_member1`
-        FOREIGN KEY (`sender_id`)
-            REFERENCES `secondhand-db`.`member` (`id`)
-            ON DELETE NO ACTION
-            ON UPDATE NO ACTION,
-    CONSTRAINT `fk_chat_log_member2`
-        FOREIGN KEY (`reciver_id`)
-            REFERENCES `secondhand-db`.`member` (`id`)
-            ON DELETE NO ACTION
-            ON UPDATE NO ACTION,
-    CONSTRAINT `fk_chat_log_member_chat_about_item1`
-        FOREIGN KEY (`chat_room_id`)
-            REFERENCES `secondhand-db`.`chat_room` (`id`)
-            ON DELETE NO ACTION
-            ON UPDATE NO ACTION
-)
-    ENGINE = InnoDB;
+    id           bigint auto_increment
+        primary key,
+    contents     varchar(300) null,
+    sender_id    bigint       not null,
+    reciver_id   bigint       not null,
+    chat_room_id bigint       not null,
+    constraint fk_chat_log_member1
+        foreign key (sender_id) references member (id),
+    constraint fk_chat_log_member2
+        foreign key (reciver_id) references member (id),
+    constraint fk_chat_log_member_chat_about_item1
+        foreign key (chat_room_id) references chat_room (id)
+);
 
+create index fk_chat_log_member1_idx
+    on chat_log (sender_id);
 
--- -----------------------------------------------------
--- Table `secondhand-db`.`based_region`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `secondhand-db`.`based_region`;
+create index fk_chat_log_member2_idx
+    on chat_log (reciver_id);
 
-CREATE TABLE IF NOT EXISTS `secondhand-db`.`based_region`
+create index fk_chat_log_member_chat_about_item1_idx
+    on chat_log (chat_room_id);
+
+create index fk_item_has_member_item1_idx
+    on chat_room (item_id);
+
+create index fk_item_has_member_member1_idx
+    on chat_room (buyer_id);
+
+create index fk_item_item_contents1_idx
+    on item (item_contents_id);
+
+create index fk_item_item_image1_idx
+    on item (item_counts_id);
+
+create index fk_item_member_idx
+    on item (seller_id);
+
+create index fk_item_region1_idx
+    on item (region_id);
+
+create fulltext index fulltext_address
+    on region (city, county, district);
+
+create table if not exists wishlist
 (
-    `id`          BIGINT  NOT NULL auto_increment,
-    `member_id`   BIGINT  NOT NULL,
-    `region_id`   BIGINT  NOT NULL,
-    `represented` TINYINT NOT NULL,
-    INDEX `fk_member_has_region_region1_idx` (`region_id` ASC) VISIBLE,
-    INDEX `fk_member_has_region_member1_idx` (`member_id` ASC) VISIBLE,
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_member_has_region_member1`
-        FOREIGN KEY (`member_id`)
-            REFERENCES `secondhand-db`.`member` (`id`)
-            ON DELETE NO ACTION
-            ON UPDATE NO ACTION,
-    CONSTRAINT `fk_member_has_region_region1`
-        FOREIGN KEY (`region_id`)
-            REFERENCES `secondhand-db`.`region` (`id`)
-            ON DELETE NO ACTION
-            ON UPDATE NO ACTION
-)
-    ENGINE = InnoDB;
+    id         bigint auto_increment
+        primary key,
+    member_id  bigint   not null,
+    item_id    bigint   not null,
+    created_at datetime null,
+    constraint fk_member_has_item_item1
+        foreign key (item_id) references item (id),
+    constraint fk_member_has_item_member1
+        foreign key (member_id) references member (id)
+);
 
+create index fk_member_has_item_item1_idx
+    on wishlist (item_id);
+
+create index fk_member_has_item_member1_idx
+    on wishlist (member_id);
 
 SET SQL_MODE = @OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS = @OLD_FOREIGN_KEY_CHECKS;
