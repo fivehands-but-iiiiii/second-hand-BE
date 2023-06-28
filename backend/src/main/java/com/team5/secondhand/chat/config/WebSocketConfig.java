@@ -1,6 +1,5 @@
 package com.team5.secondhand.chat.config;
 
-import com.team5.secondhand.chat.socket.WebSocketHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
