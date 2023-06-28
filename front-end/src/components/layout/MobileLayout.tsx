@@ -32,6 +32,10 @@ const MyMobileLayout = styled.div`
   background-color: #fff;
   text-align: center;
   overflow: auto;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 export default MobileLayout;
