@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Long>, ItemSliceRepository {
@@ -18,6 +19,10 @@ public interface ItemRepository extends JpaRepository<Item, Long>, ItemSliceRepo
     Slice<Item> findAllByRegion(Region region, Pageable pageable);
 
     int countAllByRegion(Region region);
+
+    @Modifying
+    @Query("SELECT DISTINCT category from Item where region.id = :regionId")
+    List<Long> countCategoryByRegion(@Param("regionId") Long regionId);
 
     @Modifying
     @Query("update Item i set i.status = :status where i.id = :id")

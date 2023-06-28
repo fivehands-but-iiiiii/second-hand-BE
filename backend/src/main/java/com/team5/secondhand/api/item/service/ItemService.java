@@ -4,6 +4,7 @@ import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.dto.request.ItemPostWithUrl;
 import com.team5.secondhand.api.item.domain.Status;
 import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
+import com.team5.secondhand.api.item.dto.response.CategoryList;
 import com.team5.secondhand.api.item.dto.response.ItemDetail;
 import com.team5.secondhand.api.item.dto.response.ItemList;
 import com.team5.secondhand.api.item.dto.response.ItemSummary;
@@ -73,6 +74,11 @@ public class ItemService {
         return itemDetail;
     }
 
+    public CategoryList getCategoryList(Long regionId) {
+        List<Long> categories = itemRepository.countCategoryByRegion(regionId);
+        return CategoryList.of(categories);
+    }
+
     @Transactional
     public boolean updateItemStatus(Long id, Status status) {
         return itemRepository.updateStatus(id, status) == 1;
@@ -85,5 +91,10 @@ public class ItemService {
 
     public void deleteById(Long id) {
         itemRepository.deleteById(id);
+    }
+
+    public Item findById(Long itemId) throws ExistItemException {
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
+        return item;
     }
 }
