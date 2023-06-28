@@ -48,12 +48,12 @@ public class WishlistService {
 
     public WishItemList getWishlist(Long memberId, int page, Long category) {
         PageRequest pageRequest = PageRequest.of(page, FILTER_SIZE, Sort.by(Sort.Direction.DESC, "id"));
-        Slice<Wishlist> wishlistSlice = wishlistRepository.findAllByItemCategoryOrderById(pageRequest, category);
+        Slice<Wishlist> wishlistSlice = wishlistRepository.findAllByItemCategoryAndMemberIdOrderById(pageRequest, category, memberId);
         List<WishItem> wishItems = wishlistSlice.getContent().stream()
                 .map(w -> WishItem.of(w.getItem()))
                 .collect(Collectors.toList());
 
-        return WishItemList.of(wishItems, wishlistSlice.hasNext(), wishlistSlice.hasPrevious());
+        return WishItemList.of(wishItems, page, wishlistSlice.hasNext(), wishlistSlice.hasPrevious());
     }
 
     public Boolean isMemberLiked(Long itemId, Long memberId) {
