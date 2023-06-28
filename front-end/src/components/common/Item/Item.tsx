@@ -2,6 +2,7 @@ import Icon from '@assets/Icon';
 import Chip from '@common/Chip';
 import { ItemStatus } from '@components/ItemStatus';
 import { formatNumberToSI } from '@utils/formatNumberToSI';
+import getElapsedTime from '@utils/getElapsedTime';
 
 import { styled } from 'styled-components';
 
@@ -60,7 +61,7 @@ const Item = ({ item, onHistoryPage = false }: ItemProps) => {
         <MyItemTime>
           {/* TODO: add region */}
           <div>역삼1동 &middot;</div>
-          {createdAt}
+          {getElapsedTime(createdAt)}
         </MyItemTime>
         <MyItemStatus>
           {hasChip && <Chip status={status} />}
@@ -92,7 +93,6 @@ const MyItem = styled.div`
   gap: 0 15px;
   color: ${({ theme }) => theme.colors.neutral.text};
   ${({ theme }) => theme.fonts.subhead}
-  border-top: 1px solid ${({ theme }) => theme.colors.neutral.border};
   cursor: pointer;
 `;
 

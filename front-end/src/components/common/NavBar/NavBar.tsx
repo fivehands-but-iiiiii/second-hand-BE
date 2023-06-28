@@ -24,6 +24,7 @@ const NavBar = ({ left, center, right, className, children }: NavBarProps) => {
 };
 
 const MyNavBar = styled.div`
+  width: 100vw;
   min-height: 70px;
   position: sticky;
   top: 0;
@@ -40,7 +41,6 @@ const MyNavBarTitle = styled.div`
   padding: 10px 10px;
   color: ${({ theme }) => theme.colors.neutral.textWeak};
   ${({ theme }) => theme.fonts.body};
-  /* border-radius: 10px 10px 0px 0px; */ // TODO: 팝업 애니메이션 적용시 필요함
 `;
 
 const MyLeftTitle = styled.p`

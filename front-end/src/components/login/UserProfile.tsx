@@ -3,17 +3,19 @@ import { useState, ChangeEvent } from 'react';
 import FileInput from '@common/FileInput';
 import { getPreviewURL } from '@utils/getConvertedFile';
 
-import { styled } from 'styled-components';
+import { css, styled } from 'styled-components';
 
 import { InputFile } from './Join';
 
 interface UserProfileProps {
+  size?: 's' | 'm';
   profileImgUrl?: string;
   memberId?: string;
   onChange?: (file: InputFile) => void;
 }
 // TODO: 등록된 이미지 없는 유저일 경우 이미지 변경 가능 버튼 생성하고, PATCH 요청
 const UserProfile = ({
+  size = 'm',
   profileImgUrl,
   memberId,
   onChange,
@@ -37,7 +39,7 @@ const UserProfile = ({
   return (
     <MyUserProfile>
       {profileImgUrl ? (
-        <MyUserImg src={profileImgUrl} alt={memberId} />
+        <MyUserImg src={profileImgUrl} alt={memberId} size={size} />
       ) : (
         <>
           <MyDefaultImgBox>
@@ -53,9 +55,17 @@ const UserProfile = ({
 
 const MyUserProfile = styled.div``;
 
-const MyUserImg = styled.img`
-  width: 80px;
-  height: 80px;
+const MyUserImg = styled.img<UserProfileProps>`
+  ${({ size }) =>
+    size === 's'
+      ? css`
+          width: 48px;
+          height: 48px;
+        `
+      : css`
+          width: 80px;
+          height: 80px;
+        `};
   border-radius: 50%;
 `;
 

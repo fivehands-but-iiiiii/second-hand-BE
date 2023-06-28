@@ -12,7 +12,7 @@ interface MenuItem {
 interface PopupSheetProps {
   type: 'slideDown' | 'slideUp';
   menu: MenuItem[];
-  onSheetClose: () => void;
+  onSheetClose?: () => void;
 }
 
 interface PopupSheetStyleProps {

@@ -7,10 +7,14 @@ interface LabelInputProps extends InputHTMLAttributes<HTMLInputElement> {
   subText?: string;
 }
 
+interface LabelInputStyleProps {
+  subText: boolean;
+}
+
 const LabelInput = forwardRef<HTMLInputElement, LabelInputProps>(
   ({ label, subText, placeholder, ...rest }, ref) => {
     return (
-      <MyLabelInput>
+      <MyLabelInput subText={!!subText}>
         <label htmlFor="labelInput">{label}</label>
         <input
           name="labelInput"
@@ -24,21 +28,27 @@ const LabelInput = forwardRef<HTMLInputElement, LabelInputProps>(
   },
 );
 
-const MyLabelInput = styled.div`
+const MyLabelInput = styled.div<LabelInputStyleProps>`
   position: relative;
   display: flex;
-  align-items: flex-end;
+  align-items: ${({ subText }) => (subText ? 'flex-end' : 'center')};
   padding: 1vh 0;
   border-bottom: 1px solid ${({ theme }) => theme.colors.neutral.border};
   ${({ theme }) => theme.fonts.subhead};
   > label {
-    min-width: 50px;
+    min-width: max-content;
+    padding-left: ${({ subText }) => (subText ? '0' : '15px')};
+    color: ${({ theme }) => theme.colors.neutral.text};
   }
   > input {
     flex: 1;
     margin-left: 10px;
     border: none;
     outline: none;
+    color: ${({ theme }) => theme.colors.neutral.text};
+    &::placeholder {
+      color: ${({ theme }) => theme.colors.neutral.textWeak};
+    }
   }
 `;
 

@@ -4,10 +4,8 @@ export const getFormattedId = (input: string) => {
   return input && input.replace(regExp, '');
 };
 
-export const getFormattedPrice = (input: string) => {
-  const regExp = /\D/g;
-  if (!regExp.test(input)) return;
-  return (
-    input && input.replace(regExp, '').replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-  );
+export const getFormattedPrice = (input: string): string => {
+  const numericValue = Number(input.replace(/\D/g, ''));
+  const formattedPrice = numericValue.toLocaleString();
+  return formattedPrice;
 };

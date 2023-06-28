@@ -22,6 +22,12 @@ const GlobalStyle = createGlobalStyle`
   a {
     text-decoration: none;
   }
+
+  ul,li, ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
 `;
 
 export default GlobalStyle;
