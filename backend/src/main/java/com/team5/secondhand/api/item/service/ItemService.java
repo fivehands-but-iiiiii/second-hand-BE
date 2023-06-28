@@ -62,13 +62,13 @@ public class ItemService {
 
     @Cacheable(value = "itemCache")
     @Transactional(readOnly = true)
-    public ItemDetail getItem(Long id, Long memberId) throws ExistItemException {
+    public ItemDetail getItem(Long id, Long memberId, Boolean isLike) throws ExistItemException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
         ItemDetail itemDetail;
         if (item.getSeller().getId().equals(memberId)) {
-            itemDetail = ItemDetail.of(item, true);
+            itemDetail = ItemDetail.of(item, true, isLike);
         } else {
-            itemDetail = ItemDetail.of(item, false);
+            itemDetail = ItemDetail.of(item, false, isLike);
         }
 
         return itemDetail;

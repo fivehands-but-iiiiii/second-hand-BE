@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,14 +22,15 @@ public class ItemDetail {
     private final int price;
     private final Status status;
     private final Seller seller;
-    private final boolean isMyItem;
+    private final Boolean isMyItem;
     private final List<ItemImage> images;
     private final Long hits;
     private final Long chatCount;
     private final Long likesCount;
-    private final boolean isLike;
+    private final Boolean isLike;
+    private final Instant createAt;
 
-    public static ItemDetail of(Item item, boolean isMyItem) {
+    public static ItemDetail of(Item item, Boolean isMyItem, Boolean isLike) {
         List<ItemImage> images = item.getContents().getDetailImageUrl().stream()
                 .map(ItemImage::of).collect(Collectors.toList());
 
@@ -45,7 +47,8 @@ public class ItemDetail {
                 .hits(item.getCount().getHits())
                 .chatCount(item.getCount().getChatCounts())
                 .likesCount(item.getCount().getLikeCounts())
-                .isLike(true) //TODO: 임시데이터 좋아요 목록 처리 후에 변경하기
+                .createAt(item.getCreatedAt())
+                .isLike(isLike)
                 .build();
     }
 }
