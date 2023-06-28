@@ -12,6 +12,7 @@ import com.team5.secondhand.api.item.repository.ItemRepository;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.region.domain.Region;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
 
+    @Cacheable(value = "itemListCache")
     @Transactional(readOnly = true)
     public ItemList getItemList(ItemFilteredSlice request, Region region) {
         Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
@@ -57,6 +59,7 @@ public class ItemService {
         itemRepository.save(newItem);
     }
 
+    @Cacheable(value = "itemCache")
     @Transactional(readOnly = true)
     public ItemDetail getItem(Long id, Long memberId) throws ExistItemException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
