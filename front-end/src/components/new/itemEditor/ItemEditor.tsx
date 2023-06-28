@@ -96,7 +96,8 @@ const ItemEditor = ({
   };
 
   const validateForm = useCallback(() => {
-    if (!title || !category.selectedId || !region || !files.length) return false;
+    if (!title || !category.selectedId || !region || !files.length)
+      return false;
     else return true;
   }, [title, region, category, files]);
 

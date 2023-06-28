@@ -164,7 +164,10 @@ const Home = () => {
         <Icon name={'plus'} fill={palette.neutral.backgroundWeak} />
       </MyNewBtn>
       {isNewModalOpen &&
-        createPortal(<New onClick={handleNewModal} />, document.body)}
+        createPortal(
+          <New categoryInfo={categoryInfo} onClick={handleNewModal} />,
+          document.body,
+        )}
     </>
   );
 };
