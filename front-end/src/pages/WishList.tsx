@@ -6,23 +6,30 @@ import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
 import ItemList from '@components/home/ItemList/ItemList';
 import useAPI from '@hooks/useAPI';
-import api from 'api';
 import axios from 'axios';
 
 import { styled } from 'styled-components';
 
+import api from '../api';
+import { HomePageInfo } from '../pages/Home';
+
 const WishList = () => {
   const title = '관심 목록';
+  const [homePageInfo, setHomePageInfo] = useState<HomePageInfo>({
+    page: 0,
+    hasPrevious: false,
+    hasNext: true,
+  });
   const [wishItems, setWishItems] = useState<SaleItem[]>([]);
   const [categories, setCategories] = useState([{ id: 0, title: '전체' }]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(0);
-  const { response, request } = useAPI();
+  const { request } = useAPI();
 
   const getWishList = async () => {
     await axios
       .all([
         request({
-          url: 'wishlist?page=1',
+          url: `wishlist?page=${homePageInfo.page}`,
           method: 'get',
         }),
         request({
@@ -34,7 +41,13 @@ const WishList = () => {
         axios.spread((...responses) => {
           const [wishList, categories] = responses;
           setWishItems(wishList.data?.items);
-          setCategories([categories, ...categories.data.categories]);
+          setCategories((pre) => [...pre, ...categories.data.categories]);
+
+          setHomePageInfo({
+            page: wishList.data.number + 1,
+            hasPrevious: wishList.data.hasPrevious,
+            hasNext: wishList.data.hasNext,
+          });
         }),
       );
   };
@@ -85,12 +98,16 @@ const WishList = () => {
 };
 
 const MyWishList = styled.div`
-  padding: 0 2.7vw;
-  height: calc(100%-83px);
+  height: calc(90vh-83px);
+  overflow: auto;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const MyCategories = styled.div`
-  padding: 2vh 0;
+  padding: 2vh 15px 0;
   display: flex;
   gap: 4px;
 `;
