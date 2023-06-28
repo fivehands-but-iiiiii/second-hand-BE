@@ -25,7 +25,7 @@ public class WishlistService {
     private final int FILTER_SIZE = 10;
 
     public Long likeItem(Member member, Item item) throws ExistWishlistException {
-        if (wishlistRepository.existsByMemberAndItem(member, item)) {
+        if (wishlistRepository.existsByMemberIdAndItemId(member.getId(), item.getId())) {
             throw new ExistWishlistException("이미 좋아요를 눌렀습니다.");
         } else {
             Wishlist wishlist = Wishlist.create(member, item);
@@ -48,11 +48,17 @@ public class WishlistService {
 
     public WishItemList getWishlist(Long memberId, int page, Long category) {
         PageRequest pageRequest = PageRequest.of(page, FILTER_SIZE, Sort.by(Sort.Direction.DESC, "id"));
-        Slice<Wishlist> wishlistSlice = wishlistRepository.findAllByItemCategoryOrderById(pageRequest, category);
+        Slice<Wishlist> wishlistSlice = wishlistRepository.findAllByItemCategoryAndMemberIdOrderById(pageRequest, category, memberId);
         List<WishItem> wishItems = wishlistSlice.getContent().stream()
                 .map(w -> WishItem.of(w.getItem()))
                 .collect(Collectors.toList());
 
-        return WishItemList.of(wishItems, wishlistSlice.hasNext(), wishlistSlice.hasPrevious());
+        return WishItemList.of(wishItems, page, wishlistSlice.hasNext(), wishlistSlice.hasPrevious());
+    }
+
+    public Boolean isMemberLiked(Long itemId, Long memberId) {
+        Boolean isLike = wishlistRepository.existsByMemberIdAndItemId(memberId, itemId);
+
+        return isLike;
     }
 }

@@ -18,6 +18,7 @@ import com.team5.secondhand.api.member.service.MemberService;
 import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.region.exception.NotValidRegionException;
 import com.team5.secondhand.api.region.service.GetValidRegionsUsecase;
+import com.team5.secondhand.api.wishlist.service.WishlistService;
 import com.team5.secondhand.global.aws.dto.request.ItemImageUpload;
 import com.team5.secondhand.global.aws.dto.response.ImageInfo;
 import com.team5.secondhand.global.aws.exception.ImageHostException;
@@ -45,6 +46,7 @@ public class ItemController {
     private final ItemDetailImageUpload detailImageUpload;
     private final ItemThumbnailImageUpload thumbnailImageUpload;
     private final MemberService memberService;
+    private final WishlistService wishlistService;
 
     @Operation(
             summary = "특정 동네 판매중인 상품 목록",
@@ -99,10 +101,8 @@ public class ItemController {
     )
     @PutMapping("/{id}")
     public GenericResponse<Long> updateItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemPostWithUrl itemPost) throws ExistMemberIdException, NotValidRegionException, ExistItemException, ExistItemException {
-        //의문: seller, region이 기존이랑 달라져도 되나?
         Member seller = memberService.findById(loginMember.getId());
         Region region = getValidRegions.getRegion(itemPost.getRegion());
-        //TODO: order 1 썸네일 이미지 서비스
         String thumbanilUrl = itemPost.getImages().get(0).getUrl();
         itemService.updateItem(id, itemPost, thumbanilUrl);
 
@@ -110,13 +110,14 @@ public class ItemController {
     }
 
     @Operation(
-            summary = "상품 글 상세조회",
+            summary = "상품 글 상세 조회",
             tags = "Items",
             description = "사용자는 상품의 상세 정보를 볼 수 있다."
     )
     @GetMapping("/{id}")
     public GenericResponse<ItemDetail> getItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember) throws ExistMemberIdException, ExistItemException {
-        ItemDetail item = itemService.getItem(id, loginMember.getId());
+        Boolean isLike = wishlistService.isMemberLiked(id, loginMember.getId());
+        ItemDetail item = itemService.getItem(id, loginMember.getId(), isLike);
 
         return GenericResponse.send("상품 상세정보를 볼 수 있습니다.", item);
     }
