@@ -13,7 +13,6 @@ import SubTabBar from '@common/TabBar/SubTabBar';
 import { ItemStatus } from '@components/ItemStatus';
 import { formatNumberToSI } from '@utils/formatNumberToSI';
 import getElapsedTime from '@utils/getElapsedTime';
-import { getStoredValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
 
@@ -64,7 +63,6 @@ interface ItemDetailProps {
 }
 
 const ItemDetail = ({ id }: ItemDetailProps) => {
-  const userInfo: UserInfo = getStoredValue({ key: 'userInfo' });
   const [itemDetailInfo, setItemDetailInfo] = useState<ItemDetailInfo>({
     id: 0,
     seller: { id: 0, memberId: '' },
@@ -102,21 +100,18 @@ const ItemDetail = ({ id }: ItemDetailProps) => {
   const likeIcon = isLike ? 'fullHeart' : 'heart';
 
   const statusLabel = useMemo(() => {
-    switch (status) {
-      case ItemStatus.ON_SALE:
-        return '판매중';
-      case ItemStatus.RESERVATION:
-        return '예약중';
-      case ItemStatus.SOLD_OUT:
-        return '판매완료';
-      default:
-        return '';
-    }
+    const statusType = {
+      [ItemStatus.ON_SALE]: '판매중',
+      [ItemStatus.RESERVATION]: '예약중',
+      [ItemStatus.SOLD_OUT]: '판매완료',
+    };
+
+    return statusType[status];
   }, [status]);
 
   const handleStatusSheet = async (status: ItemStatus) => {
     try {
-      await api.patch(`/items/${id}/status`, { status: status });
+      await api.patch(`/items?id=${id}/status`, { status: status });
     } catch (error) {
       console.error(`Failed to request: ${error}`);
     }
@@ -125,7 +120,7 @@ const ItemDetail = ({ id }: ItemDetailProps) => {
   const handleViewMoreSheet = async (type: string) => {
     if (type === 'delete') {
       try {
-        await api.delete(`/items/${id}`);
+        await api.delete(`/items?id=${id}`);
       } catch (error) {
         console.error(`Failed to request: ${error}`);
       }
@@ -185,10 +180,10 @@ const ItemDetail = ({ id }: ItemDetailProps) => {
     const mappedDetails = {
       ...data,
       price: formattedPrice,
-      elapsedTime: getElapsedTime(data.createdAt),
-      hits: formatNumberToSI(data.hits),
-      chatCount: formatNumberToSI(data.chatCount),
-      likesCount: formatNumberToSI(data.likesCount),
+      elapsedTime: getElapsedTime(data.createAt),
+      hits: hits && formatNumberToSI(data.hits),
+      chatCount: chatCount && formatNumberToSI(data.chatCount),
+      likesCount: likesCount && formatNumberToSI(data.likesCount),
     };
 
     setItemDetailInfo(mappedDetails);
