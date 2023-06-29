@@ -60,7 +60,7 @@ public class ItemService {
         itemRepository.save(newItem);
     }
 
-    @Cacheable(value = "itemCache")
+    // @Cacheable(value = "itemCache")
     @Transactional(readOnly = true)
     public ItemDetail getItem(Long id, Long memberId, Boolean isLike) throws ExistItemException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
