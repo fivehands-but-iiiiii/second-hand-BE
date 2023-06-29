@@ -78,7 +78,7 @@ public class ItemService {
 
     // @Cacheable(value = "itemCache")
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Transactional(readOnly = true)
+    @Transactional
     public ItemDetail viewAItem(Long id, Long memberId, Boolean isLike) throws ExistItemException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
         itemRepository.updateHits(item.getCount().getId());
