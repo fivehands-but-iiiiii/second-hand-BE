@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
 import Button from '@common/Button';
@@ -12,6 +12,7 @@ import PopupSheet from '@common/PopupSheet/PopupSheet';
 import SubTabBar from '@common/TabBar/SubTabBar';
 import { ItemStatus } from '@components/ItemStatus';
 import { formatNumberToSI } from '@utils/formatNumberToSI';
+import getElapsedTime from '@utils/getElapsedTime';
 import { getStoredValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
@@ -33,61 +34,72 @@ export interface UserInfo {
 
 interface ItemSeller {
   id: number;
-  name: string;
+  memberId: string;
 }
 
 interface ItemImages {
-  id: number;
+  order: number;
   url: string;
 }
+
 export interface ItemDetailInfo {
-  images: ItemImages[];
+  id: number;
   seller: ItemSeller;
+  images: ItemImages[];
   status: ItemStatus;
   title: string;
   category: number;
-  createdAt: string;
+  elapsedTime: string;
   contents: string;
   chatCount: number;
   likesCount: number;
   isLike: boolean;
   hits: number;
-  price: number;
+  price: string;
+  isMyItem: boolean;
 }
 
 interface ItemDetailProps {
-  itemDetailInfo: ItemDetailInfo;
+  id: number;
 }
 
-const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
+const ItemDetail = ({ id }: ItemDetailProps) => {
+  const userInfo: UserInfo = getStoredValue({ key: 'userInfo' });
+  const [itemDetailInfo, setItemDetailInfo] = useState<ItemDetailInfo>({
+    id: 0,
+    seller: { id: 0, memberId: '' },
+    images: [],
+    status: 0,
+    title: '',
+    category: 0,
+    elapsedTime: '',
+    contents: '',
+    chatCount: 0,
+    likesCount: 0,
+    isLike: false,
+    hits: 0,
+    price: '',
+    isMyItem: false,
+  });
+  const [isStatusPopupOpen, setIsStatusPopupOpen] = useState(false);
+  const [isMoreViewPopupOpen, setIsMoreViewPopupOpen] = useState(false);
   const {
-    images,
     seller,
+    images,
     status,
     title,
     category,
-    createdAt,
+    elapsedTime,
     contents,
     chatCount,
     likesCount,
     isLike,
     hits,
     price,
+    isMyItem,
   } = itemDetailInfo;
-  const [isStatusPopupOpen, setIsStatusPopupOpen] = useState(false);
-  const [isMoreViewPopupOpen, setIsMoreViewPopupOpen] = useState(false);
-
-  const handleMainTabBar: (status: boolean) => void = useOutletContext();
   const navigate = useNavigate();
-
-  const userInfo: UserInfo = getStoredValue({ key: 'userInfo' });
-  const { id } = useParams();
-  const isMyItem = true;
-  // const isMyItem = userInfo.memberId === seller.name;
   const likeIcon = isLike ? 'fullHeart' : 'heart';
-  const formattedPrice = price ? `${price.toLocaleString()}원` : '가격없음';
-
-  handleMainTabBar(false);
 
   const statusLabel = useMemo(() => {
     switch (status) {
@@ -123,12 +135,20 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
   };
 
   const handleLike = async () => {
-    // TODO: 추후 API 확인해서 path 수정하기
-    try {
-      await api.post(`/items/${id}/like`);
-    } catch (error) {
-      console.error(`Failed to request: ${error}`);
+    if (isLike) {
+      try {
+        await api.delete(`/wishlist/like?itemId=${id}`);
+      } catch (error) {
+        console.error(`Failed to request: ${error}`);
+      }
+    } else {
+      try {
+        await api.post('/wishlist/like', { itemId: id });
+      } catch (error) {
+        console.error(`Failed to request: ${error}`);
+      }
     }
+    setItemDetailInfo((prev) => ({ ...prev, isLike: !prev.isLike }));
   };
 
   const statusPopupSheetMenu = DETAIL_STATUS_MENU.filter(
@@ -157,15 +177,45 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
     setIsMoreViewPopupOpen(!isMoreViewPopupOpen);
   };
 
+  const mapItemDetailInfo = (data: any) => {
+    const formattedPrice = data.price
+      ? `${data.price.toLocaleString()}원`
+      : '가격없음';
+
+    const mappedDetails = {
+      ...data,
+      price: formattedPrice,
+      elapsedTime: getElapsedTime(data.createdAt),
+      hits: formatNumberToSI(data.hits),
+      chatCount: formatNumberToSI(data.chatCount),
+      likesCount: formatNumberToSI(data.likesCount),
+    };
+
+    setItemDetailInfo(mappedDetails);
+  };
+
   useEffect(() => {
-    // TODO: 아이템 상세 정보 API 호출
+    const getItemDetail = async () => {
+      try {
+        const {
+          data: { data },
+        } = await api.get(`/items/${id}`);
+
+        mapItemDetailInfo(data);
+      } catch (error) {
+        console.error(`Failed to get item info: ${error}`);
+      }
+    };
+
+    getItemDetail();
   }, []);
 
   return (
     <>
-      <MyItemDetail>
-        <MyNavBar
+      <div>
+        <NavBar
           left={
+            // TODO: 모달 닫기로 변경
             <button onClick={() => navigate(-1)}>
               <Icon name={'chevronLeft'} />
             </button>
@@ -193,7 +243,7 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
           {isMyItem || (
             <MySellerDetail>
               <div>판매자 정보</div>
-              <span>{seller.name}</span>
+              <span>{seller.memberId}</span>
             </MySellerDetail>
           )}
           {isMyItem && (
@@ -205,7 +255,7 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
           <MyItemInfoDetail>
             <MyTitle>{title}</MyTitle>
             <MyCategoryAndTime>
-              카테고리{category} &middot; {createdAt}
+              카테고리{category} &middot; {elapsedTime}
             </MyCategoryAndTime>
             <MyContents>{contents}</MyContents>
             <MyCountInfo>
@@ -215,12 +265,8 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
             </MyCountInfo>
           </MyItemInfoDetail>
         </MyItemInfo>
-      </MyItemDetail>
-      <SubTabBar
-        icon={likeIcon}
-        content={formattedPrice}
-        onIconClick={handleLike}
-      >
+      </div>
+      <SubTabBar icon={likeIcon} content={price} onIconClick={handleLike}>
         <Button active onClick={() => console.log('move to chat')}>
           {isMyItem ? `대화 중인 채팅방 ${chatCount}` : '채팅하기'}
         </Button>
@@ -242,23 +288,6 @@ const ItemDetail = ({ itemDetailInfo }: ItemDetailProps) => {
     </>
   );
 };
-
-const MyItemDetail = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 83px;
-`;
-
-const MyNavBar = styled(NavBar)`
-  background-color: transparent;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  border: none;
-  backdrop-filter: none;
-  z-index: 10;
-`;
 
 const MyImgDetail = styled.div`
   position: relative;
