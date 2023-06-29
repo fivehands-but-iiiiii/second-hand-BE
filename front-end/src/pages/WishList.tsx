@@ -38,7 +38,7 @@ const WishList = () => {
     });
     setWishItems((pre) => [...pre, ...data.items]);
     setPageInfo({
-      page: pageInfo.page + 1,
+      page: data.page + 1,
       hasPrevious: data?.hasPrevious,
       hasNext: data?.hasNext,
     });
@@ -67,9 +67,6 @@ const WishList = () => {
 
   useEffect(() => {
     getWishListItems();
-  }, [pageInfo.page]);
-
-  useEffect(() => {
     getWishListCategories();
   }, []);
 
