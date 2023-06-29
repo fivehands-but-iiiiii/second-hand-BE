@@ -6,7 +6,6 @@ import Button from '@common/Button';
 import LabelInput from '@common/LabelInput';
 import NavBar from '@common/NavBar';
 import useJoin from '@hooks/useJoin';
-import UserInfo from '@pages/ItemDetail';
 import { getFormattedId } from '@utils/formatText';
 
 import { styled } from 'styled-components';
@@ -15,6 +14,7 @@ import api from '../../api';
 
 import { GitHubUserInfo } from './OAuthCallback';
 import UserProfile from './UserProfile';
+
 export interface UserInfo {
   memberId: string;
   profileImgUrl?: string;
@@ -32,13 +32,11 @@ export interface InputFile {
 const Join = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [gitHubUserInfo, setGitHubUserInfo] = useState<GitHubUserInfo>(
-    location.state,
-  );
+  const [gitHubUserInfo] = useState<GitHubUserInfo>(location.state);
   const [userInputId, setUserInputId] = useState('');
   const [validationMessage, setValidationMessage] = useState('');
   const [files, setFiles] = useState<InputFile>();
-  const [regionId, setRegionId] = useState(1);
+  const [regionId] = useState(1);
   const [userAccount, setUserAccount] = useState<UserInfo>({
     memberId: gitHubUserInfo?.login,
     profileImgUrl: gitHubUserInfo?.avatar_url,

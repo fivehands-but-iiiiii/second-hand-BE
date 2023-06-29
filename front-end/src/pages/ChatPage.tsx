@@ -37,7 +37,7 @@ const mockChatList = [
 
 const ChatPage = () => {
   const title = '채팅';
-  const [chatList, setChatList] = useState(mockChatList);
+  const [chatList] = useState(mockChatList);
 
   // TODO: 채팅 리스트 API 연동
 

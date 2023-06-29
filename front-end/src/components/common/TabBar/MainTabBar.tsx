@@ -14,9 +14,6 @@ interface TabBarInfo {
   path: string;
 }
 
-interface MainTabBarProps {
-  userId: number;
-}
 
 interface IconStyleProps {
   name: keyof typeof iconTypes;
@@ -25,7 +22,7 @@ interface IconStyleProps {
   isActive?: boolean;
 }
 
-const MainTabBar = ({ userId }: MainTabBarProps) => {
+const MainTabBar = () => {
   const tabBarInfo: TabBarInfo[] = [
     { id: 1, icon: 'home', label: '홈화면', path: '/' },
     {
