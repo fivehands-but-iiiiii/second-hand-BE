@@ -1,9 +1,9 @@
 import ChatListItem from './ChatListItem';
 
-interface ChatListProps {
+interface ChatRoomListProps {
   chatItems: ChatListItem[];
 }
-const ChatList = ({ chatItems }: ChatListProps) => {
+const ChatRoomList = ({ chatItems }: ChatRoomListProps) => {
   return (
     <>
       {chatItems.map((chat) => (
@@ -13,4 +13,4 @@ const ChatList = ({ chatItems }: ChatListProps) => {
   );
 };
 
-export default ChatList;
+export default ChatRoomList;

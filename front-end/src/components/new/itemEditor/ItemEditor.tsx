@@ -48,11 +48,6 @@ export interface ItemInfo {
   images: ImageFile[];
 }
 
-interface InputFile {
-  preview: string;
-  file?: File;
-}
-
 interface ItemEditorProps {
   categoryInfo: Category[];
   isEdit?: boolean;
@@ -63,14 +58,13 @@ interface ItemEditorProps {
 const ItemEditor = ({
   categoryInfo,
   isEdit = false,
-  origin,
   handleClose,
 }: ItemEditorProps) => {
   // 지역정보 가져오기
   const [title, setTitle] = useState('');
   const [firstClickCTitle, setFirstClickCTitle] = useState(false);
   const [contents, setContents] = useState('');
-  const [region, setRegion] = useState(2729060200); // TODO: 지역 유저정보에서 받아오기
+  const [region] = useState(2729060200); // TODO: 지역 유저정보에서 받아오기
   const [price, setPrice] = useState('');
   const priceRef = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState<CategoryInfo>({
@@ -273,6 +267,7 @@ const MyNew = styled.div`
 
 const MyPrice = styled(LabelInput)`
   padding: 15px 15px 15px 0;
+  line-height: 1.5;
   label {
     padding-left: 15px;
     ${({ theme }) => theme.colors.neutral.border};

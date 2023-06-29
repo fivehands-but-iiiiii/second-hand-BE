@@ -1,47 +1,73 @@
+/* eslint-disable import/no-named-as-default-member */
 import { useEffect, useState } from 'react';
 
 import Button from '@common/Button';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
 import ItemList from '@components/home/ItemList/ItemList';
+import useAPI from '@hooks/useAPI';
+import useIntersectionObserver from '@hooks/useIntersectionObserver';
 
 import { styled } from 'styled-components';
 
-import api from '../api';
-// TODO: wishList api 연결
+import { HomePageInfo } from '../pages/Home';
+
 const WishList = () => {
   const title = '관심 목록';
   const [wishItems, setWishItems] = useState<SaleItem[]>([]);
   const [categories, setCategories] = useState([{ id: 0, title: '전체' }]);
-  const [currentCategoryId, setCurrentCategoryId] = useState(0);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(0);
+  const [pageInfo, setPageInfo] = useState<HomePageInfo>({
+    page: 0,
+    hasPrevious: false,
+    hasNext: true,
+  });
+  const { request } = useAPI();
 
-  // const getWishList = async () => {
-  //   try {
-  // const { data } = await api.get('/wishlist');
-  // TODO: 위시목록 데이터 나오면 path 수정
-  // setWishItems(data.items);
-  // data.categories && setCategories([...categories, data.categories]);
-  //   } catch (error) {
-  //     console.error(`Failed to get wishList: ${error}`);
-  //   }
-  // };
-
-  const handleFilterCategories = (categoryId: number) => {
-    setCurrentCategoryId(categoryId);
-    // getFilteredItems();
+  const onIntersect: IntersectionObserverCallback = ([{ isIntersecting }]) => {
+    if (isIntersecting) getWishListItems();
   };
 
-  // const getFilteredItems = async () => {
-  //   try {
-  //     const { data } = await api.get(`/wishlist?category=${currentCategoryId}`);
-  //     setWishItems(data?.items);
-  //   } catch (error) {
-  //     console.error(`Failed to filter categories: ${error}`);
-  //   }
-  // };
+  const { setTarget } = useIntersectionObserver({ onIntersect });
+
+  const getWishListItems = async () => {
+    if (!pageInfo.hasNext) return;
+    const { data } = await request({
+      url: `wishlist?page=${pageInfo.page}`,
+      method: 'get',
+    });
+    setWishItems((pre) => [...pre, ...data.items]);
+    setPageInfo({
+      page: data.page + 1,
+      hasPrevious: data?.hasPrevious,
+      hasNext: data?.hasNext,
+    });
+  };
+
+  const getWishListCategories = async () => {
+    const { data } = await request({
+      url: '/wishlist/categories',
+      method: 'get',
+    });
+    setCategories((pre) => [...pre, ...data.categories]);
+  };
+
+  const handleFilterCategories = (categoryId: number) => {
+    setSelectedCategoryId(categoryId);
+    getFilteredItems();
+  };
+
+  const getFilteredItems = async () => {
+    const { data } = await request({
+      url: `wishlist?category=${selectedCategoryId}`,
+      method: 'get',
+    });
+    setWishItems(data.items);
+  };
 
   useEffect(() => {
-    // getWishList();
+    getWishListItems();
+    getWishListCategories();
   }, []);
 
   return (
@@ -50,7 +76,7 @@ const WishList = () => {
       <MyWishList>
         <MyCategories>
           {categories.map(({ id, title }) => {
-            const isActive = id === currentCategoryId;
+            const isActive = id === selectedCategoryId;
             return (
               <Button
                 key={id}
@@ -64,20 +90,31 @@ const WishList = () => {
           })}
         </MyCategories>
         <ItemList saleItems={wishItems} />
+        {!!wishItems.length && (
+          <MyOnFetchItems ref={setTarget}></MyOnFetchItems>
+        )}
       </MyWishList>
     </>
   );
 };
 
 const MyWishList = styled.div`
-  padding: 0 2.7vw;
-  height: calc(100%-83px);
+  height: calc(90vh-83px);
+  overflow: auto;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const MyCategories = styled.div`
-  padding: 2vh 0;
+  padding: 2vh 15px 0;
   display: flex;
   gap: 4px;
+`;
+
+const MyOnFetchItems = styled.div`
+  margin-bottom: 75px;
 `;
 
 export default WishList;
