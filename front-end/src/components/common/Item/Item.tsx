@@ -32,9 +32,10 @@ export interface SaleItem {
 interface ItemProps {
   item: SaleItem;
   onHistoryPage?: boolean;
+  onItemClick: (id: number) => void;
 }
 
-const Item = ({ item, onHistoryPage = false }: ItemProps) => {
+const Item = ({ item, onHistoryPage = false, onItemClick }: ItemProps) => {
   const {
     id,
     title,
@@ -49,14 +50,17 @@ const Item = ({ item, onHistoryPage = false }: ItemProps) => {
   const hasChip = status !== ItemStatus.ON_SALE;
   const formattedPrice = price ? `${price.toLocaleString()}원` : '가격없음';
 
+  const handleItemClick = () => {
+    onItemClick(id);
+  };
+
   return (
-    <MyItem onClick={() => console.log(`move to item/${id}`)}>
+    <MyItem onClick={handleItemClick}>
       <ImgBox src={thumbnailUrl} alt={title} />
       <MyItemInfo>
         <MyItemTitle>
           <div>{title}</div>
-          {/* TODO: add more info icon */}
-          {onHistoryPage && <div>...</div>}
+          {onHistoryPage && <Icon name="ellipsis" size="sm" />}
         </MyItemTitle>
         <MyItemTime>
           {/* TODO: add region */}

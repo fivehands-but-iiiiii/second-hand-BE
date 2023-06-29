@@ -4,14 +4,15 @@ import { styled } from 'styled-components';
 
 interface ItemListProps {
   saleItems: SaleItem[];
+  onItemClick: (id: number) => void;
 }
 
-const ItemList = ({ saleItems }: ItemListProps) => {
+const ItemList = ({ saleItems, onItemClick }: ItemListProps) => {
   return (
     <>
       <MyItemList>
         {saleItems.map((item) => (
-          <Item key={item.id} item={item}></Item>
+          <Item key={item.id} item={item} onItemClick={onItemClick}></Item>
         ))}
       </MyItemList>
     </>
