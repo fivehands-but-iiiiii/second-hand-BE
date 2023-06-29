@@ -54,7 +54,7 @@ public class ItemController {
             description = "사용자는 자신의 동네의 상품 목록을 볼 수 있다."
     )
     @GetMapping
-    public ItemList getItemList(ItemFilteredSlice itemSlice, @RequestAttribute MemberDetails loginMember) throws NotValidRegionException {
+    public ItemList getItemList(ItemFilteredSlice itemSlice, @ModelAttribute MemberDetails loginMember) throws NotValidRegionException {
         Map<Long, Region> regions = getValidRegions.getRegions(List.of(itemSlice.getRegionId()));
         //TODO Category 유효성 검사
         return itemService.getItemList(itemSlice, regions.get(itemSlice.getPage()), loginMember);
