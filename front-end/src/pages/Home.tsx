@@ -183,7 +183,7 @@ const MyOnFetchItems = styled.div`
 
 const MyNewBtn = styled(Button)`
   position: fixed;
-  right: 9vw;
+  right: 24px;
   bottom: 120px;
 `;
 
