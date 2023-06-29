@@ -11,15 +11,19 @@ import com.team5.secondhand.api.item.dto.response.ItemSummary;
 import com.team5.secondhand.api.item.exception.ExistItemException;
 import com.team5.secondhand.api.item.repository.ItemRepository;
 import com.team5.secondhand.api.member.domain.Member;
+import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.region.domain.Region;
+import com.team5.secondhand.api.wishlist.service.CheckMemberLikedUsecase;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.LockModeType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,24 +32,36 @@ public class ItemService {
     private final int PAGE_SIZE = 10;
 
     private final ItemRepository itemRepository;
+    private final CheckMemberLikedUsecase checkMemberLiked;
 
-    // @Cacheable(value = "itemListCache")
     @Transactional(readOnly = true)
-    public ItemList getItemList(ItemFilteredSlice request, Region region) {
+    public ItemList getItemList(ItemFilteredSlice request, Region region, MemberDetails loginMember) {
         Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
 
         Slice<Item> pageResult = itemRepository.findAllByBasedRegion(request.getCategoryId(), request.getSellerId(), Status.isSales(request.getIsSales()), region, pageable);
+        List<Item> itemEntities = pageResult.getContent();
 
-        int number = 1;
-
-        //TODO 해당 로직 ItemSummary로 회원의 관심 여부와 함께 편입시킬 것
         List<ItemSummary> items = new ArrayList<>();
+        if (loginMember != null) {
+            items = getItemSummariesWithIsLike(loginMember, itemEntities);
+        }
 
-        for (Item item : pageResult.getContent()) {
-            items.add(ItemSummary.of(item, number++ % 3 == 0));
+        if (loginMember == null) {
+            items = itemEntities.stream().map(e -> ItemSummary.of(e, false)).collect(Collectors.toList());
         }
 
         return ItemList.getSlice(pageResult.getNumber(), pageResult.hasPrevious(), pageResult.hasNext(), items);
+    }
+
+    private List<ItemSummary> getItemSummariesWithIsLike(MemberDetails loginMember, List<Item> itemEntities) {
+        List<ItemSummary> items = new ArrayList<>();
+        List<Long> itemId = itemEntities.stream().map(Item::getId).collect(Collectors.toList());
+        List<Boolean> memberLiked = checkMemberLiked.isMemberLiked(itemId, loginMember.getId());
+
+        for (int i = 0; i < itemId.size(); i++) {
+            items.add(ItemSummary.of(itemEntities.get(i), memberLiked.get(i)));
+        }
+        return items;
     }
 
     public Long postItem(Item item, Member seller, Region region, String thumbnailUrl) {
@@ -61,17 +77,12 @@ public class ItemService {
     }
 
     // @Cacheable(value = "itemCache")
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Transactional(readOnly = true)
-    public ItemDetail getItem(Long id, Long memberId, Boolean isLike) throws ExistItemException {
+    public ItemDetail viewAItem(Long id, Long memberId, Boolean isLike) throws ExistItemException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
-        ItemDetail itemDetail;
-        if (item.getSeller().getId().equals(memberId)) {
-            itemDetail = ItemDetail.of(item, true, isLike);
-        } else {
-            itemDetail = ItemDetail.of(item, false, isLike);
-        }
-
-        return itemDetail;
+        itemRepository.updateHits(item.getCount().getId());
+        return ItemDetail.of(item, item.isSeller(memberId), isLike);
     }
 
     public CategoryList getCategoryList(Long regionId) {
