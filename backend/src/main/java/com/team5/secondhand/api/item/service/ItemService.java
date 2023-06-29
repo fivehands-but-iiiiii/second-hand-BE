@@ -41,7 +41,7 @@ public class ItemService {
         Slice<Item> pageResult = itemRepository.findAllByBasedRegion(request.getCategoryId(), request.getSellerId(), Status.isSales(request.getIsSales()), region, pageable);
         List<Item> itemEntities = pageResult.getContent();
 
-        List<ItemSummary> items;
+        List<ItemSummary> items = new ArrayList<>();
         if (loginMember != null) {
             items = getItemSummariesWithIsLike(loginMember, itemEntities);
         }

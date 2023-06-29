@@ -38,7 +38,7 @@ public class RegionService implements GetValidRegionsUsecase {
         return regionRepository.findById(id).orElseThrow(() -> new NotValidRegionException("해당하는 지역이 없습니다."));
     }
 
-    @Cacheable(value = "itemListCache")
+//    @Cacheable(value = "itemListCache")
     public List<Region> findRegionByAddress (String address) {
         return regionRepository.findAllByAddress(address);
     }
