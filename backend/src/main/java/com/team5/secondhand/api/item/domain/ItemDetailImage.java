@@ -7,20 +7,16 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class ItemDetailImage {
-    private int order;
     private String url;
 
     @Builder
-    private ItemDetailImage(int order, String url) {
-        this.order = order;
+    private ItemDetailImage(String url) {
         this.url = url;
     }
 
-    public static ItemDetailImage create (int order, String url) {
+    public static ItemDetailImage create (String url) {
         return ItemDetailImage.builder()
-                .order(order)
                 .url(url)
                 .build();
     }
-
 }

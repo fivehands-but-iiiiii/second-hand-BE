@@ -6,7 +6,6 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.domain.ItemDetailImage;
-import com.team5.secondhand.api.item.dto.request.ItemImage;
 import com.team5.secondhand.global.aws.domain.Directory;
 import com.team5.secondhand.global.aws.domain.Type;
 import com.team5.secondhand.global.aws.dto.response.ImageInfo;
@@ -23,7 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -111,9 +112,9 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
 
         List<ItemDetailImage> images = new ArrayList<>();
 
-        for (int i=0; i<request.size(); i++) {
-            ImageInfo imageInfo = uploadItemDetailImage(request.get(i));
-            images.add(ItemDetailImage.create(i, imageInfo.getImageUrl()));
+        for (MultipartFile multipartFile : request) {
+            ImageInfo imageInfo = uploadItemDetailImage(multipartFile);
+            images.add(ItemDetailImage.create(imageInfo.getImageUrl()));
         }
 
         return images;

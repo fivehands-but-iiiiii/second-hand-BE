@@ -1,5 +1,6 @@
 package com.team5.secondhand.api.member.exception;
 
+import com.team5.secondhand.api.oauth.dto.UserProfile;
 import com.team5.secondhand.global.dto.ErrorResponse;
 import com.team5.secondhand.global.dto.ErrorResponseWithBody;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class MemberExceptionHandler {
 
     @ExceptionHandler(UnauthorizedGithubMemberException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponseWithBody unauthorizedGithubMemberException(UnauthorizedGithubMemberException e) {
+    public ErrorResponseWithBody<UserProfile> unauthorizedGithubMemberException(UnauthorizedGithubMemberException e) {
         session.setAttribute(JOIN_SESSION_KEY, e.getBody());
         session.setMaxInactiveInterval(JOIN_SESSION_TIMEOUT);
         return ErrorResponseWithBody.occur(e, e.getBody());
