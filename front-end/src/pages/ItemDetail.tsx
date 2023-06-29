@@ -132,7 +132,7 @@ const ItemDetail = ({
         console.error(`Failed to request: ${error}`);
       }
     } else if (type === 'edit') {
-      // TODO: 수정 페이지로 이동
+      // TODO: 수정 페이지로 이동!
     }
   };
 
