@@ -16,6 +16,8 @@ import { styled } from 'styled-components';
 
 import api from '../api';
 
+import ItemDetail from './ItemDetail';
+
 interface HomeInfo {
   page: number;
   hasPrevious: boolean;
@@ -37,6 +39,7 @@ const Home = () => {
   const [categoryInfo, setCategoryInfo] = useState<CategoryInfo[]>([]);
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<number>(0);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [filterInfo, setFilterInfo] = useState<HomeFilterInfo>({
@@ -84,6 +87,8 @@ const Home = () => {
 
     setSaleItems([]);
   };
+
+  const handleItemDetail = (id: number) => setSelectedItem(id);
 
   const fetchItems = async () => {
     if (!homePageInfo.hasNext) return;
@@ -138,6 +143,7 @@ const Home = () => {
     <>
       <NavBar
         left={
+          // TODO: 동네 선택 팝업 띄우기
           <MyNavBarBtn onClick={() => 'open region popup'}>
             역삼동
             <Icon name={'chevronDown'} />
@@ -149,9 +155,17 @@ const Home = () => {
           </button>
         }
       />
-      <ItemList saleItems={saleItems} />
+      <ItemList saleItems={saleItems} onItemClick={handleItemDetail} />
       {!!saleItems.length && <MyOnFetchItems ref={setTarget}></MyOnFetchItems>}
       {isLoading && <Spinner />}
+      {!!selectedItem &&
+        createPortal(
+          <ItemDetail
+            id={selectedItem}
+            handleBackBtnClick={handleItemDetail}
+          />,
+          document.body,
+        )}
       {isCategoryModalOpen &&
         createPortal(
           <Category

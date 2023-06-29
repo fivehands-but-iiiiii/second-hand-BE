@@ -11,6 +11,7 @@ import {
 import PopupSheet from '@common/PopupSheet/PopupSheet';
 import SubTabBar from '@common/TabBar/SubTabBar';
 import { ItemStatus } from '@components/ItemStatus';
+import PortalLayout from '@components/layout/PortalLayout';
 import { formatNumberToSI } from '@utils/formatNumberToSI';
 import getElapsedTime from '@utils/getElapsedTime';
 
@@ -60,9 +61,10 @@ export interface ItemDetailInfo {
 
 interface ItemDetailProps {
   id: number;
+  handleBackBtnClick: (id: number) => void;
 }
 
-const ItemDetail = ({ id }: ItemDetailProps) => {
+const ItemDetail = ({ id, handleBackBtnClick }: ItemDetailProps) => {
   const [itemDetailInfo, setItemDetailInfo] = useState<ItemDetailInfo>({
     id: 0,
     seller: { id: 0, memberId: '' },
@@ -96,7 +98,6 @@ const ItemDetail = ({ id }: ItemDetailProps) => {
     price,
     isMyItem,
   } = itemDetailInfo;
-  const navigate = useNavigate();
   const likeIcon = isLike ? 'fullHeart' : 'heart';
 
   const statusLabel = useMemo(() => {
@@ -164,13 +165,10 @@ const ItemDetail = ({ id }: ItemDetailProps) => {
     },
   }));
 
-  const handleStatusPopup = () => {
-    setIsStatusPopupOpen(!isStatusPopupOpen);
-  };
+  const handleStatusPopup = () => setIsStatusPopupOpen(!isStatusPopupOpen);
 
-  const handleViewMorePopup = () => {
+  const handleViewMorePopup = () =>
     setIsMoreViewPopupOpen(!isMoreViewPopupOpen);
-  };
 
   const mapItemDetailInfo = (data: any) => {
     const formattedPrice = data.price
@@ -206,12 +204,11 @@ const ItemDetail = ({ id }: ItemDetailProps) => {
   }, []);
 
   return (
-    <>
+    <PortalLayout>
       <div>
         <NavBar
           left={
-            // TODO: 모달 닫기로 변경
-            <button onClick={() => navigate(-1)}>
+            <button onClick={() => handleBackBtnClick(0)}>
               <Icon name={'chevronLeft'} />
             </button>
           }
@@ -280,7 +277,7 @@ const ItemDetail = ({ id }: ItemDetailProps) => {
           onSheetClose={handleViewMorePopup}
         ></PopupSheet>
       )}
-    </>
+    </PortalLayout>
   );
 };
 
