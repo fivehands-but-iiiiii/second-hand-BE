@@ -1,9 +1,7 @@
-// import { useParams } from 'react-router-dom';
-
 import { useState } from 'react';
 
 import NavBar from '@common/NavBar';
-import ChatList from '@components/chat/ChatList';
+import ChatRoomList from '@components/chat/ChatRoomList';
 import BlankPage from '@pages/BlankPage';
 
 // NOTE: mock data는 API 연동 후 삭제 예정
@@ -37,7 +35,7 @@ const mockChatList = [
   },
 ];
 
-const ChatRooms = () => {
+const ChatPage = () => {
   const title = '채팅';
   const [chatList, setChatList] = useState(mockChatList);
 
@@ -47,7 +45,7 @@ const ChatRooms = () => {
     <>
       <NavBar center={title} />
       {chatList.length ? (
-        <ChatList chatItems={chatList} />
+        <ChatRoomList chatItems={chatList} />
       ) : (
         <BlankPage title={title} />
       )}
@@ -55,4 +53,4 @@ const ChatRooms = () => {
   );
 };
 
-export default ChatRooms;
+export default ChatPage;

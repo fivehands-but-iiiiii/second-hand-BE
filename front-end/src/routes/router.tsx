@@ -1,10 +1,9 @@
 import { createBrowserRouter } from 'react-router-dom';
 
-// import ChatList from '@components/chat/ChatList';
 import MobileLayout from '@components/layout/MobileLayout';
 import Join from '@components/login/Join';
 import OAuthCallback from '@components/login/OAuthCallback';
-import ChatRooms from '@pages/ChatRooms';
+import ChatPage from '@pages/ChatPage';
 import ErrorPage from '@pages/ErrorPage';
 import Home from '@pages/Home';
 import Login from '@pages/Login';
@@ -26,16 +25,16 @@ const router = createBrowserRouter([
         element: <Login />,
       },
       {
-        path: 'wishList',
+        path: 'wish-list',
         element: <WishList />,
       },
       {
-        path: 'items/:userId',
+        path: 'sales-history',
         element: <SalesHistory />,
       },
       {
-        path: 'chatList',
-        element: <ChatRooms />,
+        path: 'chat-list',
+        element: <ChatPage />,
       },
     ],
   },
