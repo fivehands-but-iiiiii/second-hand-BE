@@ -75,8 +75,12 @@ const Home = () => {
     setIsNewModalOpen((prev) => !prev);
   };
 
-  // 필터가 한 번 밖에 안 돼...
   const handleFilterCategory = (categoryId: number) => {
+    setHomePageInfo({
+      page: 0,
+      hasPrevious: false,
+      hasNext: true,
+    });
     setFilterInfo((prevFilterInfo) => ({
       ...prevFilterInfo,
       categoryId: categoryId,
