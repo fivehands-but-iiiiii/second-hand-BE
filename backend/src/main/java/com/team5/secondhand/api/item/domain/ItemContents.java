@@ -44,7 +44,7 @@ public class ItemContents {
         return ItemContents.builder()
                 .contents(contents)
                 .detailImageUrl(images)
-                .isDelete(false)
+                .isDeleted(false)
                 .build();
     }
 
