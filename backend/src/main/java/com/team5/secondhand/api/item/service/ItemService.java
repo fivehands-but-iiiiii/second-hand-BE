@@ -29,7 +29,7 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
 
-    @Cacheable(value = "itemListCache")
+    // @Cacheable(value = "itemListCache")
     @Transactional(readOnly = true)
     public ItemList getItemList(ItemFilteredSlice request, Region region) {
         Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
