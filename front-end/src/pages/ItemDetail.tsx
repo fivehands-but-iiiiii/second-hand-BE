@@ -121,6 +121,7 @@ const ItemDetail = ({
     } catch (error) {
       console.error(`Failed to request: ${error}`);
     }
+    setItemDetailInfo((prev) => ({ ...prev, status: status }));
   };
 
   const handleViewMoreSheet = async (type: string) => {
