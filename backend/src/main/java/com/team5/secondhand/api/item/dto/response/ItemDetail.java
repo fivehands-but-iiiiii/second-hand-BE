@@ -44,7 +44,7 @@ public class ItemDetail {
                 .seller(Seller.of(item.getSeller()))
                 .isMyItem(isMyItem)
                 .images(images)
-                .hits(item.getCount().getHits())
+                .hits(item.getCount().getHits() + 1)
                 .chatCount(item.getCount().getChatCounts())
                 .likesCount(item.getCount().getLikeCounts())
                 .createAt(item.getCreatedAt())

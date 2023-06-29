@@ -24,4 +24,6 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
     List<Long> findByDistinctCategoryByMember(@Param("memberId") Long memberId);
 
     boolean existsByMemberIdAndItemId(Long memberId, Long itemId);
+
+    List<Long> findAllItemIdByMemberId (Long memberId);
 }

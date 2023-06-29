@@ -16,11 +16,12 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityExistsException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class WishlistService {
+public class WishlistService implements CheckMemberLikedUsecase {
     private final WishlistRepository wishlistRepository;
     private final int FILTER_SIZE = 10;
 
@@ -56,9 +57,16 @@ public class WishlistService {
         return WishItemList.of(wishItems, page, wishlistSlice.hasNext(), wishlistSlice.hasPrevious());
     }
 
+    @Override
     public Boolean isMemberLiked(Long itemId, Long memberId) {
         Boolean isLike = wishlistRepository.existsByMemberIdAndItemId(memberId, itemId);
 
         return isLike;
+    }
+
+    @Override
+    public List<Boolean> isMemberLiked(List<Long> itemId, Long memberId) {
+        List<Long> itemIds = wishlistRepository.findAllItemIdByMemberId(memberId);
+        return itemId.stream().map(itemIds::contains).collect(Collectors.toList());
     }
 }

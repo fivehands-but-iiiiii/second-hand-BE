@@ -54,10 +54,10 @@ public class ItemController {
             description = "사용자는 자신의 동네의 상품 목록을 볼 수 있다."
     )
     @GetMapping
-    public ItemList getItemList(ItemFilteredSlice itemSlice) throws NotValidRegionException {
+    public ItemList getItemList(ItemFilteredSlice itemSlice, @RequestAttribute MemberDetails loginMember) throws NotValidRegionException {
         Map<Long, Region> regions = getValidRegions.getRegions(List.of(itemSlice.getRegionId()));
         //TODO Category 유효성 검사
-        return itemService.getItemList(itemSlice, regions.get(itemSlice.getPage()));
+        return itemService.getItemList(itemSlice, regions.get(itemSlice.getPage()), loginMember);
     }
 
     @Operation(
@@ -117,7 +117,7 @@ public class ItemController {
     @GetMapping("/{id}")
     public GenericResponse<ItemDetail> getItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember) throws ExistMemberIdException, ExistItemException {
         Boolean isLike = wishlistService.isMemberLiked(id, loginMember.getId());
-        ItemDetail item = itemService.getItem(id, loginMember.getId(), isLike);
+        ItemDetail item = itemService.viewAItem(id, loginMember.getId(), isLike);
 
         return GenericResponse.send("상품 상세정보를 볼 수 있습니다.", item);
     }
