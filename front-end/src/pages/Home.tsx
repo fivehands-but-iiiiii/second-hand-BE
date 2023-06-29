@@ -67,12 +67,26 @@ const Home = () => {
     return filterQuery;
   };
 
+  const initData = () => {
+    setSaleItems([]);
+    setHomePageInfo({
+      page: 0,
+      hasPrevious: false,
+      hasNext: true,
+    });
+  };
+
   const handleCategoryModal = () => {
     setIsCategoryModalOpen((prev) => !prev);
   };
 
+  const [onRefresh, setOnRefresh] = useState(false);
   const handleNewModal = () => {
     setIsNewModalOpen((prev) => !prev);
+    if (isNewModalOpen) {
+      initData();
+      setOnRefresh(true);
+    }
   };
 
   // 필터가 한 번 밖에 안 돼...
@@ -87,6 +101,7 @@ const Home = () => {
 
   const fetchItems = async () => {
     if (!homePageInfo.hasNext) return;
+
     const filterQuery = createFilterQuery();
 
     try {
@@ -129,6 +144,14 @@ const Home = () => {
   useEffect(() => {
     fetchItems();
   }, [filterInfo]);
+
+  useEffect(() => {
+    // TODO: PR merge 후, 상품디테일 창 close시에도 적용하기
+    if (onRefresh) {
+      fetchItems();
+      setOnRefresh(false);
+    }
+  }, [onRefresh]);
 
   useEffect(() => {
     getCategoryInfo();
