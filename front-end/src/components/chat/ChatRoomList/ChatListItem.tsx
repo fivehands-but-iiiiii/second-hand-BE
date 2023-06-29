@@ -51,7 +51,6 @@ const ChatListItem = ({ chatItem }: ChatListProps) => {
 
 const MyChatListItem = styled.button`
   width: 100%;
-  min-width: 393px;
   display: flex;
   align-items: center;
   padding: 16px;
@@ -63,7 +62,7 @@ const MyChatListItem = styled.button`
 `;
 
 const MyChatInfo = styled.div`
-  min-width: 240px;
+  min-width: 180px;
   flex-direction: column;
   flex-grow: 1;
   align-items: flex-start;

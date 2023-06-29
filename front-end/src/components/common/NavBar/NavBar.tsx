@@ -36,7 +36,7 @@ const MyNavBarTitle = styled.div`
   display: grid;
   align-items: flex-end;
   grid-template-columns: 1fr 1fr 1fr;
-  height: 10vh;
+  height: 100%;
   padding: 10px 10px;
   color: ${({ theme }) => theme.colors.neutral.textWeak};
   ${({ theme }) => theme.fonts.body};
