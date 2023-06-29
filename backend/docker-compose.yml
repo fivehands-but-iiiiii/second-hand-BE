@@ -26,3 +26,14 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
+#    networks:
+#      network:
+#        ipv4_address: 10.5.0.5
+#
+#networks:
+#  network:
+#    driver: bridge
+#    ipam:
+#      config:
+#        - subnet: 10.5.0.0/16
+#          gateway: 10.5.0.1
