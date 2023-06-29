@@ -1,4 +1,4 @@
-version: "3"
+version: "3.7"
 services:
   was:
     image: inewpow/secondhand-nginx
@@ -18,5 +18,11 @@ services:
       - "8080:8080"
     expose:
       - 8080
-    volumes:
-      - ${PWD}/log:/log
+    depends_on:
+      - redis
+
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
