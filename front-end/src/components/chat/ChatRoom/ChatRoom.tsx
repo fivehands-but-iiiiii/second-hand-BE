@@ -1,7 +1,18 @@
+import Icon from '@assets/Icon';
+import NavBar from '@common/NavBar/NavBar';
+
 const ChatRoom = () => {
   return (
     <>
-      <div></div>
+      <NavBar
+        left={
+          <button>
+            <Icon name={'chevronLeft'} />
+            뒤로
+          </button>
+        }
+        center=""
+      />
     </>
   );
 };
