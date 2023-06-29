@@ -93,6 +93,7 @@ const Home = () => {
       setIsLoading(true);
 
       const { data } = await api.get(`items/${filterQuery}`);
+
       setSaleItems((prevItems) => {
         const newSet = new Set(prevItems);
         data.items.forEach((item: SaleItem) => newSet.add(item));

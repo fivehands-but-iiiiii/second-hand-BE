@@ -1,9 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom';
 
+// import ChatList from '@components/chat/ChatList';
 import MobileLayout from '@components/layout/MobileLayout';
 import Join from '@components/login/Join';
 import OAuthCallback from '@components/login/OAuthCallback';
-import ChatList from '@pages/ChatList';
+import ChatRooms from '@pages/ChatRooms';
 import ErrorPage from '@pages/ErrorPage';
 import Home from '@pages/Home';
 import Login from '@pages/Login';
@@ -33,8 +34,8 @@ const router = createBrowserRouter([
         element: <SalesHistory />,
       },
       {
-        path: 'chatList/:userId',
-        element: <ChatList />,
+        path: 'chatList',
+        element: <ChatRooms />,
       },
     ],
   },
