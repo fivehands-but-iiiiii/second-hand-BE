@@ -10,6 +10,7 @@ import {
 } from '@common/PopupSheet/constants';
 import PopupSheet from '@common/PopupSheet/PopupSheet';
 import SubTabBar from '@common/TabBar/SubTabBar';
+import { CategoryInfo } from '@components/home/category';
 import { ItemStatus } from '@components/ItemStatus';
 import PortalLayout from '@components/layout/PortalLayout';
 import { formatNumberToSI } from '@utils/formatNumberToSI';
@@ -61,10 +62,15 @@ export interface ItemDetailInfo {
 
 interface ItemDetailProps {
   id: number;
+  categoryInfo: CategoryInfo[];
   handleBackBtnClick: (id: number) => void;
 }
 
-const ItemDetail = ({ id, handleBackBtnClick }: ItemDetailProps) => {
+const ItemDetail = ({
+  id,
+  categoryInfo,
+  handleBackBtnClick,
+}: ItemDetailProps) => {
   const [itemDetailInfo, setItemDetailInfo] = useState<ItemDetailInfo>({
     id: 0,
     seller: { id: 0, memberId: '' },
@@ -175,9 +181,12 @@ const ItemDetail = ({ id, handleBackBtnClick }: ItemDetailProps) => {
       ? `${data.price.toLocaleString()}원`
       : '가격없음';
 
+    const categoryTitle = categoryInfo.find((item) => item.id === category);
+
     const mappedDetails = {
       ...data,
       price: formattedPrice,
+      category: categoryTitle?.title,
       elapsedTime: getElapsedTime(data.createAt),
       hits: hits && formatNumberToSI(data.hits),
       chatCount: chatCount && formatNumberToSI(data.chatCount),

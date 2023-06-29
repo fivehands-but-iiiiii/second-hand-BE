@@ -162,6 +162,7 @@ const Home = () => {
         createPortal(
           <ItemDetail
             id={selectedItem}
+            categoryInfo={categoryInfo}
             handleBackBtnClick={handleItemDetail}
           />,
           document.body,
