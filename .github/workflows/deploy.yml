@@ -21,6 +21,13 @@ jobs:
       with:
         java-version: '11'
         distribution: 'adopt'
+	
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: "16"
+        cache: "yarn"
+	
     - run: |
         touch ./backend/src/main/resources/application-aws.yml
         echo "${{ secrets.APPLICATION_AWS }}" > ./backend/src/main/resources/application-aws.yml
