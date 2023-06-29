@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
 import Button from '@common/Button';
@@ -230,15 +229,18 @@ const ItemDetail = ({
           }
         />
         <MyImgDetail>
-          {/* <div>이미지들..{images[0].id}</div> */}
           <MyImages>
-            <img src="https://picsum.photos/203" alt={title} />
+            {images.map((image) => (
+              <img key={image.order} src={image.url} alt={title} />
+            ))}
           </MyImages>
-          <MyImgIcons>
-            <Icon name={'selected'} size="xxs" />
-            <Icon name={'selected'} size="xxs" />
-            <Icon name={'selected'} size="xxs" />
-          </MyImgIcons>
+          {images.length > 1 && (
+            <MyImgIcons>
+              {images.map((image) => (
+                <Icon key={image.order} name={'selected'} size="xxs" />
+              ))}
+            </MyImgIcons>
+          )}
         </MyImgDetail>
         <MyItemInfo>
           {isMyItem || (
@@ -300,9 +302,10 @@ const MyImgDetail = styled.div`
 
 const MyImages = styled.div`
   overflow: hidden;
+  width: 100%;
   > img {
-    object-fit: cover;
     height: 100%;
+    object-fit: cover;
   }
 `;
 
