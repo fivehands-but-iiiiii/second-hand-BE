@@ -150,7 +150,6 @@ const MyLogin = styled.div`
   justify-content: space-between;
   padding: 5vh 2.7vw;
   height: calc(90vh - 83px);
-  min-height: 400px;
 `;
 
 const MyButtons = styled.div`

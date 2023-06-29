@@ -8,6 +8,7 @@ interface Circle {
 
 interface ButtonStyleProps extends ButtonProps {
   circleSize?: number;
+  children?: ReactNode;
 }
 
 interface ButtonProps extends ComponentPropsWithRef<'button'> {
@@ -18,7 +19,7 @@ interface ButtonProps extends ComponentPropsWithRef<'button'> {
   fullWidth?: boolean;
   spaceBetween?: boolean;
   disabled?: boolean;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -73,7 +74,7 @@ const MyButton = styled.button<ButtonStyleProps>`
   padding: 8px 16px;
   gap: 4px;
   border-radius: 8px;
-  ${({ theme }) => theme.fonts.caption1}
+  ${({ theme }) => theme.fonts.caption1};
   ${({ active, theme }) =>
     active
       ? css`

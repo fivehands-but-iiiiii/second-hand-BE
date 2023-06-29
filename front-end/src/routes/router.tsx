@@ -3,7 +3,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import MobileLayout from '@components/layout/MobileLayout';
 import Join from '@components/login/Join';
 import OAuthCallback from '@components/login/OAuthCallback';
-import ChatList from '@pages/ChatList';
+import ChatPage from '@pages/ChatPage';
 import ErrorPage from '@pages/ErrorPage';
 import Home from '@pages/Home';
 import Login from '@pages/Login';
@@ -34,7 +34,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'chat-list',
-        element: <ChatList />,
+        element: <ChatPage />,
       },
     ],
   },

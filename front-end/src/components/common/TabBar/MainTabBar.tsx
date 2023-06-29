@@ -32,19 +32,19 @@ const MainTabBar = ({ userId }: MainTabBarProps) => {
       id: 2,
       icon: 'newspaper',
       label: '판매내역',
-      path: `/items/${userId}`,
+      path: '/sales-history',
     },
     {
       id: 3,
       icon: 'heart',
       label: '관심목록',
-      path: '/wishList',
+      path: '/wish-list',
     },
     {
       id: 4,
       icon: 'message',
       label: '채팅',
-      path: `chatList/${userId}`,
+      path: 'chat-list',
     },
     {
       id: 5,
