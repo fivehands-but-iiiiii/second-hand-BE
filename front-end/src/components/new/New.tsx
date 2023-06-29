@@ -1,8 +1,9 @@
-import Category from '@components/home/category';
+import { CategoryInfo } from '@components/home/category';
 import PortalLayout from '@components/layout/PortalLayout';
 import ItemEditor from '@components/new/itemEditor/ItemEditor';
+
 interface NewProps {
-  categoryInfo: Category[];
+  categoryInfo: CategoryInfo[];
   onClick: () => void;
 }
 

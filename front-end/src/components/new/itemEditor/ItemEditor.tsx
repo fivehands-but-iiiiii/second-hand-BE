@@ -48,11 +48,6 @@ export interface ItemInfo {
   images: ImageFile[];
 }
 
-interface InputFile {
-  preview: string;
-  file?: File;
-}
-
 interface ItemEditorProps {
   categoryInfo: Category[];
   isEdit?: boolean;
@@ -273,6 +268,7 @@ const MyNew = styled.div`
 
 const MyPrice = styled(LabelInput)`
   padding: 15px 15px 15px 0;
+  line-height: 1.5;
   label {
     padding-left: 15px;
     ${({ theme }) => theme.colors.neutral.border};
