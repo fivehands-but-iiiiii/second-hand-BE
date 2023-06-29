@@ -49,7 +49,7 @@ const Join = () => {
   });
   const [isReadyToSubmit, setIsReadyToSubmit] = useState(false);
   const [idExists, setIdExists] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const { join } = useJoin();
 
   const handleInputChange = async ({
