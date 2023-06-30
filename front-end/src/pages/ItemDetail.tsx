@@ -117,7 +117,7 @@ const ItemDetail = ({
 
   const handleStatusSheet = async (status: ItemStatus) => {
     try {
-      await api.patch(`/items?id=${id}/status`, { status: status });
+      await api.patch(`/items/${id}/status`, { status: status });
     } catch (error) {
       console.error(`Failed to request: ${error}`);
     }
@@ -127,7 +127,7 @@ const ItemDetail = ({
   const handleViewMoreSheet = async (type: string) => {
     if (type === 'delete') {
       try {
-        await api.delete(`/items?id=${id}`);
+        await api.delete(`/items/${id}`);
       } catch (error) {
         console.error(`Failed to request: ${error}`);
       }
@@ -137,20 +137,29 @@ const ItemDetail = ({
   };
 
   const handleLike = async () => {
+    let likesCount = itemDetailInfo.likesCount;
+
     if (isLike) {
       try {
         await api.delete(`/wishlist/like?itemId=${id}`);
+        likesCount--;
       } catch (error) {
         console.error(`Failed to request: ${error}`);
       }
     } else {
       try {
         await api.post('/wishlist/like', { itemId: id });
+        likesCount++;
       } catch (error) {
         console.error(`Failed to request: ${error}`);
       }
     }
-    setItemDetailInfo((prev) => ({ ...prev, isLike: !prev.isLike }));
+
+    setItemDetailInfo((prev) => ({
+      ...prev,
+      isLike: !prev.isLike,
+      likesCount: likesCount,
+    }));
   };
 
   const statusPopupSheetMenu = DETAIL_STATUS_MENU.filter(
@@ -181,7 +190,9 @@ const ItemDetail = ({
       ? `${data.price.toLocaleString()}원`
       : '가격없음';
 
-    const categoryTitle = categoryInfo.find((item) => item.id === category);
+    const categoryTitle = categoryInfo.find(
+      (item) => item.id === data.category,
+    );
 
     const mappedDetails = {
       ...data,
@@ -259,7 +270,7 @@ const ItemDetail = ({
           <MyItemInfoDetail>
             <MyTitle>{title}</MyTitle>
             <MyCategoryAndTime>
-              카테고리{category} &middot; {elapsedTime}
+              {category} &middot; {elapsedTime}
             </MyCategoryAndTime>
             <MyContents>{contents}</MyContents>
             <MyCountInfo>
@@ -294,7 +305,6 @@ const ItemDetail = ({
 };
 
 const MyImgDetail = styled.div`
-  position: relative;
   display: flex;
   justify-content: center;
   width: 100%;
@@ -302,6 +312,7 @@ const MyImgDetail = styled.div`
 `;
 
 const MyImages = styled.div`
+  /* position: relative; */
   overflow: hidden;
   width: 100%;
   > img {
@@ -312,7 +323,8 @@ const MyImages = styled.div`
 
 const MyImgIcons = styled.div`
   position: absolute;
-  bottom: 0;
+  /* bottom: 0; */
+  top: 546px;
   display: flex;
   gap: 10px;
   margin-bottom: 18px;
@@ -354,6 +366,7 @@ const MyItemInfoDetail = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  margin-bottom: 75px;
 `;
 
 const MyTitle = styled.div`

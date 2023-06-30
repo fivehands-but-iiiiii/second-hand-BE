@@ -106,7 +106,13 @@ const Home = () => {
     setSaleItems([]);
   };
 
-  const handleItemDetail = (id: number) => setSelectedItem(id);
+  const handleItemDetail = (id: number) => {
+    setSelectedItem(id);
+    if (id === 0) {
+      initData();
+      setOnRefresh(true);
+    }
+  };
 
   const fetchItems = async () => {
     if (!homePageInfo.hasNext) return;
@@ -155,7 +161,6 @@ const Home = () => {
   }, [filterInfo]);
 
   useEffect(() => {
-    // TODO: PR merge 후, 상품디테일 창 close시에도 적용하기
     if (onRefresh) {
       fetchItems();
       setOnRefresh(false);
