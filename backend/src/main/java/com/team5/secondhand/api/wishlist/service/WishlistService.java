@@ -1,6 +1,7 @@
 package com.team5.secondhand.api.wishlist.service;
 
 import com.team5.secondhand.api.item.domain.Item;
+import com.team5.secondhand.api.item.repository.ItemRepository;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.wishlist.domain.Wishlist;
 import com.team5.secondhand.api.wishlist.dto.response.CategoryList;
@@ -13,16 +14,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityExistsException;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class WishlistService implements CheckMemberLikedUsecase {
     private final WishlistRepository wishlistRepository;
+    private final ItemRepository itemRepository;
     private final int FILTER_SIZE = 10;
 
     @Transactional
