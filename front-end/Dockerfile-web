@@ -1,0 +1,14 @@
+FROM node:16.15.1
+
+RUN yarn
+COPY . .
+RUN yarn build
+
+
+FROM nginx:latest
+RUN rm /etc/nginx/conf.d/nginx.conf
+COPY nginx.conf /etc/nginx/conf.d
+COPY --from=dist /app/build /usr/share/nginx/html
+
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
+
