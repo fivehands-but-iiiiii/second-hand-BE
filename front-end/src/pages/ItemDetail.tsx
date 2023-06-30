@@ -128,6 +128,7 @@ const ItemDetail = ({
     if (type === 'delete') {
       try {
         await api.delete(`/items/${id}`);
+        handleBackBtnClick(0);
       } catch (error) {
         console.error(`Failed to request: ${error}`);
       }
