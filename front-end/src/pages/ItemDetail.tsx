@@ -137,20 +137,29 @@ const ItemDetail = ({
   };
 
   const handleLike = async () => {
+    let likesCount = itemDetailInfo.likesCount;
+
     if (isLike) {
       try {
         await api.delete(`/wishlist/like?itemId=${id}`);
+        likesCount--;
       } catch (error) {
         console.error(`Failed to request: ${error}`);
       }
     } else {
       try {
         await api.post('/wishlist/like', { itemId: id });
+        likesCount++;
       } catch (error) {
         console.error(`Failed to request: ${error}`);
       }
     }
-    setItemDetailInfo((prev) => ({ ...prev, isLike: !prev.isLike }));
+
+    setItemDetailInfo((prev) => ({
+      ...prev,
+      isLike: !prev.isLike,
+      likesCount: likesCount,
+    }));
   };
 
   const statusPopupSheetMenu = DETAIL_STATUS_MENU.filter(
@@ -181,7 +190,9 @@ const ItemDetail = ({
       ? `${data.price.toLocaleString()}원`
       : '가격없음';
 
-    const categoryTitle = categoryInfo.find((item) => item.id === category);
+    const categoryTitle = categoryInfo.find(
+      (item) => item.id === data.category,
+    );
 
     const mappedDetails = {
       ...data,
@@ -259,7 +270,7 @@ const ItemDetail = ({
           <MyItemInfoDetail>
             <MyTitle>{title}</MyTitle>
             <MyCategoryAndTime>
-              카테고리{category} &middot; {elapsedTime}
+              {category} &middot; {elapsedTime}
             </MyCategoryAndTime>
             <MyContents>{contents}</MyContents>
             <MyCountInfo>
