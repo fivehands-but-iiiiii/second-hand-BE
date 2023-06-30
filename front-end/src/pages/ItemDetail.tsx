@@ -305,7 +305,6 @@ const ItemDetail = ({
 };
 
 const MyImgDetail = styled.div`
-  position: relative;
   display: flex;
   justify-content: center;
   width: 100%;
@@ -313,6 +312,7 @@ const MyImgDetail = styled.div`
 `;
 
 const MyImages = styled.div`
+  /* position: relative; */
   overflow: hidden;
   width: 100%;
   > img {
@@ -323,7 +323,8 @@ const MyImages = styled.div`
 
 const MyImgIcons = styled.div`
   position: absolute;
-  bottom: 0;
+  /* bottom: 0; */
+  top: 546px;
   display: flex;
   gap: 10px;
   margin-bottom: 18px;
