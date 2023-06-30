@@ -25,12 +25,14 @@ public class WishlistService implements CheckMemberLikedUsecase {
     private final WishlistRepository wishlistRepository;
     private final int FILTER_SIZE = 10;
 
+    @Transactional
     public Long likeItem(Member member, Item item) throws ExistWishlistException {
         if (wishlistRepository.existsByMemberIdAndItemId(member.getId(), item.getId())) {
             throw new ExistWishlistException("이미 좋아요를 눌렀습니다.");
         } else {
             Wishlist wishlist = Wishlist.create(member, item);
             wishlistRepository.save(wishlist);
+            itemRepository.updateLikes(item.getCount().getId());
 
             return wishlist.getId();
         }
