@@ -117,7 +117,7 @@ const ItemDetail = ({
 
   const handleStatusSheet = async (status: ItemStatus) => {
     try {
-      await api.patch(`/items?id=${id}/status`, { status: status });
+      await api.patch(`/items/${id}/status`, { status: status });
     } catch (error) {
       console.error(`Failed to request: ${error}`);
     }
@@ -127,7 +127,7 @@ const ItemDetail = ({
   const handleViewMoreSheet = async (type: string) => {
     if (type === 'delete') {
       try {
-        await api.delete(`/items?id=${id}`);
+        await api.delete(`/items/${id}`);
       } catch (error) {
         console.error(`Failed to request: ${error}`);
       }
