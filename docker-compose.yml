@@ -1,14 +1,17 @@
-version: "3.7"
+version: "3"
+
 services:
-  was:
-    image: inewpow/secondhand-nginx
-    container_name: was-nginx
+  proxy:
+    image: nginx
+    container_name: proxy
     ports:
       - "80:80"
+      - "81:81"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
     depends_on:
       - application
+      - web
 
   application:
     build: .
@@ -26,6 +29,15 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
+
+  web:
+    image: inewpow/secondhand-web
+    container_name: web-application
+    ports:
+      - "5173:5173"
+    expose:
+      - 5173
+
 #    networks:
 #      network:
 #        ipv4_address: 10.5.0.5

@@ -20,9 +20,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
+        registry.addMapping("/api/**")
                 //TODO front server domain으로 변경할 것
-                .allowedOrigins("http://127.0.0.1:5173", "http://localhost:5173")
+                .allowedOrigins("http://127.0.0.1:5173", "http://localhost:5173", "http://3.37.51.148:5173/", "http://3.37.51.148")
                 .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS", "HEAD")
                 .allowedHeaders("*")
                 .maxAge(36000);

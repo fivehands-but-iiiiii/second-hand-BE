@@ -1,14 +1,27 @@
-FROM node:16.15.1
+FROM node:16 as dependencies
+
+WORKDIR /usr/src/app
+COPY ./package.json .
+COPY ./yarn.lock .
 
 RUN yarn
+
+FROM node:16 as builder
+
+WORKDIR /usr/src/app
+COPY . .
+COPY --from=dependencies /usr/src/app/node_modules ./node_modules
+RUN yarn
+
 COPY . .
 RUN yarn build
 
+FROM nginx
+RUN rm -rf /etc/nginx/conf.d
 
-FROM nginx:latest
-RUN rm /etc/nginx/conf.d/nginx.conf
-COPY nginx.conf /etc/nginx/conf.d
-COPY --from=dist /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx
+COPY --from=builder /usr/src/app/dist /usr/share/nginx/html
 
+EXPOSE 5173
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
 
