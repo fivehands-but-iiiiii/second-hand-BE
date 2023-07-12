@@ -83,10 +83,15 @@ public class ItemService {
     // @Cacheable(value = "itemCache")
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Transactional
-    public ItemDetail viewAItem(Long id, Long memberId, Boolean isLike) throws ExistItemException {
+    public ItemDetail viewAItem(Long id, MemberDetails member, Boolean isLike) throws ExistItemException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
         itemRepository.updateHits(item.getCount().getId());
-        return ItemDetail.of(item, item.isSeller(memberId), isLike);
+
+        boolean isSeller = false;
+        if (!member.isEmpty()) {
+            isSeller = item.isSeller(member.getId());
+        }
+        return ItemDetail.of(item, isSeller, isLike);
     }
 
     public CategoryList getCategoryList(Long regionId) {
