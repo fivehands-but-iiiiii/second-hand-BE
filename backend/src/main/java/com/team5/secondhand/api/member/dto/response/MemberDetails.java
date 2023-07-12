@@ -37,4 +37,12 @@ public class MemberDetails {
                 .regions(regions)
                 .build();
     }
+
+    public static MemberDetails empty() {
+        return MemberDetails.builder().build();
+    }
+
+    public boolean isEmpty() {
+        return this.id == null;
+    }
 }

@@ -29,7 +29,7 @@ public class AuthenticationFilter implements Filter {
 
         String headValue = httpServletRequest.getHeader(jwtProperties.getAuthorizationHeader());
 
-        MemberDetails loginMember = null;
+        MemberDetails loginMember = MemberDetails.empty();
         if (headValue != null && headValue.startsWith(jwtProperties.getTokenType())) {
             String token = getToken(headValue);
             Claims claim = jwtUtils.getClaim(token);

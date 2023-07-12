@@ -42,15 +42,19 @@ public class ItemService {
         List<Item> itemEntities = pageResult.getContent();
 
         List<ItemSummary> items = new ArrayList<>();
-        if (loginMember != null) {
+        if (!loginMember.isEmpty()) {
             items = getItemSummariesWithIsLike(loginMember, itemEntities);
         }
 
-        if (loginMember == null) {
-            items = itemEntities.stream().map(e -> ItemSummary.of(e, false)).collect(Collectors.toList());
+        if (loginMember.isEmpty()) {
+            items = getItemSummaries(itemEntities);
         }
 
         return ItemList.getSlice(pageResult.getNumber(), pageResult.hasPrevious(), pageResult.hasNext(), items);
+    }
+
+    private List<ItemSummary> getItemSummaries(List<Item> itemEntities) {
+        return itemEntities.stream().map(e -> ItemSummary.of(e, false)).collect(Collectors.toList());
     }
 
     private List<ItemSummary> getItemSummariesWithIsLike(MemberDetails loginMember, List<Item> itemEntities) {
