@@ -50,8 +50,7 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
   };
 
   const createChatId = async () => {
-    // chatId, chatBubbles가 null이고
-    // first bubble이 입력되면 chatId를 생성
+    // TODO: chatId, chatBubbles가 null이고 first bubble이 입력되면 chatId를 생성
     try {
       const { data } = await api.post('chats', {
         itemId,
@@ -80,7 +79,7 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
             <span>뒤로</span>
           </MyNavBarBtn>
         }
-        center={'상대닉네임'}
+        center={opponentId}
         right={
           <button onClick={() => console.log('handleViewMorePopup')}>
             <Icon name={'ellipsis'} />
@@ -88,30 +87,23 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
         }
       />
       <MyChatRoomItem>
-        <ImgBox src={'item'} alt={'item'} size={'sm'} />
+        <ImgBox src={itemInfo.thumbnailUrl} alt={itemInfo.title} size={'sm'} />
         <MyChatRoomItemInfo>
-          <span>뽀로로로로로</span>
-          <span>10000원</span>
+          <span>{itemInfo.title}</span>
+          <span>{itemInfo.price}</span>
         </MyChatRoomItemInfo>
       </MyChatRoomItem>
       <MyChatBubbles>
-        <MyBubble>
-          <span>
-            채팅 내용채팅 text-align: left; text-align: left; text-align: left;
-            내용채팅 내용채팅 내용채팅 내용채팅 내용채팅 내용
-          </span>
-        </MyBubble>
-        <MyChatBubble>
-          <span>채팅 내용</span>
-        </MyChatBubble>
-        <MyChatBubble>
-          <span>채팅 내용</span>
-        </MyChatBubble>
-        <MyPartnerBubbleWrapper>
-          <MyPartnerBubble>
-            <span>상대방 채팅</span>
-          </MyPartnerBubble>
-        </MyPartnerBubbleWrapper>
+        {chatBubbles.map((bubble) => {
+          const BubbleComponent =
+            bubble.senderId === 1 ? MyBubble : MyPartnerBubble;
+          return (
+            // key 추가하기
+            <BubbleComponent>
+              <span>{bubble.contents}</span>
+            </BubbleComponent>
+          );
+        })}
       </MyChatBubbles>
     </>
   );
