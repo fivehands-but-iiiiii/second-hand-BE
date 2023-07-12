@@ -1,6 +1,7 @@
 package com.team5.secondhand.global.config;
 
 import com.team5.secondhand.global.auth.interceptor.AuthorityInterceptor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+    @Value("${server.address.frontend}")
+    private String FRONTEND_SERVER;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AuthorityInterceptor())
@@ -20,9 +24,12 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
-                //TODO front server domain으로 변경할 것
-                .allowedOrigins("http://127.0.0.1:5173", "http://localhost:5173", "http://3.37.51.148:5173/", "http://3.37.51.148:81")
+        registry.addMapping("/**")
+                .allowedOrigins(
+                        "http://127.0.0.1:5173", "http://localhost:5173",
+                        "http://3.37.51.148:81/", "https://apic.app/online/#/tester",
+                        FRONTEND_SERVER, "http://fivehands-but-iiiiii.site"
+                )
                 .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS", "HEAD")
                 .allowedHeaders("*")
                 .maxAge(36000);

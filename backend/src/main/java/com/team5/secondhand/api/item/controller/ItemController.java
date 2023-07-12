@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.security.sasl.AuthenticationException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -116,8 +117,8 @@ public class ItemController {
     )
     @GetMapping("/{id}")
     public GenericResponse<ItemDetail> getItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember) throws ExistMemberIdException, ExistItemException {
-        Boolean isLike = wishlistService.isMemberLiked(id, loginMember.getId());
-        ItemDetail item = itemService.viewAItem(id, loginMember.getId(), isLike);
+        Boolean isLike = wishlistService.isMemberLiked(id, loginMember);
+        ItemDetail item = itemService.viewAItem(id, loginMember, isLike);
 
         return GenericResponse.send("상품 상세정보를 볼 수 있습니다.", item);
     }
