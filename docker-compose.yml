@@ -1,0 +1,52 @@
+version: "3"
+
+services:
+  proxy:
+    image: nginx
+    container_name: proxy
+    ports:
+      - "80:80"
+      - "81:81"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - was-application
+      - web-application
+
+  was-application:
+    build: .
+    image: inewpow/secondhand
+    container_name: was-application
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    hostname: was-application
+
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  web-application:
+    image: inewpow/secondhand-web:1.3
+    container_name: web-application
+    ports:
+      - "5173:5173"
+    expose:
+      - 5173
+    depends_on:
+      - was-application
+
+#    networks:
+#      network:
+#        ipv4_address: 10.5.0.5
+#
+#networks:
+#  network:
+#    driver: bridge
+#    ipam:
+#      config:
+#        - subnet: 10.5.0.0/16
+#          gateway: 10.5.0.1
