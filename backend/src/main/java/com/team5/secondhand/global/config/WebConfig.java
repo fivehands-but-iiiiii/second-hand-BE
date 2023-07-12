@@ -27,7 +27,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "http://127.0.0.1:5173", "http://localhost:5173",
-                        "http://3.37.51.148:81/",
+                        "http://3.37.51.148:81/", "https://apic.app/online/#/tester",
                         FRONTEND_SERVER
                 )
                 .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS", "HEAD")
