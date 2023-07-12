@@ -62,8 +62,8 @@ jobs:
         docker build --platform amd64 --build-arg DEPENDENCY=build/dependency -f ./docker/Dockerfile-was -t ${{secrets.DOCKER_USERNAME}}/secondhand .
         docker push ${{ secrets.DOCKER_USERNAME }}/secondhand
 
-	docker build --platform amd64 --build-arg -f ./docker/Dockerfile-ws -t ${{ secrets.DOCKER_USERNAME }}/secondhand-ws .
-	docker push ${{ secrets.DOCKER_USERNAME }}/secondhand-ws
+	docker build --platform amd64 --build-arg -f ./docker/Dockerfile-web -t ${{ secrets.DOCKER_USERNAME }}/secondhand-web .
+	docker push ${{ secrets.DOCKER_USERNAME }}/secondhand-web
 
     - name: Get Github Actions IP
       id: ip
@@ -91,7 +91,7 @@ jobs:
         script: |
           sudo docker rm -f $(docker ps -qa)
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/secondhand
-          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/secondhand-ws
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/secondhand-web
           sudo docker compose up -d
           sudo docker image prune -a -f
           
