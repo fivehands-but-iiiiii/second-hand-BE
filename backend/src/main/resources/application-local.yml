@@ -21,3 +21,6 @@ logging:
     rolling policy:
       file-name-pattern: application.%d{yyyy-MM-dd}.log
       max-history: 30
+server:
+  address:
+    frontend: "http://localhost:5173"
