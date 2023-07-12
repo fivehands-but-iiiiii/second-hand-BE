@@ -3,6 +3,7 @@ package com.team5.secondhand.api.wishlist.service;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.repository.ItemRepository;
 import com.team5.secondhand.api.member.domain.Member;
+import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.wishlist.domain.Wishlist;
 import com.team5.secondhand.api.wishlist.dto.response.CategoryList;
 import com.team5.secondhand.api.wishlist.dto.response.WishItem;
@@ -62,10 +63,11 @@ public class WishlistService implements CheckMemberLikedUsecase {
     }
 
     @Override
-    public Boolean isMemberLiked(Long itemId, Long memberId) {
-        Boolean isLike = wishlistRepository.existsByMemberIdAndItemId(memberId, itemId);
-
-        return isLike;
+    public Boolean isMemberLiked(Long itemId, MemberDetails member) {
+        if (!member.isEmpty()) {
+            return wishlistRepository.existsByMemberIdAndItemId(member.getId(), itemId);
+        }
+        return false;
     }
 
     @Override

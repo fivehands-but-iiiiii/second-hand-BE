@@ -42,15 +42,19 @@ public class ItemService {
         List<Item> itemEntities = pageResult.getContent();
 
         List<ItemSummary> items = new ArrayList<>();
-        if (loginMember != null) {
+        if (!loginMember.isEmpty()) {
             items = getItemSummariesWithIsLike(loginMember, itemEntities);
         }
 
-        if (loginMember == null) {
-            items = itemEntities.stream().map(e -> ItemSummary.of(e, false)).collect(Collectors.toList());
+        if (loginMember.isEmpty()) {
+            items = getItemSummaries(itemEntities);
         }
 
         return ItemList.getSlice(pageResult.getNumber(), pageResult.hasPrevious(), pageResult.hasNext(), items);
+    }
+
+    private List<ItemSummary> getItemSummaries(List<Item> itemEntities) {
+        return itemEntities.stream().map(e -> ItemSummary.of(e, false)).collect(Collectors.toList());
     }
 
     private List<ItemSummary> getItemSummariesWithIsLike(MemberDetails loginMember, List<Item> itemEntities) {
@@ -79,10 +83,15 @@ public class ItemService {
     // @Cacheable(value = "itemCache")
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Transactional
-    public ItemDetail viewAItem(Long id, Long memberId, Boolean isLike) throws ExistItemException {
+    public ItemDetail viewAItem(Long id, MemberDetails member, Boolean isLike) throws ExistItemException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
         itemRepository.updateHits(item.getCount().getId());
-        return ItemDetail.of(item, item.isSeller(memberId), isLike);
+
+        boolean isSeller = false;
+        if (!member.isEmpty()) {
+            isSeller = item.isSeller(member.getId());
+        }
+        return ItemDetail.of(item, isSeller, isLike);
     }
 
     public CategoryList getCategoryList(Long regionId) {
