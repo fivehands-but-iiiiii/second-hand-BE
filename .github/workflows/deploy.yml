@@ -56,7 +56,7 @@ jobs:
         docker push ${{ secrets.DOCKER_USERNAME }}/secondhand
 
     - name: Build with React
-      working-directory: ./frontend
+      working-directory: ./front-end
       run: |
         yarn install
         yarn build
