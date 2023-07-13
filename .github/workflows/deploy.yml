@@ -48,7 +48,15 @@ jobs:
         ./gradlew clean build
       working-directory: ./backend
 
+    - name: docker build and push
+      run: |
+        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        
+        docker build --platform linux/amd64 --build-arg DEPENDENCY=build/dependency -f ./backend/Dockerfile-was -t ${{secrets.DOCKER_USERNAME}}/secondhand .
+        docker push ${{ secrets.DOCKER_USERNAME }}/secondhand
+
     - name: Build with React
+      working-directory: ./front-end
       run: |
         cd front-end
         yarn install
@@ -57,9 +65,6 @@ jobs:
     - name: docker build and push
       run: |
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-        
-        docker build --platform linux/amd64 --build-arg DEPENDENCY=build/dependency -f ./backend/Dockerfile-was -t ${{secrets.DOCKER_USERNAME}}/secondhand .
-        docker push ${{ secrets.DOCKER_USERNAME }}/secondhand
 
         docker build --platform linux/amd64 --build-arg DEPENDENCY=build/dependency -f ./front-end/Dockerfile-web -t ${{ secrets.DOCKER_USERNAME }}/secondhand-web .
         docker push ${{ secrets.DOCKER_USERNAME }}/secondhand-web
