@@ -237,6 +237,7 @@ const ItemEditor = ({
           label={'₩'}
           name={'price'}
           value={price}
+          maxLength={20}
           placeholder={'가격(선택사항)'}
           onChange={handlePrice}
           ref={priceRef}
