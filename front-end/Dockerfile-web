@@ -2,9 +2,8 @@ FROM node:16 as builder
 
 WORKDIR /usr/src/app
 COPY ./front-end/package.json .
-
 RUN yarn
-COPY . .
+COPY ./front-end .
 RUN yarn build
 
 FROM nginx
