@@ -17,11 +17,7 @@ const MyPortalLayout = styled.div`
   height: 100vh;
   background-color: ${({ theme }) => theme.colors.neutral.background};
   color: ${({ theme }) => theme.colors.neutral.text};
-  overflow: auto;
-  -ms-overflow-style: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  overflow: hidden;
   > div {
     width: 100%;
   }

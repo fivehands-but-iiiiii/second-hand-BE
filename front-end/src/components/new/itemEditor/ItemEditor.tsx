@@ -214,7 +214,7 @@ const ItemEditor = ({
     <>
       <NavBar
         left={<button onClick={handleClose}>닫기</button>}
-        center={'새 상품 등록'}
+        center={'내 물건 팔기'}
         right={
           <button disabled={!isFormValid} onClick={handleSubmit}>
             완료
@@ -243,7 +243,7 @@ const ItemEditor = ({
           onChange={handlePrice}
           ref={priceRef}
         />
-        <MyContents
+        <Textarea
           name={'contents'}
           value={contents}
           placeholder={`${region}에 올릴 게시물 내용을 작성해주세요.`}
@@ -261,9 +261,16 @@ const MyNew = styled.div`
   width: 100vw;
   height: calc(90vh - 85px);
   padding: 0 2.7vw;
-
   > div:nth-child(1) {
     padding: 15px 0;
+  }
+  > div:last-child {
+    padding-top: 10px;
+    max-height: 40vh;
+    > textarea {
+      max-height: 40vh;
+      overflow: auto;
+    }
   }
 `;
 
@@ -273,18 +280,6 @@ const MyPrice = styled(LabelInput)`
   label {
     padding-left: 15px;
     ${({ theme }) => theme.colors.neutral.border};
-  }
-`;
-
-const MyContents = styled(Textarea)`
-  > textarea {
-    /* TODO: 최대높이 반응형으로 조절해야됨 */
-    height: 52vh;
-    overflow: auto;
-    -ms-overflow-style: none;
-    &::-webkit-scrollbar {
-      display: none;
-    }
   }
 `;
 

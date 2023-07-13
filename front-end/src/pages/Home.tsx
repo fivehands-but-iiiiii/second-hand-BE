@@ -174,6 +174,7 @@ const Home = () => {
   return (
     <>
       <NavBar
+        type="blur"
         left={
           // TODO: 동네 선택 팝업 띄우기
           <MyNavBarBtn onClick={() => 'open region popup'}>

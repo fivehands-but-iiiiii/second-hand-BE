@@ -226,8 +226,9 @@ const ItemDetail = ({
 
   return (
     <PortalLayout>
-      <div>
+      <MyItemDetail>
         <NavBar
+          type="transparent"
           left={
             <button onClick={() => handleBackBtnClick(0)}>
               <Icon name={'chevronLeft'} />
@@ -281,7 +282,7 @@ const ItemDetail = ({
             </MyCountInfo>
           </MyItemInfoDetail>
         </MyItemInfo>
-      </div>
+      </MyItemDetail>
       <SubTabBar icon={likeIcon} content={price} onIconClick={handleLike}>
         <Button active onClick={() => console.log('move to chat')}>
           {isMyItem ? `대화 중인 채팅방 ${chatCount}` : '채팅하기'}
@@ -304,6 +305,11 @@ const ItemDetail = ({
     </PortalLayout>
   );
 };
+
+const MyItemDetail = styled.div`
+  height: calc(100vh - 83px);
+  overflow: auto;
+`;
 
 const MyImgDetail = styled.div`
   display: flex;

@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { styled } from 'styled-components';
 
 interface NavBarProps {
+  type?: 'default' | 'blur' | 'transparent';
   left?: ReactNode;
   center?: ReactNode;
   right?: ReactNode;
@@ -10,7 +11,21 @@ interface NavBarProps {
   children?: ReactNode;
 }
 
-const NavBar = ({ left, center, right, className, children }: NavBarProps) => {
+const NavBar = ({
+  type = 'default',
+  left,
+  center,
+  right,
+  className,
+  children,
+}: NavBarProps) => {
+  const navBarTypes = {
+    default: MyDefaultNavBar,
+    blur: MyBlurNavBar,
+    transparent: MyTransparentNavBar,
+  };
+  const MyNavBar = navBarTypes[type];
+
   return (
     <MyNavBar className={className}>
       <MyNavBarTitle>
@@ -23,13 +38,21 @@ const NavBar = ({ left, center, right, className, children }: NavBarProps) => {
   );
 };
 
-const MyNavBar = styled.div`
+const MyDefaultNavBar = styled.div`
   min-height: 70px;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.neutral.border};
+`;
+
+const MyBlurNavBar = styled(MyDefaultNavBar)`
   position: sticky;
   top: 0;
   background-color: ${({ theme }) => theme.colors.neutral.backgroundBlur};
   backdrop-filter: blur(3px);
-  border-bottom: 1px solid ${({ theme }) => theme.colors.neutral.border};
+`;
+
+const MyTransparentNavBar = styled(MyDefaultNavBar)`
+  position: fixed;
+  border: none;
 `;
 
 const MyNavBarTitle = styled.div`
