@@ -44,12 +44,11 @@ jobs:
 
     - name: Build with Gradle
       run: |
+        cd ./backend
         chmod +x gradlew
         ./gradlew clean build
-      working-directory: ./backend
 
     - name: docker build and push
-      working-directory: ./backend
       run: |
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
         
@@ -64,7 +63,6 @@ jobs:
         yarn build
 
     - name: docker build and push
-      working-directory: ./front-end
       run: |
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
