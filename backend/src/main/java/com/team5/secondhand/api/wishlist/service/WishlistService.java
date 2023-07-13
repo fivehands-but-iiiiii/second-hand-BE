@@ -1,7 +1,9 @@
 package com.team5.secondhand.api.wishlist.service;
 
 import com.team5.secondhand.api.item.domain.Item;
+import com.team5.secondhand.api.item.repository.ItemRepository;
 import com.team5.secondhand.api.member.domain.Member;
+import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.wishlist.domain.Wishlist;
 import com.team5.secondhand.api.wishlist.dto.response.CategoryList;
 import com.team5.secondhand.api.wishlist.dto.response.WishItem;
@@ -13,24 +15,27 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityExistsException;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class WishlistService implements CheckMemberLikedUsecase {
     private final WishlistRepository wishlistRepository;
+    private final ItemRepository itemRepository;
     private final int FILTER_SIZE = 10;
 
+    @Transactional
     public Long likeItem(Member member, Item item) throws ExistWishlistException {
         if (wishlistRepository.existsByMemberIdAndItemId(member.getId(), item.getId())) {
             throw new ExistWishlistException("이미 좋아요를 눌렀습니다.");
         } else {
             Wishlist wishlist = Wishlist.create(member, item);
             wishlistRepository.save(wishlist);
+            itemRepository.updateLikes(item.getCount().getId());
 
             return wishlist.getId();
         }
@@ -58,10 +63,11 @@ public class WishlistService implements CheckMemberLikedUsecase {
     }
 
     @Override
-    public Boolean isMemberLiked(Long itemId, Long memberId) {
-        Boolean isLike = wishlistRepository.existsByMemberIdAndItemId(memberId, itemId);
-
-        return isLike;
+    public Boolean isMemberLiked(Long itemId, MemberDetails member) {
+        if (!member.isEmpty()) {
+            return wishlistRepository.existsByMemberIdAndItemId(member.getId(), itemId);
+        }
+        return false;
     }
 
     @Override

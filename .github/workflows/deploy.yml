@@ -3,7 +3,6 @@ name: CICD for fivehands
 on:
   push:
     branches: [ "dev/deploy-test" ]
-    
 
 permissions:
   contents: read
@@ -21,13 +20,12 @@ jobs:
       with:
         java-version: '11'
         distribution: 'adopt'
-	
+      
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
         node-version: "16"
-        cache: "yarn"
-	
+      
     - run: |
         touch ./backend/src/main/resources/application-aws.yml
         echo "${{ secrets.APPLICATION_AWS }}" > ./backend/src/main/resources/application-aws.yml
@@ -36,13 +34,13 @@ jobs:
         echo "${{ secrets.APPLICATION_PROD }}" > ./backend/src/main/resources/application-prod.yml
         
         touch ./backend/src/main/resources/application-oauth.yml
-        echo "${{ secrets.APPICATION_OAUTH }}" > ./backend/src/main/resources/application-oauth.yml
+        echo "${{ secrets.APPLICATION_OAUTH }}" > ./backend/src/main/resources/application-oauth.yml
      
         touch ./backend/src/main/resources/application-jwt.yml
         echo "${{ secrets.APPLICATION_JWT }}" > ./backend/src/main/resources/application-jwt.yml
 
-	touch ./front-end/.env
-	echo "${{ secrets.ENV }}" > ./front-end/.env
+        touch ./front-end/.env
+        echo "${{ secrets.ENV }}" > ./front-end/.env
 
     - name: Build with Gradle
       run: |
@@ -52,18 +50,19 @@ jobs:
 
     - name: Build with React
       run: |
-	cd front-end
-	yarn install
-	yarn build
+        cd front-end
+        yarn install
+        yarn build
 
     - name: docker build and push
       run: |
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-        docker build --platform amd64 --build-arg DEPENDENCY=build/dependency -f ./docker/Dockerfile-was -t ${{secrets.DOCKER_USERNAME}}/secondhand .
+        
+        docker build --platform linux/amd64 --build-arg DEPENDENCY=build/dependency -f ./docker/Dockerfile-was -t ${{secrets.DOCKER_USERNAME}}/secondhand .
         docker push ${{ secrets.DOCKER_USERNAME }}/secondhand
 
-	docker build --platform amd64 --build-arg -f ./docker/Dockerfile-ws -t ${{ secrets.DOCKER_USERNAME }}/secondhand-ws .
-	docker push ${{ secrets.DOCKER_USERNAME }}/secondhand-ws
+        docker build --platform linux/amd64 --build-arg DEPENDENCY=build/dependency -f ./docker/Dockerfile-web -t ${{ secrets.DOCKER_USERNAME }}/secondhand-web .
+        docker push ${{ secrets.DOCKER_USERNAME }}/secondhand-web
 
     - name: Get Github Actions IP
       id: ip
@@ -76,11 +75,9 @@ jobs:
         aws-secret-access-key: ${{ secrets.KEY }}
         aws-region: ap-northeast-2
 
-
     - name: Add Github Actions IP to Security group
       run: |
         aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
-
 
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@master
@@ -91,8 +88,8 @@ jobs:
         script: |
           sudo docker rm -f $(docker ps -qa)
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/secondhand
-          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/secondhand-ws
-          sudo docker compose up -d
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/secondhand-web
+          sudo docker-compose up -d
           sudo docker image prune -a -f
           
     - name: Remove Github Actions IP From Security Group

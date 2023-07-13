@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -28,12 +29,13 @@ public class AuthenticationFilter implements Filter {
 
         String headValue = httpServletRequest.getHeader(jwtProperties.getAuthorizationHeader());
 
+        MemberDetails loginMember = MemberDetails.empty();
         if (headValue != null && headValue.startsWith(jwtProperties.getTokenType())) {
             String token = getToken(headValue);
             Claims claim = jwtUtils.getClaim(token);
-            MemberDetails loginMember = objectMapper.readValue((String) claim.get(jwtProperties.getClaimKey()), MemberDetails.class);
-            request.setAttribute("loginMember", loginMember);
+            loginMember = objectMapper.readValue((String) claim.get(jwtProperties.getClaimKey()), MemberDetails.class);
         }
+        request.setAttribute("loginMember", loginMember);
 
         chain.doFilter(request, response);
     }
