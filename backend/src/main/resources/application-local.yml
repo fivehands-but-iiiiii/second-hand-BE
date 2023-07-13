@@ -1,0 +1,26 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600
+      cache-null-values: true
+      host: localhost
+      port: 6379
+logging:
+  level:
+    root: warn
+    com.team5.secondhand: debug
+  file:
+    name: application.log
+  logback:
+    rolling policy:
+      file-name-pattern: application.%d{yyyy-MM-dd}.log
+      max-history: 30
+server:
+  address:
+    frontend: "http://localhost:5173"

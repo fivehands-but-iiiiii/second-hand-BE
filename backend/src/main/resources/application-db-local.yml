@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/secondhand-db
+    username: root
+    password: 1122
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600
+      cache-null-values: true
+      host: localhost
+      port: 6379

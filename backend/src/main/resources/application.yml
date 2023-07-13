@@ -1,0 +1,17 @@
+spring:
+  profiles:
+    active: prod
+    group:
+      local: [ db-local, local ] # localhost
+      prod: [ prod ] # production
+#      dev: [ dev ] #test
+    include: [ aws, jwt, oauth ]
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+        default_batch_fetch_size: 100
