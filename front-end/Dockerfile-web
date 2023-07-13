@@ -9,7 +9,7 @@ RUN yarn build
 
 FROM nginx
 RUN rm -rf /etc/nginx/conf.d
-COPY nginx.conf /etc/nginx/conf.d/nginx.conf
+COPY nginx-web.conf /etc/nginx/conf.d/nginx.conf
 COPY --from=builder /usr/src/app/dist /usr/share/nginx/html
 
 EXPOSE 5173
