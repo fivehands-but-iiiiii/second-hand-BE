@@ -1,17 +1,20 @@
-import { useEffect, useState } from 'react';
+import { FormEvent, SetStateAction, useEffect, useRef, useState } from 'react';
 
 import Icon from '@assets/Icon';
 import ImgBox from '@common/ImgBox';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
+import ChatTabBar from '@common/TabBar/ChatTabBar';
+import * as StompJs from '@stomp/stompjs';
 
 import { styled } from 'styled-components';
 
 import api from '../../../api';
 
-interface ChatBubbles {
-  senderId: number;
-  contents: string;
+interface ChatBubble {
+  roomId: string;
+  from: string;
+  message: string;
 }
 
 interface ChatRoomProps {
@@ -24,24 +27,26 @@ type SaleItemSummary = Pick<
 >;
 
 const ChatRoom = ({ itemId }: ChatRoomProps) => {
-  const [opponentId, setOpponentId] = useState('');
   const [itemInfo, setItemInfo] = useState<SaleItemSummary>(
     {} as SaleItemSummary,
   );
-  const [chatId, setChatId] = useState<number | null>(null);
-  const [chatBubbles, setChatBubbles] = useState<ChatBubbles[]>([]);
+  const [roomId, setRoomId] = useState<Pick<ChatBubble, 'roomId'> | null>(null);
+  const [opponentId, setOpponentId] = useState('');
+  const [chatBubbles, setChatBubbles] = useState<ChatBubble[]>([]);
+  const [chat, setChat] = useState('');
 
   const getChatInfo = async () => {
     try {
       const { data } = await api.get(`chats/items/${itemId}`);
 
-      setOpponentId(data.opponentId);
       setItemInfo(data.item);
-      setChatId(data.chatId);
+      setRoomId(data.chatId);
+      setOpponentId(data.opponentId);
 
-      if (chatId) {
+      if (roomId) {
         await getChatBubbles();
       } else {
+        // TODO: chatId, chatBubbles가 null이고 first bubble이 입력되면 chatId를 생성
         await createChatId();
       }
     } catch (error) {
@@ -50,25 +55,80 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
   };
 
   const createChatId = async () => {
-    // TODO: chatId, chatBubbles가 null이고 first bubble이 입력되면 chatId를 생성
     try {
       const { data } = await api.post('chats', {
         itemId,
       });
-      setChatId(data.chatId);
+      setRoomId(data.chatId);
     } catch (error) {
       // 오류 처리
     }
   };
 
   const getChatBubbles = async () => {
-    const { data } = await api.get(`chat/${chatId}`);
+    const { data } = await api.get(`chat/${roomId}`);
     setChatBubbles(data);
   };
 
   useEffect(() => {
     getChatInfo();
   }, []);
+
+  const client = useRef<StompJs.Client | null>(null);
+
+  const connect = () => {
+    client.current = new StompJs.Client({
+      brokerURL: 'ws://3.37.51.148:81/chat',
+      onConnect: () => {
+        subscribe();
+      },
+    });
+    client.current.activate();
+  };
+
+  const publish = (chat: string) => {
+    if (!client.current?.connected) return;
+
+    client.current.publish({
+      destination: '/pub/message',
+      body: JSON.stringify({
+        roomId: 'room1',
+        from: 1,
+        message: chat,
+      }),
+    });
+
+    setChat('');
+  };
+
+  const subscribe = () => {
+    client.current?.subscribe('/sub/room1', (body) => {
+      const jsonBody = JSON.parse(body.body);
+      setChatBubbles((_chatList) => [..._chatList, jsonBody]);
+    });
+  };
+
+  const disconnect = () => {
+    client.current?.deactivate();
+  };
+
+  const handleChange = (event: {
+    target: { value: SetStateAction<string> };
+  }) => {
+    setChat(event.target.value);
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>, chat: string) => {
+    // 보내기 버튼 눌렀을 때 publish
+    event.preventDefault();
+    publish(chat);
+  };
+
+  useEffect(() => {
+    roomId && connect();
+
+    return () => disconnect();
+  }, [roomId]);
 
   return (
     <>
@@ -93,18 +153,32 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
           <span>{itemInfo.price}</span>
         </MyChatRoomItemInfo>
       </MyChatRoomItem>
-      <MyChatBubbles>
-        {chatBubbles.map((bubble) => {
-          const BubbleComponent =
-            bubble.senderId === 1 ? MyBubble : MyPartnerBubble;
-          return (
-            // key 추가하기
-            <BubbleComponent>
-              <span>{bubble.contents}</span>
-            </BubbleComponent>
-          );
-        })}
-      </MyChatBubbles>
+      {!chatBubbles.length && (
+        <MyChatBubbles>
+          {chatBubbles.map((bubble) => {
+            const BubbleComponent =
+              bubble.from === '1' ? MyBubble : MyPartnerBubble;
+            return (
+              // TODO: key 추가하기, MyPartnerBubbleWrapper 조건부로 입히기
+              <BubbleComponent>
+                <span>{bubble.message}</span>
+              </BubbleComponent>
+            );
+          })}
+        </MyChatBubbles>
+      )}
+      <form onSubmit={(event) => handleSubmit(event, chat)}>
+        <div>
+          <input
+            type={'text'}
+            name={'chatInput'}
+            onChange={handleChange}
+            value={chat}
+          />
+        </div>
+        <input type={'submit'} value={'의견 보내기'} />
+      </form>
+      <ChatTabBar />
     </>
   );
 };
