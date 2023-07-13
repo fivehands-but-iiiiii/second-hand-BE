@@ -61,7 +61,7 @@ jobs:
         docker build --platform linux/amd64 --build-arg DEPENDENCY=build/dependency -f ./docker/Dockerfile-was -t ${{secrets.DOCKER_USERNAME}}/secondhand .
         docker push ${{ secrets.DOCKER_USERNAME }}/secondhand
 
-        docker build --platform linux/amd64 -f DEPENDENCY=build/dependency ./docker/Dockerfile-web -t ${{ secrets.DOCKER_USERNAME }}/secondhand-web .
+        docker build --platform linux/amd64 --build-arg DEPENDENCY=build/dependency -f ./docker/Dockerfile-web -t ${{ secrets.DOCKER_USERNAME }}/secondhand-web .
         docker push ${{ secrets.DOCKER_USERNAME }}/secondhand-web
 
     - name: Get Github Actions IP
