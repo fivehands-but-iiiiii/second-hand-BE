@@ -2,7 +2,7 @@ name: CICD for fivehands
 
 on:
   push:
-    branches: [ "dev/deploy-test" ]
+    branches: [ "release" ]
 
 permissions:
   contents: read
