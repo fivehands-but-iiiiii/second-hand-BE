@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Getter
@@ -46,5 +47,10 @@ public class ChatRoom {
                 .item(item)
                 .buyer(buyer)
                 .build();
+    }
+
+    public List<String> getChatroomMemberIds() {
+        Member seller = item.getSeller();
+        return List.of(buyer.getMemberId(), seller.getMemberId());
     }
 }
