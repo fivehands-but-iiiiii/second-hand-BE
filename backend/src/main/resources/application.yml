@@ -15,3 +15,6 @@ spring:
       hibernate:
         jdbc:
         default_batch_fetch_size: 100
+server:
+  address:
+    domain: "http://fivehands-but-iiiiii.site"
