@@ -1,9 +1,10 @@
-/* eslint-disable import/no-named-as-default-member */
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import Button from '@common/Button';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
+import { CategoryInfo } from '@components/home/category';
 import ItemList from '@components/home/ItemList/ItemList';
 import useAPI from '@hooks/useAPI';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
@@ -12,11 +13,16 @@ import { styled } from 'styled-components';
 
 import { HomePageInfo } from '../pages/Home';
 
+import ItemDetail from './ItemDetail';
+
 const WishList = () => {
   const title = '관심 목록';
   const [wishItems, setWishItems] = useState<SaleItem[]>([]);
-  const [categories, setCategories] = useState([{ id: 0, title: '전체' }]);
+  const [categories, setCategories] = useState<CategoryInfo[]>([
+    { id: 0, title: '전체', iconUrl: '' },
+  ]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(0);
+  const [selectedItem, setSelectedItem] = useState(0);
   const [pageInfo, setPageInfo] = useState<HomePageInfo>({
     page: 0,
     hasPrevious: false,
@@ -57,6 +63,10 @@ const WishList = () => {
     getFilteredItems();
   };
 
+  const handleItemDetail = (itemId: number) => {
+    setSelectedItem(itemId);
+  };
+
   const getFilteredItems = async () => {
     const { data } = await request({
       url: `wishlist?category=${selectedCategoryId}`,
@@ -89,7 +99,16 @@ const WishList = () => {
             );
           })}
         </MyCategories>
-        <ItemList saleItems={wishItems} />
+        <ItemList saleItems={wishItems} onItemClick={handleItemDetail} />
+        {!!selectedItem &&
+          createPortal(
+            <ItemDetail
+              id={selectedItem}
+              categoryInfo={categories}
+              handleBackBtnClick={handleItemDetail}
+            />,
+            document.body,
+          )}
         {!!wishItems.length && (
           <MyOnFetchItems ref={setTarget}></MyOnFetchItems>
         )}

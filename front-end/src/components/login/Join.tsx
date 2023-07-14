@@ -32,13 +32,11 @@ export interface InputFile {
 const Join = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [gitHubUserInfo, setGitHubUserInfo] = useState<GitHubUserInfo>(
-    location.state,
-  );
+  const [gitHubUserInfo] = useState<GitHubUserInfo>(location.state);
   const [userInputId, setUserInputId] = useState('');
   const [validationMessage, setValidationMessage] = useState('');
   const [files, setFiles] = useState<InputFile>();
-  const [regionId, setRegionId] = useState(1);
+  const [regionId] = useState(1);
   const [userAccount, setUserAccount] = useState<UserInfo>({
     memberId: gitHubUserInfo?.login,
     profileImgUrl: gitHubUserInfo?.avatar_url,
@@ -51,7 +49,7 @@ const Join = () => {
   });
   const [isReadyToSubmit, setIsReadyToSubmit] = useState(false);
   const [idExists, setIdExists] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const { join } = useJoin();
 
   const handleInputChange = async ({
@@ -134,7 +132,7 @@ const Join = () => {
         center={'회원가입'}
         right={
           <button
-            // disabled={!isReadyToSubmit}
+            disabled={!isReadyToSubmit}
             type="submit"
             onClick={handlePostUserAccount}
           >
