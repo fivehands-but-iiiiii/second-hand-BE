@@ -8,6 +8,8 @@ import com.team5.secondhand.api.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ChatRoomService {
@@ -20,5 +22,9 @@ public class ChatRoomService {
         ChatRoom chatRoom = ChatRoom.create(item, buyer);
 
         return chatRoomRepository.save(chatRoom).getChatroomId();
+    }
+
+    public Optional<ChatRoom> findChatroom(long memberId, long itemId) {
+        return chatRoomRepository.findByBuyer_IdAndItem_Id(memberId, itemId);
     }
 }
