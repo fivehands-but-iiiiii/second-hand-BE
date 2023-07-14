@@ -7,6 +7,5 @@ import java.util.*;
 public interface ChatRoomRepository {
     List<ChatRoom> findAll();
     Optional<ChatRoom> findById(String roomId);
-
     boolean save(ChatRoom chatRoom);
 }

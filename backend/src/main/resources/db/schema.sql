@@ -110,10 +110,10 @@ create table if not exists item
         foreign key (region_id) references region (id)
 );
 
-create table if not exists chat_room
+create table if not exists chatroom
 (
-    id         bigint auto_increment
-        primary key,
+    id         bigint auto_increment primary key,
+    chatroom_id binary(16) not null unique,
     item_id    bigint   not null,
     buyer_id   bigint   not null,
     created_at datetime null,
@@ -122,6 +122,11 @@ create table if not exists chat_room
     constraint fk_item_has_member_member1
         foreign key (buyer_id) references member (id)
 );
+CREATE UNIQUE INDEX idx_my_chatroom_id on chatroom (chatroom_id);
+
+create trigger init_uuid_chatroom before insert on chatroom
+    for each row
+    set NEW.chatroom_id = UUID_TO_BIN(UUID());
 
 create table if not exists chat_log
 (
@@ -187,6 +192,8 @@ create index fk_member_has_item_item1_idx
 
 create index fk_member_has_item_member1_idx
     on wishlist (member_id);
+
+
 
 SET SQL_MODE = @OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS = @OLD_FOREIGN_KEY_CHECKS;
