@@ -1,10 +1,12 @@
 import { useState, ChangeEvent, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
 import Button from '@common/Button';
 import LabelInput from '@common/LabelInput';
 import NavBar from '@common/NavBar';
+import SearchRegions from '@components/region/SearchRegions';
 import useJoin from '@hooks/useJoin';
 import UserInfo from '@pages/ItemDetail';
 import { getFormattedId } from '@utils/formatText';
@@ -51,10 +53,12 @@ const Join = () => {
   });
   const [isReadyToSubmit, setIsReadyToSubmit] = useState(false);
   const [idExists, setIdExists] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const [isSettingRegionsModalOpen, setIsSettingRegionsModalOpen] =
+    useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const { join } = useJoin();
 
-  const handleInputChange = async ({
+  const handleInputChange = ({
     target,
   }: ChangeEvent<HTMLInputElement>) => {
     const { value } = target;
@@ -112,6 +116,10 @@ const Join = () => {
     }
   };
 
+  const handleRegionModal = () => {
+    setIsSettingRegionsModalOpen((prev) => !prev);
+  };
+
   useEffect(() => {
     if (userInputId.length < 3) {
       setValidationMessage('');
@@ -134,7 +142,7 @@ const Join = () => {
         center={'회원가입'}
         right={
           <button
-            // disabled={!isReadyToSubmit}
+            disabled={!isReadyToSubmit}
             type="submit"
             onClick={handlePostUserAccount}
           >
@@ -159,10 +167,15 @@ const Join = () => {
             />
           )}
         </MyUserInfo>
-        <Button fullWidth>
+        <Button fullWidth onClick={handleRegionModal}>
           <Icon name={'plus'} />
           위치추가
         </Button>
+        {isSettingRegionsModalOpen &&
+          createPortal(
+            <SearchRegions onPortal={handleRegionModal} />,
+            document.body,
+          )}
       </MyJoin>
     </MyBack>
   );
@@ -178,7 +191,6 @@ const MyUserInfo = styled.div`
 `;
 
 const MyJoin = styled.div`
-  height: 90vh;
   padding: 5vh 2.7vw;
 `;
 
