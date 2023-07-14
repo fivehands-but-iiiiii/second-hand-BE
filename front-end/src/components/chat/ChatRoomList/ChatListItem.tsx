@@ -6,7 +6,7 @@ import UserProfile from '@components/login/UserProfile';
 
 import { styled } from 'styled-components';
 
-interface ChatListItem extends ComponentPropsWithRef<'button'> {
+interface ChatListItem {
   id: string;
   userImage: string;
   userName: string;
@@ -16,11 +16,11 @@ interface ChatListItem extends ComponentPropsWithRef<'button'> {
   itemImage: string;
 }
 
-interface ChatListProps {
+interface ChatListProps extends ComponentPropsWithRef<'button'> {
   chatItem: ChatListItem;
 }
 
-const ChatListItem = ({ chatItem }: ChatListProps) => {
+const ChatListItem = ({ chatItem, ...rest }: ChatListProps) => {
   const {
     userImage,
     userName,
@@ -30,7 +30,7 @@ const ChatListItem = ({ chatItem }: ChatListProps) => {
     itemImage,
   } = chatItem;
   return (
-    <MyChatListItem>
+    <MyChatListItem {...rest}>
       <UserProfile size="s" profileImgUrl={userImage} />
       <MyChatInfo>
         <MyChatUserName>

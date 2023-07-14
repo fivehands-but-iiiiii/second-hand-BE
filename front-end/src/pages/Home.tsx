@@ -122,7 +122,7 @@ const Home = () => {
     try {
       setIsLoading(true);
 
-      const { data } = await api.get(`items/${filterQuery}`);
+      const { data } = await api.get(`items${filterQuery}`);
 
       setSaleItems((prevItems) => {
         const newSet = new Set(prevItems);

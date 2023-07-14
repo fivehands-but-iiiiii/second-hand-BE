@@ -13,7 +13,8 @@ const mockChatList = [
     lastMessageTime: '2023-06-27',
     lastMessage: '안녕하시와요안녕하시와요안녕하시와요안녕하시와요안녕하시와요',
     unreadCount: 1,
-    itemImage: 'https://m.pororomall.com/web/product/big/202204/ea27d867f02fc52e6fb122653b90ca04.jpg',
+    itemImage:
+      'https://m.pororomall.com/web/product/big/202204/ea27d867f02fc52e6fb122653b90ca04.jpg',
   },
   {
     id: '2',
@@ -22,7 +23,8 @@ const mockChatList = [
     lastMessageTime: '2023-06-27',
     lastMessage: '채팅중입니다요',
     unreadCount: 1,
-    itemImage: 'https://openimage.interpark.com/goods_image_big/0/8/2/2/8658370822_l.jpg',
+    itemImage:
+      'https://openimage.interpark.com/goods_image_big/0/8/2/2/8658370822_l.jpg',
   },
   {
     id: '3',
@@ -45,7 +47,7 @@ const ChatPage = () => {
   return (
     <>
       <NavBar center={title} />
-      {chatList.length ? (
+      {!chatList.length ? (
         <ChatRoomList chatItems={chatList} />
       ) : (
         <BlankPage title={title} />
