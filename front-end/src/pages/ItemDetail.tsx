@@ -199,9 +199,9 @@ const ItemDetail = ({
       price: formattedPrice,
       category: categoryTitle?.title,
       elapsedTime: getElapsedTime(data.createAt),
-      hits: hits && formatNumberToSI(data.hits),
-      chatCount: chatCount && formatNumberToSI(data.chatCount),
-      likesCount: likesCount && formatNumberToSI(data.likesCount),
+      hits: data.hits && formatNumberToSI(data.hits),
+      chatCount: data.chatCount && formatNumberToSI(data.chatCount),
+      likesCount: data.likesCount && formatNumberToSI(data.likesCount),
     };
 
     setItemDetailInfo(mappedDetails);
