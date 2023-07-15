@@ -30,6 +30,7 @@ type SaleItemSummary = Pick<
 const ChatRoom = ({ itemId }: ChatRoomProps) => {
   const [itemInfo, setItemInfo] = useState<SaleItemSummary>(
     // {} as SaleItemSummary,
+    // NOTO: HTTP API 완성 시 아래 데이터 제거
     {
       id: 230,
       title: '팝니다요',
@@ -80,6 +81,7 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
     setChatBubbles(data);
   };
 
+  // TODO: HTTP API 완성 시 주석 제거
   // useEffect(() => {
   //   getChatInfo();
   // }, []);
@@ -133,7 +135,8 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
   };
 
   useEffect(() => {
-    // TODO: roomId && connect();
+    // TODO: HTTP API 완성 시 주석으로 로직 변경
+    // roomId && connect();
     connect();
 
     return () => disconnect();
