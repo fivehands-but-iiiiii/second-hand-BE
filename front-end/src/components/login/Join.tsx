@@ -6,6 +6,7 @@ import Icon from '@assets/Icon';
 import Button from '@common/Button';
 import LabelInput from '@common/LabelInput';
 import NavBar from '@common/NavBar';
+import RegionButtons from '@components/region/RegionButtons';
 import SearchRegions from '@components/region/SearchRegions';
 import useJoin from '@hooks/useJoin';
 import UserInfo from '@pages/ItemDetail';
@@ -28,7 +29,7 @@ export interface InputFile {
   file?: File;
 }
 
-interface RegionInfo {
+export interface RegionInfo {
   id: number;
   district: string;
   onFocus: boolean;
@@ -40,7 +41,6 @@ const Join = () => {
   const gitHubUserInfo = location.state;
   const [userInputId, setUserInputId] = useState('');
   const [validationMessage, setValidationMessage] = useState('');
-  const [regionMessage, setRegionMessage] = useState('');
   const [files, setFiles] = useState<InputFile>();
   const [selectedRegions, setSelectedRegions] = useState<RegionInfo[]>([]);
   const [userAccount, setUserAccount] = useState<UserInfo>({
@@ -128,10 +128,6 @@ const Join = () => {
   };
 
   const handleRemoveRegion = (id: number) => {
-    if (selectedRegions.length === 1) {
-      setRegionMessage('최소 1개의 지역을 선택해야해요');
-      return;
-    }
     setSelectedRegions((prev) =>
       prev
         .filter((region) => region.id !== +id)
@@ -151,45 +147,6 @@ const Join = () => {
       ),
     );
   };
-
-  const regionButtons = useMemo(() => {
-    const selectedRegionButtons = selectedRegions.map(
-      ({ id, district, onFocus }) => {
-        const isActive = selectedRegions.length === 1 ? true : onFocus;
-        return (
-          <Button
-            key={id}
-            fullWidth
-            active={isActive}
-            onClick={() => handleSwitchRegion(id)}
-          >
-            {district}
-            <Icon
-              name={'x'}
-              size={'xs'}
-              fill={palette.neutral.background}
-              onClick={() => handleRemoveRegion(id)}
-            />
-          </Button>
-        );
-      },
-    );
-    const addButton = (
-      <Button fullWidth onClick={handleRegionModal}>
-        <Icon name={'plus'} size={'xs'} />
-        위치추가
-      </Button>
-    );
-    return selectedRegions.length < 2
-      ? [...selectedRegionButtons, addButton]
-      : selectedRegionButtons;
-  }, [selectedRegions]);
-
-  useEffect(() => {
-    if (selectedRegions.length < 2) {
-      setRegionMessage('최소 1개 이상 최대 2개까지 선택 가능해요');
-    } else setRegionMessage('');
-  }, [selectedRegions.length]);
 
   useEffect(() => {
     if (userInputId.length < 3) {
@@ -244,10 +201,12 @@ const Join = () => {
             />
           )}
         </MyUserInfo>
-        <div>
-          <MyRegionButton>{regionButtons}</MyRegionButton>
-          <MyRegionMessage>{regionMessage}</MyRegionMessage>
-        </div>
+        <RegionButtons
+          selectedRegions={selectedRegions}
+          handleSwitchRegion={handleSwitchRegion}
+          handleRemoveRegion={handleRemoveRegion}
+          handleRegionModal={handleRegionModal}
+        />
         {isSettingRegionsModalOpen &&
           createPortal(
             <SearchRegions
@@ -275,17 +234,6 @@ const MyUserInfo = styled.div`
   > div {
     padding-bottom: 10px;
   }
-`;
-
-const MyRegionButton = styled.div`
-  display: flex;
-  gap: 7px;
-`;
-
-const MyRegionMessage = styled.p`
-  color: ${({ theme }) => theme.colors.neutral.textWeak};
-  ${({ theme }) => theme.fonts.caption2};
-  text-align: end;
 `;
 
 export default Join;
