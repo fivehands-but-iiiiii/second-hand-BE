@@ -169,13 +169,21 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
       {!!chatBubbles.length && (
         <MyChatBubbles>
           {chatBubbles.map((bubble) => {
-            const BubbleComponent =
-              bubble.from === '1' ? MyBubble : MyPartnerBubble;
-            return (
-              // TODO: key 추가하기, MyPartnerBubbleWrapper 조건부로 입히기
+            const isMyBubble = bubble.from === '1';
+            const BubbleComponent = isMyBubble ? MyBubble : MyPartnerBubble;
+
+            const renderBubbleComponent = (
               <BubbleComponent>
                 <span>{bubble.message}</span>
               </BubbleComponent>
+            );
+
+            return isMyBubble ? (
+              <>{renderBubbleComponent}</>
+            ) : (
+              <MyPartnerBubbleWrapper>
+                {renderBubbleComponent}
+              </MyPartnerBubbleWrapper>
             );
           })}
         </MyChatBubbles>
@@ -243,10 +251,10 @@ const MyBubble = styled(MyChatBubble)`
   background-color: ${({ theme }) => theme.colors.neutral.backgroundBold};
 `;
 
-// const MyPartnerBubbleWrapper = styled.div`
-//   display: flex;
-//   justify-content: flex-end;
-// `;
+const MyPartnerBubbleWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
 
 const MyPartnerBubble = styled(MyChatBubble)`
   background-color: ${({ theme }) => theme.colors.accent.backgroundPrimary};
