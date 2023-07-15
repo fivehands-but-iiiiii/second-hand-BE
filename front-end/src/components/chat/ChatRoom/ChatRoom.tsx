@@ -43,6 +43,8 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
   const [chatBubbles, setChatBubbles] = useState<ChatBubble[]>([]);
   const [chat, setChat] = useState('');
 
+  const endRef = useRef<HTMLDivElement | null>(null);
+
   const getChatInfo = async () => {
     try {
       const { data } = await api.get(`chats/items/${itemId}`);
@@ -78,9 +80,9 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
     setChatBubbles(data);
   };
 
-  useEffect(() => {
-    getChatInfo();
-  }, []);
+  // useEffect(() => {
+  //   getChatInfo();
+  // }, []);
 
   const client = useRef<StompJs.Client | null>(null);
 
@@ -101,7 +103,7 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
       destination: '/pub/message',
       body: JSON.stringify({
         roomId: 'room1',
-        from: 1,
+        from: 2,
         message: chat,
       }),
     });
@@ -131,11 +133,15 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
   };
 
   useEffect(() => {
-    // roomId && connect();
+    // TODO: roomId && connect();
     connect();
 
     return () => disconnect();
   }, [roomId]);
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatBubbles]);
 
   return (
     <PortalLayout>
@@ -160,7 +166,7 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
           <span>{itemInfo.price}</span>
         </MyChatRoomItemInfo>
       </MyChatRoomItem>
-      {!chatBubbles.length && (
+      {!!chatBubbles.length && (
         <MyChatBubbles>
           {chatBubbles.map((bubble) => {
             const BubbleComponent =
@@ -174,6 +180,7 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
           })}
         </MyChatBubbles>
       )}
+      <div ref={endRef}></div>
       <ChatTabBar
         chatInput={chat}
         handleInputChange={handleChange}
@@ -214,6 +221,8 @@ const MyChatBubbles = styled.section`
   display: flex;
   flex-direction: column;
   padding: 16px;
+  margin-bottom: 75px;
+  overflow: scroll;
 `;
 
 const MyChatBubble = styled.div`
@@ -221,6 +230,7 @@ const MyChatBubble = styled.div`
   max-width: 65%;
   display: flex;
   padding: 6px 12px;
+  margin-bottom: 16px;
   border-radius: 18px;
   & > span {
     text-align: left;
