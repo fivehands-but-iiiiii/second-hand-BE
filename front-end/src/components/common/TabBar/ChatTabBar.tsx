@@ -23,6 +23,7 @@ const ChatTabBar = ({
       type="chat"
       rows={4}
       value={chatInput}
+      autoFocus
       onChange={handleInputChange}
     ></Textarea>
     <MyChatTabBarButton
