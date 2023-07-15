@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
 
-import api from '../api';
+import axios from 'axios';
 
 const GOOGLE_KEY = import.meta.env.VITE_GOOGLE_KEY;
 
+export interface coordsType {
+  latitude: number;
+  longitude: number;
+}
+
 interface LocationType {
   loaded: boolean;
-  coordinates?: {
-    lat: number;
-    lng: number;
-  };
+  coords?: coordsType;
   address?: string;
   error?: {
     code: number;
@@ -20,23 +22,21 @@ interface LocationType {
 const useGeoLocation = () => {
   const [location, setLocation] = useState<LocationType>({
     loaded: false,
-    coordinates: { lat: 0, lng: 0 },
+    coords: { latitude: 0, longitude: 0 },
     address: '',
   });
 
-  const onSuccess = async (location: {
-    coords: { latitude: number; longitude: number };
-  }) => {
+  const onSuccess = async (location: { coords: coordsType }) => {
     try {
-      const { data } = await api.get(
+      const { data } = await axios.get(
         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${location.coords.latitude},${location.coords.longitude}&language=ko&key=${GOOGLE_KEY}`,
       );
       const formattedAddress = data.results[5].formatted_address;
       setLocation({
         loaded: true,
-        coordinates: {
-          lat: location.coords.latitude,
-          lng: location.coords.longitude,
+        coords: {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
         },
         address: formattedAddress,
       });

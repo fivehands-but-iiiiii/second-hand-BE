@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, useRef, useEffect } from 'react';
+import { useState, ChangeEvent, useRef, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -9,21 +9,18 @@ import NavBar from '@common/NavBar';
 import SearchRegions from '@components/region/SearchRegions';
 import useJoin from '@hooks/useJoin';
 import UserInfo from '@pages/ItemDetail';
+import palette from '@styles/colors';
 import { getFormattedId } from '@utils/formatText';
 
 import { styled } from 'styled-components';
 
 import api from '../../api';
 
-import { GitHubUserInfo } from './OAuthCallback';
 import UserProfile from './UserProfile';
 export interface UserInfo {
   memberId: string;
   profileImgUrl?: string;
-  regions: {
-    id: number;
-    onFocus: boolean;
-  }[];
+  regions: RegionInfo[];
 }
 
 export interface InputFile {
@@ -31,25 +28,25 @@ export interface InputFile {
   file?: File;
 }
 
+interface RegionInfo {
+  id: number;
+  district: string;
+  onFocus: boolean;
+}
+
 const Join = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [gitHubUserInfo, setGitHubUserInfo] = useState<GitHubUserInfo>(
-    location.state,
-  );
+  const gitHubUserInfo = location.state;
   const [userInputId, setUserInputId] = useState('');
   const [validationMessage, setValidationMessage] = useState('');
+  const [regionMessage, setRegionMessage] = useState('');
   const [files, setFiles] = useState<InputFile>();
-  const [regionId, setRegionId] = useState(1);
+  const [selectedRegions, setSelectedRegions] = useState<RegionInfo[]>([]);
   const [userAccount, setUserAccount] = useState<UserInfo>({
     memberId: gitHubUserInfo?.login,
     profileImgUrl: gitHubUserInfo?.avatar_url,
-    regions: [
-      {
-        id: regionId,
-        onFocus: true,
-      },
-    ],
+    regions: selectedRegions,
   });
   const [isReadyToSubmit, setIsReadyToSubmit] = useState(false);
   const [idExists, setIdExists] = useState(false);
@@ -58,9 +55,7 @@ const Join = () => {
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const { join } = useJoin();
 
-  const handleInputChange = ({
-    target,
-  }: ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const { value } = target;
     const regExp = /[^0-9a-z]/;
     if (regExp.test(value)) {
@@ -120,6 +115,84 @@ const Join = () => {
     setIsSettingRegionsModalOpen((prev) => !prev);
   };
 
+  const handleSelectRegion = (id: number, district: string) => {
+    if (selectedRegions.some((region) => region.id === id)) return;
+    const newRegion = { id, district, onFocus: true };
+    setSelectedRegions((prev) => [
+      ...prev.map((region) =>
+        region.onFocus ? { ...region, onFocus: false } : region,
+      ),
+      newRegion,
+    ]);
+    setIsSettingRegionsModalOpen(false);
+  };
+
+  const handleRemoveRegion = (id: number) => {
+    if (selectedRegions.length === 1) {
+      setRegionMessage('최소 1개의 지역을 선택해야해요');
+      return;
+    }
+    setSelectedRegions((prev) =>
+      prev
+        .filter((region) => region.id !== +id)
+        .map((region) => ({
+          ...region,
+          onFocus: true,
+        })),
+    );
+  };
+
+  const handleSwitchRegion = (id: number) => {
+    setSelectedRegions((prev) =>
+      prev.map((region) =>
+        region.id === +id
+          ? { ...region, onFocus: true }
+          : { ...region, onFocus: false },
+      ),
+    );
+  };
+
+  const regionButtons = useMemo(() => {
+    console.log(selectedRegions);
+    const selectedRegionButtons = selectedRegions.map(
+      ({ id, district, onFocus }) => (
+        <Button
+          key={id}
+          fullWidth
+          active={onFocus}
+          onClick={() => handleSwitchRegion(id)}
+        >
+          {district}
+          <Icon
+            name={'x'}
+            size={'xs'}
+            fill={palette.neutral.background}
+            onClick={() => handleRemoveRegion(id)}
+          />
+        </Button>
+      ),
+    );
+    const addButton = (
+      <Button fullWidth onClick={handleRegionModal}>
+        <Icon name={'plus'} size={'xs'} />
+        위치추가
+      </Button>
+    );
+    return selectedRegions.length < 2
+      ? [...selectedRegionButtons, addButton]
+      : selectedRegionButtons;
+  }, [selectedRegions]);
+
+  useEffect(() => {
+    if (selectedRegions.length < 2) {
+      setRegionMessage('최소 1개 이상 최대 2개까지 선택 가능해요');
+    } else setRegionMessage('');
+    setUserAccount({
+      ...userAccount,
+      regions: selectedRegions,
+    });
+  }, [selectedRegions.length]);
+
   useEffect(() => {
     if (userInputId.length < 3) {
       setValidationMessage('');
@@ -127,16 +200,21 @@ const Join = () => {
       setValidationMessage('6~12자 이내로 입력하세요');
     } else if (idExists) {
       setValidationMessage('이미 사용중인 아이디예요');
-      setIsReadyToSubmit(false);
     } else {
       setValidationMessage('사용 가능한 아이디예요');
-      setIsReadyToSubmit(true);
-      setUserAccount({ ...userAccount, memberId: userInputId });
+      if (selectedRegions.length > 0) {
+        return setIsReadyToSubmit(true);
+      }
     }
-  }, [userInputId, idExists]);
+    setUserAccount({
+      ...userAccount,
+      memberId: userInputId,
+    });
+    setIsReadyToSubmit(false);
+  }, [userInputId, idExists, selectedRegions]);
 
   return (
-    <MyBack>
+    <MyJoin>
       <NavBar
         left={<button onClick={() => navigate('/login')}>닫기</button>}
         center={'회원가입'}
@@ -150,7 +228,7 @@ const Join = () => {
           </button>
         }
       />
-      <MyJoin>
+      <MyUserAccount>
         <MyUserInfo>
           <UserProfile
             profileImgUrl={gitHubUserInfo?.avatar_url}
@@ -167,31 +245,48 @@ const Join = () => {
             />
           )}
         </MyUserInfo>
-        <Button fullWidth onClick={handleRegionModal}>
-          <Icon name={'plus'} />
-          위치추가
-        </Button>
+        <div>
+          <MyRegionButton>{regionButtons}</MyRegionButton>
+          <MyRegionMessage>{regionMessage}</MyRegionMessage>
+        </div>
         {isSettingRegionsModalOpen &&
           createPortal(
-            <SearchRegions onPortal={handleRegionModal} />,
+            <SearchRegions
+              onPortal={handleRegionModal}
+              handleSelectRegion={handleSelectRegion}
+            />,
             document.body,
           )}
-      </MyJoin>
-    </MyBack>
+      </MyUserAccount>
+    </MyJoin>
   );
 };
 
-const MyBack = styled.div`
+const MyJoin = styled.div`
   background-color: white;
 `;
 
-const MyUserInfo = styled.div`
-  height: 200px;
-  margin-bottom: 20px;
+const MyUserAccount = styled.div`
+  padding: 5vh 2.7vw;
 `;
 
-const MyJoin = styled.div`
-  padding: 5vh 2.7vw;
+const MyUserInfo = styled.div`
+  height: 150px;
+  margin-bottom: 20px;
+  > div {
+    padding-bottom: 10px;
+  }
+`;
+
+const MyRegionButton = styled.div`
+  display: flex;
+  gap: 7px;
+`;
+
+const MyRegionMessage = styled.p`
+  color: ${({ theme }) => theme.colors.neutral.textWeak};
+  ${({ theme }) => theme.fonts.caption2};
+  text-align: end;
 `;
 
 export default Join;

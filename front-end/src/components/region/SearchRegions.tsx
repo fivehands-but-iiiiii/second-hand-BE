@@ -5,10 +5,9 @@ import NavBar from '@common/NavBar/NavBar';
 import Textarea from '@common/Textarea/Textarea';
 import PortalLayout from '@components/layout/PortalLayout';
 import useAPI from '@hooks/useAPI';
-import useGeoLocation from '@hooks/useGeoLocation';
+import useGeoLocation, { coordsType } from '@hooks/useGeoLocation';
 
 import { styled } from 'styled-components';
-
 export interface Region {
   id: number;
   city?: string;
@@ -18,16 +17,16 @@ export interface Region {
 
 interface SearchRegionsProps {
   onPortal: () => void;
+  handleSelectRegion: (id: number, district: string) => void;
 }
 
-interface RegionStyleProps {
-  active: boolean;
-}
-
-const SearchRegions = ({ onPortal }: SearchRegionsProps) => {
+const SearchRegions = ({
+  onPortal,
+  handleSelectRegion,
+}: SearchRegionsProps) => {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [address, setAddress] = useState('역삼1동');
-  const [center, setCenter] = useState({ lat: 37.494, lng: 127.033 });
+  const [center, setCenter] = useState<coordsType>();
   const [regionList, setRegionList] = useState<Region[]>([]);
   const { request } = useAPI();
   const { location: currentLocation } = useGeoLocation();
@@ -37,10 +36,10 @@ const SearchRegions = ({ onPortal }: SearchRegionsProps) => {
   };
 
   const getCurrentLocation = useCallback(() => {
-    if (!currentLocation.coordinates || !currentLocation.address) return;
+    if (!currentLocation.coords || !currentLocation.address) return;
     setCenter({
-      lat: currentLocation.coordinates.lat,
-      lng: currentLocation.coordinates.lng,
+      latitude: currentLocation.coords.latitude,
+      longitude: currentLocation.coords.longitude,
     });
     setAddress(currentLocation.address);
   }, [currentLocation]);
@@ -97,7 +96,10 @@ const SearchRegions = ({ onPortal }: SearchRegionsProps) => {
         {regionList.length > 0 ? (
           <ul>
             {regionList.map(({ id, city, county, district }: Region) => (
-              <MyRegion key={id} active={false}>
+              <MyRegion
+                key={id}
+                onClick={() => handleSelectRegion(id, district)}
+              >
                 {city} {county} {district}
               </MyRegion>
             ))}
@@ -132,13 +134,12 @@ const MyRegionList = styled.div`
   }
 `;
 
-const MyRegion = styled.li<RegionStyleProps>`
+const MyRegion = styled.li`
   height: 5vh;
   min-width: 200px;
   line-height: 5vh;
   text-align: start;
-  color: ${({ theme, active }) =>
-    active ? theme.colors.accent.backgroundPrimary : theme.colors.neutral.text};
+  color: ${({ theme }) => theme.colors.neutral.text};
 `;
 
 export default SearchRegions;
