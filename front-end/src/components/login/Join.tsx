@@ -1,16 +1,11 @@
-import { useState, ChangeEvent, useRef, useEffect, useMemo } from 'react';
-import { createPortal } from 'react-dom';
+import { useState, ChangeEvent, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import Icon from '@assets/Icon';
-import Button from '@common/Button';
 import LabelInput from '@common/LabelInput';
 import NavBar from '@common/NavBar';
-import RegionButtons from '@components/region/RegionButtons';
-import SearchRegions from '@components/region/SearchRegions';
+import SettingRegions from '@components/region/SettingRegions';
 import useJoin from '@hooks/useJoin';
 import UserInfo from '@pages/ItemDetail';
-import palette from '@styles/colors';
 import { getFormattedId } from '@utils/formatText';
 
 import { styled } from 'styled-components';
@@ -21,7 +16,7 @@ import UserProfile from './UserProfile';
 export interface UserInfo {
   memberId: string;
   profileImgUrl?: string;
-  regions: RegionInfo[];
+  regions: UserRegion[];
 }
 
 export interface InputFile {
@@ -35,6 +30,8 @@ export interface RegionInfo {
   onFocus: boolean;
 }
 
+export type UserRegion = Omit<RegionInfo, 'district'>;
+
 const Join = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -42,16 +39,14 @@ const Join = () => {
   const [userInputId, setUserInputId] = useState('');
   const [validationMessage, setValidationMessage] = useState('');
   const [files, setFiles] = useState<InputFile>();
-  const [selectedRegions, setSelectedRegions] = useState<RegionInfo[]>([]);
+  const [userRegions, setUserRegions] = useState<UserRegion[]>([]);
   const [userAccount, setUserAccount] = useState<UserInfo>({
     memberId: gitHubUserInfo?.login,
     profileImgUrl: gitHubUserInfo?.avatar_url,
-    regions: selectedRegions,
+    regions: userRegions,
   });
   const [isReadyToSubmit, setIsReadyToSubmit] = useState(false);
   const [idExists, setIdExists] = useState(false);
-  const [isSettingRegionsModalOpen, setIsSettingRegionsModalOpen] =
-    useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const { join } = useJoin();
 
@@ -95,6 +90,15 @@ const Join = () => {
     });
   };
 
+  const handleUserRegions = (regions: UserRegion[]) => {
+    setUserRegions(regions);
+    setUserAccount({
+      ...userAccount,
+      memberId: userInputId,
+      regions: regions,
+    });
+  };
+
   const handlePostUserAccount = async () => {
     try {
       const response = await join({ files, account: userAccount });
@@ -111,43 +115,6 @@ const Join = () => {
     }
   };
 
-  const handleRegionModal = () => {
-    setIsSettingRegionsModalOpen((prev) => !prev);
-  };
-
-  const handleSelectRegion = (id: number, district: string) => {
-    if (selectedRegions.some((region) => region.id === id)) return;
-    const newRegion = { id, district, onFocus: true };
-    setSelectedRegions((prev) => [
-      ...prev.map((region) =>
-        region.onFocus ? { ...region, onFocus: false } : region,
-      ),
-      newRegion,
-    ]);
-    setIsSettingRegionsModalOpen(false);
-  };
-
-  const handleRemoveRegion = (id: number) => {
-    setSelectedRegions((prev) =>
-      prev
-        .filter((region) => region.id !== +id)
-        .map((region) => ({
-          ...region,
-          onFocus: true,
-        })),
-    );
-  };
-
-  const handleSwitchRegion = (id: number) => {
-    setSelectedRegions((prev) =>
-      prev.map((region) =>
-        region.id === +id
-          ? { ...region, onFocus: true }
-          : { ...region, onFocus: false },
-      ),
-    );
-  };
-
   useEffect(() => {
     if (userInputId.length < 3) {
       setValidationMessage('');
@@ -157,17 +124,17 @@ const Join = () => {
       setValidationMessage('이미 사용중인 아이디예요');
     } else {
       setValidationMessage('사용 가능한 아이디예요');
-      if (selectedRegions.length > 0) {
+      if (userRegions.length > 0) {
         setUserAccount({
           ...userAccount,
           memberId: userInputId,
-          regions: selectedRegions,
+          regions: userRegions,
         });
         return setIsReadyToSubmit(true);
       }
     }
     setIsReadyToSubmit(false);
-  }, [userInputId, idExists, selectedRegions]);
+  }, [userInputId, idExists]);
 
   return (
     <MyJoin>
@@ -201,20 +168,7 @@ const Join = () => {
             />
           )}
         </MyUserInfo>
-        <RegionButtons
-          selectedRegions={selectedRegions}
-          handleSwitchRegion={handleSwitchRegion}
-          handleRemoveRegion={handleRemoveRegion}
-          handleRegionModal={handleRegionModal}
-        />
-        {isSettingRegionsModalOpen &&
-          createPortal(
-            <SearchRegions
-              onPortal={handleRegionModal}
-              handleSelectRegion={handleSelectRegion}
-            />,
-            document.body,
-          )}
+        <SettingRegions handleUserRegions={handleUserRegions} />
       </MyUserAccount>
     </MyJoin>
   );
