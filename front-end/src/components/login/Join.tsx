@@ -153,24 +153,26 @@ const Join = () => {
   };
 
   const regionButtons = useMemo(() => {
-    console.log(selectedRegions);
     const selectedRegionButtons = selectedRegions.map(
-      ({ id, district, onFocus }) => (
-        <Button
-          key={id}
-          fullWidth
-          active={onFocus}
-          onClick={() => handleSwitchRegion(id)}
-        >
-          {district}
-          <Icon
-            name={'x'}
-            size={'xs'}
-            fill={palette.neutral.background}
-            onClick={() => handleRemoveRegion(id)}
-          />
-        </Button>
-      ),
+      ({ id, district, onFocus }) => {
+        const isActive = selectedRegions.length === 1 ? true : onFocus;
+        return (
+          <Button
+            key={id}
+            fullWidth
+            active={isActive}
+            onClick={() => handleSwitchRegion(id)}
+          >
+            {district}
+            <Icon
+              name={'x'}
+              size={'xs'}
+              fill={palette.neutral.background}
+              onClick={() => handleRemoveRegion(id)}
+            />
+          </Button>
+        );
+      },
     );
     const addButton = (
       <Button fullWidth onClick={handleRegionModal}>
@@ -187,10 +189,6 @@ const Join = () => {
     if (selectedRegions.length < 2) {
       setRegionMessage('최소 1개 이상 최대 2개까지 선택 가능해요');
     } else setRegionMessage('');
-    setUserAccount({
-      ...userAccount,
-      regions: selectedRegions,
-    });
   }, [selectedRegions.length]);
 
   useEffect(() => {
@@ -203,13 +201,14 @@ const Join = () => {
     } else {
       setValidationMessage('사용 가능한 아이디예요');
       if (selectedRegions.length > 0) {
+        setUserAccount({
+          ...userAccount,
+          memberId: userInputId,
+          regions: selectedRegions,
+        });
         return setIsReadyToSubmit(true);
       }
     }
-    setUserAccount({
-      ...userAccount,
-      memberId: userInputId,
-    });
     setIsReadyToSubmit(false);
   }, [userInputId, idExists, selectedRegions]);
 
