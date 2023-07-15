@@ -1,10 +1,11 @@
-import { FormEvent, SetStateAction, useEffect, useRef, useState } from 'react';
+import { SetStateAction, useEffect, useRef, useState } from 'react';
 
 import Icon from '@assets/Icon';
 import ImgBox from '@common/ImgBox';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
 import ChatTabBar from '@common/TabBar/ChatTabBar';
+import PortalLayout from '@components/layout/PortalLayout';
 import * as StompJs from '@stomp/stompjs';
 
 import { styled } from 'styled-components';
@@ -28,7 +29,14 @@ type SaleItemSummary = Pick<
 
 const ChatRoom = ({ itemId }: ChatRoomProps) => {
   const [itemInfo, setItemInfo] = useState<SaleItemSummary>(
-    {} as SaleItemSummary,
+    // {} as SaleItemSummary,
+    {
+      id: 230,
+      title: '팝니다요',
+      price: 10000,
+      thumbnailUrl: 'https://picsum.photos/200/300',
+      status: 0,
+    },
   );
   const [roomId, setRoomId] = useState<Pick<ChatBubble, 'roomId'> | null>(null);
   const [opponentId, setOpponentId] = useState('');
@@ -118,20 +126,19 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
     setChat(event.target.value);
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>, chat: string) => {
-    // 보내기 버튼 눌렀을 때 publish
-    event.preventDefault();
+  const handleSubmit = (chat: string) => {
     publish(chat);
   };
 
   useEffect(() => {
-    roomId && connect();
+    // roomId && connect();
+    connect();
 
     return () => disconnect();
   }, [roomId]);
 
   return (
-    <>
+    <PortalLayout>
       <NavBar
         left={
           <MyNavBarBtn onClick={() => console.log('뒤로')}>
@@ -167,19 +174,12 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
           })}
         </MyChatBubbles>
       )}
-      <form onSubmit={(event) => handleSubmit(event, chat)}>
-        <div>
-          <input
-            type={'text'}
-            name={'chatInput'}
-            onChange={handleChange}
-            value={chat}
-          />
-        </div>
-        <input type={'submit'} value={'의견 보내기'} />
-      </form>
-      <ChatTabBar />
-    </>
+      <ChatTabBar
+        chatInput={chat}
+        handleInputChange={handleChange}
+        handleChatSubmit={handleSubmit}
+      />
+    </PortalLayout>
   );
 };
 
@@ -233,10 +233,10 @@ const MyBubble = styled(MyChatBubble)`
   background-color: ${({ theme }) => theme.colors.neutral.backgroundBold};
 `;
 
-const MyPartnerBubbleWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-`;
+// const MyPartnerBubbleWrapper = styled.div`
+//   display: flex;
+//   justify-content: flex-end;
+// `;
 
 const MyPartnerBubble = styled(MyChatBubble)`
   background-color: ${({ theme }) => theme.colors.accent.backgroundPrimary};
