@@ -9,6 +9,7 @@ import Spinner from '@common/Spinner/Spinner';
 import Category, { CategoryInfo } from '@components/home/category';
 import ItemList from '@components/home/ItemList';
 import New from '@components/new/New';
+import UserRegions from '@components/region/UserRegions';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
 import palette from '@styles/colors';
 
@@ -42,9 +43,10 @@ const Home = () => {
   const [selectedItem, setSelectedItem] = useState<number>(0);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
+  const [isRegionModalOpen, setIsRegionModalOpen] = useState(false);
   const [filterInfo, setFilterInfo] = useState<HomeFilterInfo>({
     sellerId: null,
-    regionId: 1,
+    regionId: 1168064000,
     isSales: null,
     categoryId: null,
   });
@@ -77,6 +79,10 @@ const Home = () => {
       hasPrevious: false,
       hasNext: true,
     });
+  };
+
+  const handleRegionModal = () => {
+    setIsRegionModalOpen((prev) => !prev);
   };
 
   const handleCategoryModal = () => {
@@ -176,9 +182,8 @@ const Home = () => {
       <NavBar
         type="blur"
         left={
-          // TODO: 동네 선택 팝업 띄우기
-          <MyNavBarBtn onClick={() => 'open region popup'}>
-            역삼동
+          <MyNavBarBtn onClick={handleRegionModal}>
+            역삼1동
             <Icon name={'chevronDown'} />
           </MyNavBarBtn>
         }
@@ -188,6 +193,11 @@ const Home = () => {
           </button>
         }
       />
+      {isRegionModalOpen &&
+        createPortal(
+          <UserRegions onPortal={handleRegionModal} />,
+          document.body,
+        )}
       <ItemList saleItems={saleItems} onItemClick={handleItemDetail} />
       {!!saleItems.length && <MyOnFetchItems ref={setTarget}></MyOnFetchItems>}
       {isLoading && <Spinner />}

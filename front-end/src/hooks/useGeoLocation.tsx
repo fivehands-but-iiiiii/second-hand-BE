@@ -5,8 +5,8 @@ import axios from 'axios';
 const GOOGLE_KEY = import.meta.env.VITE_GOOGLE_KEY;
 
 export interface coordsType {
-  latitude: number;
-  longitude: number;
+  lat: number;
+  lng: number;
 }
 
 interface LocationType {
@@ -22,11 +22,16 @@ interface LocationType {
 const useGeoLocation = () => {
   const [location, setLocation] = useState<LocationType>({
     loaded: false,
-    coords: { latitude: 0, longitude: 0 },
+    coords: { lat: 0, lng: 0 },
     address: '',
   });
 
-  const onSuccess = async (location: { coords: coordsType }) => {
+  const getAddressFromCoordinates = async (location: {
+    coords: {
+      latitude: number;
+      longitude: number;
+    };
+  }) => {
     try {
       const { data } = await axios.get(
         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${location.coords.latitude},${location.coords.longitude}&language=ko&key=${GOOGLE_KEY}`,
@@ -35,12 +40,32 @@ const useGeoLocation = () => {
       setLocation({
         loaded: true,
         coords: {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
+          lat: location.coords.latitude,
+          lng: location.coords.longitude,
         },
         address: formattedAddress,
       });
       return formattedAddress;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getCoordinatesFromAddress = async (address: string) => {
+    try {
+      const { data } = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&language=ko&key=${GOOGLE_KEY}`,
+      );
+      const coords = data.results[0].geometry.location;
+      setLocation({
+        loaded: true,
+        coords: {
+          lat: coords.lat,
+          lng: coords.lng,
+        },
+        address: address,
+      });
+      return coords;
     } catch (error) {
       console.log(error);
     }
@@ -60,10 +85,13 @@ const useGeoLocation = () => {
         message: 'Geolocation not supported',
       });
     }
-    navigator.geolocation.getCurrentPosition(onSuccess, onError);
+    navigator.geolocation.getCurrentPosition(
+      getAddressFromCoordinates,
+      onError,
+    );
   }, []);
 
-  return { location, onSuccess };
+  return { location, getAddressFromCoordinates, getCoordinatesFromAddress };
 };
 
 export default useGeoLocation;

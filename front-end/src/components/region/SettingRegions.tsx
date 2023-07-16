@@ -7,18 +7,26 @@ import RegionButtons from './RegionButtons';
 import SearchRegions from './SearchRegions';
 
 interface SettingRegionsProps {
-  handleUserRegions: (regions: UserRegion[]) => void;
+  userRegions?: RegionInfo[];
+  handleUserRegions?: (regions: UserRegion[]) => void;
+  handleUserRegionMaps?: (regions: RegionInfo[]) => void;
 }
 
-const SettingRegions = ({ handleUserRegions }: SettingRegionsProps) => {
-  const [selectedRegions, setSelectedRegions] = useState<RegionInfo[]>([]);
+const SettingRegions = ({
+  userRegions,
+  handleUserRegions,
+  handleUserRegionMaps,
+}: SettingRegionsProps) => {
+  const [selectedRegions, setSelectedRegions] = useState<RegionInfo[]>(userRegions || []);
   const [isSettingRegionsModalOpen, setIsSettingRegionsModalOpen] =
     useState(false);
 
   const settingUserRegions = (regions: RegionInfo[]) => {
-    handleUserRegions(
-      regions.map((region) => ({ id: region.id, onFocus: region.onFocus })),
-    );
+    handleUserRegions &&
+      handleUserRegions(
+        regions.map((region) => ({ id: region.id, onFocus: region.onFocus })),
+      );
+    handleUserRegionMaps && handleUserRegionMaps(regions);
   };
 
   const handleSelectRegion = (id: number, district: string) => {

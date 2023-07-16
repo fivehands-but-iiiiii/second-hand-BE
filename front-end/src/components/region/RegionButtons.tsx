@@ -5,7 +5,7 @@ import Button from '@common/Button/Button';
 import { RegionInfo } from '@components/login/Join';
 import palette from '@styles/colors';
 
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 
 interface RegionButtonsProps {
   selectedRegions: RegionInfo[];

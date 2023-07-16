@@ -38,8 +38,8 @@ const SearchRegions = ({
   const getCurrentLocation = useCallback(() => {
     if (!currentLocation.coords || !currentLocation.address) return;
     setCenter({
-      latitude: currentLocation.coords.latitude,
-      longitude: currentLocation.coords.longitude,
+      lat: currentLocation.coords.lat,
+      lng: currentLocation.coords.lng,
     });
     setAddress(currentLocation.address);
   }, [currentLocation]);
