@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class ChatRoomFacade {
+public class ChatroomFacade {
     private final ChatroomService chatRoomService;
     private final ItemService itemService;
     private final MemberService memberService;

@@ -4,7 +4,7 @@ import com.team5.secondhand.api.chatroom.dto.response.ChatItem;
 import com.team5.secondhand.api.chatroom.dto.response.ChatroomDetails;
 import com.team5.secondhand.api.chatroom.exception.ExistChatRoomException;
 import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
-import com.team5.secondhand.api.chatroom.service.ChatRoomFacade;
+import com.team5.secondhand.api.chatroom.service.ChatroomFacade;
 import com.team5.secondhand.api.chatroom.service.ChatroomService;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.exception.ExistItemException;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/chats")
 public class ChatroomController {
-    private final ChatRoomFacade chatRoomFacade;
+    private final ChatroomFacade chatRoomFacade;
     private final ChatroomService chatRoomService;
     private final MemberService memberService;
     private final ItemService itemService;
