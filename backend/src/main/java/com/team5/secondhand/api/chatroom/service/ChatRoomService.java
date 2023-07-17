@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ChatRoomService {
+public class ChatroomService {
     private final ChatRoomRepository chatRoomRepository;
     public String create(Item item, Member buyer) throws ExistChatRoomException {
         if (chatRoomRepository.findByItemAndBuyer(item, buyer).isPresent()) {
@@ -26,5 +26,9 @@ public class ChatRoomService {
 
     public Optional<Chatroom> findChatroom(long memberId, long itemId) {
         return chatRoomRepository.findByBuyer_IdAndItem_Id(memberId, itemId);
+    }
+
+    public Optional<Chatroom> findByChatroomId(String chatroomId) {
+        return chatRoomRepository.findByChatroomId(chatroomId);
     }
 }
