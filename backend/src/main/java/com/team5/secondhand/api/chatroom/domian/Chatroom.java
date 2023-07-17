@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -33,6 +34,9 @@ public class Chatroom {
 
     @CreatedDate
     private Instant createdAt;
+
+    @Enumerated(EnumType.STRING)
+    private ChatroomStatus chatroomStatus;
 
     @Builder
     private Chatroom(Long id, String chatroomId, Item item, Member buyer, Instant createdAt) {
