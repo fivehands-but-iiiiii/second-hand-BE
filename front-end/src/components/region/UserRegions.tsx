@@ -73,8 +73,11 @@ const UserRegions = ({ onPortal }: UserRegionsProps) => {
 
   return (
     <PortalLayout>
-      <NavBar left={<button onClick={onPortal}>닫기</button>} />
-      <MyRegionMap className="?">
+      <NavBar
+        left={<button onClick={onPortal}>닫기</button>}
+        center={'동네 설정'}
+      />
+      <MyRegionMap>
         {isLoaded && (
           <GoogleMap
             mapContainerStyle={containerStyle}
