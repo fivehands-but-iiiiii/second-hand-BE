@@ -35,7 +35,7 @@ public class ChatroomController {
     }
 
     @GetMapping("/items/{itemId}")
-    public GenericResponse<ChatroomDetails> getChatroomInfo(@PathVariable long itemId, @RequestAttribute MemberDetails loginMember) throws ExistMemberIdException, ExistItemException {
+    public GenericResponse<ChatroomDetails> getChatroomInfo(@PathVariable long itemId, @RequestAttribute MemberDetails loginMember) throws ExistMemberIdException, ExistItemException, NotChatroomMemberException {
         ChatroomDetails chatroomInfo = chatRoomFacade.findChatroomInfo(itemId, loginMember.getId());
         return GenericResponse.send("채팅방 정보가 조회되었습니다.", chatroomInfo);
     }

@@ -98,7 +98,7 @@ public class Item extends BaseTimeEntity {
     public boolean isSeller(long memberId) {
         return this.seller.equals(memberId);
     }
-  
+
     public Item owned(Member seller, Region region) {
         this.seller = seller;
         this.region = region;

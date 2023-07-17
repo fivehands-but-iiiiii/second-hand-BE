@@ -22,7 +22,7 @@ public class ChatRoomFacade {
     private final ItemService itemService;
     private final MemberService memberService;
 
-    public ChatroomDetails findChatroomInfo(long itemId, long memberId) throws ExistMemberIdException, ExistItemException {
+    public ChatroomDetails findChatroomInfo(long itemId, long memberId) throws ExistMemberIdException, ExistItemException, NotChatroomMemberException {
         Item item = itemService.findById(itemId);
         Member member = memberService.findById(memberId);
         Optional<Chatroom> chatroom = chatRoomService.findChatroom(itemId, memberId);
@@ -36,12 +36,12 @@ public class ChatRoomFacade {
 
     public ChatroomDetails findChatroomInfo(String chatroomId, long memberId) throws ExistChatRoomException, NotChatroomMemberException, ExistMemberIdException {
         Chatroom chatroom = chatRoomService.findByChatroomId(chatroomId).orElseThrow(() -> new ExistChatRoomException("해당하는 채팅방이 없습니다."));
+        Member member = memberService.findById(memberId);
 
-        if (!chatroom.isMemberIn(memberId)) {
+        if (!chatroom.isChatroomMember(member)) {
             throw new NotChatroomMemberException("채팅방 멤버가 아닙니다.");
         }
 
-        Member member = memberService.findById(memberId);
 
         return ChatroomDetails.of(chatroom, member);
     }

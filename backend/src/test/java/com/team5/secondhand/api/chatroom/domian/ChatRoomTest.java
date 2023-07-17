@@ -1,5 +1,6 @@
 package com.team5.secondhand.api.chatroom.domian;
 
+import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.domain.ItemContents;
 import com.team5.secondhand.api.item.domain.ItemCounts;
@@ -66,6 +67,7 @@ class ChatroomTest {
                 .chatroomId("test-test-tttt-ssss")
                 .buyer(iirin)
                 .item(keyboard)
+                .chatroomStatus(ChatroomStatus.FULL)
                 .createdAt(Instant.now())
                 .build();
     }
@@ -86,6 +88,21 @@ class ChatroomTest {
     public void testFindOpponent() throws Exception{
         Member opponent = chatRoom.findOpponent(iirin);
         assertThat(opponent.getMemberId()).isEqualTo("듀이");
+    }
+    
+    @Test
+    public void testIsChatroomMember() throws Exception{
+        chatRoom.exitMember(dewey);
+    
+        assertSoftly(softAssertions -> {
+            try {
+                softAssertions.assertThat(chatRoom.isChatroomMember(dewey)).isFalse();
+                softAssertions.assertThat(chatRoom.isChatroomMember(iirin)).isTrue();
+                softAssertions.assertThat(chatRoom.getChatroomStatus()).isEqualTo(ChatroomStatus.BUYER_ONLY);
+            } catch (NotChatroomMemberException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
 }
