@@ -1,11 +1,10 @@
 package com.team5.secondhand.api.chatroom.dto.response;
 
-import com.team5.secondhand.api.chatroom.domian.ChatRoom;
+import com.team5.secondhand.api.chatroom.domian.Chatroom;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.member.domain.Member;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class ChatroomDetails {
         this.chatroomId = chatroomId;
     }
 
-    public static ChatroomDetails of(ChatRoom chatRoom, Member member) {
+    public static ChatroomDetails of(Chatroom chatRoom, Member member) {
         List<String> chatroomMembers = chatRoom.getChatroomMemberIds();
         chatroomMembers.remove(member.getMemberId());
 

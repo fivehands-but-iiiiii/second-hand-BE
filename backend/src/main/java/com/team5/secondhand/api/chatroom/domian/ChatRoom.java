@@ -15,9 +15,10 @@ import java.util.List;
 
 @Entity
 @Getter
+@Table(name = "chatroom")
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChatRoom {
+public class Chatroom {
     @Id
     private Long id;
     private String chatroomId;
@@ -31,19 +32,19 @@ public class ChatRoom {
     private Member buyer;
 
     @CreatedDate
-    private Instant createAt;
+    private Instant createdAt;
 
     @Builder
-    private ChatRoom(Long id, String chatroomId, Item item, Member buyer, Instant createAt) {
+    private Chatroom(Long id, String chatroomId, Item item, Member buyer, Instant createdAt) {
         this.id = id;
         this.chatroomId = chatroomId;
         this.item = item;
         this.buyer = buyer;
-        this.createAt = createAt;
+        this.createdAt = createdAt;
     }
 
-    public static ChatRoom create(Item item, Member buyer) {
-        return ChatRoom.builder()
+    public static Chatroom create(Item item, Member buyer) {
+        return com.team5.secondhand.api.chatroom.domian.Chatroom.builder()
                 .item(item)
                 .buyer(buyer)
                 .build();
