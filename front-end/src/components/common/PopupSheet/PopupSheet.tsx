@@ -22,7 +22,6 @@ interface PopupSheetStyleProps {
 
 const PopupSheet = ({ type, menu, onSheetClose }: PopupSheetProps) => {
   const isSlideDown = type === 'slideDown';
-
   return (
     <>
       {isSlideDown ? (

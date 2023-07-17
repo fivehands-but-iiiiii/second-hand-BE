@@ -1,15 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 
 import Icon from '@assets/Icon';
 import Button from '@common/Button/Button';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
+import { REGION_MENU } from '@common/PopupSheet/constants';
+import PopupSheet from '@common/PopupSheet/PopupSheet';
 import Spinner from '@common/Spinner/Spinner';
 import Category, { CategoryInfo } from '@components/home/category';
 import ItemList from '@components/home/ItemList';
+import { useUserInfo } from '@components/layout/MobileLayout';
+import { RegionInfo } from '@components/login/Join';
 import New from '@components/new/New';
-import UserRegions from '@components/region/UserRegions';
+import SettingRegionMap from '@components/region/SettingRegionMap';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
 import palette from '@styles/colors';
 
@@ -37,16 +41,29 @@ export type HomePageInfo = Omit<HomeInfo, 'items'>;
 
 const Home = () => {
   // TODO: filterInfo가 변하면 -> saleItems를 한 번 비워야한다.
+  const { userInfo } = useUserInfo();
+  const [userRegions, setUserRegions] = useState<RegionInfo[]>([
+    {
+      id: 1168064000,
+      district: '역삼1동',
+      onFocus: true,
+    },
+  ]);
+  const onFocusRegion = userRegions.find(({ onFocus }) => onFocus);
+  const [currentRegion, setCurrentRegion] = useState<number>(
+    onFocusRegion?.id || userRegions[0].id,
+  );
   const [categoryInfo, setCategoryInfo] = useState<CategoryInfo[]>([]);
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState<number>(0);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
-  const [isRegionModalOpen, setIsRegionModalOpen] = useState(false);
+  const [isRegionPopupSheetOpen, setIsRegionPopupSheetOpen] = useState(false);
+  const [isRegionMapModalOpen, setIsRegionMapModalOpen] = useState(false);
   const [filterInfo, setFilterInfo] = useState<HomeFilterInfo>({
     sellerId: null,
-    regionId: 1168064000,
+    regionId: currentRegion,
     isSales: null,
     categoryId: null,
   });
@@ -81,13 +98,82 @@ const Home = () => {
     });
   };
 
-  const handleRegionModal = () => {
-    setIsRegionModalOpen((prev) => !prev);
+  const patchUserRegion = async (regionId: number) => {
+    try {
+      const updatedRegions = userRegions.map((region) => {
+        return region.id === regionId
+          ? {
+              ...region,
+              onFocus: true,
+            }
+          : {
+              ...region,
+              onFocus: false,
+            };
+      });
+      const { data } = await api.patch('/members/region', {
+        id: userInfo?.id,
+        regions: updatedRegions,
+      });
+      // TODO: PATCH 데이터에 district 포함되어있음 (사실 필요없음)
+      setUserRegions(updatedRegions);
+      return data.data;
+    } catch (error) {
+      console.error(`Failed to patch user region: ${error}`);
+    }
+  };
+
+  const handleRegionSwitch = async (id: number) => {
+    const patchResult = await patchUserRegion(id);
+    if (patchResult) {
+      setCurrentRegion(id);
+      setFilterInfo((prevFilterInfo) => ({
+        ...prevFilterInfo,
+        regionId: id,
+      }));
+    }
+  };
+
+  const handleRegionPopupSheetModal = () => {
+    setIsRegionPopupSheetOpen((prev) => !prev);
+  };
+
+  const handleRegionMapModal = () => {
+    setIsRegionMapModalOpen((prev) => !prev);
+    setIsRegionPopupSheetOpen((prev) => !prev);
   };
 
   const handleCategoryModal = () => {
     setIsCategoryModalOpen((prev) => !prev);
   };
+
+  const regionPopupSheetMenu = useMemo(() => {
+    if (!userInfo)
+      return userRegions.map(({ id, district, onFocus }) => ({
+        id,
+        title: district,
+        style: onFocus ? 'font-weight: 600' : '',
+        onClick: () => handleRegionSwitch(id),
+      }));
+    else
+      return [
+        ...userRegions.map(({ id, district, onFocus }) => {
+          return {
+            id,
+            title: district,
+            style: onFocus ? 'font-weight: 600' : '',
+            onClick: () => handleRegionSwitch(id),
+          };
+        }),
+        ...REGION_MENU.map(({ id, title }) => {
+          return {
+            id,
+            title,
+            onClick: handleRegionMapModal,
+          };
+        }),
+      ];
+  }, [userRegions]);
 
   const [onRefresh, setOnRefresh] = useState(false);
   const handleNewModal = () => {
@@ -174,6 +260,9 @@ const Home = () => {
   }, [onRefresh]);
 
   useEffect(() => {
+    if (userInfo) {
+      setUserRegions(userInfo?.regions);
+    }
     getCategoryInfo();
   }, []);
 
@@ -182,10 +271,19 @@ const Home = () => {
       <NavBar
         type="blur"
         left={
-          <MyNavBarBtn onClick={handleRegionModal}>
-            역삼1동
-            <Icon name={'chevronDown'} />
-          </MyNavBarBtn>
+          <>
+            <MyNavBarBtn onClick={handleRegionPopupSheetModal}>
+              {onFocusRegion?.district}
+              <Icon name={'chevronDown'} />
+            </MyNavBarBtn>
+            {isRegionPopupSheetOpen && (
+              <PopupSheet
+                type={'slideDown'}
+                menu={regionPopupSheetMenu}
+                onSheetClose={handleRegionPopupSheetModal}
+              />
+            )}
+          </>
         }
         right={
           <button onClick={handleCategoryModal}>
@@ -193,9 +291,12 @@ const Home = () => {
           </button>
         }
       />
-      {isRegionModalOpen &&
+      {isRegionMapModalOpen &&
         createPortal(
-          <UserRegions onPortal={handleRegionModal} />,
+          <SettingRegionMap
+            userRegions={userRegions}
+            onPortal={handleRegionMapModal}
+          />,
           document.body,
         )}
       <ItemList saleItems={saleItems} onItemClick={handleItemDetail} />

@@ -22,18 +22,14 @@ const containerStyle = {
   height: '100%',
 };
 
-interface UserRegionsProps {
+interface SettingRegionMapProps {
+  userRegions: RegionInfo[];
   onPortal: () => void;
 }
 
-const UserRegions = ({ onPortal }: UserRegionsProps) => {
-  const [userRegions, setUserRegions] = useState<RegionInfo[]>([
-    {
-      id: 1168064000,
-      district: '역삼1동',
-      onFocus: false,
-    },
-  ]);
+const SettingRegionMap = ({ userRegions, onPortal }: SettingRegionMapProps) => {
+  const [updatedRegions, setUpdatedRegions] =
+    useState<RegionInfo[]>(userRegions);
   const [map, setMap] = useState(null);
   const [center, setCenter] = useState<coordsType>({
     lat: 37.490821,
@@ -57,19 +53,19 @@ const UserRegions = ({ onPortal }: UserRegionsProps) => {
     setMap(null);
   }, []);
 
-  const handleUserRegionMaps = (regions: RegionInfo[]) => {
-    setUserRegions(regions);
+  const handleUserRegions = (regions: RegionInfo[]) => {
+    setUpdatedRegions(regions);
   };
 
   useEffect(() => {
     const getCenter = async () => {
       const coords = await getCoordinatesFromAddress(
-        userRegions.filter(({ onFocus }) => onFocus)[0].district,
+        updatedRegions.find(({ onFocus }) => onFocus)?.district || '역삼1동',
       );
       setCenter(coords);
     };
     getCenter();
-  }, [userRegions]);
+  }, [updatedRegions]);
 
   return (
     <PortalLayout>
@@ -77,7 +73,7 @@ const UserRegions = ({ onPortal }: UserRegionsProps) => {
         left={<button onClick={onPortal}>닫기</button>}
         center={'동네 설정'}
       />
-      <MyRegionMap>
+      <MySettingRegionMap>
         {isLoaded && (
           <GoogleMap
             mapContainerStyle={containerStyle}
@@ -90,15 +86,15 @@ const UserRegions = ({ onPortal }: UserRegionsProps) => {
           </GoogleMap>
         )}
         <SettingRegions
-          userRegions={userRegions}
-          handleUserRegionMaps={handleUserRegionMaps}
+          userRegions={updatedRegions}
+          handleUserRegions={handleUserRegions}
         />
-      </MyRegionMap>
+      </MySettingRegionMap>
     </PortalLayout>
   );
 };
 
-const MyRegionMap = styled.div`
+const MySettingRegionMap = styled.div`
   height: 50vh;
   padding: 0 2.7vw;
   > div:first-child {
@@ -106,4 +102,4 @@ const MyRegionMap = styled.div`
   }
 `;
 
-export default UserRegions;
+export default SettingRegionMap;

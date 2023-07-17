@@ -76,6 +76,5 @@ export const REGION_MENU = [
   {
     id: 'selectLocale',
     title: '내 동네 설정하기',
-    style: 'font-weight: 400',
   },
 ];

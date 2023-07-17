@@ -1,32 +1,29 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { RegionInfo, UserRegion } from '@components/login/Join';
+import { RegionInfo } from '@components/login/Join';
 
 import RegionButtons from './RegionButtons';
 import SearchRegions from './SearchRegions';
 
 interface SettingRegionsProps {
   userRegions?: RegionInfo[];
-  handleUserRegions?: (regions: UserRegion[]) => void;
-  handleUserRegionMaps?: (regions: RegionInfo[]) => void;
+  handleUserRegions: (regions: RegionInfo[]) => void;
 }
 
 const SettingRegions = ({
   userRegions,
   handleUserRegions,
-  handleUserRegionMaps,
 }: SettingRegionsProps) => {
-  const [selectedRegions, setSelectedRegions] = useState<RegionInfo[]>(userRegions || []);
+  const [selectedRegions, setSelectedRegions] = useState<RegionInfo[]>(
+    userRegions || [],
+  );
   const [isSettingRegionsModalOpen, setIsSettingRegionsModalOpen] =
     useState(false);
 
+  // TODO: 변경된 결과 PATCH해야됨
   const settingUserRegions = (regions: RegionInfo[]) => {
-    handleUserRegions &&
-      handleUserRegions(
-        regions.map((region) => ({ id: region.id, onFocus: region.onFocus })),
-      );
-    handleUserRegionMaps && handleUserRegionMaps(regions);
+    handleUserRegions(regions);
   };
 
   const handleSelectRegion = (id: number, district: string) => {

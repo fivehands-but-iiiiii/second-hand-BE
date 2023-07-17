@@ -13,11 +13,6 @@ import { styled } from 'styled-components';
 import api from '../../api';
 
 import UserProfile from './UserProfile';
-export interface UserInfo {
-  memberId: string;
-  profileImgUrl?: string;
-  regions: UserRegion[];
-}
 
 export interface InputFile {
   preview: string;
@@ -30,6 +25,13 @@ export interface RegionInfo {
   onFocus: boolean;
 }
 
+export interface UserInfo {
+  id?: number;
+  memberId: string;
+  profileImgUrl?: string;
+  regions: RegionInfo[];
+}
+
 export type UserRegion = Omit<RegionInfo, 'district'>;
 
 const Join = () => {
@@ -39,7 +41,7 @@ const Join = () => {
   const [userInputId, setUserInputId] = useState('');
   const [validationMessage, setValidationMessage] = useState('');
   const [files, setFiles] = useState<InputFile>();
-  const [userRegions, setUserRegions] = useState<UserRegion[]>([]);
+  const [userRegions, setUserRegions] = useState<RegionInfo[]>([]);
   const [userAccount, setUserAccount] = useState<UserInfo>({
     memberId: gitHubUserInfo?.login,
     profileImgUrl: gitHubUserInfo?.avatar_url,
@@ -90,7 +92,7 @@ const Join = () => {
     });
   };
 
-  const handleUserRegions = (regions: UserRegion[]) => {
+  const handleUserRegions = (regions: RegionInfo[]) => {
     setUserRegions(regions);
     setUserAccount({
       ...userAccount,
