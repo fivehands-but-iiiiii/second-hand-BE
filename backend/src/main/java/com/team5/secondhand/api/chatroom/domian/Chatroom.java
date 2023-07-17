@@ -13,6 +13,7 @@ import javax.persistence.*;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -55,7 +56,25 @@ public class Chatroom {
     }
 
     public List<String> getChatroomMemberIds() {
-        Member seller = item.getSeller();
-        return List.of(buyer.getMemberId(), seller.getMemberId());
+        Map<Long, Member> chatroomMembers = getChatroomMembers();
+        return chatroomMembers.values().stream()
+                .map(Member::getMemberId)
+                .collect(Collectors.toList());
+    }
+
+    private Map<Long, Member> getChatroomMembers() {
+        Member seller = this.item.getSeller();
+        return Map.of(buyer.getId(), buyer, seller.getId(), seller);
+    }
+
+    public boolean isMemberIn(long memberId) {
+        return buyer.equals(memberId) || item.isSeller(memberId);
+    }
+
+    public Member findOpponent(Member myself) {
+        Map<Long, Member> chatroomMembers = getChatroomMembers();
+        return chatroomMembers.values().stream()
+                .filter(e -> !e.equals(myself))
+                .findAny().orElseThrow();
     }
 }

@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import java.time.Instant;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class ChatroomTest {
@@ -29,7 +30,7 @@ class ChatroomTest {
 
     @BeforeEach
     void init() {
-        iirin = Member.builder().id(10000L)
+        iirin = Member.builder().id(1L)
                 .memberId("이린")
                 .regions(List.of(BasedRegion.builder().id(10L)
                         .region(region)
@@ -38,7 +39,7 @@ class ChatroomTest {
                 .oauth(Oauth.NONE)
                 .profileImgUrl("image.png")
                 .build();
-        dewey = Member.builder().id(10000L)
+        dewey = Member.builder().id(2L)
                 .memberId("듀이")
                 .regions(List.of(BasedRegion.builder().id(10L)
                         .region(region)
@@ -78,6 +79,13 @@ class ChatroomTest {
             assertions.assertThat(chatroomMemberIds.contains(iirin.getMemberId())).isTrue();
             assertions.assertThat(chatroomMemberIds.contains(dewey.getMemberId())).isTrue();
         });
+    }
+    
+    @Test
+    @DisplayName("채팅방에 있는 상대방을 알 수 있다.")
+    public void testFindOpponent() throws Exception{
+        Member opponent = chatRoom.findOpponent(iirin);
+        assertThat(opponent.getMemberId()).isEqualTo("듀이");
     }
 
 }
