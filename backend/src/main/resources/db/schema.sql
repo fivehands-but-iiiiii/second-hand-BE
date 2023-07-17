@@ -110,6 +110,7 @@ create table if not exists item
         foreign key (region_id) references region (id)
 );
 
+DROP TABLE IF EXISTS chatroom;
 create table if not exists chatroom
 (
     id         bigint auto_increment primary key,
@@ -117,6 +118,7 @@ create table if not exists chatroom
     item_id    bigint   not null,
     buyer_id   bigint   not null,
     created_at datetime null,
+    chatroom_status enum('EMPTY', 'SELLER_ONLY', 'BUYER_ONLY', 'FULL') default 'FULL' null,
     constraint fk_item_has_member_item1
         foreign key (item_id) references item (id),
     constraint fk_item_has_member_member1
