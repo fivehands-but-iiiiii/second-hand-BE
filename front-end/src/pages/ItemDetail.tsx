@@ -261,8 +261,10 @@ const ItemDetail = ({
 
   const handleChatRoom = () => setIsChatRoomOpen(!isChatRoomOpen);
 
+  const navigate = useNavigate();
+
   const handleChatButton = () => {
-    isMyItem ? console.log('move to chat') : handleChatRoom();
+    isMyItem ? navigate(`chat-list/${id}`) : handleChatRoom();
   };
 
   const handleNewModal = () => {
@@ -375,10 +377,7 @@ const ItemDetail = ({
       </SubTabBar>
       {!!isChatRoomOpen &&
         createPortal(
-          <ChatRoom
-            itemId={itemDetailInfo.id}
-            onRoomClose={handleChatRoom}
-          ></ChatRoom>,
+          <ChatRoom itemId={id} onRoomClose={handleChatRoom}></ChatRoom>,
           document.body,
         )}
       {isStatusPopupOpen && (

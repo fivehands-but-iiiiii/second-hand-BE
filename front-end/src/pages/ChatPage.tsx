@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import NavBar from '@common/NavBar';
 import ChatRoomList from '@components/chat/ChatRoomList';
 import BlankPage from '@pages/BlankPage';
+
+import api from '../api';
 
 // NOTE: mock data는 API 연동 후 삭제 예정
 const mockChatList = [
@@ -51,11 +54,27 @@ const mockChatList = [
 ];
 
 const ChatPage = () => {
+  const { itemId } = useParams();
+
   const title = '채팅';
   const [chatList] = useState(mockChatList);
   const isExistChatList = !!chatList.length;
 
-  // TODO: 채팅 리스트 API 연동
+  const getChatList = async () => {
+    const isExistItemId = !!itemId;
+    const itemIdPath = isExistItemId ? `?itemId=${itemId}` : '';
+
+    try {
+      const { data } = await api.get(`/api/chats${itemIdPath}`);
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getChatList();
+  }, []);
 
   return (
     <>
