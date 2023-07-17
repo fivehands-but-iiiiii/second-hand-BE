@@ -20,6 +20,7 @@ interface ChatBubble {
 
 interface ChatRoomProps {
   itemId: number;
+  onRoomClose: () => void;
 }
 
 type SaleItemSummary = Pick<
@@ -27,7 +28,7 @@ type SaleItemSummary = Pick<
   'id' | 'title' | 'price' | 'thumbnailUrl' | 'status'
 >;
 
-const ChatRoom = ({ itemId }: ChatRoomProps) => {
+const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
   const [itemInfo, setItemInfo] = useState<SaleItemSummary>(
     // {} as SaleItemSummary,
     // NOTO: HTTP API 완성 시 아래 데이터 제거
@@ -150,7 +151,7 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
     <PortalLayout>
       <NavBar
         left={
-          <MyNavBarBtn onClick={() => console.log('뒤로')}>
+          <MyNavBarBtn onClick={onRoomClose}>
             <Icon name={'chevronLeft'} />
             <span>뒤로</span>
           </MyNavBarBtn>

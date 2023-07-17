@@ -16,6 +16,8 @@ const ChatRoomList = ({ chatItems }: ChatRoomListProps) => {
     setSelectedItemId(itemId);
   };
 
+  const handleChatRoom = () => setSelectedItemId(0);
+
   return (
     <>
       {chatItems.map((chat) => (
@@ -27,7 +29,10 @@ const ChatRoomList = ({ chatItems }: ChatRoomListProps) => {
       ))}
       {!!selectedItemId &&
         createPortal(
-          <ChatRoom itemId={selectedItemId}></ChatRoom>,
+          <ChatRoom
+            itemId={selectedItemId}
+            onRoomClose={handleChatRoom}
+          ></ChatRoom>,
           document.body,
         )}
     </>
