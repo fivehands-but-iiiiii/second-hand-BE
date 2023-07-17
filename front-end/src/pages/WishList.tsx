@@ -1,9 +1,12 @@
 /* eslint-disable import/no-named-as-default-member */
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import Button from '@common/Button';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
+import Spinner from '@common/Spinner/Spinner';
+import { CategoryInfo } from '@components/home/category';
 import ItemList from '@components/home/ItemList/ItemList';
 import useAPI from '@hooks/useAPI';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
@@ -12,16 +15,21 @@ import { styled } from 'styled-components';
 
 import { HomePageInfo } from '../pages/Home';
 
+import ItemDetail from './ItemDetail';
+
 const WishList = () => {
   const title = '관심 목록';
   const [wishItems, setWishItems] = useState<SaleItem[]>([]);
+  const [categoryInfo, setCategoryInfo] = useState<CategoryInfo[]>([]);
   const [categories, setCategories] = useState([{ id: 0, title: '전체' }]);
+  const [selectedItem, setSelectedItem] = useState<number>(0);
   const [selectedCategoryId, setSelectedCategoryId] = useState(0);
   const [pageInfo, setPageInfo] = useState<HomePageInfo>({
     page: 0,
     hasPrevious: false,
     hasNext: true,
   });
+  const [isLoading, setIsLoading] = useState(false);
   const { request } = useAPI();
 
   const onIntersect: IntersectionObserverCallback = ([{ isIntersecting }]) => {
@@ -32,24 +40,53 @@ const WishList = () => {
 
   const getWishListItems = async () => {
     if (!pageInfo.hasNext) return;
-    const { data } = await request({
-      url: `wishlist?page=${pageInfo.page}`,
-      method: 'get',
-    });
-    setWishItems((pre) => [...pre, ...data.items]);
-    setPageInfo({
-      page: data.page + 1,
-      hasPrevious: data?.hasPrevious,
-      hasNext: data?.hasNext,
-    });
+    try {
+      setIsLoading(true);
+      const { data } = await request({
+        url: `wishlist?page=${pageInfo.page}`,
+        method: 'get',
+      });
+      setWishItems((pre) => [...pre, ...data.items]);
+      setPageInfo({
+        page: data.page + 1,
+        hasPrevious: data?.hasPrevious,
+        hasNext: data?.hasNext,
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getWishListCategories = async () => {
-    const { data } = await request({
-      url: '/wishlist/categories',
-      method: 'get',
-    });
-    setCategories((pre) => [...pre, ...data.categories]);
+    try {
+      const { data } = await request({
+        url: '/wishlist/categories',
+        method: 'get',
+      });
+      const wishListCategories = data.categories.map((categoryId: number) => {
+        const targetCategory = categoryInfo.find(({ id }) => id === categoryId);
+        return { id: targetCategory?.id, title: targetCategory?.title };
+      });
+      setCategories((pre) => [...pre, ...wishListCategories]);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // TODO: 카테고리 fetch 전역에서 관리하기. 1번만 하도록 수정해야됨 (삭제 예정)
+  const getCategoryInfo = async () => {
+    if (categoryInfo.length) return;
+    try {
+      const { data } = await request({
+        url: '/resources/categories',
+        method: 'get',
+      });
+      setCategoryInfo(data.categories);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleFilterCategories = (categoryId: number) => {
@@ -57,6 +94,11 @@ const WishList = () => {
     getFilteredItems();
   };
 
+  const handleItemDetail = (itemId: number) => {
+    setSelectedItem(itemId);
+  };
+
+  // TODO: 필터한다음 무한 스크롤 적용 테스트해야됨
   const getFilteredItems = async () => {
     const { data } = await request({
       url: `wishlist?category=${selectedCategoryId}`,
@@ -68,6 +110,7 @@ const WishList = () => {
   useEffect(() => {
     getWishListItems();
     getWishListCategories();
+    getCategoryInfo();
   }, []);
 
   return (
@@ -89,10 +132,20 @@ const WishList = () => {
             );
           })}
         </MyCategories>
-        <ItemList saleItems={wishItems} />
+        <ItemList saleItems={wishItems} onItemClick={handleItemDetail} />
         {!!wishItems.length && (
           <MyOnFetchItems ref={setTarget}></MyOnFetchItems>
         )}
+        {isLoading && <Spinner />}
+        {!!selectedItem &&
+          createPortal(
+            <ItemDetail
+              id={selectedItem}
+              categoryInfo={categoryInfo}
+              handleBackBtnClick={handleItemDetail}
+            />,
+            document.body,
+          )}
       </MyWishList>
     </>
   );
