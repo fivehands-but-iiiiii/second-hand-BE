@@ -18,14 +18,14 @@ import java.util.List;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-class ChatRoomTest {
+class ChatroomTest {
 
     @Mock
     private Region region;
     private Member iirin;
     private Member dewey;
     private Item keyboard;
-    private ChatRoom chatRoom;
+    private Chatroom chatRoom;
 
     @BeforeEach
     void init() {
@@ -61,11 +61,11 @@ class ChatRoomTest {
                 .isDeleted(false)
                 .build();
 
-        chatRoom = ChatRoom.builder().id(1L)
+        chatRoom = Chatroom.builder().id(1L)
                 .chatroomId("test-test-tttt-ssss")
                 .buyer(iirin)
                 .item(keyboard)
-                .createAt(Instant.now())
+                .createdAt(Instant.now())
                 .build();
     }
     

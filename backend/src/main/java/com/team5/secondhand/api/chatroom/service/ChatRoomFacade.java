@@ -1,8 +1,7 @@
 package com.team5.secondhand.api.chatroom.service;
 
-import com.team5.secondhand.api.chatroom.domian.ChatRoom;
+import com.team5.secondhand.api.chatroom.domian.Chatroom;
 import com.team5.secondhand.api.chatroom.dto.response.ChatroomDetails;
-import com.team5.secondhand.api.chatroom.exception.ExistChatRoomException;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.exception.ExistItemException;
 import com.team5.secondhand.api.item.service.ItemService;
@@ -24,7 +23,7 @@ public class ChatRoomFacade {
     public ChatroomDetails findChatroomInfo(long itemId, long memberId) throws ExistMemberIdException, ExistItemException {
         Item item = itemService.findById(itemId);
         Member member = memberService.findById(memberId);
-        Optional<ChatRoom> chatroom = chatRoomService.findChatroom(itemId, memberId);
+        Optional<Chatroom> chatroom = chatRoomService.findChatroom(itemId, memberId);
 
         if (chatroom.isEmpty()) {
             return ChatroomDetails.from(item);
