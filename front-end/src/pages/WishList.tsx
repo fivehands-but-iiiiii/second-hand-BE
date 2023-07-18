@@ -17,6 +17,7 @@ import { HomePageInfo } from '../pages/Home';
 
 import ItemDetail from './ItemDetail';
 
+// TODO: 상세 갔다가 뒤로 가도 리프레시, 카테고리 필터링해도 리프레시 적용, 아이템리스트 중복 제거
 const WishList = () => {
   const title = '관심 목록';
   const [wishItems, setWishItems] = useState<SaleItem[]>([]);
@@ -65,11 +66,30 @@ const WishList = () => {
         url: '/wishlist/categories',
         method: 'get',
       });
-      const wishListCategories = data.categories.map((categoryId: number) => {
+      const matchedCategories = data.categories.map((categoryId: number) => {
         const targetCategory = categoryInfo.find(({ id }) => id === categoryId);
-        return { id: targetCategory?.id, title: targetCategory?.title };
+        return (
+          targetCategory && {
+            id: targetCategory.id,
+            title: targetCategory.title,
+          }
+        );
       });
-      setCategories((pre) => [...pre, ...wishListCategories]);
+      if (matchedCategories.length > 0) {
+        setCategories((prevCategories) => {
+          const newCategories = [...prevCategories, ...matchedCategories];
+          const wishListCategories = newCategories.reduce(
+            (acc: { id: number; title: string }[], category) => {
+              if (category && !acc.some(({ id }) => id === category.id)) {
+                acc.push(category);
+              }
+              return acc;
+            },
+            [],
+          );
+          return wishListCategories;
+        });
+      }
     } catch (error) {
       console.error(error);
     }
@@ -110,7 +130,11 @@ const WishList = () => {
   useEffect(() => {
     getWishListItems();
     getWishListCategories();
+  }, [wishItems]);
+
+  useEffect(() => {
     getCategoryInfo();
+    getWishListItems();
   }, []);
 
   return (
@@ -164,6 +188,14 @@ const MyCategories = styled.div`
   padding: 2vh 15px 0;
   display: flex;
   gap: 4px;
+  overflow: auto;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  > button {
+    min-width: max-content;
+  }
 `;
 
 const MyOnFetchItems = styled.div`
