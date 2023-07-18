@@ -56,9 +56,9 @@ public class ItemController {
     )
     @GetMapping
     public ItemList getItemList(ItemFilteredSlice itemSlice, @RequestAttribute MemberDetails loginMember) throws NotValidRegionException {
-        Map<Long, Region> regions = getValidRegions.getRegions(List.of(itemSlice.getRegionId()));
+        Region regions = getValidRegions.getRegion(itemSlice.getRegionId());
         //TODO Category 유효성 검사
-        return itemService.getItemList(itemSlice, regions.get(itemSlice.getPage()), loginMember);
+        return itemService.getItemList(itemSlice, regions, loginMember);
     }
 
     @Operation(

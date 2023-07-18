@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.Cacheable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +36,9 @@ public class RegionService implements GetValidRegionsUsecase {
     @Override
     @Transactional(readOnly = true)
     public Region getRegion(Long id) throws NotValidRegionException {
+        if (id==null) {
+            return null;
+        }
         return regionRepository.findById(id).orElseThrow(() -> new NotValidRegionException("해당하는 지역이 없습니다."));
     }
 
