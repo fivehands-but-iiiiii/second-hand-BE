@@ -4,6 +4,8 @@ import Icon from '@assets/Icon';
 import ImgBox from '@common/ImgBox';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
+import PopupSheet from '@common/PopupSheet';
+import { CHAT_VIEWMORE_MENU } from '@common/PopupSheet/constants';
 import ChatTabBar from '@common/TabBar/ChatTabBar';
 import PortalLayout from '@components/layout/PortalLayout';
 import * as StompJs from '@stomp/stompjs';
@@ -44,6 +46,19 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
   const [opponentId, setOpponentId] = useState('');
   const [chatBubbles, setChatBubbles] = useState<ChatBubble[]>([]);
   const [chat, setChat] = useState('');
+  const [isMoreViewPopupOpen, setIsMoreViewPopupOpen] = useState(false);
+
+  const handleViewMorePopup = () => {
+    setIsMoreViewPopupOpen(!isMoreViewPopupOpen);
+  };
+
+  const viewMorePopupSheetMenu = CHAT_VIEWMORE_MENU.map((menu) => ({
+    ...menu,
+    onClick: () => {
+      console.log('');
+      setIsMoreViewPopupOpen(false);
+    },
+  }));
 
   const endRef = useRef<HTMLDivElement | null>(null);
 
@@ -158,7 +173,7 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
         }
         center={opponentId}
         right={
-          <button onClick={() => console.log('handleViewMorePopup')}>
+          <button onClick={handleViewMorePopup}>
             <Icon name={'ellipsis'} />
           </button>
         }
@@ -191,6 +206,13 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
             );
           })}
         </MyChatBubbles>
+      )}
+      {isMoreViewPopupOpen && (
+        <PopupSheet
+          type={'slideUp'}
+          menu={viewMorePopupSheetMenu}
+          onSheetClose={handleViewMorePopup}
+        ></PopupSheet>
       )}
       <div ref={endRef}></div>
       <ChatTabBar
