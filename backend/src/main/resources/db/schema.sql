@@ -116,13 +116,16 @@ create table if not exists chatroom
     id         bigint auto_increment primary key,
     chatroom_id binary(16) not null unique,
     item_id    bigint   not null,
+    seller_id bigint not null,
     buyer_id   bigint   not null,
     created_at datetime null,
     chatroom_status enum('EMPTY', 'SELLER_ONLY', 'BUYER_ONLY', 'FULL') default 'FULL' null,
-    constraint fk_item_has_member_item1
+    constraint fk_chatroom_has_item
         foreign key (item_id) references item (id),
-    constraint fk_item_has_member_member1
-        foreign key (buyer_id) references member (id)
+    constraint fk_chatroom_has_buyer
+        foreign key (buyer_id) references member (id),
+    constraint fk_chatroom_has_seller
+        foreign key (seller_id) references member (id)
 );
 CREATE UNIQUE INDEX idx_my_chatroom_id on chatroom (chatroom_id);
 
@@ -143,7 +146,7 @@ create table if not exists chat_log
     constraint fk_chat_log_member2
         foreign key (reciver_id) references member (id),
     constraint fk_chat_log_member_chat_about_item1
-        foreign key (chat_room_id) references chat_room (id)
+        foreign key (chat_room_id) references chatroom (id)
 );
 
 create index fk_chat_log_member1_idx
@@ -156,10 +159,10 @@ create index fk_chat_log_member_chat_about_item1_idx
     on chat_log (chat_room_id);
 
 create index fk_item_has_member_item1_idx
-    on chat_room (item_id);
+    on chatroom (item_id);
 
 create index fk_item_has_member_member1_idx
-    on chat_room (buyer_id);
+    on chatroom (buyer_id);
 
 create index fk_item_item_contents1_idx
     on item (item_contents_id);
