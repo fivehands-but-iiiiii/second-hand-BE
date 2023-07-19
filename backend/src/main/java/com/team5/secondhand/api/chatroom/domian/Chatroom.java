@@ -34,6 +34,8 @@ public class Chatroom {
     @JoinColumn(name = "buyer_id")
     private Member buyer;
 
+    private Long sellerId;
+
     @CreatedDate
     private Instant createdAt;
 
@@ -41,11 +43,12 @@ public class Chatroom {
     private ChatroomStatus chatroomStatus;
 
     @Builder
-    public Chatroom(Long id, String chatroomId, Item item, Member buyer, Instant createdAt, ChatroomStatus chatroomStatus) {
+    public Chatroom(Long id, String chatroomId, Item item, Member buyer, Long sellerId, Instant createdAt, ChatroomStatus chatroomStatus) {
         this.id = id;
         this.chatroomId = chatroomId;
         this.item = item;
         this.buyer = buyer;
+        this.sellerId = sellerId;
         this.createdAt = createdAt;
         this.chatroomStatus = chatroomStatus;
     }
@@ -54,6 +57,7 @@ public class Chatroom {
         return com.team5.secondhand.api.chatroom.domian.Chatroom.builder()
                 .item(item)
                 .buyer(buyer)
+                .sellerId(item.getSeller().getId())
                 .chatroomStatus(ChatroomStatus.FULL)
                 .build();
     }
