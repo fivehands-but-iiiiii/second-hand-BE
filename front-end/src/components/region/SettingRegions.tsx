@@ -11,6 +11,7 @@ interface SettingRegionsProps {
   handleUserRegions: (regions: RegionInfo[]) => void;
 }
 
+// TODO: 지역 설정하고 닫기 누르면 요청하는 로직추가
 const SettingRegions = ({
   userRegions,
   handleUserRegions,
@@ -21,7 +22,6 @@ const SettingRegions = ({
   const [isSettingRegionsModalOpen, setIsSettingRegionsModalOpen] =
     useState(false);
 
-  // TODO: 변경된 결과 PATCH해야됨
   const settingUserRegions = (regions: RegionInfo[]) => {
     handleUserRegions(regions);
   };

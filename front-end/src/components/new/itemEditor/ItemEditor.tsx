@@ -21,7 +21,6 @@ import { styled } from 'styled-components';
 import api from '../../../api';
 import ImageEditor from '../itemEditor/ImageEditor';
 import TitleEditor from '../itemEditor/TitleEditor';
-
 export interface Category {
   id: number;
   title: string;
@@ -49,23 +48,25 @@ export interface ItemInfo {
 }
 
 interface ItemEditorProps {
+  region: { id: number; district: string };
   categoryInfo: Category[];
   isEdit?: boolean;
   origin?: ItemInfo;
   handleClose: () => void;
+  handleRegion: () => void;
 }
 
 const ItemEditor = ({
+  region,
   categoryInfo,
   isEdit = false,
   origin,
   handleClose,
+  handleRegion,
 }: ItemEditorProps) => {
-  // 지역정보 가져오기
   const [title, setTitle] = useState('');
   const [firstClickCTitle, setFirstClickCTitle] = useState(false);
   const [contents, setContents] = useState('');
-  const [region, setRegion] = useState(2729060200); // TODO: 지역 유저정보에서 받아오기
   const [price, setPrice] = useState('');
   const priceRef = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState<CategoryInfo>({
@@ -91,7 +92,7 @@ const ItemEditor = ({
   };
 
   const validateForm = useCallback(() => {
-    if (!title || !category.selectedId || !region || !files.length)
+    if (!title || !category.selectedId || !region.id || !files.length)
       return false;
     else return true;
   }, [title, region, category, files]);
@@ -110,7 +111,7 @@ const ItemEditor = ({
       'price',
       parseInt(priceRef.current.value.replace(/,/g, '')).toString(),
     );
-    formData.append('region', region.toString());
+    formData.append('region', region.id.toString());
     try {
       await api.post('/items', formData, {
         headers: {
@@ -246,11 +247,15 @@ const ItemEditor = ({
         <Textarea
           name={'contents'}
           value={contents}
-          placeholder={`${region}에 올릴 게시물 내용을 작성해주세요.`}
+          placeholder={`${region.district}에 올릴 게시물 내용을 작성해주세요.`}
           onChange={handleContents}
         />
       </MyNew>
-      <SubTabBar icon={'location'} content={`${region}`}>
+      <SubTabBar
+        icon={'location'}
+        content={`${region.district}`}
+        onIconClick={handleRegion}
+      >
         <Icon name="keyboard" />
       </SubTabBar>
     </>

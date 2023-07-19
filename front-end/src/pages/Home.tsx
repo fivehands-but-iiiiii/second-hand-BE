@@ -40,18 +40,19 @@ interface HomeFilterInfo {
 export type HomePageInfo = Omit<HomeInfo, 'items'>;
 
 const Home = () => {
-  // TODO: filterInfo가 변하면 -> saleItems를 한 번 비워야한다.
   const { userInfo } = useUserInfo();
-  const [userRegions, setUserRegions] = useState<RegionInfo[]>([
-    {
-      id: 1168064000,
-      district: '역삼1동',
-      onFocus: true,
-    },
-  ]);
-  const onFocusRegion = userRegions.find(({ onFocus }) => onFocus);
-  const [currentRegion, setCurrentRegion] = useState<number>(
-    onFocusRegion?.id || userRegions[0].id,
+  const [userRegions, setUserRegions] = useState<RegionInfo[]>(
+    userInfo?.regions || [
+      {
+        id: 1168064000,
+        district: '역삼1동',
+        onFocus: true,
+      },
+    ],
+  );
+  const currentRegion = userRegions.find(({ onFocus }) => onFocus);
+  const [currentRegionId, setCurrentRegionId] = useState(
+    currentRegion?.id || userRegions[0].id,
   );
   const [categoryInfo, setCategoryInfo] = useState<CategoryInfo[]>([]);
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
@@ -63,7 +64,7 @@ const Home = () => {
   const [isRegionMapModalOpen, setIsRegionMapModalOpen] = useState(false);
   const [filterInfo, setFilterInfo] = useState<HomeFilterInfo>({
     sellerId: null,
-    regionId: currentRegion,
+    regionId: currentRegionId,
     isSales: null,
     categoryId: null,
   });
@@ -99,6 +100,7 @@ const Home = () => {
   };
 
   const patchUserRegion = async (regionId: number) => {
+    if (currentRegionId === regionId) return;
     try {
       const updatedRegions = userRegions.map((region) => {
         return region.id === regionId
@@ -115,7 +117,6 @@ const Home = () => {
         id: userInfo?.id,
         regions: updatedRegions,
       });
-      // TODO: PATCH 데이터에 district 포함되어있음 (사실 필요없음)
       setUserRegions(updatedRegions);
       return data.data;
     } catch (error) {
@@ -126,11 +127,18 @@ const Home = () => {
   const handleRegionSwitch = async (id: number) => {
     const patchResult = await patchUserRegion(id);
     if (patchResult) {
-      setCurrentRegion(id);
+      setCurrentRegionId(id);
+      setHomePageInfo({
+        page: 0,
+        hasPrevious: false,
+        hasNext: true,
+      });
       setFilterInfo((prevFilterInfo) => ({
         ...prevFilterInfo,
         regionId: id,
       }));
+      setSaleItems([]);
+      setIsRegionPopupSheetOpen((prev) => !prev);
     }
   };
 
@@ -140,7 +148,7 @@ const Home = () => {
 
   const handleRegionMapModal = () => {
     setIsRegionMapModalOpen((prev) => !prev);
-    setIsRegionPopupSheetOpen((prev) => !prev);
+    setIsRegionPopupSheetOpen(false);
   };
 
   const handleCategoryModal = () => {
@@ -260,9 +268,6 @@ const Home = () => {
   }, [onRefresh]);
 
   useEffect(() => {
-    if (userInfo) {
-      setUserRegions(userInfo?.regions);
-    }
     getCategoryInfo();
   }, []);
 
@@ -273,7 +278,7 @@ const Home = () => {
         left={
           <>
             <MyNavBarBtn onClick={handleRegionPopupSheetModal}>
-              {onFocusRegion?.district}
+              {currentRegion?.district}
               <Icon name={'chevronDown'} />
             </MyNavBarBtn>
             {isRegionPopupSheetOpen && (
@@ -325,7 +330,12 @@ const Home = () => {
       </MyNewBtn>
       {isNewModalOpen &&
         createPortal(
-          <New categoryInfo={categoryInfo} onClick={handleNewModal} />,
+          <New
+            region={currentRegion || userRegions[0]}
+            categoryInfo={categoryInfo}
+            onClick={handleNewModal}
+            handleRegion={handleRegionMapModal}
+          />,
           document.body,
         )}
     </>
