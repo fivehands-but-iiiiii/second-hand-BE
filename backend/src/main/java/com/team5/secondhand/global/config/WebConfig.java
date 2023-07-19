@@ -31,7 +31,8 @@ public class WebConfig implements WebMvcConfigurer {
 //                        "http://3.37.51.148",
 //                        FRONTEND_SERVER, DOMAIN
                 )
-                .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS", "HEAD")
+//                .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS", "HEAD")
+                .allowedMethods("*")
                 .allowedHeaders("*")
                 .maxAge(36000);
     }
