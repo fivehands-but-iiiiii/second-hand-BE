@@ -27,8 +27,7 @@ jobs:
       with:
         node-version: "16"
         cache: "yarn"
-
-    - run: |
+      run: |
         touch ./backend/src/main/resources/application-aws.yml
         echo "${{ secrets.APPLICATION_AWS }}" > ./backend/src/main/resources/application-aws.yml
         
@@ -37,11 +36,11 @@ jobs:
         
         touch ./backend/src/main/resources/application-oauth.yml
         echo "${{ secrets.APPICATION_OAUTH }}" > ./backend/src/main/resources/application-oauth.yml
-     
-        touch ./backend/src/main/resources/application-jwt.yml
-        echo "${{ secrets.APPLICATION_JWT }}" > ./backend/src/main/resources/application-jwt.yml
-
-        touch ./front-end/.env
+	
+	touch ./backend/src/main/resources/application-jwt.yml
+	echo "${{ secrets.APPLICATION_JWT }}" > ./backend/src/main/resources/application-jwt.yml
+	
+	touch ./front-end/.env
 	echo "${{ secrets.ENV }}" > ./front-end/.env
 
     - name: Build with Gradle
