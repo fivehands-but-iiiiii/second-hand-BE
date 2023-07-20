@@ -3,7 +3,7 @@ package com.team5.secondhand.api.item.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team5.secondhand.api.item.dto.request.ItemPostWithUrl;
 import com.team5.secondhand.api.member.domain.Member;
-import com.team5.secondhand.api.model.BaseTimeEntity;
+import com.team5.secondhand.global.model.UpdatedTimeEntity;
 import com.team5.secondhand.api.region.domain.Region;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -20,7 +20,7 @@ import javax.validation.constraints.Size;
 @SQLDelete(sql = "UPDATE item SET is_deleted = true WHERE id = ?")
 @Where(clause = "is_deleted = false")
 @Access(AccessType.FIELD)
-public class Item extends BaseTimeEntity {
+public class Item extends UpdatedTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
