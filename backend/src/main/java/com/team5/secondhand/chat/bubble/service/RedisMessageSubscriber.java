@@ -1,8 +1,8 @@
-package com.team5.secondhand.chat.service;
+package com.team5.secondhand.chat.bubble.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team5.secondhand.chat.domain.ChatBubble;
+import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
