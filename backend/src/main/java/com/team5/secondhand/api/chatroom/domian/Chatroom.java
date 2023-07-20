@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -14,17 +16,20 @@ import javax.persistence.*;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
 @Getter
-@Table(name = "chatroom")
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Chatroom {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String chatroomId;
+
+    @Generated(GenerationTime.INSERT)
+    private UUID chatroomId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
@@ -43,7 +48,7 @@ public class Chatroom {
     private ChatroomStatus chatroomStatus;
 
     @Builder
-    public Chatroom(Long id, String chatroomId, Item item, Member buyer, Long sellerId, Instant createdAt, ChatroomStatus chatroomStatus) {
+    public Chatroom(Long id, UUID chatroomId, Item item, Member buyer, Long sellerId, Instant createdAt, ChatroomStatus chatroomStatus) {
         this.id = id;
         this.chatroomId = chatroomId;
         this.item = item;

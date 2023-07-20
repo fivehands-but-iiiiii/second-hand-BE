@@ -21,7 +21,7 @@ public class ChatroomService {
 
         Chatroom chatRoom = Chatroom.create(item, buyer);
 
-        return chatRoomRepository.save(chatRoom).getChatroomId();
+        return chatRoomRepository.save(chatRoom).getChatroomId().toString();
     }
 
     public Optional<Chatroom> findChatroom(long memberId, long itemId) {
