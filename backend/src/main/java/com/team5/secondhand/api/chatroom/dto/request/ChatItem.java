@@ -1,4 +1,4 @@
-package com.team5.secondhand.api.chatroom.dto.response;
+package com.team5.secondhand.api.chatroom.dto.request;
 
 import lombok.AccessLevel;
 import lombok.Getter;
