@@ -14,7 +14,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-import java.time.Instant;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,7 +67,6 @@ class ChatroomTest {
                 .buyer(iirin)
                 .item(keyboard)
                 .chatroomStatus(ChatroomStatus.FULL)
-                .createdAt(Instant.now())
                 .build();
     }
     
