@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.amazonaws.services.s3.internal.Constants.MB;
+
 @Service
 @RequiredArgsConstructor
 public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, ItemThumbnailImageUpload {
@@ -40,8 +42,8 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
 
     public String upload(MultipartFile file, Directory directory) throws IOException, TooLargeImageException, NotValidImageTypeException {
 
-        if (file.getSize() > (1e+8*2)) {
-            throw new TooLargeImageException("사진 용량이 10MB를 초과해 업로드에 실패하였습니다.");
+        if (file.getSize() > (30*MB)) {
+            throw new TooLargeImageException("사진 용량이 30MB를 초과해 업로드에 실패하였습니다.");
         }
 
         if (Type.isValidType(file.getName())) {

@@ -1,4 +1,4 @@
-package com.team5.secondhand.chat.config;
+package com.team5.secondhand.chat.bubble.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
