@@ -3,6 +3,7 @@ package com.team5.secondhand.api.chatroom.domian;
 import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.member.domain.Member;
+import com.team5.secondhand.global.model.BasedTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 @Table(name = "chatroom")
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Chatroom {
+public class Chatroom extends BasedTimeEntity {
     @Id
     private Long id;
     private String chatroomId;
@@ -36,20 +37,16 @@ public class Chatroom {
 
     private Long sellerId;
 
-    @CreatedDate
-    private Instant createdAt;
-
     @Enumerated(EnumType.STRING)
     private ChatroomStatus chatroomStatus;
 
     @Builder
-    public Chatroom(Long id, String chatroomId, Item item, Member buyer, Long sellerId, Instant createdAt, ChatroomStatus chatroomStatus) {
+    public Chatroom(Long id, String chatroomId, Item item, Member buyer, Long sellerId, ChatroomStatus chatroomStatus) {
         this.id = id;
         this.chatroomId = chatroomId;
         this.item = item;
         this.buyer = buyer;
         this.sellerId = sellerId;
-        this.createdAt = createdAt;
         this.chatroomStatus = chatroomStatus;
     }
 

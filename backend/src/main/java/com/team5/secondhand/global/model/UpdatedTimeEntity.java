@@ -1,10 +1,9 @@
-package com.team5.secondhand.api.model;
+package com.team5.secondhand.global.model;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -17,12 +16,7 @@ import java.time.Instant;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @ToString
-public class BaseTimeEntity {
-
-    @CreatedDate
-    private Instant createdAt;
-
+public class UpdatedTimeEntity extends BasedTimeEntity {
     @LastModifiedDate
     private Instant updatedAt;
-
 }
