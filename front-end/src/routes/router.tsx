@@ -14,16 +14,16 @@ import WishList from '@pages/WishList';
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <MobileLayout />,
+    element: (
+      <CategoryProvider>
+        <MobileLayout />
+      </CategoryProvider>
+    ),
     errorElement: <ErrorPage />,
     children: [
       {
         path: '',
-        element: (
-          <CategoryProvider>
-            <Home />
-          </CategoryProvider>
-        ),
+        element: <Home />,
       },
       {
         path: 'login',
@@ -31,19 +31,11 @@ const router = createBrowserRouter([
       },
       {
         path: 'wish-list',
-        element: (
-          <CategoryProvider>
-            <WishList />
-          </CategoryProvider>
-        ),
+        element: <WishList />,
       },
       {
         path: 'sales-history',
-        element: (
-          <CategoryProvider>
-            <SalesHistory />
-          </CategoryProvider>
-        ),
+        element: <SalesHistory />,
       },
       {
         path: 'chat-list',

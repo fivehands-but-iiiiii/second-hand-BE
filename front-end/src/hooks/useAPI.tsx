@@ -7,7 +7,7 @@ import api from '../api';
 
 interface APIProps {
   url: string;
-  method: 'get' | 'post' | 'put' | 'delete' | 'patch';
+  method?: 'get' | 'post' | 'put' | 'delete' | 'patch';
   config?: AxiosRequestConfig;
 }
 
@@ -16,7 +16,7 @@ const useAPI = () => {
   const [error, setError] = useState<AxiosError>();
   const [loading, setLoading] = useState(false);
 
-  const request = async ({ url, method, config }: APIProps) => {
+  const request = async ({ url, method = 'get', config }: APIProps) => {
     setLoading(true);
     try {
       const requestConfig = {

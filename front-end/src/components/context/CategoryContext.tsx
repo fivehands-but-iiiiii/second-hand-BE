@@ -20,7 +20,6 @@ const CategoryProvider = ({ children }: CategoryProviderProps): JSX.Element => {
     try {
       const { data } = await request({
         url: '/resources/categories',
-        method: 'get',
       });
       setCategories(data.categories);
     } catch (error) {

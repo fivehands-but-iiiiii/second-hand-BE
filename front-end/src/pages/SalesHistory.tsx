@@ -35,10 +35,10 @@ const SalesHistory = () => {
   // TODO: API 바뀌면 userInfo 필요없음
   const userInfo = getStoredValue({ key: 'userInfo' });
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState(ItemStatus.ON_SALE);
   const [onRefresh, setOnRefresh] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [pageInfo, setPageInfo] = useState<HomePageInfo>({
     page: 0,
     hasPrevious: false,
@@ -60,7 +60,6 @@ const SalesHistory = () => {
         url: `items?page=${pageInfo.page}&sellerId=${
           userInfo.id
         }&isSales=${!selectedStatus}&categoryId=`,
-        method: 'get',
       });
       setSaleItems((pre) => [...pre, ...data.items]);
       setPageInfo({
@@ -125,19 +124,19 @@ const SalesHistory = () => {
             <MyOnFetchItems ref={setTarget}></MyOnFetchItems>
           )}
           {isLoading && <Spinner />}
+          {!!selectedItem &&
+            createPortal(
+              <ItemDetail
+                id={selectedItem}
+                categoryInfo={categories}
+                handleBackBtnClick={handleItemDetail}
+              />,
+              document.body,
+            )}
         </>
       ) : (
         <BlankPage title={title} />
       )}
-      {!!selectedItem &&
-        createPortal(
-          <ItemDetail
-            id={selectedItem}
-            categoryInfo={categories}
-            handleBackBtnClick={handleItemDetail}
-          />,
-          document.body,
-        )}
     </>
   );
 };
