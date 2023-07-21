@@ -14,7 +14,7 @@ interface RegionButtonsProps {
   handleRegionModal: () => void;
 }
 
-const RegionButtons = ({
+const RegionSelector = ({
   selectedRegions,
   handleSwitchRegion,
   handleRemoveRegion,
@@ -79,4 +79,4 @@ const MyRegionMessage = styled.p`
   text-align: end;
 `;
 
-export default RegionButtons;
+export default RegionSelector;

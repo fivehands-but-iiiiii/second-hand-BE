@@ -8,7 +8,7 @@ import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 
 import { styled } from 'styled-components';
 
-import SettingRegions from './SettingRegions';
+import SettingRegionSelector from './SettingRegionSelector';
 
 const GOOGLE_KEY = import.meta.env.VITE_GOOGLE_KEY;
 
@@ -17,23 +17,22 @@ const OPTIONS = {
   maxZoom: 18,
 };
 
-const containerStyle = {
+const MAP_STYLE = {
   width: '100%',
   height: '100%',
 };
 
 interface SettingRegionMapProps {
-  userRegions: RegionInfo[];
+  regions: RegionInfo[];
   onPortal: () => void;
 }
 
-const SettingRegionMap = ({ userRegions, onPortal }: SettingRegionMapProps) => {
-  const [updatedRegions, setUpdatedRegions] =
-    useState<RegionInfo[]>(userRegions);
-  const [map, setMap] = useState(null);
+const SettingRegionMap = ({ regions, onPortal }: SettingRegionMapProps) => {
+  const [updatedRegions, setUpdatedRegions] = useState<RegionInfo[]>(regions);
+  const [, setMap] = useState(null);
   const [center, setCenter] = useState<coordsType>({
-    lat: 37.490821,
-    lng: 127.033417,
+    lat: 37.5000776,
+    lng: 127.0385419,
   });
   const { getCoordinatesFromAddress } = useGeoLocation();
 
@@ -45,15 +44,14 @@ const SettingRegionMap = ({ userRegions, onPortal }: SettingRegionMapProps) => {
   const onLoad = useCallback(function callback(map: any) {
     const bounds = new window.google.maps.LatLngBounds(center);
     map.fitBounds(bounds);
-
     setMap(map);
   }, []);
 
-  const onUnmount = useCallback(function callback(map: any) {
+  const onUnmount = useCallback(function callback() {
     setMap(null);
   }, []);
 
-  const handleUserRegions = (regions: RegionInfo[]) => {
+  const handleRegions = (regions: RegionInfo[]) => {
     setUpdatedRegions(regions);
   };
 
@@ -76,7 +74,7 @@ const SettingRegionMap = ({ userRegions, onPortal }: SettingRegionMapProps) => {
       <MySettingRegionMap>
         {isLoaded && (
           <GoogleMap
-            mapContainerStyle={containerStyle}
+            mapContainerStyle={MAP_STYLE}
             center={center}
             onLoad={onLoad}
             onUnmount={onUnmount}
@@ -85,9 +83,9 @@ const SettingRegionMap = ({ userRegions, onPortal }: SettingRegionMapProps) => {
             <Marker position={center}></Marker>
           </GoogleMap>
         )}
-        <SettingRegions
-          userRegions={updatedRegions}
-          handleUserRegions={handleUserRegions}
+        <SettingRegionSelector
+          regions={updatedRegions}
+          handleRegions={handleRegions}
         />
       </MySettingRegionMap>
     </PortalLayout>

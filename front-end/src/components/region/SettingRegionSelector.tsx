@@ -3,28 +3,24 @@ import { createPortal } from 'react-dom';
 
 import { RegionInfo } from '@components/login/Join';
 
-import RegionButtons from './RegionButtons';
+import RegionSelector from './RegionSelector';
 import SearchRegions from './SearchRegions';
 
-interface SettingRegionsProps {
-  userRegions?: RegionInfo[];
-  handleUserRegions: (regions: RegionInfo[]) => void;
+interface SettingRegionSelectorProps {
+  regions?: RegionInfo[];
+  handleRegions: (regions: RegionInfo[]) => void;
 }
 
 // TODO: 지역 설정하고 닫기 누르면 요청하는 로직추가
-const SettingRegions = ({
-  userRegions,
-  handleUserRegions,
-}: SettingRegionsProps) => {
+const SettingRegionSelector = ({
+  regions,
+  handleRegions,
+}: SettingRegionSelectorProps) => {
   const [selectedRegions, setSelectedRegions] = useState<RegionInfo[]>(
-    userRegions || [],
+    regions || [],
   );
   const [isSettingRegionsModalOpen, setIsSettingRegionsModalOpen] =
     useState(false);
-
-  const settingUserRegions = (regions: RegionInfo[]) => {
-    handleUserRegions(regions);
-  };
 
   const handleSelectRegion = (id: number, district: string) => {
     if (selectedRegions.some((region) => region.id === id)) return;
@@ -65,12 +61,12 @@ const SettingRegions = ({
   };
 
   useEffect(() => {
-    settingUserRegions(selectedRegions);
+    handleRegions(selectedRegions);
   }, [selectedRegions]);
 
   return (
     <>
-      <RegionButtons
+      <RegionSelector
         selectedRegions={selectedRegions}
         handleSwitchRegion={handleSwitchRegion}
         handleRemoveRegion={handleRemoveRegion}
@@ -88,4 +84,4 @@ const SettingRegions = ({
   );
 };
 
-export default SettingRegions;
+export default SettingRegionSelector;

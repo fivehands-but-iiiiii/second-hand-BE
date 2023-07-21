@@ -5,7 +5,8 @@ import NavBar from '@common/NavBar/NavBar';
 import Textarea from '@common/Textarea/Textarea';
 import PortalLayout from '@components/layout/PortalLayout';
 import useAPI from '@hooks/useAPI';
-import useGeoLocation, { coordsType } from '@hooks/useGeoLocation';
+import useGeoLocation from '@hooks/useGeoLocation';
+import { debounce } from '@utils/debounce';
 
 import { styled } from 'styled-components';
 export interface Region {
@@ -26,7 +27,6 @@ const SearchRegions = ({
 }: SearchRegionsProps) => {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [address, setAddress] = useState('역삼1동');
-  const [center, setCenter] = useState<coordsType>();
   const [regionList, setRegionList] = useState<Region[]>([]);
   const { request } = useAPI();
   const { location: currentLocation } = useGeoLocation();
@@ -37,28 +37,15 @@ const SearchRegions = ({
 
   const getCurrentLocation = useCallback(() => {
     if (!currentLocation.coords || !currentLocation.address) return;
-    setCenter({
-      lat: currentLocation.coords.lat,
-      lng: currentLocation.coords.lng,
-    });
     setAddress(currentLocation.address);
   }, [currentLocation]);
 
   const getRegionList = async (keyword: string) => {
     const { data } = await request({
       url: `/regions?keyword=${keyword}`,
-      method: 'get',
     });
     setRegionList(data);
   };
-
-  const debounce = useCallback((callback: () => void, delay: number) => {
-    let timer: ReturnType<typeof setTimeout>;
-    return () => {
-      clearTimeout(timer);
-      timer = setTimeout(callback, delay);
-    };
-  }, []);
 
   const handleSearchChange = useCallback(
     ({ target }: ChangeEvent<HTMLTextAreaElement>) => {

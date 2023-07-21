@@ -10,12 +10,12 @@ import PopupSheet from '@common/PopupSheet/PopupSheet';
 import Spinner from '@common/Spinner/Spinner';
 import Category, { CategoryInfo } from '@components/home/category';
 import ItemList from '@components/home/ItemList';
-import { useUserInfo } from '@components/layout/MobileLayout';
 import { RegionInfo } from '@components/login/Join';
 import New from '@components/new/New';
 import SettingRegionMap from '@components/region/SettingRegionMap';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
 import palette from '@styles/colors';
+import { getStoredValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
 
@@ -40,7 +40,7 @@ interface HomeFilterInfo {
 export type HomePageInfo = Omit<HomeInfo, 'items'>;
 
 const Home = () => {
-  const { userInfo } = useUserInfo();
+  const userInfo = getStoredValue({ key: 'userInfo' });
   const [userRegions, setUserRegions] = useState<RegionInfo[]>(
     userInfo?.regions || [
       {
@@ -299,7 +299,7 @@ const Home = () => {
       {isRegionMapModalOpen &&
         createPortal(
           <SettingRegionMap
-            userRegions={userRegions}
+            regions={userRegions}
             onPortal={handleRegionMapModal}
           />,
           document.body,

@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import LabelInput from '@common/LabelInput';
 import NavBar from '@common/NavBar';
-import SettingRegions from '@components/region/SettingRegions';
+import SettingRegionSelector from '@components/region/SettingRegionSelector';
 import useJoin from '@hooks/useJoin';
 import UserInfo from '@pages/ItemDetail';
 import { getFormattedId } from '@utils/formatText';
@@ -170,7 +170,7 @@ const Join = () => {
             />
           )}
         </MyUserInfo>
-        <SettingRegions handleUserRegions={handleUserRegions} />
+        <SettingRegionSelector handleRegions={handleUserRegions} />
       </MyUserAccount>
     </MyJoin>
   );
