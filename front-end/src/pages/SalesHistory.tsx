@@ -5,12 +5,13 @@ import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar/NavBar';
 import SegmentedControl from '@common/SegmentedControl';
 import Spinner from '@common/Spinner/Spinner';
-import { CategoryInfo } from '@components/home/category';
+import { useCategoryContext } from '@components/context/CategoryContext';
 import ItemList from '@components/home/ItemList/ItemList';
 import { ItemStatus } from '@components/ItemStatus';
 import useAPI from '@hooks/useAPI';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
 import ItemDetail from '@pages/ItemDetail';
+import { getStoredValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
 
@@ -28,14 +29,16 @@ const SALES_STATUS = [
   },
 ];
 
-// TODO: 스크롤이 너무나 무한으로 돌아가는 현상 해결해야됨
 const SalesHistory = () => {
   const title = '판매 내역';
-  const [categoryInfo, setCategoryInfo] = useState<CategoryInfo[]>([]);
-  const [selectedIndex, setSelectedIndex] = useState(ItemStatus.ON_SALE);
+  const { categories } = useCategoryContext();
+  // TODO: API 바뀌면 userInfo 필요없음
+  const userInfo = getStoredValue({ key: 'userInfo' });
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<number>(0);
+  const [selectedItem, setSelectedItem] = useState(0);
+  const [selectedStatus, setSelectedStatus] = useState(ItemStatus.ON_SALE);
+  const [onRefresh, setOnRefresh] = useState(false);
   const [pageInfo, setPageInfo] = useState<HomePageInfo>({
     page: 0,
     hasPrevious: false,
@@ -44,7 +47,7 @@ const SalesHistory = () => {
   const { request } = useAPI();
 
   const onIntersect: IntersectionObserverCallback = ([{ isIntersecting }]) => {
-    if (isIntersecting) getSalesHistory();
+    if (isIntersecting && !isLoading) getSalesHistory();
   };
 
   const { setTarget } = useIntersectionObserver({ onIntersect });
@@ -54,12 +57,12 @@ const SalesHistory = () => {
     try {
       setIsLoading(true);
       const data = await request({
-        url: `items?page=${
-          pageInfo.page
-        }&regionId=1&isSales=${!selectedIndex}&categoryId=`,
+        url: `items?page=${pageInfo.page}&sellerId=${
+          userInfo.id
+        }&isSales=${!selectedStatus}&categoryId=`,
         method: 'get',
       });
-      setSaleItems(data.items);
+      setSaleItems((pre) => [...pre, ...data.items]);
       setPageInfo({
         page: data.number + 1,
         hasPrevious: data.hasPrevious,
@@ -72,62 +75,65 @@ const SalesHistory = () => {
     }
   };
 
-  const getCategoryInfo = async () => {
-    if (categoryInfo.length) return;
-    try {
-      const { data } = await request({
-        url: '/resources/categories',
-        method: 'get',
-      });
-      setCategoryInfo(data.categories);
-    } catch (error) {
-      console.error(`Failed to get category icons: ${error}`);
-    }
-  };
-
-  const handleSelectedIndex = (index: number) => {
-    setSelectedIndex(index);
+  const initData = () => {
     setPageInfo({
       page: 0,
       hasPrevious: false,
       hasNext: true,
     });
+    setSaleItems([]);
+  };
+
+  const handleSelectedStatus = (index: number) => {
+    if (index === selectedStatus) return;
+    setSelectedStatus(index);
+    initData();
   };
 
   const handleItemDetail = (id: number) => {
     setSelectedItem(id);
+    if (!id) {
+      initData();
+      setOnRefresh(true);
+    }
   };
 
   useEffect(() => {
     getSalesHistory();
-  }, [!selectedIndex]);
+  }, [selectedStatus]);
 
   useEffect(() => {
-    getSalesHistory();
-    getCategoryInfo();
-  }, []);
+    if (onRefresh) {
+      getSalesHistory();
+      setOnRefresh(false);
+    }
+  }, [onRefresh]);
 
   return (
     <>
       <NavBar center={title}>
         <SegmentedControl
           options={SALES_STATUS}
-          value={selectedIndex}
-          onClick={handleSelectedIndex}
+          value={selectedStatus}
+          onClick={handleSelectedStatus}
         />
       </NavBar>
       {saleItems.length > 0 ? (
-        <ItemList saleItems={saleItems} onItemClick={handleItemDetail} />
+        <>
+          <ItemList saleItems={saleItems} onItemClick={handleItemDetail} />
+          {!!saleItems.length && (
+            <MyOnFetchItems ref={setTarget}></MyOnFetchItems>
+          )}
+          {isLoading && <Spinner />}
+        </>
       ) : (
         <BlankPage title={title} />
       )}
-      {!!saleItems.length && <MyOnFetchItems ref={setTarget}></MyOnFetchItems>}
-      {isLoading && <Spinner />}
       {!!selectedItem &&
         createPortal(
           <ItemDetail
             id={selectedItem}
-            categoryInfo={categoryInfo}
+            categoryInfo={categories}
             handleBackBtnClick={handleItemDetail}
           />,
           document.body,

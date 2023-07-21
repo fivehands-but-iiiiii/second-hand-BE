@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 
+import CategoryProvider from '@components/context/CategoryContext';
 import MobileLayout from '@components/layout/MobileLayout';
 import Join from '@components/login/Join';
 import OAuthCallback from '@components/login/OAuthCallback';
@@ -18,7 +19,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: '',
-        element: <Home />,
+        element: (
+          <CategoryProvider>
+            <Home />
+          </CategoryProvider>
+        ),
       },
       {
         path: 'login',
@@ -26,11 +31,19 @@ const router = createBrowserRouter([
       },
       {
         path: 'wish-list',
-        element: <WishList />,
+        element: (
+          <CategoryProvider>
+            <WishList />
+          </CategoryProvider>
+        ),
       },
       {
         path: 'sales-history',
-        element: <SalesHistory />,
+        element: (
+          <CategoryProvider>
+            <SalesHistory />
+          </CategoryProvider>
+        ),
       },
       {
         path: 'chat-list',
