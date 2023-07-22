@@ -29,10 +29,7 @@ const ChatRoomList = ({ chatItems }: ChatRoomListProps) => {
       ))}
       {!!selectedItemId &&
         createPortal(
-          <ChatRoom
-            itemId={selectedItemId}
-            onRoomClose={handleChatRoom}
-          ></ChatRoom>,
+          <ChatRoom itemId={selectedItemId} onRoomClose={handleChatRoom} />,
           document.body,
         )}
     </>

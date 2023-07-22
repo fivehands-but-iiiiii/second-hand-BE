@@ -83,7 +83,7 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
 
   const createChatId = async () => {
     try {
-      const { data } = await api.post('chats', {
+      const { data } = await api.post('/chats', {
         itemId,
       });
       setRoomId(data.chatId);
@@ -97,10 +97,10 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
     setChatBubbles(data);
   };
 
-  // TODO: HTTP API 완성 시 주석 제거
-  // useEffect(() => {
-  //   getChatInfo();
-  // }, []);
+  // // TODO: HTTP API 완성 시 주석 제거
+  useEffect(() => {
+    getChatInfo();
+  }, []);
 
   const client = useRef<StompJs.Client | null>(null);
 
@@ -256,7 +256,6 @@ const MyChatBubbles = styled.section`
   flex-direction: column;
   padding: 16px;
   margin-bottom: 75px;
-  overflow: scroll;
 `;
 
 const MyChatBubble = styled.div`
