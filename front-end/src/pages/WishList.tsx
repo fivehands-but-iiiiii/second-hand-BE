@@ -5,9 +5,9 @@ import Button from '@common/Button';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
 import Spinner from '@common/Spinner/Spinner';
-import { useCategoryContext } from '@components/context/CategoryContext';
 import { CategoryInfo } from '@components/home/category';
 import ItemList from '@components/home/ItemList/ItemList';
+import { useCategories } from '@components/layout/MobileLayout';
 import useAPI from '@hooks/useAPI';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
 
@@ -22,7 +22,7 @@ type WishCategory = Omit<CategoryInfo, 'iconUrl'>;
 
 const WishList = () => {
   const title = '관심 목록';
-  const { categories } = useCategoryContext();
+  const categories = useCategories();
   const [wishItems, setWishItems] = useState<SaleItem[]>([]);
   const [wishCategories, setWishCategories] = useState<WishCategory[]>([]);
   const [selectedItem, setSelectedItem] = useState(0);

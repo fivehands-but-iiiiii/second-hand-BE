@@ -6,9 +6,9 @@ import Button from '@common/Button/Button';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
 import Spinner from '@common/Spinner/Spinner';
-import { useCategoryContext } from '@components/context/CategoryContext';
 import Category from '@components/home/category';
 import ItemList from '@components/home/ItemList';
+import { useCategories } from '@components/layout/MobileLayout';
 import New from '@components/new/New';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
 import palette from '@styles/colors';
@@ -36,7 +36,7 @@ interface HomeFilterInfo {
 export type HomePageInfo = Omit<HomeInfo, 'items'>;
 
 const Home = () => {
-  const { categories } = useCategoryContext();
+  const categories = useCategories();
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState<number>(0);

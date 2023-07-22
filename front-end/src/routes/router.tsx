@@ -1,6 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
 
-import CategoryProvider from '@components/context/CategoryContext';
 import MobileLayout from '@components/layout/MobileLayout';
 import Join from '@components/login/Join';
 import OAuthCallback from '@components/login/OAuthCallback';
@@ -14,11 +13,7 @@ import WishList from '@pages/WishList';
 const router = createBrowserRouter([
   {
     path: '/',
-    element: (
-      <CategoryProvider>
-        <MobileLayout />
-      </CategoryProvider>
-    ),
+    element: <MobileLayout />,
     errorElement: <ErrorPage />,
     children: [
       {

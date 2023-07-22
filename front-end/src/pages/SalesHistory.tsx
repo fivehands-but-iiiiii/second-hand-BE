@@ -5,9 +5,9 @@ import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar/NavBar';
 import SegmentedControl from '@common/SegmentedControl';
 import Spinner from '@common/Spinner/Spinner';
-import { useCategoryContext } from '@components/context/CategoryContext';
 import ItemList from '@components/home/ItemList/ItemList';
 import { ItemStatus } from '@components/ItemStatus';
+import { useCategories } from '@components/layout/MobileLayout';
 import useAPI from '@hooks/useAPI';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
 import ItemDetail from '@pages/ItemDetail';
@@ -31,7 +31,7 @@ const SALES_STATUS = [
 
 const SalesHistory = () => {
   const title = '판매 내역';
-  const { categories } = useCategoryContext();
+  const categories = useCategories();
   // TODO: API 바뀌면 userInfo 필요없음
   const userInfo = getStoredValue({ key: 'userInfo' });
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
