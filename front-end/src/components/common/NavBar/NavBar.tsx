@@ -39,6 +39,7 @@ const NavBar = ({
 };
 
 const MyDefaultNavBar = styled.div`
+  width: 100%;
   min-height: 70px;
   border-bottom: 1px solid ${({ theme }) => theme.colors.neutral.border};
 `;
