@@ -2,6 +2,7 @@ import Icon from '@assets/Icon';
 import Chip from '@common/Chip';
 import { ItemStatus } from '@components/ItemStatus';
 import { formatNumberToSI } from '@utils/formatNumberToSI';
+import { getFormattedPrice } from '@utils/formatPrice';
 import getElapsedTime from '@utils/getElapsedTime';
 
 import { styled } from 'styled-components';
@@ -48,7 +49,6 @@ const Item = ({ item, onHistoryPage = false, onItemClick }: ItemProps) => {
     isLike,
   } = item;
   const hasChip = status !== ItemStatus.ON_SALE;
-  const formattedPrice = price ? `${price.toLocaleString()}원` : '가격없음';
 
   const handleItemClick = () => {
     onItemClick(id);
@@ -69,7 +69,7 @@ const Item = ({ item, onHistoryPage = false, onItemClick }: ItemProps) => {
         </MyItemTime>
         <MyItemStatus>
           {hasChip && <Chip status={status} />}
-          <div>{formattedPrice}</div>
+          <div>{getFormattedPrice(price)}</div>
         </MyItemStatus>
         <MyItemSubInfo>
           {!!chatCount && (

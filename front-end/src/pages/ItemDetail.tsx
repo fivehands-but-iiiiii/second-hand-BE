@@ -25,6 +25,7 @@ import { useCategories } from '@components/layout/MobileLayout';
 import PortalLayout from '@components/layout/PortalLayout';
 import New from '@components/new/New';
 import { formatNumberToSI } from '@utils/formatNumberToSI';
+import { getFormattedPrice } from '@utils/formatPrice';
 import getElapsedTime from '@utils/getElapsedTime';
 import { getStoredValue } from '@utils/sessionStorage';
 
@@ -274,17 +275,13 @@ const ItemDetail = ({
   };
 
   const mapItemDetailInfo = (data: any) => {
-    const formattedPrice = data.price
-      ? `${data.price.toLocaleString()}원`
-      : '가격없음';
-
     const categoryTitle = categoryInfo.find(
       (item) => item.id === data.category,
     );
 
     const mappedDetails = {
       ...data,
-      price: formattedPrice,
+      price: getFormattedPrice(data.price),
       category: categoryTitle?.title,
       elapsedTime: getElapsedTime(data.createAt),
       hits: data.hits && formatNumberToSI(data.hits),
