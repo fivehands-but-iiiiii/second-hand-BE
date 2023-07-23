@@ -6,8 +6,9 @@ import Button from '@common/Button/Button';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
 import Spinner from '@common/Spinner/Spinner';
-import Category, { CategoryInfo } from '@components/home/category';
+import Category from '@components/home/category';
 import ItemList from '@components/home/ItemList';
+import { useCategories } from '@components/layout/MobileLayout';
 import New from '@components/new/New';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
 import palette from '@styles/colors';
@@ -35,8 +36,7 @@ interface HomeFilterInfo {
 export type HomePageInfo = Omit<HomeInfo, 'items'>;
 
 const Home = () => {
-  // TODO: filterInfo가 변하면 -> saleItems를 한 번 비워야한다.
-  const [categoryInfo, setCategoryInfo] = useState<CategoryInfo[]>([]);
+  const categories = useCategories();
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState<number>(0);
@@ -55,7 +55,7 @@ const Home = () => {
   });
 
   const onIntersect: IntersectionObserverCallback = ([{ isIntersecting }]) => {
-    if (isIntersecting) fetchItems();
+    if (isIntersecting && !isLoading) fetchItems();
   };
 
   const { setTarget } = useIntersectionObserver({ onIntersect });
@@ -142,20 +142,6 @@ const Home = () => {
     }
   };
 
-  const getCategoryInfo = async () => {
-    if (categoryInfo.length) return;
-
-    try {
-      const {
-        data: { data },
-      } = await api.get('/resources/categories');
-
-      setCategoryInfo(data.categories);
-    } catch (error) {
-      console.error(`Failed to get category icons: ${error}`);
-    }
-  };
-
   useEffect(() => {
     fetchItems();
   }, [filterInfo]);
@@ -166,10 +152,6 @@ const Home = () => {
       setOnRefresh(false);
     }
   }, [onRefresh]);
-
-  useEffect(() => {
-    getCategoryInfo();
-  }, []);
 
   return (
     <>
@@ -194,7 +176,7 @@ const Home = () => {
         createPortal(
           <ItemDetail
             id={selectedItem}
-            categoryInfo={categoryInfo}
+            categoryInfo={categories}
             handleBackBtnClick={handleItemDetail}
           />,
           document.body,
@@ -202,7 +184,7 @@ const Home = () => {
       {isCategoryModalOpen &&
         createPortal(
           <Category
-            categoryInfo={categoryInfo}
+            categoryInfo={categories}
             handleCategoryModal={handleCategoryModal}
             onCategoryClick={handleFilterCategory}
           />,
@@ -213,7 +195,7 @@ const Home = () => {
       </MyNewBtn>
       {isNewModalOpen &&
         createPortal(
-          <New categoryInfo={categoryInfo} onClick={handleNewModal} />,
+          <New categoryInfo={categories} onClick={handleNewModal} />,
           document.body,
         )}
     </>
