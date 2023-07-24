@@ -4,6 +4,7 @@ import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.dto.request.ItemPostWithUrl;
 import com.team5.secondhand.api.item.domain.Status;
 import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
+import com.team5.secondhand.api.item.dto.request.MyItemFilteredSlice;
 import com.team5.secondhand.api.item.dto.response.CategoryList;
 import com.team5.secondhand.api.item.dto.response.ItemDetail;
 import com.team5.secondhand.api.item.dto.response.ItemList;
@@ -12,6 +13,7 @@ import com.team5.secondhand.api.item.exception.ExistItemException;
 import com.team5.secondhand.api.item.repository.ItemRepository;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
+import com.team5.secondhand.api.member.exception.UnauthorizedException;
 import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.wishlist.service.CheckMemberLikedUsecase;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +50,25 @@ public class ItemService {
 
         if (loginMember.isEmpty()) {
             items = getItemSummaries(itemEntities);
+        }
+
+        return ItemList.getSlice(pageResult.getNumber(), pageResult.hasPrevious(), pageResult.hasNext(), items);
+    }
+
+    @Transactional(readOnly = true)
+    public ItemList getMyItemList(MyItemFilteredSlice request, MemberDetails loginMember) throws UnauthorizedException {
+        Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
+
+        Slice<Item> pageResult = itemRepository.findAllByBasedRegion(null, loginMember.getId(), Status.isSales(request.getIsSales()), null, pageable);
+        List<Item> itemEntities = pageResult.getContent();
+
+        List<ItemSummary> items = new ArrayList<>();
+        if (!loginMember.isEmpty()) {
+            items = getItemSummariesWithIsLike(loginMember, itemEntities);
+        }
+
+        if (loginMember.isEmpty()) {
+            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
         }
 
         return ItemList.getSlice(pageResult.getNumber(), pageResult.hasPrevious(), pageResult.hasNext(), items);
