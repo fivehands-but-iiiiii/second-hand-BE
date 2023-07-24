@@ -57,7 +57,7 @@ public class ChatroomController {
             description = "사용자는 채팅방을 생성할 수 있다."
     )
     @PostMapping
-    public GenericResponse<String> createChatRoom(@ModelAttribute ChatItem chatItem, @RequestAttribute MemberDetails loginMember) throws ExistMemberIdException, ExistItemException, ExistChatRoomException {
+    public GenericResponse<String> createChatRoom(@RequestBody ChatItem chatItem, @RequestAttribute MemberDetails loginMember) throws ExistMemberIdException, ExistItemException, ExistChatRoomException {
         Member buyer = memberService.findById(loginMember.getId());
         Item item = itemService.findById(chatItem.getItemId());
         String chatRoomId = chatRoomService.create(item, buyer);
