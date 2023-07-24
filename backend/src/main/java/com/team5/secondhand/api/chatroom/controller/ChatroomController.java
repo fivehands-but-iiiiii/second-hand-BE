@@ -7,10 +7,8 @@ import com.team5.secondhand.api.chatroom.exception.ExistChatRoomException;
 import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
 import com.team5.secondhand.api.chatroom.service.ChatroomFacade;
 import com.team5.secondhand.api.chatroom.service.ChatroomService;
-import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.exception.ExistItemException;
 import com.team5.secondhand.api.item.service.ItemService;
-import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.member.exception.ExistMemberIdException;
 import com.team5.secondhand.api.member.service.MemberService;
@@ -59,10 +57,8 @@ public class ChatroomController {
     )
     @PostMapping
     public GenericResponse<String> createChatRoom(@RequestBody ChatItem chatItem, @RequestAttribute MemberDetails loginMember) throws ExistMemberIdException, ExistItemException, ExistChatRoomException {
-        Member buyer = memberService.findById(loginMember.getId());
-        Item item = itemService.findById(chatItem.getItemId());
-        String chatRoomId = chatRoomService.create(item, buyer);
-    
+        String chatRoomId = chatRoomFacade.create(chatItem.getItemId(), loginMember.getId());
+
         return GenericResponse.send("채팅방이 생성되었습니다.", chatRoomId);
     }
 

@@ -57,4 +57,11 @@ public class ChatroomFacade {
         //채팅방 id가 존재할 경우
         return chatRoomService.findChatroomListByItem(chatItem.getItemId());
     }
+
+    public String create(Long itemId, Long memberId) throws ExistMemberIdException, ExistItemException, ExistChatRoomException {
+        Member buyer = memberService.findById(memberId);
+        Item item = itemService.findById(itemId);
+
+        return chatRoomService.create(item, buyer);
+    }
 }
