@@ -27,7 +27,6 @@ interface HomeInfo {
 }
 
 interface HomeFilterInfo {
-  sellerId: number | null;
   regionId: number;
   isSales: boolean | null;
   categoryId: number | null;
@@ -43,7 +42,6 @@ const Home = () => {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [filterInfo, setFilterInfo] = useState<HomeFilterInfo>({
-    sellerId: null,
     regionId: 1,
     isSales: null,
     categoryId: null,
@@ -61,12 +59,10 @@ const Home = () => {
   const { setTarget } = useIntersectionObserver({ onIntersect });
 
   const createFilterQuery = () => {
-    const { sellerId, regionId, isSales, categoryId } = filterInfo;
-    const sellerQuery = sellerId ? `&sellerId=${sellerId}` : '';
+    const { regionId, isSales, categoryId } = filterInfo;
     const salesQuery = isSales ? `&isSales=${isSales}` : '';
     const categoryQuery = categoryId ? `&categoryId=${categoryId}` : '';
-    const filterQuery = `?page=${homePageInfo.page}${sellerQuery}&regionId=${regionId}${salesQuery}${categoryQuery}`;
-
+    const filterQuery = `?page=${homePageInfo.page}&regionId=${regionId}${salesQuery}${categoryQuery}`;
     return filterQuery;
   };
 
@@ -123,10 +119,9 @@ const Home = () => {
       setIsLoading(true);
 
       const { data } = await api.get(`items${filterQuery}`);
-
       setSaleItems((prevItems) => {
         const newSet = new Set(prevItems);
-        data.items.forEach((item: SaleItem) => newSet.add(item));
+        data.data.items.forEach((item: SaleItem) => newSet.add(item));
         return [...newSet];
       });
 

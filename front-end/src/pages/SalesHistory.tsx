@@ -56,10 +56,8 @@ const SalesHistory = () => {
     if (!pageInfo.hasNext) return;
     try {
       setIsLoading(true);
-      const data = await request({
-        url: `items?page=${pageInfo.page}&sellerId=${
-          userInfo.id
-        }&isSales=${!selectedStatus}&categoryId=`,
+      const { data } = await request({
+        url: `items/mine?page=${pageInfo.page}&isSales=${!selectedStatus}`,
       });
       setSaleItems((pre) => [...pre, ...data.items]);
       setPageInfo({
