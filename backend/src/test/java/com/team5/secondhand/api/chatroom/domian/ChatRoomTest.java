@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -63,7 +64,7 @@ class ChatroomTest {
                 .build();
 
         chatRoom = Chatroom.builder().id(1L)
-                .chatroomId("test-test-tttt-ssss")
+                .chatroomId(UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479"))
                 .buyer(iirin)
                 .item(keyboard)
                 .chatroomStatus(ChatroomStatus.FULL)
