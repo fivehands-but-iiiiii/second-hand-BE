@@ -33,11 +33,6 @@ export interface CategoryInfo {
   selectedId: number;
 }
 
-interface ImageFile {
-  order: number;
-  url: string;
-}
-
 export interface ItemInfo {
   id: number;
   title: string;
@@ -45,7 +40,7 @@ export interface ItemInfo {
   region: number;
   category: number;
   price: string;
-  images: ImageFile[];
+  images: string[];
 }
 
 export interface OriginItem {
@@ -146,13 +141,24 @@ const ItemEditor = ({
 
   const getRandomCategories = useCallback((): Category[] => {
     const RANDOM_COUNT = 3;
-    const randomCategories: Set<Category> = new Set();
-    while (randomCategories.size < RANDOM_COUNT) {
-      const randomIndex = Math.floor(Math.random() * categoryInfo.length);
-      randomCategories.add(categoryInfo[randomIndex]);
+    const usedId = new Set();
+    const randomCategories: Category[] = [];
+    if (isEdit && origin) {
+      const categoryId = categoryInfo.find(
+        (item) => item.title === origin.category,
+      )?.id as number;
+      randomCategories.push({
+        id: categoryId,
+        title: origin.category as string,
+      });
+      usedId.add(categoryId);
     }
-    const titleCategories = [...randomCategories];
-    return titleCategories;
+    while (randomCategories.length < RANDOM_COUNT) {
+      const randomIndex = Math.floor(Math.random() * categoryInfo.length);
+      if (!usedId.has(randomIndex))
+        randomCategories.push(categoryInfo[randomIndex]);
+    }
+    return randomCategories;
   }, [categoryInfo]);
 
   const handleRecommendation = useCallback(() => {
@@ -232,6 +238,11 @@ const ItemEditor = ({
       ...prev,
       selectedId: mappedOrigin.category as number,
     }));
+    setFiles(
+      mappedOrigin.images.map((image) => ({
+        preview: image.url,
+      })),
+    );
   };
 
   useEffect(() => {
@@ -241,6 +252,11 @@ const ItemEditor = ({
   useEffect(() => {
     if (isEdit && origin) {
       getMappedOrigin(origin);
+      const category = getRandomCategories();
+      setCategory((prev) => ({
+        ...prev,
+        recommendedCategory: category,
+      }));
     }
   }, [isEdit, origin]);
 
