@@ -1,6 +1,8 @@
 package com.team5.secondhand.api.chatroom.service;
 
 import com.team5.secondhand.api.chatroom.domian.Chatroom;
+import com.team5.secondhand.api.chatroom.dto.response.ChatroomList;
+import com.team5.secondhand.api.chatroom.dto.response.ChatroomSummary;
 import com.team5.secondhand.api.chatroom.exception.ExistChatRoomException;
 import com.team5.secondhand.api.chatroom.repository.ChatroomRepository;
 import com.team5.secondhand.api.item.domain.Item;
@@ -8,14 +10,16 @@ import com.team5.secondhand.api.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ChatroomService {
     private final ChatroomRepository chatRoomRepository;
     public String create(Item item, Member buyer) throws ExistChatRoomException {
-        if (chatRoomRepository.findByItemAndBuyer(item, buyer).isPresent()) {
+        if (chatRoomRepository.findByBuyer_IdAndItem_Id(buyer.getId(), item.getId()).isPresent()) {
             throw new ExistChatRoomException("이미 존재하는 채팅방입니다.");
         }
 
