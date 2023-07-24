@@ -7,12 +7,9 @@ import com.team5.secondhand.api.chatroom.exception.BuyerException;
 import com.team5.secondhand.api.chatroom.exception.ExistChatRoomException;
 import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
 import com.team5.secondhand.api.chatroom.service.ChatroomFacade;
-import com.team5.secondhand.api.chatroom.service.ChatroomService;
 import com.team5.secondhand.api.item.exception.ExistItemException;
-import com.team5.secondhand.api.item.service.ItemService;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.member.exception.ExistMemberIdException;
-import com.team5.secondhand.api.member.service.MemberService;
 import com.team5.secondhand.global.dto.GenericResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +22,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/chats")
 public class ChatroomController {
     private final ChatroomFacade chatRoomFacade;
-    private final ChatroomService chatRoomService;
-    private final MemberService memberService;
-    private final ItemService itemService;
 
     @Operation(
             summary = "채팅방 정보 조회",
