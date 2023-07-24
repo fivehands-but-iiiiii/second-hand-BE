@@ -4,14 +4,13 @@ import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.dto.request.ItemPostWithUrl;
 import com.team5.secondhand.api.item.domain.Status;
 import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
-import com.team5.secondhand.api.item.dto.response.CategoryList;
-import com.team5.secondhand.api.item.dto.response.ItemDetail;
-import com.team5.secondhand.api.item.dto.response.ItemList;
-import com.team5.secondhand.api.item.dto.response.ItemSummary;
+import com.team5.secondhand.api.item.dto.request.MyItemFilteredSlice;
+import com.team5.secondhand.api.item.dto.response.*;
 import com.team5.secondhand.api.item.exception.ExistItemException;
 import com.team5.secondhand.api.item.repository.ItemRepository;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
+import com.team5.secondhand.api.member.exception.UnauthorizedException;
 import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.wishlist.service.CheckMemberLikedUsecase;
 import lombok.RequiredArgsConstructor;
@@ -53,8 +52,23 @@ public class ItemService {
         return ItemList.getSlice(pageResult.getNumber(), pageResult.hasPrevious(), pageResult.hasNext(), items);
     }
 
+    @Transactional(readOnly = true)
+    public MyItemList getMyItemList(MyItemFilteredSlice request, MemberDetails loginMember) throws UnauthorizedException {
+        Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
+
+        Slice<Item> pageResult = itemRepository.findAllByBasedRegion(null, loginMember.getId(), Status.isSales(request.getIsSales()), null, pageable);
+        List<Item> itemEntities = pageResult.getContent();
+        List<MyItemSummary> items = getMyItemSummaries(itemEntities);
+
+        return MyItemList.getSlice(pageResult.getNumber(), pageResult.hasPrevious(), pageResult.hasNext(), items);
+    }
+
     private List<ItemSummary> getItemSummaries(List<Item> itemEntities) {
         return itemEntities.stream().map(e -> ItemSummary.of(e, false)).collect(Collectors.toList());
+    }
+
+    private List<MyItemSummary> getMyItemSummaries(List<Item> itemEntities) {
+        return itemEntities.stream().map(MyItemSummary::of).collect(Collectors.toList());
     }
 
     private List<ItemSummary> getItemSummariesWithIsLike(MemberDetails loginMember, List<Item> itemEntities) {
