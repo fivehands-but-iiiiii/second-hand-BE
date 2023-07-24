@@ -14,6 +14,8 @@ import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.exception.ExistMemberIdException;
 import com.team5.secondhand.api.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -24,6 +26,8 @@ public class ChatroomFacade {
     private final ChatroomService chatRoomService;
     private final ItemService itemService;
     private final MemberService memberService;
+
+    private final int FILTER_SIZE = 10;
 
     public ChatroomDetails findChatroomInfo(long itemId, long memberId) throws ExistMemberIdException, ExistItemException, NotChatroomMemberException {
         Item item = itemService.findById(itemId);
@@ -50,13 +54,14 @@ public class ChatroomFacade {
     }
 
     public ChatroomList findChatroomList(ChatItem chatItem, Long id) throws ExistMemberIdException {
+        PageRequest pageRequest = PageRequest.of(chatItem.getPage(), FILTER_SIZE, Sort.by(Sort.Direction.DESC, "id"));
         Member member = memberService.findById(id);
         //채팅방 id가 존재하지 않고 멤버id가 존재할 경우
         if (chatItem.getItemId() == null) {
-            return chatRoomService.findChatroomListByMember(member);
+            return chatRoomService.findChatroomListByMember(pageRequest, member);
         }
         //채팅방 id가 존재할 경우
-        return chatRoomService.findChatroomListByItem(chatItem.getItemId());
+        return chatRoomService.findChatroomListByItem(pageRequest, chatItem.getItemId());
     }
 
     public String create(Long itemId, Long memberId) throws ExistMemberIdException, ExistItemException, ExistChatRoomException, BuyerException {

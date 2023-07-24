@@ -9,6 +9,8 @@ import com.team5.secondhand.api.chatroom.repository.ChatroomRepository;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.member.domain.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,21 +44,21 @@ public class ChatroomService {
         return chatRoomRepository.findByChatroomId(UUID.fromString(chatroomId));
     }
 
-    public ChatroomList findChatroomListByMember(Member member) {
-        List<Chatroom> chatrooms = chatRoomRepository.findAllByBuyerIdOrSellerIdOrderByIdDesc(member.getId(), member.getId());
-        List<ChatroomSummary> chatroomSummaries = chatrooms.stream()
+    public ChatroomList findChatroomListByMember(Pageable page, Member member) {
+        Slice<Chatroom> chatroomSlice = chatRoomRepository.findAllByBuyerIdOrSellerIdOrderByIdDesc(page, member.getId(), member.getId());
+        List<ChatroomSummary> chatroomSummaries = chatroomSlice.getContent().stream()
                 .map(c -> ChatroomSummary.of(c, member))
                 .collect(Collectors.toList());
 
-        return ChatroomList.of(chatroomSummaries);
+        return ChatroomList.of(chatroomSummaries, page.getPageNumber(), chatroomSlice.hasNext(), chatroomSlice.hasPrevious());
     }
 
-    public ChatroomList findChatroomListByItem(Long itemId) {
-        List<Chatroom> chatrooms = chatRoomRepository.findAllByItemId(itemId);
-        List<ChatroomSummary> chatroomSummaries = chatrooms.stream()
+    public ChatroomList findChatroomListByItem(Pageable page, Long itemId) {
+        Slice<Chatroom> chatroomSlice = chatRoomRepository.findAllByItemIdOrderByIdDesc(page, itemId);
+        List<ChatroomSummary> chatroomSummaries = chatroomSlice.getContent().stream()
                 .map(ChatroomSummary::of)
                 .collect(Collectors.toList());
 
-        return ChatroomList.of(chatroomSummaries);
+        return ChatroomList.of(chatroomSummaries, page.getPageNumber(), chatroomSlice.hasNext(), chatroomSlice.hasPrevious());
     }
 }
