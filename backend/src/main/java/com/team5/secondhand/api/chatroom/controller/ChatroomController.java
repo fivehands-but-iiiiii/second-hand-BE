@@ -3,6 +3,7 @@ package com.team5.secondhand.api.chatroom.controller;
 import com.team5.secondhand.api.chatroom.dto.request.ChatItem;
 import com.team5.secondhand.api.chatroom.dto.response.ChatroomDetails;
 import com.team5.secondhand.api.chatroom.dto.response.ChatroomList;
+import com.team5.secondhand.api.chatroom.exception.BuyerException;
 import com.team5.secondhand.api.chatroom.exception.ExistChatRoomException;
 import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
 import com.team5.secondhand.api.chatroom.service.ChatroomFacade;
@@ -56,7 +57,7 @@ public class ChatroomController {
             description = "사용자는 채팅방을 생성할 수 있다."
     )
     @PostMapping
-    public GenericResponse<String> createChatRoom(@RequestBody ChatItem chatItem, @RequestAttribute MemberDetails loginMember) throws ExistMemberIdException, ExistItemException, ExistChatRoomException {
+    public GenericResponse<String> createChatRoom(@RequestBody ChatItem chatItem, @RequestAttribute MemberDetails loginMember) throws ExistMemberIdException, ExistItemException, ExistChatRoomException, BuyerException {
         String chatRoomId = chatRoomFacade.create(chatItem.getItemId(), loginMember.getId());
 
         return GenericResponse.send("채팅방이 생성되었습니다.", chatRoomId);

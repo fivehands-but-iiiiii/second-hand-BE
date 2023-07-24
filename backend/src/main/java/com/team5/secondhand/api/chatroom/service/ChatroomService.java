@@ -3,6 +3,7 @@ package com.team5.secondhand.api.chatroom.service;
 import com.team5.secondhand.api.chatroom.domian.Chatroom;
 import com.team5.secondhand.api.chatroom.dto.response.ChatroomList;
 import com.team5.secondhand.api.chatroom.dto.response.ChatroomSummary;
+import com.team5.secondhand.api.chatroom.exception.BuyerException;
 import com.team5.secondhand.api.chatroom.exception.ExistChatRoomException;
 import com.team5.secondhand.api.chatroom.repository.ChatroomRepository;
 import com.team5.secondhand.api.item.domain.Item;
@@ -18,9 +19,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ChatroomService {
     private final ChatroomRepository chatRoomRepository;
-    public String create(Item item, Member buyer) throws ExistChatRoomException {
+
+    public String create(Item item, Member buyer) throws ExistChatRoomException, BuyerException {
         if (chatRoomRepository.findByBuyer_IdAndItem_Id(buyer.getId(), item.getId()).isPresent()) {
             throw new ExistChatRoomException("이미 존재하는 채팅방입니다.");
+        }
+        if (item.isSameSellerAndBuyer(buyer)) {
+            throw new BuyerException("구매자는 판매자와 같을 수 없습니다.");
         }
 
         Chatroom chatRoom = Chatroom.create(item, buyer);

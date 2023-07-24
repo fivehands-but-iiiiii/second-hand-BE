@@ -18,4 +18,10 @@ public class ChatRoomExceptionHandler {
     public ErrorResponse handleExistChatRoomException(ExistChatRoomException e) {
         return ErrorResponse.occur(e);
     }
+
+    @ExceptionHandler(BuyerException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleExistChatRoomException(BuyerException e) {
+        return ErrorResponse.occur(e);
+    }
 }

@@ -104,5 +104,8 @@ public class Item extends UpdatedTimeEntity {
         this.region = region;
         return this;
     }
-  
+
+    public boolean isSameSellerAndBuyer(Member buyer) {
+        return seller.equals(buyer);
+    }
 }

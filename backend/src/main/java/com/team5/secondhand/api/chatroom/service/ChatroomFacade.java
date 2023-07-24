@@ -4,6 +4,7 @@ import com.team5.secondhand.api.chatroom.domian.Chatroom;
 import com.team5.secondhand.api.chatroom.dto.request.ChatItem;
 import com.team5.secondhand.api.chatroom.dto.response.ChatroomDetails;
 import com.team5.secondhand.api.chatroom.dto.response.ChatroomList;
+import com.team5.secondhand.api.chatroom.exception.BuyerException;
 import com.team5.secondhand.api.chatroom.exception.ExistChatRoomException;
 import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
 import com.team5.secondhand.api.item.domain.Item;
@@ -58,7 +59,7 @@ public class ChatroomFacade {
         return chatRoomService.findChatroomListByItem(chatItem.getItemId());
     }
 
-    public String create(Long itemId, Long memberId) throws ExistMemberIdException, ExistItemException, ExistChatRoomException {
+    public String create(Long itemId, Long memberId) throws ExistMemberIdException, ExistItemException, ExistChatRoomException, BuyerException {
         Member buyer = memberService.findById(memberId);
         Item item = itemService.findById(itemId);
 
