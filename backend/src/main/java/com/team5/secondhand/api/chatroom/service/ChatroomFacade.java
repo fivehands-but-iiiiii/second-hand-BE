@@ -53,15 +53,16 @@ public class ChatroomFacade {
         return ChatroomDetails.of(chatroom, member);
     }
 
-    public ChatroomList findChatroomList(ChatItem chatItem, Long id) throws ExistMemberIdException {
+    public ChatroomList findChatroomList(ChatItem chatItem, Long id) throws ExistMemberIdException, ExistItemException {
         PageRequest pageRequest = PageRequest.of(chatItem.getPage(), FILTER_SIZE, Sort.by(Sort.Direction.DESC, "id"));
-        Member member = memberService.findById(id);
         //채팅방 id가 존재하지 않고 멤버id가 존재할 경우
         if (chatItem.getItemId() == null) {
+            Member member = memberService.findById(id);
             return chatRoomService.findChatroomListByMember(pageRequest, member);
         }
         //채팅방 id가 존재할 경우
-        return chatRoomService.findChatroomListByItem(pageRequest, chatItem.getItemId());
+        Item item = itemService.findById(chatItem.getItemId());
+        return chatRoomService.findChatroomListByItem(pageRequest, item);
     }
 
     public String create(Long itemId, Long memberId) throws ExistMemberIdException, ExistItemException, ExistChatRoomException, BuyerException {

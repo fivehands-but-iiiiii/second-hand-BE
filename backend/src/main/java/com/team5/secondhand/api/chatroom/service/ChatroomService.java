@@ -53,8 +53,8 @@ public class ChatroomService {
         return ChatroomList.of(chatroomSummaries, page.getPageNumber(), chatroomSlice.hasNext(), chatroomSlice.hasPrevious());
     }
 
-    public ChatroomList findChatroomListByItem(Pageable page, Long itemId) {
-        Slice<Chatroom> chatroomSlice = chatRoomRepository.findAllByItemIdOrderByIdDesc(page, itemId);
+    public ChatroomList findChatroomListByItem(Pageable page, Item item) {
+        Slice<Chatroom> chatroomSlice = chatRoomRepository.findAllByItemIdOrderByIdDesc(page, item.getId());
         List<ChatroomSummary> chatroomSummaries = chatroomSlice.getContent().stream()
                 .map(ChatroomSummary::of)
                 .collect(Collectors.toList());
