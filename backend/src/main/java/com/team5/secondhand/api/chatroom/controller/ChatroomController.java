@@ -1,7 +1,8 @@
 package com.team5.secondhand.api.chatroom.controller;
 
-import com.team5.secondhand.api.chatroom.dto.response.ChatItem;
+import com.team5.secondhand.api.chatroom.dto.request.ChatItem;
 import com.team5.secondhand.api.chatroom.dto.response.ChatroomDetails;
+import com.team5.secondhand.api.chatroom.dto.response.ChatroomList;
 import com.team5.secondhand.api.chatroom.exception.ExistChatRoomException;
 import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
 import com.team5.secondhand.api.chatroom.service.ChatroomFacade;
@@ -63,5 +64,12 @@ public class ChatroomController {
         String chatRoomId = chatRoomService.create(item, buyer);
     
         return GenericResponse.send("채팅방이 생성되었습니다.", chatRoomId);
+    }
+
+    @GetMapping()
+    public GenericResponse<ChatroomList> getChatroomList(ChatItem chatItem, @RequestAttribute MemberDetails loginMember) throws ExistMemberIdException, ExistItemException {
+        ChatroomList chatroomList = chatRoomFacade.findChatroomList(chatItem, loginMember.getId());
+
+        return GenericResponse.send("채팅방 목록을 조회되었습니다.", chatroomList);
     }
 }
