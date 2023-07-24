@@ -63,7 +63,7 @@ class ChatroomTest {
                 .build();
 
         chatRoom = Chatroom.builder().id(1L)
-                .chatroomId("test-test-tttt-ssss")
+                .chatroomId(UUID.fromString("test-test-tttt-ssss"))
                 .buyer(iirin)
                 .item(keyboard)
                 .chatroomStatus(ChatroomStatus.FULL)
