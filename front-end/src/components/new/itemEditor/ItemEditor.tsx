@@ -14,7 +14,7 @@ import SubTabBar from '@common/TabBar/SubTabBar';
 import Textarea from '@common/Textarea';
 import { InputFile } from '@components/login/Join';
 import { getPreviewURL } from '@utils/convertFile';
-import { getFormattedPrice } from '@utils/formatText';
+import { getFormattedPrice, getFormattedNumber } from '@utils/formatText';
 
 import { styled } from 'styled-components';
 
@@ -48,10 +48,19 @@ export interface ItemInfo {
   images: ImageFile[];
 }
 
+export interface OriginItem {
+  id: number;
+  title: string;
+  contents: string;
+  category: string | number;
+  price: string;
+  images: { url: string }[];
+}
+
 interface ItemEditorProps {
   categoryInfo: Category[];
   isEdit?: boolean;
-  origin?: ItemInfo;
+  origin?: OriginItem;
   handleClose: () => void;
 }
 
@@ -61,7 +70,7 @@ const ItemEditor = ({
   origin,
   handleClose,
 }: ItemEditorProps) => {
-  // 지역정보 가져오기
+  const pageTitle = isEdit ? '상품 수정' : '새 상품 등록';
   const [title, setTitle] = useState('');
   const [firstClickCTitle, setFirstClickCTitle] = useState(false);
   const [contents, setContents] = useState('');
@@ -147,7 +156,6 @@ const ItemEditor = ({
   }, [categoryInfo]);
 
   const handleRecommendation = useCallback(() => {
-    if (isEdit) return;
     if (firstClickCTitle) return;
     const timeOutId = setTimeout(() => {
       const category = getRandomCategories();
@@ -206,15 +214,41 @@ const ItemEditor = ({
     setContents(value);
   };
 
+  const getMappedOrigin = (origin: OriginItem) => {
+    if (!origin) return;
+    const formattedPrice = getFormattedNumber(origin.price);
+    const categoryId = categoryInfo.find(
+      (item) => item.title === origin.category,
+    );
+    const mappedOrigin = {
+      ...origin,
+      price: formattedPrice.toString(),
+      category: categoryId?.id,
+    };
+    setTitle(mappedOrigin.title);
+    setContents(mappedOrigin.contents);
+    setPrice(mappedOrigin.price);
+    setCategory((prev) => ({
+      ...prev,
+      selectedId: mappedOrigin.category as number,
+    }));
+  };
+
   useEffect(() => {
     setFormValid(validateForm());
   }, [title, region, category, files, validateForm]);
+
+  useEffect(() => {
+    if (isEdit && origin) {
+      getMappedOrigin(origin);
+    }
+  }, [isEdit, origin]);
 
   return (
     <>
       <NavBar
         left={<button onClick={handleClose}>닫기</button>}
-        center={'새 상품 등록'}
+        center={pageTitle}
         right={
           <button disabled={!isFormValid} onClick={handleSubmit}>
             완료

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import Icon from '@assets/Icon';
 import Button from '@common/Button';
@@ -11,7 +12,9 @@ import PopupSheet from '@common/PopupSheet/PopupSheet';
 import SubTabBar from '@common/TabBar/SubTabBar';
 import { CategoryInfo } from '@components/home/category';
 import { ItemStatus } from '@components/ItemStatus';
+import { useCategories } from '@components/layout/MobileLayout';
 import PortalLayout from '@components/layout/PortalLayout';
+import New from '@components/new/New';
 import { formatNumberToSI } from '@utils/formatNumberToSI';
 import getElapsedTime from '@utils/getElapsedTime';
 
@@ -115,6 +118,9 @@ const ItemDetail = ({
     return statusType[status];
   }, [status]);
 
+  const categories = useCategories();
+  const [isNewModalOpen, setIsNewModalOpen] = useState(false);
+
   const handleStatusSheet = async (status: ItemStatus) => {
     try {
       await api.patch(`/items/${id}/status`, { status: status });
@@ -133,7 +139,7 @@ const ItemDetail = ({
         console.error(`Failed to request: ${error}`);
       }
     } else if (type === 'edit') {
-      // TODO: 수정 페이지로 이동!
+      setIsNewModalOpen(true);
     }
   };
 
@@ -185,6 +191,8 @@ const ItemDetail = ({
 
   const handleViewMorePopup = () =>
     setIsMoreViewPopupOpen(!isMoreViewPopupOpen);
+
+  const handleNewModal = () => setIsNewModalOpen(!isNewModalOpen);
 
   const mapItemDetailInfo = (data: any) => {
     const formattedPrice = data.price
@@ -301,6 +309,16 @@ const ItemDetail = ({
           onSheetClose={handleViewMorePopup}
         ></PopupSheet>
       )}
+      {isNewModalOpen &&
+        createPortal(
+          <New
+            isEdit={true}
+            origin={itemDetailInfo}
+            categoryInfo={categories}
+            onClick={handleNewModal}
+          />,
+          document.body,
+        )}
     </PortalLayout>
   );
 };
