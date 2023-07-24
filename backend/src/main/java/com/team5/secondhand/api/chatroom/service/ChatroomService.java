@@ -31,4 +31,22 @@ public class ChatroomService {
     public Optional<Chatroom> findByChatroomId(String chatroomId) {
         return chatRoomRepository.findByChatroomId(chatroomId);
     }
+
+    public ChatroomList findChatroomListByMember(Member member) {
+        List<Chatroom> chatrooms = chatRoomRepository.findAllByBuyerIdOrSellerIdOrderByIdDesc(member.getId(), member.getId());
+        List<ChatroomSummary> chatroomSummaries = chatrooms.stream()
+                .map(c -> ChatroomSummary.of(c, member))
+                .collect(Collectors.toList());
+
+        return ChatroomList.of(chatroomSummaries);
+    }
+
+    public ChatroomList findChatroomListByItem(Long itemId) {
+        List<Chatroom> chatrooms = chatRoomRepository.findAllByItemId(itemId);
+        List<ChatroomSummary> chatroomSummaries = chatrooms.stream()
+                .map(ChatroomSummary::of)
+                .collect(Collectors.toList());
+
+        return ChatroomList.of(chatroomSummaries);
+    }
 }
