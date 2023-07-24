@@ -1,11 +1,11 @@
 package com.team5.secondhand.api.chatroom.dto.request;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
+@RequiredArgsConstructor
 public class ChatItem {
-    private Long itemId;
+    private final Long itemId;
+    private final Integer page;
 }
