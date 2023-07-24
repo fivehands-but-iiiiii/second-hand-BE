@@ -10,11 +10,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.GenerationTime;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -46,7 +44,7 @@ public class Chatroom extends BasedTimeEntity {
     private ChatroomStatus chatroomStatus;
 
     @Builder
-    public Chatroom(Long id, UUID chatroomId, Item item, Member buyer, Long sellerId, Instant createdAt, ChatroomStatus chatroomStatus) {
+    public Chatroom(Long id, UUID chatroomId, Item item, Member buyer, Long sellerId, ChatroomStatus chatroomStatus) {
         this.id = id;
         this.chatroomId = chatroomId;
         this.item = item;
