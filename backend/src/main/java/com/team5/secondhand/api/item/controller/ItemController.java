@@ -7,9 +7,7 @@ import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
 import com.team5.secondhand.api.item.dto.request.ItemPost;
 import com.team5.secondhand.api.item.dto.request.ItemStatusUpdate;
 import com.team5.secondhand.api.item.dto.request.ItemPostWithUrl;
-import com.team5.secondhand.api.item.dto.response.CategoryList;
-import com.team5.secondhand.api.item.dto.response.ItemDetail;
-import com.team5.secondhand.api.item.dto.response.ItemList;
+import com.team5.secondhand.api.item.dto.response.*;
 import com.team5.secondhand.api.item.exception.ExistItemException;
 import com.team5.secondhand.api.item.service.ItemService;
 import com.team5.secondhand.api.member.domain.Member;
@@ -55,10 +53,11 @@ public class ItemController {
             description = "사용자는 자신의 동네의 상품 목록을 볼 수 있다."
     )
     @GetMapping
-    public ItemList getItemList(ItemFilteredSlice itemSlice, @RequestAttribute(required = false) MemberDetails loginMember) throws NotValidRegionException {
+    public GenericResponse<ItemList> getItemList(ItemFilteredSlice itemSlice, @RequestAttribute(required = false) MemberDetails loginMember) throws NotValidRegionException {
         Region regions = getValidRegions.getRegion(itemSlice.getRegionId());
+        ItemList itemList = itemService.getItemList(itemSlice, regions, loginMember);
         //TODO Category 유효성 검사
-        return itemService.getItemList(itemSlice, regions, loginMember);
+        return GenericResponse.send("상품 목록이 조회되었습니다.", itemList);
     }
 
     @Operation(
@@ -67,8 +66,8 @@ public class ItemController {
             description = "사용자는 자신이 판매 중인/완료한 상품 목록을 볼 수 있다"
     )
     @GetMapping("/mine")
-    public ItemList getItemMyList(MyItemFilteredSlice itemSlice, @RequestAttribute MemberDetails loginMember) throws UnauthorizedException {
-        return itemService.getMyItemList(itemSlice, loginMember);
+    public GenericResponse<MyItemList> getItemMyList(MyItemFilteredSlice itemSlice, @RequestAttribute MemberDetails loginMember) throws UnauthorizedException {
+        return GenericResponse.send("판매 내역이 조회되었습니다.", itemService.getMyItemList(itemSlice, loginMember));
     }
 
     @Operation(
