@@ -1,6 +1,5 @@
 package com.team5.secondhand.chat.bubble.domain;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import lombok.Builder;
@@ -18,7 +17,7 @@ import java.util.UUID;
 @ToString
 @RedisHash("chat-bubble")
 public class ChatBubble implements Serializable {
-    @Id @JsonIgnore
+    @Id
     private final String id;
     @Indexed
     private final String roomId;
