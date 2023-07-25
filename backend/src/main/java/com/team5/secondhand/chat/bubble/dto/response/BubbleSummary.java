@@ -1,4 +1,4 @@
-package com.team5.secondhand.chat.bubble.dto;
+package com.team5.secondhand.chat.bubble.dto.response;
 
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
