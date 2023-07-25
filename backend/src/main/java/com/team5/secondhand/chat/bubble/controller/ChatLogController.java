@@ -15,7 +15,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/chat")
+@RequestMapping("/chats")
 public class ChatLogController {
 
     private final ChatLogService chatLogService;
