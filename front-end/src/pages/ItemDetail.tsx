@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import Icon from '@assets/Icon';
+import Alert from '@common/Alert/Alert';
+import { ALERT_ACTIONS, ALERT_TITLE } from '@common/Alert/constants';
 import Button from '@common/Button';
 import NavBar from '@common/NavBar';
 import {
@@ -132,16 +134,28 @@ const ItemDetail = ({
     setItemDetailInfo((prev) => ({ ...prev, status: status }));
   };
 
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+
   const handleViewMoreSheet = async (type: string) => {
     if (type === 'delete') {
-      try {
-        await api.delete(`/items/${id}`);
-        handleBackBtnClick(0);
-      } catch (error) {
-        console.error(`Failed to request: ${error}`);
-      }
-    } else if (type === 'edit') {
-      setIsNewModalOpen(true);
+      setIsAlertOpen(true);
+    }
+  };
+
+  const handleAlert = (type: string) => {
+    if (type === 'delete') {
+      deleteItem();
+    } else {
+      setIsAlertOpen(false);
+    }
+  };
+
+  const deleteItem = async () => {
+    try {
+      await api.delete(`/items/${id}`);
+      handleBackBtnClick(0);
+    } catch (error) {
+      console.error(`Failed to request: ${error}`);
     }
   };
 
@@ -307,6 +321,18 @@ const ItemDetail = ({
           onSheetClose={handleViewMorePopup}
         ></PopupSheet>
       )}
+      <Alert isOpen={isAlertOpen}>
+        <Alert.Title>{ALERT_TITLE.DELETE('삭제')}</Alert.Title>
+        <Alert.Button>
+          {ALERT_ACTIONS.DELETE.map(({ id, action }) => {
+            return (
+              <button key={id} onClick={() => handleAlert(id)}>
+                {action}
+              </button>
+            );
+          })}
+        </Alert.Button>
+      </Alert>
       {isNewModalOpen &&
         createPortal(
           <New

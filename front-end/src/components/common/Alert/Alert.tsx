@@ -1,10 +1,16 @@
-import { ReactNode } from 'react';
+import { Children, ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+
+import PortalLayout from '@components/layout/PortalLayout';
 
 import { styled } from 'styled-components';
 
+import { ALERT_TITLE } from './constants';
+
 interface AlertProps {
   isOpen?: boolean;
-  children: ReactNode;
+  // action: string;
+  children?: ReactNode;
 }
 
 interface AlertProtoProps {
@@ -13,7 +19,13 @@ interface AlertProtoProps {
 
 const Alert = ({ isOpen, children }: AlertProps) => {
   if (!isOpen) return null;
-  return <MyAlert>{children}</MyAlert>;
+
+  return createPortal(
+    <PortalLayout.Alert>
+      <MyAlert>{children}</MyAlert>
+    </PortalLayout.Alert>,
+    document.body,
+  );
 };
 
 Alert.Title = ({ children }: AlertProtoProps) => {

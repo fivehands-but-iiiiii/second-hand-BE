@@ -7,8 +7,8 @@ export const ALERT_TITLE = {
 
 export const ALERT_ACTIONS = {
   DELETE: [
-    { id: 1, action: '취소' },
-    { id: 2, action: '삭제' },
+    { id: 'cancel', action: '취소' },
+    { id: 'delete', action: '삭제' },
   ],
   EXIT: [
     { id: 1, action: '취소' },
