@@ -3,7 +3,11 @@ import { createPortal } from 'react-dom';
 
 import Icon from '@assets/Icon';
 import Alert from '@common/Alert/Alert';
-import { ALERT_ACTIONS, ALERT_TITLE } from '@common/Alert/constants';
+import {
+  ALERT_ACTIONS,
+  ALERT_TITLE,
+  AlertActionsProps,
+} from '@common/Alert/constants';
 import Button from '@common/Button';
 import NavBar from '@common/NavBar';
 import {
@@ -20,6 +24,7 @@ import PortalLayout from '@components/layout/PortalLayout';
 import New from '@components/new/New';
 import { formatNumberToSI } from '@utils/formatNumberToSI';
 import getElapsedTime from '@utils/getElapsedTime';
+import { getStoredValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
 
@@ -76,6 +81,8 @@ const ItemDetail = ({
   categoryInfo,
   handleBackBtnClick,
 }: ItemDetailProps) => {
+  const isLogin = !!getStoredValue({ key: 'userInfo' });
+
   const [itemDetailInfo, setItemDetailInfo] = useState<ItemDetailInfo>({
     id: 0,
     seller: { id: 0, memberId: '' },
@@ -160,28 +167,32 @@ const ItemDetail = ({
   };
 
   const handleLike = async () => {
-    let likesCount = itemDetailInfo.likesCount;
-    if (isLike) {
-      try {
-        await api.delete(`/wishlist/like?itemId=${id}`);
-        likesCount--;
-      } catch (error) {
-        console.error(`Failed to request: ${error}`);
+    if (isLogin) {
+      let likesCount = itemDetailInfo.likesCount;
+      if (isLike) {
+        try {
+          await api.delete(`/wishlist/like?itemId=${id}`);
+          likesCount--;
+        } catch (error) {
+          console.error(`Failed to request: ${error}`);
+        }
+      } else {
+        try {
+          await api.post('/wishlist/like', { itemId: id });
+          likesCount++;
+        } catch (error) {
+          console.error(`Failed to request: ${error}`);
+        }
       }
-    } else {
-      try {
-        await api.post('/wishlist/like', { itemId: id });
-        likesCount++;
-      } catch (error) {
-        console.error(`Failed to request: ${error}`);
-      }
-    }
 
-    setItemDetailInfo((prev) => ({
-      ...prev,
-      isLike: !prev.isLike,
-      likesCount: likesCount,
-    }));
+      setItemDetailInfo((prev) => ({
+        ...prev,
+        isLike: !prev.isLike,
+        likesCount: likesCount,
+      }));
+    } else {
+      <Alert isOpen={true}></Alert>;
+    }
   };
 
   const statusPopupSheetMenu = DETAIL_STATUS_MENU.filter(
@@ -234,6 +245,13 @@ const ItemDetail = ({
 
     setItemDetailInfo(mappedDetails);
   };
+
+  const alertButtons = (actions: AlertActionsProps[]) =>
+    actions.map(({ id, action }) => (
+      <button key={id} onClick={() => handleAlert(id)}>
+        {action}
+      </button>
+    ));
 
   const getItemDetail = async () => {
     try {
@@ -323,15 +341,7 @@ const ItemDetail = ({
       )}
       <Alert isOpen={isAlertOpen}>
         <Alert.Title>{ALERT_TITLE.DELETE('삭제')}</Alert.Title>
-        <Alert.Button>
-          {ALERT_ACTIONS.DELETE.map(({ id, action }) => {
-            return (
-              <button key={id} onClick={() => handleAlert(id)}>
-                {action}
-              </button>
-            );
-          })}
-        </Alert.Button>
+        <Alert.Button>{alertButtons(ALERT_ACTIONS.DELETE)}</Alert.Button>
       </Alert>
       {isNewModalOpen &&
         createPortal(

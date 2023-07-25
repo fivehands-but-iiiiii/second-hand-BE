@@ -1,3 +1,8 @@
+export interface AlertActionsProps {
+  id: string;
+  action: string;
+}
+
 export const ALERT_TITLE = {
   DELETE: (subject: string) => `${subject}을 삭제하시겠어요?`,
   EXIT: '채팅방을 나가시겠어요?',
@@ -11,15 +16,15 @@ export const ALERT_ACTIONS = {
     { id: 'delete', action: '삭제' },
   ],
   EXIT: [
-    { id: 1, action: '취소' },
-    { id: 2, action: '나가기' },
+    { id: 'cancel', action: '취소' },
+    { id: 'leave', action: '나가기' },
   ],
   LOGOUT: [
-    { id: 1, action: '취소' },
-    { id: 2, action: '로그아웃' },
+    { id: 'cancel', action: '취소' },
+    { id: 'logout', action: '로그아웃' },
   ],
   LOGIN: [
-    { id: 1, action: '홈으로' },
-    { id: 2, action: '로그인' },
+    { id: 'home', action: '홈으로' },
+    { id: 'login', action: '로그인' },
   ],
 };

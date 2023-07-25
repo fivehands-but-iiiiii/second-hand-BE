@@ -1,11 +1,9 @@
-import { Children, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
 import PortalLayout from '@components/layout/PortalLayout';
 
 import { styled } from 'styled-components';
-
-import { ALERT_TITLE } from './constants';
 
 interface AlertProps {
   isOpen?: boolean;
