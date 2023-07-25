@@ -1,9 +1,8 @@
 package com.team5.secondhand.chat.bubble.controller;
 
-import com.team5.secondhand.api.chatroom.domian.Chatroom;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
-import com.team5.secondhand.chat.bubble.dto.ChatroomLog;
+import com.team5.secondhand.chat.bubble.dto.response.ChatroomLog;
 import com.team5.secondhand.chat.bubble.service.ChatLogService;
 import com.team5.secondhand.global.dto.GenericResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,11 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/chat")
+@RequestMapping("/chats")
 public class ChatLogController {
 
     private final ChatLogService chatLogService;

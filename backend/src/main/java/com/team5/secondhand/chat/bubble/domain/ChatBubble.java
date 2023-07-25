@@ -1,7 +1,7 @@
 package com.team5.secondhand.chat.bubble.domain;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,15 +23,15 @@ public class ChatBubble implements Serializable {
     @Indexed
     private final String roomId;
     private final String from;
-    private final String contents;
+    private final String message;
     private final String createdAt;
 
     @Builder
-    private ChatBubble(String id, String roomId, String from, String message, String createdAt) {
+    public ChatBubble(String id, String roomId, String from, String message, String createdAt) {
         this.id = id;
         this.roomId = roomId;
         this.from = from;
-        this.contents = message;
+        this.message = message;
         this.createdAt = createdAt;
     }
 
@@ -51,6 +51,6 @@ public class ChatBubble implements Serializable {
     }
 
     public Boolean isSender(MemberDetails loginMember) {
-        return this.equals(loginMember.getMemberId());
+        return this.from.equals(loginMember.getMemberId());
     }
 }

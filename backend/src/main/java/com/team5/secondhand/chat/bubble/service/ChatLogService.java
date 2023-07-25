@@ -18,7 +18,7 @@ public class ChatLogService {
     private final ChatBubbleRepository chatBubbleRepository;
 
     public Slice<ChatBubble> getChatBubbles(int page, String roomId) {
-        Pageable pageable = PageRequest.of(page, LOAD_SIZE, by("id").descending());
+        Pageable pageable = PageRequest.of(page, LOAD_SIZE, by("createdAt").descending());
         return chatBubbleRepository.findAllByRoomId(roomId, pageable);
     }
 
