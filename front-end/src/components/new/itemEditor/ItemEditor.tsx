@@ -100,8 +100,14 @@ const ItemEditor = ({
     else return true;
   }, [title, region, category, files]);
 
-  // TODO: 수정 api 변경필요함
+  // TODO: API PUT 테스트 해야됨
   const handleSubmit = async () => {
+    if (isEdit) await handleSubmitEdit();
+    else await handleSubmitNew();
+    handleClose();
+  };
+
+  const handleSubmitNew = async () => {
     if (!contents || !priceRef.current) return;
     const formData = new FormData();
     files.forEach(({ file }) => {
@@ -124,7 +130,30 @@ const ItemEditor = ({
     } catch (error) {
       console.log(error);
     }
-    handleClose();
+  };
+
+  const handleSubmitEdit = async () => {
+    if (!contents || !priceRef.current) return;
+    try {
+      const data = {
+        title,
+        contents,
+        category: category.selectedId,
+        region,
+        price: parseInt(priceRef.current.value.replace(/,/g, '')),
+        images: [
+          {
+            url: '',
+          },
+        ],
+        firstImageUrl: {
+          url: [0],
+        },
+      };
+      await api.put(`/items/${origin?.id}`, data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleDeleteFile = ({
