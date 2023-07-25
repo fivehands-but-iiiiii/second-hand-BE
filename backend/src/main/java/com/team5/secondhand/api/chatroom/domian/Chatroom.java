@@ -98,7 +98,8 @@ public class Chatroom extends BasedTimeEntity {
 
     public boolean isChatroomMember(Member member) throws NotChatroomMemberException {
         boolean isSeller = item.isSeller(member.getId());
-        boolean isBuyer = buyer.equals(member);
+        //TODO: 현재 member 객체가 프록시 객체라 객체 비교가 불가능하다.. 어떤 방식을 해야 좋을지 모르겠다. 임시로 pk 비교
+        boolean isBuyer = buyer.getId().equals(member.getId());
 
         if (!isBuyer && !isSeller) {
             throw new NotChatroomMemberException("채팅방에 있는 멤버가 아닙니다.");
