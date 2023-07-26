@@ -2,13 +2,14 @@ import { SetStateAction, useEffect, useRef, useState } from 'react';
 
 import Icon from '@assets/Icon';
 import ImgBox from '@common/ImgBox';
-import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
 import PopupSheet from '@common/PopupSheet';
 import { CHAT_VIEWMORE_MENU } from '@common/PopupSheet/constants';
 import ChatTabBar from '@common/TabBar/ChatTabBar';
 import PortalLayout from '@components/layout/PortalLayout';
 import * as StompJs from '@stomp/stompjs';
+import { getFormattedPrice } from '@utils/formatPrice';
+import { getStoredValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
 
@@ -17,7 +18,16 @@ import api from '../../../api';
 interface ChatBubble {
   roomId: string;
   from: string;
-  message: string;
+  contents: string;
+}
+
+interface SaleItemSummary {
+  id: number;
+  title: 'string';
+  price: number;
+  thumbnailUrl: 'string';
+  status: number;
+  isDelete: boolean;
 }
 
 interface ChatRoomProps {
@@ -25,22 +35,11 @@ interface ChatRoomProps {
   onRoomClose: () => void;
 }
 
-type SaleItemSummary = Pick<
-  SaleItem,
-  'id' | 'title' | 'price' | 'thumbnailUrl' | 'status'
->;
-
 const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
+  const { id: userId } = getStoredValue({ key: 'userInfo' });
+
   const [itemInfo, setItemInfo] = useState<SaleItemSummary>(
-    // {} as SaleItemSummary,
-    // NOTO: HTTP API 완성 시 아래 데이터 제거
-    {
-      id: 230,
-      title: '팝니다요',
-      price: 10000,
-      thumbnailUrl: 'https://picsum.photos/200/300',
-      status: 0,
-    },
+    {} as SaleItemSummary,
   );
   const [roomId, setRoomId] = useState<Pick<ChatBubble, 'roomId'> | null>(null);
   const [opponentId, setOpponentId] = useState('');
@@ -65,39 +64,44 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
   const getChatInfo = async () => {
     try {
       const { data } = await api.get(`chats/items/${itemId}`);
+      const { item, chatroomId, opponentId } = data.data;
 
-      setItemInfo(data.item);
-      setRoomId(data.chatId);
-      setOpponentId(data.opponentId);
+      setItemInfo({
+        ...item,
+        id: item.itemId,
+        price: getFormattedPrice(item.price),
+        status: parseInt(item.status),
+        thumbnailUrl: item.thumbnailImgUrl,
+      });
+      setRoomId(chatroomId);
+      setOpponentId(opponentId);
 
-      if (roomId) {
-        await getChatBubbles();
-      } else {
-        // TODO: chatId, chatBubbles가 null이고 first bubble이 입력되면 chatId를 생성
-        await createChatId();
+      if (chatroomId) {
+        // await getChatBubbles(chatroomId);
       }
     } catch (error) {
       // 오류 처리
     }
   };
 
-  const createChatId = async () => {
+  const createChatRoomId = async () => {
     try {
       const { data } = await api.post('/chats', {
         itemId,
       });
-      setRoomId(data.chatId);
+
+      setRoomId(data.data);
+      console.log(data);
     } catch (error) {
       // 오류 처리
     }
   };
 
-  const getChatBubbles = async () => {
-    const { data } = await api.get(`chat/${roomId}`);
+  const getChatBubbles = async (chatroomId: number) => {
+    const { data } = await api.get(`chat/${chatroomId}`);
     setChatBubbles(data);
   };
 
-  // // TODO: HTTP API 완성 시 주석 제거
   useEffect(() => {
     getChatInfo();
   }, []);
@@ -111,18 +115,20 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
         subscribe();
       },
     });
+
     client.current.activate();
   };
 
   const publish = (chat: string) => {
     if (!client.current?.connected) return;
+    console.log('publish');
 
     client.current.publish({
       destination: '/pub/message',
       body: JSON.stringify({
-        roomId: 'room1',
-        from: 2,
-        message: chat,
+        roomId,
+        from: userId,
+        contents: chat,
       }),
     });
 
@@ -130,8 +136,9 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
   };
 
   const subscribe = () => {
-    client.current?.subscribe('/sub/room1', (body) => {
+    client.current?.subscribe(`/sub/${roomId}`, (body) => {
       const jsonBody = JSON.parse(body.body);
+      console.log(jsonBody);
       setChatBubbles((_chatList) => [..._chatList, jsonBody]);
     });
   };
@@ -146,14 +153,32 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
     setChat(event.target.value);
   };
 
-  const handleSubmit = (chat: string) => {
+  const handleSubmit = async (chat: string) => {
+    console.log('handleSubmit!!!!!! roomId:', roomId);
+    if (!roomId) {
+      console.log('room id is not defined');
+      await createChatRoomId();
+      await connect();
+    }
+
     publish(chat);
   };
 
+  // 새로운 채팅방일 경우 로직
+  // 1. createChatRoomId
+  // 2. connect : 채팅 서버와 연결
+  // 3. publish(roomId) : 2번이 되어야 3번이 가능
+
   useEffect(() => {
-    // TODO: HTTP API 완성 시 주석으로 로직 변경
-    // roomId && connect();
-    connect();
+    // const isConnect = client.current?.connected
+
+    // if (roomId && !isConnect) {
+    //   connect();
+    // }
+
+    console.log('useEffect roomId:', roomId);
+    roomId && connect();
+    // connect();
 
     return () => disconnect();
   }, [roomId]);
@@ -193,7 +218,7 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
 
             const renderBubbleComponent = (
               <BubbleComponent>
-                <span>{bubble.message}</span>
+                <span>{bubble.contents}</span>
               </BubbleComponent>
             );
 
