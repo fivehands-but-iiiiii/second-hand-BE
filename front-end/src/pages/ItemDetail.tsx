@@ -322,8 +322,8 @@ const ItemDetail = ({
 };
 
 const MyNavBar = styled(NavBar)`
-  /* NOTE: slick의 기본 z-index 값이 10000임 */
-  z-index: 10001;
+  /* NOTE: slick의 기본 z-index 값이 1000임 */
+  z-index: 10010;
 `;
 
 const MyItemInfo = styled.div`

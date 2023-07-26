@@ -17,6 +17,8 @@ const MyPortalLayout = styled.div`
   height: 100vh;
   background-color: ${({ theme }) => theme.colors.neutral.background};
   color: ${({ theme }) => theme.colors.neutral.text};
+  /* NOTE: slick의 기본 z-index 값이 10000임 */
+  z-index: 11000;
   overflow: auto;
   -ms-overflow-style: none;
   &::-webkit-scrollbar {

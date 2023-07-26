@@ -20,10 +20,6 @@ const Carousel = ({ itemTitle, images }: CarouselProps) => {
 
   const settings = {
     dots: true,
-    className: 'center',
-    infinite: true,
-    centerPadding: '60px',
-    slidesToShow: 1,
     swipeToSlide: true,
     arrows: false,
   };
@@ -44,9 +40,6 @@ const Carousel = ({ itemTitle, images }: CarouselProps) => {
 };
 
 const MyContainer = styled.div`
-  & .slick-slide div {
-    display: flex !important;
-  }
   & .slick-dots {
     position: absolute;
     top: 450px;
@@ -59,12 +52,13 @@ const MyImgContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 0;
   margin-bottom: 20px;
 `;
 
 const MyCarouselImg = styled.img`
-  height: 419px;
+  height: 100%;
+  width: 100%;
+  margin: 0 auto;
   object-fit: cover;
 `;
 
