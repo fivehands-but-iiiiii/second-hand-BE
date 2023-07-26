@@ -88,6 +88,7 @@ public class Chatroom extends BasedTimeEntity {
                 return;
             }
             this.chatroomStatus = ChatroomStatus.SELLER_ONLY;
+            return;
         } else if (this.chatroomStatus == ChatroomStatus.SELLER_ONLY && isBuyer) {
             return;
         } else if (this.chatroomStatus == ChatroomStatus.BUYER_ONLY && isSeller) {
