@@ -41,8 +41,8 @@ public class ChatroomService {
         return chatRoomRepository.findByBuyer_IdAndItem_Id(memberId, itemId);
     }
 
-    public Optional<Chatroom> findByChatroomId(String chatroomId) {
-        return chatRoomRepository.findByChatroomId(UUID.fromString(chatroomId));
+    public Chatroom findByChatroomId(String chatroomId) throws ExistChatRoomException {
+        return chatRoomRepository.findByChatroomId(UUID.fromString(chatroomId)).orElseThrow(() -> new ExistChatRoomException("해당하는 채팅방이 없습니다."));
     }
 
     public ChatroomList findChatroomListByMember(Pageable page, Member member) {
