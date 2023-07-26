@@ -71,4 +71,10 @@ public class ChatroomFacade {
 
         return chatRoomService.create(item, buyer);
     }
+
+    public void exitChatroom(String chatId, Long memberId) throws ExistMemberIdException, ExistChatRoomException, NotChatroomMemberException {
+        Member member = memberService.findById(memberId);
+        Chatroom chatroom = chatRoomService.findByChatroomId(chatId);
+        chatRoomService.exitChatroom(chatroom, member);
+    }
 }

@@ -5,6 +5,7 @@ import com.team5.secondhand.api.chatroom.dto.response.ChatroomList;
 import com.team5.secondhand.api.chatroom.dto.response.ChatroomSummary;
 import com.team5.secondhand.api.chatroom.exception.BuyerException;
 import com.team5.secondhand.api.chatroom.exception.ExistChatRoomException;
+import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
 import com.team5.secondhand.api.chatroom.repository.ChatroomRepository;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.member.domain.Member;
@@ -60,5 +61,10 @@ public class ChatroomService {
                 .collect(Collectors.toList());
 
         return ChatroomList.of(chatroomSummaries, page.getPageNumber(), chatroomSlice.hasNext(), chatroomSlice.hasPrevious());
+    }
+
+    public void exitChatroom(Chatroom chatroom, Member member) throws NotChatroomMemberException {
+        chatroom.exitMember(member);
+        chatRoomRepository.save(chatroom);
     }
 }
