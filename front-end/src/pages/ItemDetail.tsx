@@ -11,6 +11,7 @@ import {
 import PopupSheet from '@common/PopupSheet/PopupSheet';
 import SubTabBar from '@common/TabBar/SubTabBar';
 import { CategoryInfo } from '@components/home/category';
+import Carousel from '@components/home/ItemDetail/Carousel';
 import { ItemStatus } from '@components/ItemStatus';
 import { useCategories } from '@components/layout/MobileLayout';
 import PortalLayout from '@components/layout/PortalLayout';
@@ -40,7 +41,7 @@ interface ItemSeller {
   memberId: string;
 }
 
-interface ItemImages {
+export interface ItemImages {
   order: number;
   url: string;
 }
@@ -245,7 +246,7 @@ const ItemDetail = ({
   return (
     <PortalLayout>
       <div>
-        <NavBar
+        <MyNavBar
           left={
             <button onClick={() => handleBackBtnClick(0)}>
               <Icon name={'chevronLeft'} />
@@ -259,20 +260,7 @@ const ItemDetail = ({
             )
           }
         />
-        <MyImgDetail>
-          <MyImages>
-            {images.map((image) => (
-              <img key={image.order} src={image.url} alt={title} />
-            ))}
-          </MyImages>
-          {images.length > 1 && (
-            <MyImgIcons>
-              {images.map((image) => (
-                <Icon key={image.order} name={'selected'} size="xxs" />
-              ))}
-            </MyImgIcons>
-          )}
-        </MyImgDetail>
+        <Carousel images={images} itemTitle={title} />
         <MyItemInfo>
           {isMyItem || (
             <MySellerDetail>
@@ -333,31 +321,9 @@ const ItemDetail = ({
   );
 };
 
-const MyImgDetail = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  height: 491px;
-`;
-
-const MyImages = styled.div`
-  /* position: relative; */
-  overflow: hidden;
-  width: 100%;
-  > img {
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
-  }
-`;
-
-const MyImgIcons = styled.div`
-  position: absolute;
-  /* bottom: 0; */
-  top: 546px;
-  display: flex;
-  gap: 10px;
-  margin-bottom: 18px;
+const MyNavBar = styled(NavBar)`
+  /* NOTE: slick의 기본 z-index 값이 10000임 */
+  z-index: 10001;
 `;
 
 const MyItemInfo = styled.div`
