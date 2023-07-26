@@ -106,6 +106,7 @@ const ItemDetail = ({
     price,
     isMyItem,
   } = itemDetailInfo;
+  const [onRefresh, setOnRefresh] = useState(false);
   const likeIcon = isLike ? 'fullHeart' : 'heart';
 
   const statusLabel = useMemo(() => {
@@ -145,7 +146,6 @@ const ItemDetail = ({
 
   const handleLike = async () => {
     let likesCount = itemDetailInfo.likesCount;
-
     if (isLike) {
       try {
         await api.delete(`/wishlist/like?itemId=${id}`);
@@ -192,7 +192,11 @@ const ItemDetail = ({
   const handleViewMorePopup = () =>
     setIsMoreViewPopupOpen(!isMoreViewPopupOpen);
 
-  const handleNewModal = () => setIsNewModalOpen(!isNewModalOpen);
+  const handleNewModal = () => {
+    setIsNewModalOpen(!isNewModalOpen);
+    // TODO: EDit을 하고 변경사항이 있을 때만 새로고침을 해야하는데 지금은 닫으면 무조건 새로고침함
+    if (isNewModalOpen) setOnRefresh(true);
+  };
 
   const mapItemDetailInfo = (data: any) => {
     const formattedPrice = data.price
@@ -216,19 +220,25 @@ const ItemDetail = ({
     setItemDetailInfo(mappedDetails);
   };
 
+  const getItemDetail = async () => {
+    try {
+      const {
+        data: { data },
+      } = await api.get(`/items/${id}`);
+      mapItemDetailInfo(data);
+    } catch (error) {
+      console.error(`Failed to get item info: ${error}`);
+    }
+  };
+
   useEffect(() => {
-    const getItemDetail = async () => {
-      try {
-        const {
-          data: { data },
-        } = await api.get(`/items/${id}`);
+    if (onRefresh) {
+      getItemDetail();
+      setOnRefresh(false);
+    }
+  }, [onRefresh]);
 
-        mapItemDetailInfo(data);
-      } catch (error) {
-        console.error(`Failed to get item info: ${error}`);
-      }
-    };
-
+  useEffect(() => {
     getItemDetail();
   }, []);
 

@@ -102,13 +102,19 @@ const ItemEditor = ({
   }, [title, region, category, files]);
 
   const handleSubmit = async () => {
-    if (isEdit) await handleSubmitEdit();
-    else await handleSubmitNew();
-    handleClose();
-    // TODO: 요청이 성공되면 닫고, 실패하면 그대로 띄워놓기
+    try {
+      if (isEdit) {
+        await putEdit();
+      } else {
+        await postNew();
+      }
+      handleClose();
+    } catch (error) {
+      console.error('error');
+    }
   };
 
-  const handleSubmitEdit = async () => {
+  const putEdit = async () => {
     if (!contents || !priceRef.current) return;
     try {
       const newFiles = await editFiles();
@@ -168,7 +174,7 @@ const ItemEditor = ({
     }
   };
 
-  const handleSubmitNew = async () => {
+  const postNew = async () => {
     if (!contents || !priceRef.current) return;
     const formData = new FormData();
     files.forEach(({ file }) => {
