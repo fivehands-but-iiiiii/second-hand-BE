@@ -57,16 +57,21 @@ const ChatPage = () => {
   const { itemId } = useParams();
 
   const title = '채팅';
-  const [chatList] = useState(mockChatList);
-  const isExistChatList = !!chatList.length;
+  const [page, setPage] = useState(0);
+  const [chatList, setChatList] = useState(mockChatList);
+  const isChatListExist = !!chatList.length;
 
   const getChatList = async () => {
-    const isExistItemId = !!itemId;
-    const itemIdPath = isExistItemId ? `?itemId=${itemId}` : '';
+    const isItemIdExist = !!itemId;
+    const itemIdPath = isItemIdExist ? `&itemId=${itemId}` : '';
 
     try {
-      const { data } = await api.get(`/chats${itemIdPath}`);
-      return data;
+      const { data: chatList } = await api.get(
+        `/chats?page=${page}${itemIdPath}`,
+      );
+
+      setPage(chatList.page);
+      setChatList(chatList);
     } catch (error) {
       console.error(error);
     }
@@ -79,7 +84,7 @@ const ChatPage = () => {
   return (
     <>
       <NavBar center={title} />
-      {isExistChatList ? (
+      {isChatListExist ? (
         <ChatRoomList chatItems={chatList} />
       ) : (
         <BlankPage title={title} />
