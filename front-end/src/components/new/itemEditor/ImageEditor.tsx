@@ -78,7 +78,7 @@ const MyImageBox = styled.li`
 const MyThumbnail = styled.div`
   position: absolute;
   width: 100%;
-  bottom: 5px;
+  bottom: 0px;
   padding: 4px 8px;
   border-radius: 0 0 10px 10px;
   background-color: ${({ theme }) => theme.colors.neutral.overlay};

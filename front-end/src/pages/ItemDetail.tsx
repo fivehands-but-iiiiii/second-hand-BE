@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import Icon from '@assets/Icon';
 import Button from '@common/Button';
@@ -11,7 +12,9 @@ import PopupSheet from '@common/PopupSheet/PopupSheet';
 import SubTabBar from '@common/TabBar/SubTabBar';
 import { CategoryInfo } from '@components/home/category';
 import { ItemStatus } from '@components/ItemStatus';
+import { useCategories } from '@components/layout/MobileLayout';
 import PortalLayout from '@components/layout/PortalLayout';
+import New from '@components/new/New';
 import { formatNumberToSI } from '@utils/formatNumberToSI';
 import getElapsedTime from '@utils/getElapsedTime';
 
@@ -103,6 +106,7 @@ const ItemDetail = ({
     price,
     isMyItem,
   } = itemDetailInfo;
+  const [onRefresh, setOnRefresh] = useState(false);
   const likeIcon = isLike ? 'fullHeart' : 'heart';
 
   const statusLabel = useMemo(() => {
@@ -114,6 +118,9 @@ const ItemDetail = ({
 
     return statusType[status];
   }, [status]);
+
+  const categories = useCategories();
+  const [isNewModalOpen, setIsNewModalOpen] = useState(false);
 
   const handleStatusSheet = async (status: ItemStatus) => {
     try {
@@ -133,13 +140,12 @@ const ItemDetail = ({
         console.error(`Failed to request: ${error}`);
       }
     } else if (type === 'edit') {
-      // TODO: 수정 페이지로 이동!
+      setIsNewModalOpen(true);
     }
   };
 
   const handleLike = async () => {
     let likesCount = itemDetailInfo.likesCount;
-
     if (isLike) {
       try {
         await api.delete(`/wishlist/like?itemId=${id}`);
@@ -186,6 +192,12 @@ const ItemDetail = ({
   const handleViewMorePopup = () =>
     setIsMoreViewPopupOpen(!isMoreViewPopupOpen);
 
+  const handleNewModal = () => {
+    setIsNewModalOpen(!isNewModalOpen);
+    // TODO: EDit을 하고 변경사항이 있을 때만 새로고침을 해야하는데 지금은 닫으면 무조건 새로고침함
+    if (isNewModalOpen) setOnRefresh(true);
+  };
+
   const mapItemDetailInfo = (data: any) => {
     const formattedPrice = data.price
       ? `${data.price.toLocaleString()}원`
@@ -208,19 +220,25 @@ const ItemDetail = ({
     setItemDetailInfo(mappedDetails);
   };
 
+  const getItemDetail = async () => {
+    try {
+      const {
+        data: { data },
+      } = await api.get(`/items/${id}`);
+      mapItemDetailInfo(data);
+    } catch (error) {
+      console.error(`Failed to get item info: ${error}`);
+    }
+  };
+
   useEffect(() => {
-    const getItemDetail = async () => {
-      try {
-        const {
-          data: { data },
-        } = await api.get(`/items/${id}`);
+    if (onRefresh) {
+      getItemDetail();
+      setOnRefresh(false);
+    }
+  }, [onRefresh]);
 
-        mapItemDetailInfo(data);
-      } catch (error) {
-        console.error(`Failed to get item info: ${error}`);
-      }
-    };
-
+  useEffect(() => {
     getItemDetail();
   }, []);
 
@@ -301,6 +319,16 @@ const ItemDetail = ({
           onSheetClose={handleViewMorePopup}
         ></PopupSheet>
       )}
+      {isNewModalOpen &&
+        createPortal(
+          <New
+            isEdit={true}
+            origin={itemDetailInfo}
+            categoryInfo={categories}
+            onClick={handleNewModal}
+          />,
+          document.body,
+        )}
     </PortalLayout>
   );
 };

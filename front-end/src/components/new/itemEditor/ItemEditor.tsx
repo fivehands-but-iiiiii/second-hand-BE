@@ -13,12 +13,12 @@ import NavBar from '@common/NavBar';
 import SubTabBar from '@common/TabBar/SubTabBar';
 import Textarea from '@common/Textarea';
 import { InputFile } from '@components/login/Join';
+import useAPI from '@hooks/useAPI';
 import { getPreviewURL } from '@utils/convertFile';
-import { getFormattedPrice } from '@utils/formatText';
+import { getFormattedPrice, getFormattedNumber } from '@utils/formatText';
 
 import { styled } from 'styled-components';
 
-import api from '../../../api';
 import ImageEditor from '../itemEditor/ImageEditor';
 import TitleEditor from '../itemEditor/TitleEditor';
 
@@ -33,11 +33,6 @@ export interface CategoryInfo {
   selectedId: number;
 }
 
-interface ImageFile {
-  order: number;
-  url: string;
-}
-
 export interface ItemInfo {
   id: number;
   title: string;
@@ -45,13 +40,22 @@ export interface ItemInfo {
   region: number;
   category: number;
   price: string;
-  images: ImageFile[];
+  images: string[];
+}
+
+export interface OriginItem {
+  id: number;
+  title: string;
+  contents: string;
+  category: string | number;
+  price: string;
+  images: { url: string }[];
 }
 
 interface ItemEditorProps {
   categoryInfo: Category[];
   isEdit?: boolean;
-  origin?: ItemInfo;
+  origin?: OriginItem;
   handleClose: () => void;
 }
 
@@ -61,7 +65,7 @@ const ItemEditor = ({
   origin,
   handleClose,
 }: ItemEditorProps) => {
-  // 지역정보 가져오기
+  const pageTitle = isEdit ? '상품 수정' : '새 상품 등록';
   const [title, setTitle] = useState('');
   const [firstClickCTitle, setFirstClickCTitle] = useState(false);
   const [contents, setContents] = useState('');
@@ -75,6 +79,7 @@ const ItemEditor = ({
   });
   const [files, setFiles] = useState<InputFile[]>([]);
   const [isFormValid, setFormValid] = useState(true);
+  const { request } = useAPI();
 
   const handleFiles = async ({ target }: ChangeEvent<HTMLInputElement>) => {
     const file = target.files?.[0];
@@ -96,8 +101,80 @@ const ItemEditor = ({
     else return true;
   }, [title, region, category, files]);
 
-  // TODO: 수정 api 변경필요함
   const handleSubmit = async () => {
+    try {
+      if (isEdit) {
+        await putEdit();
+      } else {
+        await postNew();
+      }
+      handleClose();
+    } catch (error) {
+      console.error('error');
+    }
+  };
+
+  const putEdit = async () => {
+    if (!contents || !priceRef.current) return;
+    try {
+      const newFiles = await editFiles();
+      if (!newFiles) return;
+      const newImages = [
+        ...files
+          .filter(({ preview, file }) => (!file ? preview : null))
+          .map(({ preview }) => ({ url: preview })),
+        ...newFiles.map((image) => ({ url: image })),
+      ];
+      const editedData = {
+        title: title,
+        contents: contents,
+        category: category.selectedId,
+        region: region,
+        price: parseInt(priceRef.current.value.replace(/,/g, '')),
+        images: newImages,
+        firstImageUrl: newImages && newImages[0],
+      };
+      const test = await request({
+        url: `/items/${origin?.id}`,
+        method: 'put',
+        config: {
+          data: editedData,
+        },
+      });
+      console.log(test);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const editFiles = async () => {
+    try {
+      const newImages = await Promise.all(
+        files
+          .filter(({ file }) => file)
+          .map(async ({ file }) => {
+            const formData = new FormData();
+            formData.append('itemImages', file as Blob, file?.name);
+            const { data } = await request({
+              url: '/items/image',
+              method: 'post',
+              config: {
+                data: formData,
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                },
+              },
+            });
+            return data.imageUrl;
+          }),
+      );
+      return newImages;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const postNew = async () => {
     if (!contents || !priceRef.current) return;
     const formData = new FormData();
     files.forEach(({ file }) => {
@@ -112,15 +189,19 @@ const ItemEditor = ({
     );
     formData.append('region', region.toString());
     try {
-      await api.post('/items', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      await request({
+        url: '/items',
+        method: 'post',
+        config: {
+          data: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         },
       });
     } catch (error) {
       console.log(error);
     }
-    handleClose();
   };
 
   const handleDeleteFile = ({
@@ -137,17 +218,27 @@ const ItemEditor = ({
 
   const getRandomCategories = useCallback((): Category[] => {
     const RANDOM_COUNT = 3;
-    const randomCategories: Set<Category> = new Set();
-    while (randomCategories.size < RANDOM_COUNT) {
-      const randomIndex = Math.floor(Math.random() * categoryInfo.length);
-      randomCategories.add(categoryInfo[randomIndex]);
+    const usedId = new Set();
+    const randomCategories: Category[] = [];
+    if (isEdit && origin) {
+      const categoryId = categoryInfo.find(
+        (item) => item.title === origin.category,
+      )?.id as number;
+      randomCategories.push({
+        id: categoryId,
+        title: origin.category as string,
+      });
+      usedId.add(categoryId);
     }
-    const titleCategories = [...randomCategories];
-    return titleCategories;
+    while (randomCategories.length < RANDOM_COUNT) {
+      const randomIndex = Math.floor(Math.random() * categoryInfo.length);
+      if (!usedId.has(randomIndex))
+        randomCategories.push(categoryInfo[randomIndex]);
+    }
+    return randomCategories;
   }, [categoryInfo]);
 
   const handleRecommendation = useCallback(() => {
-    if (isEdit) return;
     if (firstClickCTitle) return;
     const timeOutId = setTimeout(() => {
       const category = getRandomCategories();
@@ -206,15 +297,51 @@ const ItemEditor = ({
     setContents(value);
   };
 
+  const getMappedOrigin = (origin: OriginItem) => {
+    if (!origin) return;
+    const formattedPrice = getFormattedNumber(origin.price);
+    const categoryId = categoryInfo.find(
+      (item) => item.title === origin.category,
+    );
+    const mappedOrigin = {
+      ...origin,
+      price: formattedPrice.toString(),
+      category: categoryId?.id,
+    };
+    setTitle(mappedOrigin.title);
+    setContents(mappedOrigin.contents);
+    setPrice(mappedOrigin.price);
+    setCategory((prev) => ({
+      ...prev,
+      selectedId: mappedOrigin.category as number,
+    }));
+    setFiles(
+      mappedOrigin.images.map((image) => ({
+        preview: image.url,
+      })),
+    );
+  };
+
   useEffect(() => {
     setFormValid(validateForm());
   }, [title, region, category, files, validateForm]);
+
+  useEffect(() => {
+    if (isEdit && origin) {
+      getMappedOrigin(origin);
+      const category = getRandomCategories();
+      setCategory((prev) => ({
+        ...prev,
+        recommendedCategory: category,
+      }));
+    }
+  }, [isEdit, origin]);
 
   return (
     <>
       <NavBar
         left={<button onClick={handleClose}>닫기</button>}
-        center={'새 상품 등록'}
+        center={pageTitle}
         right={
           <button disabled={!isFormValid} onClick={handleSubmit}>
             완료
