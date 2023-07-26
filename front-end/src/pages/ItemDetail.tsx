@@ -265,7 +265,7 @@ const ItemDetail = ({
   const navigate = useNavigate();
 
   const handleChatButton = () => {
-    isMyItem ? navigate(`chat-list/${id}`) : handleChatRoom();
+    isMyItem ? navigate(`/chat-list/${id}`) : handleChatRoom();
   };
 
   const handleNewModal = () => {
