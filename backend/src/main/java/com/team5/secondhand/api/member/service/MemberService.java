@@ -34,7 +34,6 @@ public class MemberService implements JoinService {
 
         Member newMember = joinDto.toMember();
         newMember.updatePlatform(joinPlatform);
-
         newMember.updateBasedRegions(regions);
         memberRepository.save(newMember);
 
