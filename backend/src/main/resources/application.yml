@@ -18,3 +18,7 @@ spring:
 server:
   address:
     domain: "http://fivehands-but-iiiiii.site"
+const:
+  chat:
+    bucket: "chatroom:"
+    page-size: 25

@@ -1,10 +1,7 @@
 package com.team5.secondhand.chat.bubble.domain;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
@@ -16,40 +13,54 @@ import java.util.UUID;
 @Getter
 @ToString
 @RedisHash("chat-bubble")
-public class ChatBubble implements Serializable {
+@NoArgsConstructor
+public class ChatBubble implements Serializable, Comparable {
     @Id
-    private final String id;
+    private String id;
     @Indexed
-    private final String roomId;
-    private final String from;
-    private final String message;
-    private final String createdAt;
+    private String roomId;
+    private String sender;
+    private String message;
+    private String createdAt;
 
     @Builder
-    public ChatBubble(String id, String roomId, String from, String message, String createdAt) {
+    private ChatBubble(String id, String roomId, String sender, String message, String createdAt) {
         this.id = id;
         this.roomId = roomId;
-        this.from = from;
+        this.sender = sender;
         this.message = message;
         this.createdAt = createdAt;
     }
 
-    @JsonCreator
-    public static ChatBubble create(String roomId, String sender, String message) {
-        return ChatBubble.builder()
-                .id(generateKey())
-                .roomId(roomId)
-                .from(sender)
-                .message(message)
-                .createdAt(Instant.now().toString())
-                .build();
+    private static String generateKey(String id) {
+        if (id==null) {
+            return UUID.randomUUID().toString().replace("-", "");
+        }
+        return id;
     }
 
-    private static String generateKey() {
-        return UUID.randomUUID().toString().replace("-","");
+    private String generateCreatedAt(String time) {
+        if (time == null) {
+            return Instant.now().toString();
+        }
+        return time;
     }
 
     public Boolean isSender(MemberDetails loginMember) {
-        return this.from.equals(loginMember.getMemberId());
+        return this.sender.equals(loginMember.getMemberId());
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        ChatBubble bubble = (ChatBubble) o;
+        if (Instant.parse(this.createdAt).isBefore(Instant.parse(bubble.createdAt))) {
+            return 1;
+        }
+        return -1;
+    }
+
+    public void ready() {
+        this.id = generateKey(id);
+        this.createdAt = generateCreatedAt(createdAt);
     }
 }
