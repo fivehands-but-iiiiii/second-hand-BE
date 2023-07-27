@@ -42,7 +42,7 @@ public class ChatroomFacade {
     }
 
     public ChatroomDetails findChatroomInfo(String chatroomId, long memberId) throws ExistChatRoomException, NotChatroomMemberException, ExistMemberIdException {
-        Chatroom chatroom = chatRoomService.findByChatroomId(chatroomId).orElseThrow(() -> new ExistChatRoomException("해당하는 채팅방이 없습니다."));
+        Chatroom chatroom = chatRoomService.findByChatroomId(chatroomId);
         Member member = memberService.findById(memberId);
 
         if (!chatroom.isChatroomMember(member)) {
@@ -70,5 +70,11 @@ public class ChatroomFacade {
         Item item = itemService.findById(itemId);
 
         return chatRoomService.create(item, buyer);
+    }
+
+    public void exitChatroom(String chatId, Long memberId) throws ExistMemberIdException, ExistChatRoomException, NotChatroomMemberException {
+        Member member = memberService.findById(memberId);
+        Chatroom chatroom = chatRoomService.findByChatroomId(chatId);
+        chatRoomService.exitChatroom(chatroom, member);
     }
 }
