@@ -1,6 +1,8 @@
 package com.team5.secondhand.api.oauth.service;
 
-import com.team5.secondhand.api.oauth.config.OAuthLocalProperties;
+import com.team5.secondhand.api.member.domain.OauthEnv;
+import com.team5.secondhand.api.oauth.config.OAuthProperties;
+import com.team5.secondhand.api.oauth.config.OAuthProvider;
 import com.team5.secondhand.api.oauth.config.OAuthServerProperties;
 import com.team5.secondhand.api.oauth.dto.OAuthToken;
 import com.team5.secondhand.api.oauth.dto.UserProfile;
@@ -15,11 +17,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequiredArgsConstructor
 @Service
 public class OAuthService {
-    private final OAuthLocalProperties env;
     private final OAuthServerProperties requestServer;
+    private final OAuthProvider oAuthProvider;
 
-    public UserProfile getGithubUser(String code) {
-        OAuthToken oAuthToken = getToken(code);
+    public UserProfile getGithubUser(String code, OauthEnv env) {
+        OAuthProperties oAuthProperties = oAuthProvider.createOAuthProperties(env);
+        OAuthToken oAuthToken = getToken(code, oAuthProperties);
         UserProfile user = getUserProfile(oAuthToken);
         return user;
     }
@@ -36,7 +39,7 @@ public class OAuthService {
                 .block();
     }
 
-    private OAuthToken getToken(String code) {
+    private OAuthToken getToken(String code, OAuthProperties env) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("code", code);
         formData.add("client_id", env.getClientId());
