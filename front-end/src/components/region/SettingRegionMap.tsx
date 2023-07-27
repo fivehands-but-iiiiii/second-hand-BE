@@ -51,7 +51,7 @@ const SettingRegionMap = ({ regions, onPortal }: SettingRegionMapProps) => {
     setMap(null);
   }, []);
 
-  const handleRegions = (regions: RegionInfo[]) => {
+  const handleUpdateRegions = (regions: RegionInfo[]) => {
     setUpdatedRegions(regions);
   };
 
@@ -85,7 +85,7 @@ const SettingRegionMap = ({ regions, onPortal }: SettingRegionMapProps) => {
         )}
         <SettingRegionSelector
           regions={updatedRegions}
-          handleRegions={handleRegions}
+          onSetRegions={handleUpdateRegions}
         />
       </MySettingRegionMap>
     </PortalLayout>

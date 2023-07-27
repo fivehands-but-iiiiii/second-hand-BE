@@ -18,22 +18,17 @@ export interface Region {
 
 interface SearchRegionsProps {
   onPortal: () => void;
-  handleSelectRegion: (id: number, district: string) => void;
+  onSelectRegion: (id: number, district: string) => void;
 }
 
-const SearchRegions = ({
-  onPortal,
-  handleSelectRegion,
-}: SearchRegionsProps) => {
+const SearchRegions = ({ onPortal, onSelectRegion }: SearchRegionsProps) => {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [address, setAddress] = useState('역삼1동');
   const [regionList, setRegionList] = useState<Region[]>([]);
   const { request } = useAPI();
   const { location: currentLocation } = useGeoLocation();
 
-  const getCurrentRegionList = () => {
-    getCurrentLocation();
-  };
+  const getCurrentRegionList = () => getCurrentLocation();
 
   const getCurrentLocation = useCallback(() => {
     if (!currentLocation.coords || !currentLocation.address) return;
@@ -83,10 +78,7 @@ const SearchRegions = ({
         {regionList.length > 0 ? (
           <ul>
             {regionList.map(({ id, city, county, district }: Region) => (
-              <MyRegion
-                key={id}
-                onClick={() => handleSelectRegion(id, district)}
-              >
+              <MyRegion key={id} onClick={() => onSelectRegion(id, district)}>
                 {city} {county} {district}
               </MyRegion>
             ))}

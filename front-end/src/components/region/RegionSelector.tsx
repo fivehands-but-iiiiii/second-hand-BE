@@ -7,48 +7,42 @@ import palette from '@styles/colors';
 
 import { styled } from 'styled-components';
 
-interface RegionButtonsProps {
+interface RegionSelectorProps {
   selectedRegions: RegionInfo[];
-  handleSwitchRegion: (id: number) => void;
-  handleRemoveRegion: (id: number) => void;
-  handleRegionModal: () => void;
+  onClickRegionButton: (id: number) => void;
+  onClickAddButton: () => void;
 }
 
 const RegionSelector = ({
   selectedRegions,
-  handleSwitchRegion,
-  handleRemoveRegion,
-  handleRegionModal,
-}: RegionButtonsProps) => {
+  onClickRegionButton,
+  onClickAddButton,
+}: RegionSelectorProps) => {
   const [regionMessage, setRegionMessage] = useState('');
+
   const regionButtons = useMemo(() => {
     const selectedRegionButtons = selectedRegions.map(
       ({ id, district, onFocus }) => {
-        const isActive = selectedRegions.length === 1 ? true : onFocus;
         return (
           <Button
             key={id}
             fullWidth
-            active={isActive}
-            onClick={() => handleSwitchRegion(id)}
+            active={onFocus}
+            onClick={() => onClickRegionButton(id)}
           >
             {district}
-            <Icon
-              name={'x'}
-              size={'xs'}
-              fill={palette.neutral.background}
-              onClick={() => handleRemoveRegion(id)}
-            />
+            <Icon name={'x'} size={'xs'} fill={palette.neutral.background} />
           </Button>
         );
       },
     );
     const addButton = (
-      <Button fullWidth onClick={handleRegionModal}>
+      <Button fullWidth onClick={onClickAddButton}>
         <Icon name={'plus'} size={'xs'} />
         위치추가
       </Button>
     );
+
     return selectedRegions.length < 2
       ? [...selectedRegionButtons, addButton]
       : selectedRegionButtons;

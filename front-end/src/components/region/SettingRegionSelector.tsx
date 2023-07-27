@@ -8,13 +8,13 @@ import SearchRegions from './SearchRegions';
 
 interface SettingRegionSelectorProps {
   regions?: RegionInfo[];
-  handleRegions: (regions: RegionInfo[]) => void;
+  onSetRegions: (regions: RegionInfo[]) => void;
 }
 
 // TODO: 지역 설정하고 닫기 누르면 요청하는 로직추가
 const SettingRegionSelector = ({
   regions,
-  handleRegions,
+  onSetRegions,
 }: SettingRegionSelectorProps) => {
   const [selectedRegions, setSelectedRegions] = useState<RegionInfo[]>(
     regions || [],
@@ -46,14 +46,19 @@ const SettingRegionSelector = ({
     );
   };
 
-  const handleSwitchRegion = (id: number) => {
-    setSelectedRegions((prev) =>
-      prev.map((region) =>
-        region.id === +id
-          ? { ...region, onFocus: true }
-          : { ...region, onFocus: false },
-      ),
-    );
+  const handleRegionButtonsClick = (id: number) => {
+    const isSelectedId =
+      selectedRegions.find((region) => region.onFocus)?.id === id;
+    if (isSelectedId) handleRemoveRegion(id);
+    else {
+      setSelectedRegions((prev) =>
+        prev.map((region) =>
+          region.id === +id
+            ? { ...region, onFocus: true }
+            : { ...region, onFocus: false },
+        ),
+      );
+    }
   };
 
   const handleRegionModal = () => {
@@ -61,22 +66,21 @@ const SettingRegionSelector = ({
   };
 
   useEffect(() => {
-    handleRegions(selectedRegions);
+    onSetRegions(selectedRegions);
   }, [selectedRegions]);
 
   return (
     <>
       <RegionSelector
         selectedRegions={selectedRegions}
-        handleSwitchRegion={handleSwitchRegion}
-        handleRemoveRegion={handleRemoveRegion}
-        handleRegionModal={handleRegionModal}
+        onClickRegionButton={handleRegionButtonsClick}
+        onClickAddButton={handleRegionModal}
       />
       {isSettingRegionsModalOpen &&
         createPortal(
           <SearchRegions
             onPortal={handleRegionModal}
-            handleSelectRegion={handleSelectRegion}
+            onSelectRegion={handleSelectRegion}
           />,
           document.body,
         )}
