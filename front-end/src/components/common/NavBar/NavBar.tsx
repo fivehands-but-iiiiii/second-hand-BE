@@ -29,7 +29,7 @@ const NavBar = ({
   return (
     <MyNavBar className={className}>
       <MyNavBarTitle>
-        <MyLeftTitle>{left}</MyLeftTitle>
+        {left && <MyLeftTitle>{left}</MyLeftTitle>}
         <MyCenter>{center}</MyCenter>
         {right && <MyRightTitle>{right}</MyRightTitle>}
       </MyNavBarTitle>
@@ -62,16 +62,17 @@ const MyNavBarTitle = styled.div`
   grid-template-columns: 1fr 1fr 1fr;
   height: 100%;
   padding: 10px 10px;
-  color: ${({ theme }) => theme.colors.neutral.textWeak};
   ${({ theme }) => theme.fonts.body};
 `;
 
 const MyLeftTitle = styled.p`
   text-align: left;
+  grid-column: 1;
 `;
 
 const MyRightTitle = styled.p`
   text-align: right;
+  grid-column: 3;
 `;
 
 const MyCenter = styled.p`
@@ -79,6 +80,7 @@ const MyCenter = styled.p`
   font-weight: 600;
   color: ${({ theme }) => theme.colors.neutral.textStrong};
   text-align: center;
+  grid-column: 2;
 `;
 
 const MyChildren = styled.div`

@@ -226,7 +226,7 @@ const Home = () => {
 
       setSaleItems((prevItems) => {
         const newSet = new Set(prevItems);
-        data.items.forEach((item: SaleItem) => newSet.add(item));
+        data.data.items.forEach((item: SaleItem) => newSet.add(item));
         return [...newSet];
       });
 
