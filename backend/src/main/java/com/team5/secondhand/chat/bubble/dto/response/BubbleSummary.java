@@ -15,10 +15,10 @@ public class BubbleSummary {
     private String senderId;
     private String contents;
     private Boolean isMine;
-    private Instant createdAt;
+    private String createdAt;
 
     @Builder
-    private BubbleSummary(String id, String senderId, String contents, Boolean isMine, Instant createdAt) {
+    private BubbleSummary(String id, String senderId, String contents, Boolean isMine, String createdAt) {
         this.id = id;
         this.senderId = senderId;
         this.contents = contents;
@@ -29,10 +29,10 @@ public class BubbleSummary {
     public static BubbleSummary from(ChatBubble bubble, MemberDetails loginMember) {
         return BubbleSummary.builder()
                 .id(bubble.getId())
-                .senderId(bubble.getFrom())
+                .senderId(bubble.getSender())
                 .contents(bubble.getMessage())
                 .isMine(bubble.isSender(loginMember))
-                .createdAt(Instant.parse(bubble.getCreatedAt()))
+                .createdAt(bubble.getCreatedAt())
                 .build();
     }
 }

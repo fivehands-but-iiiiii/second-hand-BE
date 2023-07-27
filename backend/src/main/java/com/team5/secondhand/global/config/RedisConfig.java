@@ -1,6 +1,8 @@
 package com.team5.secondhand.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.chat.bubble.service.RedisMessageSubscriber;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +50,22 @@ public class RedisConfig {
     }
 
     @Bean
+    public RedisTemplate<String, ChatBubble> redisChatBubbleTemplate() {
+        final RedisTemplate<String, ChatBubble> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory());
+        template.setKeySerializer(new StringRedisSerializer());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        Jackson2JsonRedisSerializer<ChatBubble> jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(ChatBubble.class);
+        jsonRedisSerializer.setObjectMapper(objectMapper);
+        template.setValueSerializer(jsonRedisSerializer);
+
+        return template;
+    }
+
+    @Bean
     public StringRedisTemplate stringRedisTemplate() {
         StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
         stringRedisTemplate.setKeySerializer(new StringRedisSerializer());
@@ -56,7 +74,6 @@ public class RedisConfig {
         return stringRedisTemplate;
     }
 
-    //channel(topic)으로 부터 메시지를 받고 주입된 구독자에게 비동기적으로 dispatch 하는 역할을 수행하는 컨테이너
     @Bean
     public RedisMessageListenerContainer redisContainer() {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
