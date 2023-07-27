@@ -170,7 +170,7 @@ const Join = () => {
             />
           )}
         </MyUserInfo>
-        <SettingRegionSelector handleRegions={handleUserRegions} />
+        <SettingRegionSelector onSetRegions={handleUserRegions} />
       </MyUserAccount>
     </MyJoin>
   );
