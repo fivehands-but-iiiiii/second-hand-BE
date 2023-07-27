@@ -91,7 +91,7 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
       });
 
       setRoomId(data.data);
-      console.log(data);
+      return data.data;
     } catch (error) {
       // 오류 처리
     }
@@ -113,6 +113,7 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
       brokerURL: 'ws://3.37.51.148:81/chat',
       onConnect: () => {
         subscribe();
+        chat && publish(chat);
       },
     });
 
@@ -120,8 +121,8 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
   };
 
   const publish = (chat: string) => {
+    console.log('publish!!!!!!!!!!!!');
     if (!client.current?.connected) return;
-    console.log('publish');
 
     client.current.publish({
       destination: '/pub/message',
@@ -154,11 +155,9 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
   };
 
   const handleSubmit = async (chat: string) => {
-    console.log('handleSubmit!!!!!! roomId:', roomId);
     if (!roomId) {
-      console.log('room id is not defined');
       await createChatRoomId();
-      await connect();
+      connect();
     }
 
     publish(chat);
@@ -170,13 +169,12 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
   // 3. publish(roomId) : 2번이 되어야 3번이 가능
 
   useEffect(() => {
-    // const isConnect = client.current?.connected
+    // const isConnect = client.current?.connected;
 
     // if (roomId && !isConnect) {
     //   connect();
     // }
 
-    console.log('useEffect roomId:', roomId);
     roomId && connect();
     // connect();
 
