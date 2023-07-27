@@ -1,19 +1,15 @@
 package com.team5.secondhand.api.oauth.config;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-
+@Getter @Setter
 @Configuration
-@Getter
-@Setter
-@ConfigurationProperties(prefix = "oauth")
-public class OAuthProperties {
+@ConfigurationProperties(prefix = "oauth.env.local")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class OAuthLocalProperties {
     private String clientId;
     private String clientSecret;
     private String redirectUri;
-    private String tokenUri;
-    private String userInfoUri;
 }
