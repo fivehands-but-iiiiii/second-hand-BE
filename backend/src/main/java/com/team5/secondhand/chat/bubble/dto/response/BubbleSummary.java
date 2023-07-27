@@ -6,14 +6,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.time.Instant;
-
 @Getter
 @RequiredArgsConstructor
 public class BubbleSummary {
     private String id;
     private String senderId;
-    private String contents;
+    private String message;
     private Boolean isMine;
     private String createdAt;
 
@@ -21,7 +19,7 @@ public class BubbleSummary {
     private BubbleSummary(String id, String senderId, String contents, Boolean isMine, String createdAt) {
         this.id = id;
         this.senderId = senderId;
-        this.contents = contents;
+        this.message = contents;
         this.isMine = isMine;
         this.createdAt = createdAt;
     }
