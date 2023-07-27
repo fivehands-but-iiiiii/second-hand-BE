@@ -4,7 +4,6 @@ import com.team5.secondhand.api.item.domain.ItemDetailImage;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @NoArgsConstructor
