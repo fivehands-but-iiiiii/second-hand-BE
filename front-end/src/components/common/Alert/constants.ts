@@ -1,6 +1,18 @@
+export type AlertActionType =
+  | 'delete'
+  | 'cancel'
+  | 'home'
+  | 'login'
+  | 'logout'
+  | 'leave';
+
 export interface AlertActionsProps {
-  id: string;
+  id: AlertActionType;
   action: string;
+}
+
+export interface AlertActions {
+  [key: string]: AlertActionsProps[];
 }
 
 export const ALERT_TITLE = {
@@ -10,7 +22,7 @@ export const ALERT_TITLE = {
   LOGIN: '로그인이 필요해요.',
 };
 
-export const ALERT_ACTIONS = {
+export const ALERT_ACTIONS: AlertActions = {
   DELETE: [
     { id: 'cancel', action: '취소' },
     { id: 'delete', action: '삭제' },

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
 import Alert from '@common/Alert/Alert';
@@ -141,19 +142,54 @@ const ItemDetail = ({
     setItemDetailInfo((prev) => ({ ...prev, status: status }));
   };
 
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [isLoginAlertOpen, setIsLoginAlertOpen] = useState(false);
 
   const handleViewMoreSheet = async (type: string) => {
     if (type === 'delete') {
-      setIsAlertOpen(true);
+      setIsDeleteAlertOpen(true);
     }
   };
 
-  const handleAlert = (type: string) => {
+  const handleAlert = (type: AlertActionsProps['id']) => {
+    if (type === 'leave' || type === 'logout') {
+      return;
+    }
+
+    const actions = {
+      delete: () => handleDeleteAlert(type),
+      cancel: () => setIsDeleteAlertOpen(false),
+      home: () => handleLoginAlert(type),
+      login: () => handleLoginAlert(type),
+    };
+
+    return actions[type]();
+  };
+
+  const handleDeleteAlert = (type: string) => {
     if (type === 'delete') {
       deleteItem();
+      setIsDeleteAlertOpen(false);
     } else {
-      setIsAlertOpen(false);
+      setIsDeleteAlertOpen(false);
+    }
+  };
+
+  const handleLoginAlertOpen = () => {
+    // TODO: 채팅하기 버튼에도 적용하기
+    setIsLoginAlertOpen(true);
+  };
+
+  const navigator = useNavigate();
+
+  const handleLoginAlert = (type: string) => {
+    if (type === 'home') {
+      handleBackBtnClick(0);
+      return;
+    }
+
+    if (type === 'login') {
+      navigator('/login');
     }
   };
 
@@ -191,7 +227,7 @@ const ItemDetail = ({
         likesCount: likesCount,
       }));
     } else {
-      <Alert isOpen={true}></Alert>;
+      handleLoginAlertOpen();
     }
   };
 
@@ -339,10 +375,6 @@ const ItemDetail = ({
           onSheetClose={handleViewMorePopup}
         ></PopupSheet>
       )}
-      <Alert isOpen={isAlertOpen}>
-        <Alert.Title>{ALERT_TITLE.DELETE('삭제')}</Alert.Title>
-        <Alert.Button>{alertButtons(ALERT_ACTIONS.DELETE)}</Alert.Button>
-      </Alert>
       {isNewModalOpen &&
         createPortal(
           <New
@@ -353,6 +385,14 @@ const ItemDetail = ({
           />,
           document.body,
         )}
+      <Alert isOpen={isDeleteAlertOpen}>
+        <Alert.Title>{ALERT_TITLE.DELETE('삭제')}</Alert.Title>
+        <Alert.Button>{alertButtons(ALERT_ACTIONS.DELETE)}</Alert.Button>
+      </Alert>
+      <Alert isOpen={isLoginAlertOpen}>
+        <Alert.Title>{ALERT_TITLE.LOGIN}</Alert.Title>
+        <Alert.Button>{alertButtons(ALERT_ACTIONS.LOGIN)}</Alert.Button>
+      </Alert>
     </PortalLayout>
   );
 };
