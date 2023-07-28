@@ -1,6 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
+import Alert from '@common/Alert/Alert';
+import {
+  ALERT_ACTIONS,
+  ALERT_TITLE,
+  AlertActionsProps,
+} from '@common/Alert/constants';
 import Button from '@common/Button';
 import NavBar from '@common/NavBar';
 import {
@@ -10,10 +18,14 @@ import {
 import PopupSheet from '@common/PopupSheet/PopupSheet';
 import SubTabBar from '@common/TabBar/SubTabBar';
 import { CategoryInfo } from '@components/home/category';
+import Carousel from '@components/home/ItemDetail/Carousel';
 import { ItemStatus } from '@components/ItemStatus';
+import { useCategories } from '@components/layout/MobileLayout';
 import PortalLayout from '@components/layout/PortalLayout';
+import New from '@components/new/New';
 import { formatNumberToSI } from '@utils/formatNumberToSI';
 import getElapsedTime from '@utils/getElapsedTime';
+import { getStoredValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
 
@@ -37,7 +49,7 @@ interface ItemSeller {
   memberId: string;
 }
 
-interface ItemImages {
+export interface ItemImages {
   order: number;
   url: string;
 }
@@ -70,6 +82,8 @@ const ItemDetail = ({
   categoryInfo,
   handleBackBtnClick,
 }: ItemDetailProps) => {
+  const isLogin = !!getStoredValue({ key: 'userInfo' });
+
   const [itemDetailInfo, setItemDetailInfo] = useState<ItemDetailInfo>({
     id: 0,
     seller: { id: 0, memberId: '' },
@@ -103,6 +117,7 @@ const ItemDetail = ({
     price,
     isMyItem,
   } = itemDetailInfo;
+  const [onRefresh, setOnRefresh] = useState(false);
   const likeIcon = isLike ? 'fullHeart' : 'heart';
 
   const statusLabel = useMemo(() => {
@@ -115,6 +130,9 @@ const ItemDetail = ({
     return statusType[status];
   }, [status]);
 
+  const categories = useCategories();
+  const [isNewModalOpen, setIsNewModalOpen] = useState(false);
+
   const handleStatusSheet = async (status: ItemStatus) => {
     try {
       await api.patch(`/items/${id}/status`, { status: status });
@@ -124,43 +142,96 @@ const ItemDetail = ({
     setItemDetailInfo((prev) => ({ ...prev, status: status }));
   };
 
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [isLoginAlertOpen, setIsLoginAlertOpen] = useState(false);
+
   const handleViewMoreSheet = async (type: string) => {
     if (type === 'delete') {
-      try {
-        await api.delete(`/items/${id}`);
-        handleBackBtnClick(0);
-      } catch (error) {
-        console.error(`Failed to request: ${error}`);
-      }
-    } else if (type === 'edit') {
-      // TODO: 수정 페이지로 이동!
+      setIsDeleteAlertOpen(true);
+    }
+    if (type === 'edit') {
+      setIsNewModalOpen(true);
+    }
+  };
+
+  const handleAlert = (type: AlertActionsProps['id']) => {
+    if (type === 'leave' || type === 'logout') {
+      return;
+    }
+
+    const actions = {
+      delete: () => handleDeleteAlert(type),
+      cancel: () => setIsDeleteAlertOpen(false),
+      home: () => handleLoginAlert(type),
+      login: () => handleLoginAlert(type),
+    };
+
+    return actions[type]();
+  };
+
+  const handleDeleteAlert = (type: string) => {
+    if (type === 'delete') {
+      deleteItem();
+      setIsDeleteAlertOpen(false);
+    } else {
+      setIsDeleteAlertOpen(false);
+    }
+  };
+
+  const handleLoginAlertOpen = () => {
+    // TODO: 채팅하기 버튼에도 적용하기
+    setIsLoginAlertOpen(true);
+  };
+
+  const navigator = useNavigate();
+
+  const handleLoginAlert = (type: string) => {
+    if (type === 'home') {
+      handleBackBtnClick(0);
+      return;
+    }
+
+    if (type === 'login') {
+      navigator('/login');
+    }
+  };
+
+  const deleteItem = async () => {
+    try {
+      await api.delete(`/items/${id}`);
+      handleBackBtnClick(0);
+    } catch (error) {
+      console.error(`Failed to request: ${error}`);
     }
   };
 
   const handleLike = async () => {
-    let likesCount = itemDetailInfo.likesCount;
-
-    if (isLike) {
-      try {
-        await api.delete(`/wishlist/like?itemId=${id}`);
-        likesCount--;
-      } catch (error) {
-        console.error(`Failed to request: ${error}`);
+    if (isLogin) {
+      let likesCount = itemDetailInfo.likesCount;
+      if (isLike) {
+        try {
+          await api.delete(`/wishlist/like?itemId=${id}`);
+          likesCount--;
+        } catch (error) {
+          console.error(`Failed to request: ${error}`);
+        }
+      } else {
+        try {
+          await api.post('/wishlist/like', { itemId: id });
+          likesCount++;
+        } catch (error) {
+          console.error(`Failed to request: ${error}`);
+        }
       }
+
+      setItemDetailInfo((prev) => ({
+        ...prev,
+        isLike: !prev.isLike,
+        likesCount: likesCount,
+      }));
     } else {
-      try {
-        await api.post('/wishlist/like', { itemId: id });
-        likesCount++;
-      } catch (error) {
-        console.error(`Failed to request: ${error}`);
-      }
+      handleLoginAlertOpen();
     }
-
-    setItemDetailInfo((prev) => ({
-      ...prev,
-      isLike: !prev.isLike,
-      likesCount: likesCount,
-    }));
   };
 
   const statusPopupSheetMenu = DETAIL_STATUS_MENU.filter(
@@ -186,6 +257,12 @@ const ItemDetail = ({
   const handleViewMorePopup = () =>
     setIsMoreViewPopupOpen(!isMoreViewPopupOpen);
 
+  const handleNewModal = () => {
+    setIsNewModalOpen(!isNewModalOpen);
+    // TODO: EDit을 하고 변경사항이 있을 때만 새로고침을 해야하는데 지금은 닫으면 무조건 새로고침함
+    if (isNewModalOpen) setOnRefresh(true);
+  };
+
   const mapItemDetailInfo = (data: any) => {
     const formattedPrice = data.price
       ? `${data.price.toLocaleString()}원`
@@ -200,34 +277,47 @@ const ItemDetail = ({
       price: formattedPrice,
       category: categoryTitle?.title,
       elapsedTime: getElapsedTime(data.createAt),
-      hits: hits && formatNumberToSI(data.hits),
-      chatCount: chatCount && formatNumberToSI(data.chatCount),
-      likesCount: likesCount && formatNumberToSI(data.likesCount),
+      hits: data.hits && formatNumberToSI(data.hits),
+      chatCount: data.chatCount && formatNumberToSI(data.chatCount),
+      likesCount: data.likesCount && formatNumberToSI(data.likesCount),
     };
 
     setItemDetailInfo(mappedDetails);
   };
 
+  const alertButtons = (actions: AlertActionsProps[]) =>
+    actions.map(({ id, action }) => (
+      <button key={id} onClick={() => handleAlert(id)}>
+        {action}
+      </button>
+    ));
+
+  const getItemDetail = async () => {
+    try {
+      const {
+        data: { data },
+      } = await api.get(`/items/${id}`);
+      mapItemDetailInfo(data);
+    } catch (error) {
+      console.error(`Failed to get item info: ${error}`);
+    }
+  };
+
   useEffect(() => {
-    const getItemDetail = async () => {
-      try {
-        const {
-          data: { data },
-        } = await api.get(`/items/${id}`);
+    if (onRefresh) {
+      getItemDetail();
+      setOnRefresh(false);
+    }
+  }, [onRefresh]);
 
-        mapItemDetailInfo(data);
-      } catch (error) {
-        console.error(`Failed to get item info: ${error}`);
-      }
-    };
-
+  useEffect(() => {
     getItemDetail();
   }, []);
 
   return (
     <PortalLayout>
       <MyItemDetail>
-        <NavBar
+        <MyNavBar
           type="transparent"
           left={
             <button onClick={() => handleBackBtnClick(0)}>
@@ -242,20 +332,7 @@ const ItemDetail = ({
             )
           }
         />
-        <MyImgDetail>
-          <MyImages>
-            {images.map((image) => (
-              <img key={image.order} src={image.url} alt={title} />
-            ))}
-          </MyImages>
-          {images.length > 1 && (
-            <MyImgIcons>
-              {images.map((image) => (
-                <Icon key={image.order} name={'selected'} size="xxs" />
-              ))}
-            </MyImgIcons>
-          )}
-        </MyImgDetail>
+        <Carousel images={images} itemTitle={title} />
         <MyItemInfo>
           {isMyItem || (
             <MySellerDetail>
@@ -302,40 +379,37 @@ const ItemDetail = ({
           onSheetClose={handleViewMorePopup}
         ></PopupSheet>
       )}
+      {isNewModalOpen &&
+        createPortal(
+          <New
+            isEdit={true}
+            origin={itemDetailInfo}
+            categoryInfo={categories}
+            onClick={handleNewModal}
+          />,
+          document.body,
+        )}
+      <Alert isOpen={isDeleteAlertOpen}>
+        <Alert.Title>{ALERT_TITLE.DELETE('삭제')}</Alert.Title>
+        <Alert.Button>{alertButtons(ALERT_ACTIONS.DELETE)}</Alert.Button>
+      </Alert>
+      <Alert isOpen={isLoginAlertOpen}>
+        <Alert.Title>{ALERT_TITLE.LOGIN}</Alert.Title>
+        <Alert.Button>{alertButtons(ALERT_ACTIONS.LOGIN)}</Alert.Button>
+      </Alert>
     </PortalLayout>
   );
 };
+
 
 const MyItemDetail = styled.div`
   height: calc(100vh - 83px);
   overflow: auto;
 `;
 
-const MyImgDetail = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  height: 491px;
-`;
-
-const MyImages = styled.div`
-  /* position: relative; */
-  overflow: hidden;
-  width: 100%;
-  > img {
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
-  }
-`;
-
-const MyImgIcons = styled.div`
-  position: absolute;
-  /* bottom: 0; */
-  top: 546px;
-  display: flex;
-  gap: 10px;
-  margin-bottom: 18px;
+const MyNavBar = styled(NavBar)`
+  /* NOTE: slick의 기본 z-index 값이 1000임 */
+  z-index: 10010;
 `;
 
 const MyItemInfo = styled.div`

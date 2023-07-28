@@ -8,8 +8,9 @@ import NavBar from '@common/NavBar';
 import { REGION_MENU } from '@common/PopupSheet/constants';
 import PopupSheet from '@common/PopupSheet/PopupSheet';
 import Spinner from '@common/Spinner/Spinner';
-import Category, { CategoryInfo } from '@components/home/category';
+import Category from '@components/home/category';
 import ItemList from '@components/home/ItemList';
+import { useCategories } from '@components/layout/MobileLayout';
 import { RegionInfo } from '@components/login/Join';
 import New from '@components/new/New';
 import SettingRegionMap from '@components/region/SettingRegionMap';
@@ -31,7 +32,6 @@ interface HomeInfo {
 }
 
 interface HomeFilterInfo {
-  sellerId: number | null;
   regionId: number;
   isSales: boolean | null;
   categoryId: number | null;
@@ -55,7 +55,7 @@ const Home = () => {
   const [currentRegionId, setCurrentRegionId] = useState(
     currentRegion?.id || userRegions[0].id,
   );
-  const [categoryInfo, setCategoryInfo] = useState<CategoryInfo[]>([]);
+  const categories = useCategories();
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState<number>(0);
@@ -64,7 +64,6 @@ const Home = () => {
   const [isRegionPopupSheetOpen, setIsRegionPopupSheetOpen] = useState(false);
   const [isRegionMapModalOpen, setIsRegionMapModalOpen] = useState(false);
   const [filterInfo, setFilterInfo] = useState<HomeFilterInfo>({
-    sellerId: null,
     regionId: currentRegionId,
     isSales: null,
     categoryId: null,
@@ -76,18 +75,16 @@ const Home = () => {
   });
 
   const onIntersect: IntersectionObserverCallback = ([{ isIntersecting }]) => {
-    if (isIntersecting) fetchItems();
+    if (isIntersecting && !isLoading) fetchItems();
   };
 
   const { setTarget } = useIntersectionObserver({ onIntersect });
 
   const createFilterQuery = () => {
-    const { sellerId, regionId, isSales, categoryId } = filterInfo;
-    const sellerQuery = sellerId ? `&sellerId=${sellerId}` : '';
+    const { regionId, isSales, categoryId } = filterInfo;
     const salesQuery = isSales ? `&isSales=${isSales}` : '';
     const categoryQuery = categoryId ? `&categoryId=${categoryId}` : '';
-    const filterQuery = `?page=${homePageInfo.page}${sellerQuery}&regionId=${regionId}${salesQuery}${categoryQuery}`;
-
+    const filterQuery = `?page=${homePageInfo.page}&regionId=${regionId}${salesQuery}${categoryQuery}`;
     return filterQuery;
   };
 
@@ -151,7 +148,6 @@ const Home = () => {
     setIsRegionPopupSheetOpen((prev) => !prev);
   };
 
-  // 지도 닫으면 초기화 (유저정보도 새로 받고, 데이터도 새로 받고)
   const handleRegionMapModal = () => {
     setIsRegionMapModalOpen((prev) => !prev);
     setIsRegionPopupSheetOpen(false);
@@ -234,8 +230,7 @@ const Home = () => {
     try {
       setIsLoading(true);
 
-      const { data } = await api.get(`items/${filterQuery}`);
-
+      const { data } = await api.get(`items${filterQuery}`);
       setSaleItems((prevItems) => {
         const newSet = new Set(prevItems);
         data.data.items.forEach((item: SaleItem) => newSet.add(item));
@@ -254,20 +249,6 @@ const Home = () => {
     }
   };
 
-  const getCategoryInfo = async () => {
-    if (categoryInfo.length) return;
-
-    try {
-      const {
-        data: { data },
-      } = await api.get('/resources/categories');
-
-      setCategoryInfo(data.categories);
-    } catch (error) {
-      console.error(`Failed to get category icons: ${error}`);
-    }
-  };
-
   useEffect(() => {
     fetchItems();
   }, [filterInfo]);
@@ -278,10 +259,6 @@ const Home = () => {
       setOnRefresh(false);
     }
   }, [onRefresh]);
-
-  useEffect(() => {
-    getCategoryInfo();
-  }, []);
 
   return (
     <>
@@ -323,7 +300,7 @@ const Home = () => {
         createPortal(
           <ItemDetail
             id={selectedItem}
-            categoryInfo={categoryInfo}
+            categoryInfo={categories}
             handleBackBtnClick={handleItemDetail}
           />,
           document.body,
@@ -331,7 +308,7 @@ const Home = () => {
       {isCategoryModalOpen &&
         createPortal(
           <Category
-            categoryInfo={categoryInfo}
+            categoryInfo={categories}
             handleCategoryModal={handleCategoryModal}
             onCategoryClick={handleFilterCategory}
           />,
@@ -342,14 +319,9 @@ const Home = () => {
       </MyNewBtn>
       {isNewModalOpen &&
         createPortal(
-          <New
-            region={currentRegion || userRegions[0]}
-            categoryInfo={categoryInfo}
-            onClick={handleNewModal}
-            handleRegion={handleRegionMapModal}
-          />,
+          <New categoryInfo={categories} onClick={handleNewModal} />,
           document.body,
-        )}
+      )}
     </>
   );
 };
