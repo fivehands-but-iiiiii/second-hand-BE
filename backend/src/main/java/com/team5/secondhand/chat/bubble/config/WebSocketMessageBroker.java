@@ -37,7 +37,7 @@ public class WebSocketMessageBroker implements WebSocketMessageBrokerConfigurer 
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor headerAccessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-                log.debug("stomp command : {} , destination {}", headerAccessor.getCommand(), headerAccessor.getDestination());
+                log.debug("stomp command : {} , destination :  {} , sessionId : {}", headerAccessor.getCommand(), headerAccessor.getDestination(), headerAccessor.getSessionId());
                 return message;
             }
         });
