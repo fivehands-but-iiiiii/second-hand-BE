@@ -41,9 +41,7 @@ export type HomePageInfo = Omit<HomeInfo, 'items'>;
 
 const Home = () => {
   const userInfo = getStoredValue({ key: 'userInfo' });
-  const userRegion = userInfo?.regions.filter(
-    ({ onFocus }: RegionInfo) => onFocus,
-  );
+  const userRegion = userInfo?.regions;
   const [userRegions, setUserRegions] = useState<RegionInfo[]>(
     userRegion || [
       {
