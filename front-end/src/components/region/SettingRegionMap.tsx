@@ -94,8 +94,8 @@ const SettingRegionMap = ({ regions, onPortal }: SettingRegionMapProps) => {
   };
 
   const haveSwitchedRegions = (prev: RegionInfo[], updated: RegionInfo[]) => {
-    return prev.some((prevRegion) =>
-      updated.some(
+    return prev.every((prevRegion) =>
+      updated.every(
         (updatedRegion) =>
           prevRegion.id === updatedRegion.id &&
           prevRegion.onFocus !== updatedRegion.onFocus,
