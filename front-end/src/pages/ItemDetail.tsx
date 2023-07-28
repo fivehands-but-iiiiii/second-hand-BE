@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
+import Alert from '@common/Alert/Alert';
+import {
+  ALERT_ACTIONS,
+  ALERT_TITLE,
+  AlertActionsProps,
+} from '@common/Alert/constants';
 import Button from '@common/Button';
 import NavBar from '@common/NavBar';
 import {
@@ -18,6 +25,7 @@ import PortalLayout from '@components/layout/PortalLayout';
 import New from '@components/new/New';
 import { formatNumberToSI } from '@utils/formatNumberToSI';
 import getElapsedTime from '@utils/getElapsedTime';
+import { getStoredValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
 
@@ -74,6 +82,8 @@ const ItemDetail = ({
   categoryInfo,
   handleBackBtnClick,
 }: ItemDetailProps) => {
+  const isLogin = !!getStoredValue({ key: 'userInfo' });
+
   const [itemDetailInfo, setItemDetailInfo] = useState<ItemDetailInfo>({
     id: 0,
     seller: { id: 0, memberId: '' },
@@ -132,42 +142,93 @@ const ItemDetail = ({
     setItemDetailInfo((prev) => ({ ...prev, status: status }));
   };
 
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [isLoginAlertOpen, setIsLoginAlertOpen] = useState(false);
+
   const handleViewMoreSheet = async (type: string) => {
     if (type === 'delete') {
-      try {
-        await api.delete(`/items/${id}`);
-        handleBackBtnClick(0);
-      } catch (error) {
-        console.error(`Failed to request: ${error}`);
-      }
-    } else if (type === 'edit') {
-      setIsNewModalOpen(true);
+      setIsDeleteAlertOpen(true);
+    }
+  };
+
+  const handleAlert = (type: AlertActionsProps['id']) => {
+    if (type === 'leave' || type === 'logout') {
+      return;
+    }
+
+    const actions = {
+      delete: () => handleDeleteAlert(type),
+      cancel: () => setIsDeleteAlertOpen(false),
+      home: () => handleLoginAlert(type),
+      login: () => handleLoginAlert(type),
+    };
+
+    return actions[type]();
+  };
+
+  const handleDeleteAlert = (type: string) => {
+    if (type === 'delete') {
+      deleteItem();
+      setIsDeleteAlertOpen(false);
+    } else {
+      setIsDeleteAlertOpen(false);
+    }
+  };
+
+  const handleLoginAlertOpen = () => {
+    // TODO: 채팅하기 버튼에도 적용하기
+    setIsLoginAlertOpen(true);
+  };
+
+  const navigator = useNavigate();
+
+  const handleLoginAlert = (type: string) => {
+    if (type === 'home') {
+      handleBackBtnClick(0);
+      return;
+    }
+
+    if (type === 'login') {
+      navigator('/login');
+    }
+  };
+
+  const deleteItem = async () => {
+    try {
+      await api.delete(`/items/${id}`);
+      handleBackBtnClick(0);
+    } catch (error) {
+      console.error(`Failed to request: ${error}`);
     }
   };
 
   const handleLike = async () => {
-    let likesCount = itemDetailInfo.likesCount;
-    if (isLike) {
-      try {
-        await api.delete(`/wishlist/like?itemId=${id}`);
-        likesCount--;
-      } catch (error) {
-        console.error(`Failed to request: ${error}`);
+    if (isLogin) {
+      let likesCount = itemDetailInfo.likesCount;
+      if (isLike) {
+        try {
+          await api.delete(`/wishlist/like?itemId=${id}`);
+          likesCount--;
+        } catch (error) {
+          console.error(`Failed to request: ${error}`);
+        }
+      } else {
+        try {
+          await api.post('/wishlist/like', { itemId: id });
+          likesCount++;
+        } catch (error) {
+          console.error(`Failed to request: ${error}`);
+        }
       }
-    } else {
-      try {
-        await api.post('/wishlist/like', { itemId: id });
-        likesCount++;
-      } catch (error) {
-        console.error(`Failed to request: ${error}`);
-      }
-    }
 
-    setItemDetailInfo((prev) => ({
-      ...prev,
-      isLike: !prev.isLike,
-      likesCount: likesCount,
-    }));
+      setItemDetailInfo((prev) => ({
+        ...prev,
+        isLike: !prev.isLike,
+        likesCount: likesCount,
+      }));
+    } else {
+      handleLoginAlertOpen();
+    }
   };
 
   const statusPopupSheetMenu = DETAIL_STATUS_MENU.filter(
@@ -220,6 +281,13 @@ const ItemDetail = ({
 
     setItemDetailInfo(mappedDetails);
   };
+
+  const alertButtons = (actions: AlertActionsProps[]) =>
+    actions.map(({ id, action }) => (
+      <button key={id} onClick={() => handleAlert(id)}>
+        {action}
+      </button>
+    ));
 
   const getItemDetail = async () => {
     try {
@@ -317,6 +385,14 @@ const ItemDetail = ({
           />,
           document.body,
         )}
+      <Alert isOpen={isDeleteAlertOpen}>
+        <Alert.Title>{ALERT_TITLE.DELETE('삭제')}</Alert.Title>
+        <Alert.Button>{alertButtons(ALERT_ACTIONS.DELETE)}</Alert.Button>
+      </Alert>
+      <Alert isOpen={isLoginAlertOpen}>
+        <Alert.Title>{ALERT_TITLE.LOGIN}</Alert.Title>
+        <Alert.Button>{alertButtons(ALERT_ACTIONS.LOGIN)}</Alert.Button>
+      </Alert>
     </PortalLayout>
   );
 };
