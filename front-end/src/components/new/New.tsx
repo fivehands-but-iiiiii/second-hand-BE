@@ -2,9 +2,9 @@ import { CategoryInfo } from '@components/home/category';
 import PortalLayout from '@components/layout/PortalLayout';
 import ItemEditor, { OriginItem } from '@components/new/itemEditor/ItemEditor';
 interface NewProps {
+  categoryInfo: CategoryInfo[];
   isEdit?: boolean;
   origin?: OriginItem;
-  categoryInfo: CategoryInfo[];
   onClick: () => void;
 }
 

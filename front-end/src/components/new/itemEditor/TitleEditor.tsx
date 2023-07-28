@@ -26,8 +26,14 @@ const TitleEditor = ({
   onClickCategory,
 }: TitleEditorProps) => {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+
+  const handleSelectCategory = (category: Category) => {
+    onClickCategory(category);
+    handleCategoryModal();
+  };
+
   const handleCategoryModal = () => {
-    setIsCategoryModalOpen((prev) => !prev);
+    setIsCategoryModalOpen(!isCategoryModalOpen);
   };
 
   return (
@@ -70,7 +76,7 @@ const TitleEditor = ({
           <CategoryList
             categories={category.total}
             selectedId={category.selectedId}
-            onClickCategory={onClickCategory}
+            onClickCategory={handleSelectCategory}
             onPortal={handleCategoryModal}
           />,
           document.body,

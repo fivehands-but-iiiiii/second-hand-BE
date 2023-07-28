@@ -12,16 +12,16 @@ import LabelInput from '@common/LabelInput';
 import NavBar from '@common/NavBar';
 import SubTabBar from '@common/TabBar/SubTabBar';
 import Textarea from '@common/Textarea';
-import { InputFile } from '@components/login/Join';
+import { InputFile, RegionInfo } from '@components/login/Join';
 import useAPI from '@hooks/useAPI';
 import { getPreviewURL } from '@utils/convertFile';
 import { getFormattedPrice, getFormattedNumber } from '@utils/formatText';
+import { getStoredValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
 
 import ImageEditor from '../itemEditor/ImageEditor';
 import TitleEditor from '../itemEditor/TitleEditor';
-
 export interface Category {
   id: number;
   title: string;
@@ -66,10 +66,12 @@ const ItemEditor = ({
   handleClose,
 }: ItemEditorProps) => {
   const pageTitle = isEdit ? '상품 수정' : '새 상품 등록';
+  const userInfo = getStoredValue({ key: 'userInfo' });
+  const region = userInfo?.regions.find(({ onFocus }: RegionInfo) => onFocus);
+  if (!region) return;
   const [title, setTitle] = useState('');
   const [firstClickCTitle, setFirstClickCTitle] = useState(false);
   const [contents, setContents] = useState('');
-  const [region, setRegion] = useState(2729060200); // TODO: 지역 유저정보에서 받아오기
   const [price, setPrice] = useState('');
   const priceRef = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState<CategoryInfo>({
@@ -96,18 +98,18 @@ const ItemEditor = ({
   };
 
   const validateForm = useCallback(() => {
-    if (!title || !category.selectedId || !region || !files.length)
-      return false;
-    else return true;
+    return title && category.selectedId && region.id && files.length;
   }, [title, region, category, files]);
 
+  // TODO: 전송 실패 처리
   const handleSubmit = async () => {
     try {
       if (isEdit) {
         await putEdit();
-      } else {
-        await postNew();
+        handleClose();
+        return;
       }
+      await postNew();
       handleClose();
     } catch (error) {
       console.error('error');
@@ -129,19 +131,18 @@ const ItemEditor = ({
         title: title,
         contents: contents,
         category: category.selectedId,
-        region: region,
+        region: region.id,
         price: parseInt(priceRef.current.value.replace(/,/g, '')),
         images: newImages,
         firstImageUrl: newImages && newImages[0],
       };
-      const test = await request({
+      await request({
         url: `/items/${origin?.id}`,
         method: 'put',
         config: {
           data: editedData,
         },
       });
-      console.log(test);
     } catch (error) {
       console.log(error);
     }
@@ -187,7 +188,7 @@ const ItemEditor = ({
       'price',
       parseInt(priceRef.current.value.replace(/,/g, '')).toString(),
     );
-    formData.append('region', region.toString());
+    formData.append('region', region.id.toString());
     try {
       await request({
         url: '/items',
@@ -253,7 +254,7 @@ const ItemEditor = ({
     };
   }, [firstClickCTitle, getRandomCategories]);
 
-  // TODO: 랜덤 3개 추출하는 함수 (BE API나오면 제거예정)
+  // TODO: 랜덤 3개 추출하는 함수 (중복 절대 불가!!)
   const handleCategory = (updatedCategory: Category) => {
     const isSameCategory = category.selectedId === updatedCategory.id;
     const isExistingCategory = category.recommendedCategory.some(
@@ -370,14 +371,17 @@ const ItemEditor = ({
           onChange={handlePrice}
           ref={priceRef}
         />
-        <MyContents
+        <Textarea
           name={'contents'}
           value={contents}
-          placeholder={`${region}에 올릴 게시물 내용을 작성해주세요.`}
+          placeholder={`${region.district}에 올릴 게시물 내용을 작성해주세요.`}
           onChange={handleContents}
         />
       </MyNew>
-      <SubTabBar icon={'location'} content={`${region}`}>
+      <SubTabBar
+        icon={'location'}
+        content={`${region.district}`}
+      >
         <Icon name="keyboard" />
       </SubTabBar>
     </>
@@ -388,9 +392,16 @@ const MyNew = styled.div`
   width: 100vw;
   height: calc(90vh - 85px);
   padding: 0 2.7vw;
-
   > div:nth-child(1) {
     padding: 15px 0;
+  }
+  > div:last-child {
+    padding-top: 10px;
+    max-height: 40vh;
+    > textarea {
+      max-height: 40vh;
+      overflow: auto;
+    }
   }
 `;
 
@@ -400,18 +411,6 @@ const MyPrice = styled(LabelInput)`
   label {
     padding-left: 15px;
     ${({ theme }) => theme.colors.neutral.border};
-  }
-`;
-
-const MyContents = styled(Textarea)`
-  > textarea {
-    /* TODO: 최대높이 반응형으로 조절해야됨 */
-    height: 52vh;
-    overflow: auto;
-    -ms-overflow-style: none;
-    &::-webkit-scrollbar {
-      display: none;
-    }
   }
 `;
 

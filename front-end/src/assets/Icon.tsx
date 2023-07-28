@@ -1,12 +1,13 @@
+import { MouseEventHandler } from 'react';
+
 import * as iconTypes from '@assets/svgs/index';
 import palette from '@styles/colors';
-
 interface IconProps {
   name: keyof typeof iconTypes;
   size?: keyof typeof iconSizes;
   fill?: string;
   className?: string;
-  onClick?: () => void;
+  onClick?: MouseEventHandler<SVGSVGElement> | (() => void);
 }
 
 const iconSizes = {

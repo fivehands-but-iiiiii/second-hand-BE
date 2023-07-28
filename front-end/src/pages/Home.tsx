@@ -1,17 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 
 import Icon from '@assets/Icon';
 import Button from '@common/Button/Button';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
+import { REGION_MENU } from '@common/PopupSheet/constants';
+import PopupSheet from '@common/PopupSheet/PopupSheet';
 import Spinner from '@common/Spinner/Spinner';
 import Category from '@components/home/category';
 import ItemList from '@components/home/ItemList';
 import { useCategories } from '@components/layout/MobileLayout';
+import { RegionInfo } from '@components/login/Join';
 import New from '@components/new/New';
+import SettingRegionMap from '@components/region/SettingRegionMap';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
 import palette from '@styles/colors';
+import { getStoredValue, setStorageValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
 
@@ -35,14 +40,31 @@ interface HomeFilterInfo {
 export type HomePageInfo = Omit<HomeInfo, 'items'>;
 
 const Home = () => {
+  const userInfo = getStoredValue({ key: 'userInfo' });
+  const userRegion = userInfo?.regions;
+  const [userRegions, setUserRegions] = useState<RegionInfo[]>(
+    userRegion || [
+      {
+        id: 1168064000,
+        district: '역삼1동',
+        onFocus: true,
+      },
+    ],
+  );
+  const currentRegion = userRegions.find(({ onFocus }) => onFocus);
+  const [currentRegionId, setCurrentRegionId] = useState(
+    currentRegion?.id || userRegions[0].id,
+  );
   const categories = useCategories();
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState<number>(0);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
+  const [isRegionPopupSheetOpen, setIsRegionPopupSheetOpen] = useState(false);
+  const [isRegionMapModalOpen, setIsRegionMapModalOpen] = useState(false);
   const [filterInfo, setFilterInfo] = useState<HomeFilterInfo>({
-    regionId: 1,
+    regionId: currentRegionId,
     isSales: null,
     categoryId: null,
   });
@@ -75,9 +97,99 @@ const Home = () => {
     });
   };
 
+  const patchUserRegion = async (regionId: number) => {
+    if (currentRegionId === regionId) return;
+    try {
+      const updatedRegions = userRegions.map((region) => {
+        return region.id === regionId
+          ? {
+              ...region,
+              onFocus: true,
+            }
+          : {
+              ...region,
+              onFocus: false,
+            };
+      });
+      const { data } = await api.patch('/members/region', {
+        id: userInfo?.id,
+        regions: updatedRegions,
+      });
+      const updatedUserAccount = { ...userInfo, regions: updatedRegions };
+      if (data) {
+        setUserRegions(updatedRegions);
+        setStorageValue({ key: 'userInfo', value: updatedUserAccount });
+      }
+      return data.data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleRegionSwitch = async (id: number) => {
+    const patchResult = await patchUserRegion(id);
+    if (patchResult) {
+      setCurrentRegionId(id);
+      setHomePageInfo({
+        page: 0,
+        hasPrevious: false,
+        hasNext: true,
+      });
+      setFilterInfo((prevFilterInfo) => ({
+        ...prevFilterInfo,
+        regionId: id,
+      }));
+      setSaleItems([]);
+      setIsRegionPopupSheetOpen((prev) => !prev);
+    }
+  };
+
+  const handleRegionPopupSheetModal = () => {
+    setIsRegionPopupSheetOpen((prev) => !prev);
+  };
+
+  const handleRegionMapModal = () => {
+    setIsRegionMapModalOpen((prev) => !prev);
+    setIsRegionPopupSheetOpen(false);
+    if (isRegionMapModalOpen) {
+      const userInfo = getStoredValue({ key: 'userInfo' });
+      setUserRegions(userInfo.regions);
+      initData();
+      setOnRefresh(true);
+    }
+  };
+
   const handleCategoryModal = () => {
     setIsCategoryModalOpen((prev) => !prev);
   };
+
+  const regionPopupSheetMenu = useMemo(() => {
+    if (!userInfo)
+      return userRegions.map(({ id, district, onFocus }) => ({
+        id,
+        title: district,
+        style: onFocus ? 'font-weight: 600' : '',
+        onClick: () => handleRegionSwitch(id),
+      }));
+    else
+      return [
+        ...userRegions.map(({ id, district, onFocus }) => {
+          return {
+            id,
+            title: district,
+            style: onFocus ? 'font-weight: 600' : '',
+            onClick: () => handleRegionSwitch(id),
+          };
+        }),
+        ...REGION_MENU.map(({ id, title }) => {
+          return {
+            id,
+            title,
+            onClick: handleRegionMapModal,
+          };
+        }),
+      ];
+  }, [userRegions]);
 
   const [onRefresh, setOnRefresh] = useState(false);
   const handleNewModal = () => {
@@ -151,12 +263,21 @@ const Home = () => {
   return (
     <>
       <NavBar
+        type="blur"
         left={
-          // TODO: 동네 선택 팝업 띄우기
-          <MyNavBarBtn onClick={() => 'open region popup'}>
-            역삼동
-            <Icon name={'chevronDown'} />
-          </MyNavBarBtn>
+          <>
+            <MyNavBarBtn onClick={handleRegionPopupSheetModal}>
+              {currentRegion?.district}
+              <Icon name={'chevronDown'} />
+            </MyNavBarBtn>
+            {isRegionPopupSheetOpen && (
+              <PopupSheet
+                type={'slideDown'}
+                menu={regionPopupSheetMenu}
+                onSheetClose={handleRegionPopupSheetModal}
+              />
+            )}
+          </>
         }
         right={
           <button onClick={handleCategoryModal}>
@@ -164,6 +285,14 @@ const Home = () => {
           </button>
         }
       />
+      {isRegionMapModalOpen &&
+        createPortal(
+          <SettingRegionMap
+            regions={userRegions}
+            onPortal={handleRegionMapModal}
+          />,
+          document.body,
+        )}
       <ItemList saleItems={saleItems} onItemClick={handleItemDetail} />
       {!!saleItems.length && <MyOnFetchItems ref={setTarget}></MyOnFetchItems>}
       {isLoading && <Spinner />}
@@ -192,7 +321,7 @@ const Home = () => {
         createPortal(
           <New categoryInfo={categories} onClick={handleNewModal} />,
           document.body,
-        )}
+      )}
     </>
   );
 };
