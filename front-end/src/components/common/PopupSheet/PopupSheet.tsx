@@ -71,7 +71,6 @@ const MyPopupBackground = styled.div<PopupSheetBackgroundProps>`
         `
       : css`
           background-color: ${theme.colors.neutral.overlay};
-          opacity: 0.5;
         `}
 `;
 
@@ -98,11 +97,12 @@ const MyPopupSheet = styled.div`
   font-weight: 600;
   > div {
     margin: 8px 0;
-    border-radius: 1rem;
+    border-radius: 12px;
     &:last-child {
       height: 60px;
       line-height: 60px;
       background-color: ${({ theme }) => theme.colors.neutral.background};
+      text-align: center;
       cursor: pointer;
     }
   }
@@ -123,6 +123,7 @@ const MyPopupOption = styled.div<PopupSheetStyleProps>`
           height: 60px;
           line-height: 60px;
           ${({ theme }) => theme.fonts.title3};
+          text-align: center;
         `}
   ${({ option }) => option};
   &:not(:last-child) {

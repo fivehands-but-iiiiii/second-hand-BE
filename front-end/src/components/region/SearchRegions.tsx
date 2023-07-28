@@ -114,10 +114,12 @@ const MyRegionList = styled.div`
 `;
 
 const MyRegion = styled.li`
+  display: flex;
+  align-items: center;
   height: 5vh;
+  min-height: 35px;
   min-width: 200px;
-  line-height: 5vh;
-  text-align: start;
+  padding-left: 5px;
   color: ${({ theme }) => theme.colors.neutral.text};
 `;
 
