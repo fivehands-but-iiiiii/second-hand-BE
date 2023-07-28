@@ -45,13 +45,13 @@ const SettingRegionMap = ({ regions, onPortal }: SettingRegionMapProps) => {
     googleMapsApiKey: GOOGLE_KEY,
   });
 
-  const onLoad = useCallback(function callback(map: any) {
+  const onLoad = useCallback((map: any) => {
     const bounds = new window.google.maps.LatLngBounds(center);
     map.fitBounds(bounds);
     setMap(map);
   }, []);
 
-  const onUnmount = useCallback(function callback() {
+  const onUnmount = useCallback(() => {
     setMap(null);
   }, []);
 

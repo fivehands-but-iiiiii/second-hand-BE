@@ -92,9 +92,7 @@ const ItemEditor = ({
   };
 
   const validateForm = useCallback(() => {
-    if (!title || !category.selectedId || !region.id || !files.length)
-      return false;
-    else return true;
+    return title && category.selectedId && region.id && files.length;
   }, [title, region, category, files]);
 
   // TODO: 수정 api 변경필요함

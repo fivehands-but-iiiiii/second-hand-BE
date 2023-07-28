@@ -41,8 +41,11 @@ export type HomePageInfo = Omit<HomeInfo, 'items'>;
 
 const Home = () => {
   const userInfo = getStoredValue({ key: 'userInfo' });
+  const userRegion = userInfo?.regions.filter(
+    ({ onFocus }: RegionInfo) => onFocus,
+  );
   const [userRegions, setUserRegions] = useState<RegionInfo[]>(
-    userInfo?.regions || [
+    userRegion || [
       {
         id: 1168064000,
         district: '역삼1동',

@@ -33,7 +33,7 @@ const TitleEditor = ({
   };
 
   const handleCategoryModal = () => {
-    setIsCategoryModalOpen((prev) => !prev);
+    setIsCategoryModalOpen(!isCategoryModalOpen);
   };
 
   return (
