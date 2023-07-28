@@ -7,7 +7,6 @@ import { styled } from 'styled-components';
 
 interface AlertProps {
   isOpen?: boolean;
-  // action: string;
   children?: ReactNode;
 }
 
@@ -45,6 +44,7 @@ const MyAlertTitle = styled.div`
   line-height: 60px;
   border-radius: 11px 11px 0 0;
   border-bottom: 1px solid ${({ theme }) => theme.colors.neutral.border};
+  text-align: center;
 `;
 
 const MyAlertButton = styled.div`

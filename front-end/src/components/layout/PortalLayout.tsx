@@ -15,6 +15,8 @@ PortalLayout.Alert = ({ children }: PortalLayoutProps) => {
 };
 
 const MyDefaultPortal = styled.div`
+  /* NOTE: slick의 기본 z-index 값이 10000임 */
+  z-index: 11000;
   position: absolute;
   bottom: 0;
   width: 100vw;
@@ -24,8 +26,6 @@ const MyDefaultPortal = styled.div`
 
 const MyPortalLayout = styled(MyDefaultPortal)`
   background-color: ${({ theme }) => theme.colors.neutral.background};
-  /* NOTE: slick의 기본 z-index 값이 10000임 */
-  z-index: 11000;
   overflow: auto;
   -ms-overflow-style: none;
   &::-webkit-scrollbar {

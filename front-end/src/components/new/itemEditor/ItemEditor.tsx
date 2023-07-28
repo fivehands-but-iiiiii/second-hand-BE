@@ -101,10 +101,13 @@ const ItemEditor = ({
     return title && category.selectedId && region.id && files.length;
   }, [title, region, category, files]);
 
+  // TODO: 전송 실패 처리
   const handleSubmit = async () => {
     try {
       if (isEdit) {
         await putEdit();
+        handleClose();
+        return;
       }
       await postNew();
       handleClose();
@@ -128,19 +131,18 @@ const ItemEditor = ({
         title: title,
         contents: contents,
         category: category.selectedId,
-        region: region,
+        region: region.id,
         price: parseInt(priceRef.current.value.replace(/,/g, '')),
         images: newImages,
         firstImageUrl: newImages && newImages[0],
       };
-      const test = await request({
+      await request({
         url: `/items/${origin?.id}`,
         method: 'put',
         config: {
           data: editedData,
         },
       });
-      console.log(test);
     } catch (error) {
       console.log(error);
     }
@@ -379,7 +381,6 @@ const ItemEditor = ({
       <SubTabBar
         icon={'location'}
         content={`${region.district}`}
-        // onIconClick={handleRegion}
       >
         <Icon name="keyboard" />
       </SubTabBar>
