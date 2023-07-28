@@ -17,15 +17,15 @@ import api from '../../../api';
 
 interface ChatBubble {
   roomId: string;
-  from: string;
-  contents: string;
+  sender: string;
+  message: string;
 }
 
 interface SaleItemSummary {
   id: number;
-  title: 'string';
+  title: string;
   price: number;
-  thumbnailUrl: 'string';
+  thumbnailUrl: string;
   status: number;
   isDelete: boolean;
 }
@@ -128,20 +128,23 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
       destination: '/pub/message',
       body: JSON.stringify({
         roomId,
-        from: userId,
-        contents: chat,
+        sender: userId,
+        message: chat,
       }),
     });
 
     setChat('');
   };
 
+  const handleMessage = (messageBody: { body: string }) => {
+    const parsedMessage = JSON.parse(messageBody.body);
+    console.log(parsedMessage);
+
+    setChatBubbles((prevChatList) => [...prevChatList, parsedMessage]);
+  };
+
   const subscribe = () => {
-    client.current?.subscribe(`/sub/${roomId}`, (body) => {
-      const jsonBody = JSON.parse(body.body);
-      console.log(jsonBody);
-      setChatBubbles((_chatList) => [..._chatList, jsonBody]);
-    });
+    client.current?.subscribe(`/sub/${roomId}`, handleMessage);
   };
 
   const disconnect = () => {
@@ -162,11 +165,6 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
 
     publish(chat);
   };
-
-  // 새로운 채팅방일 경우 로직
-  // 1. createChatRoomId
-  // 2. connect : 채팅 서버와 연결
-  // 3. publish(roomId) : 2번이 되어야 3번이 가능
 
   useEffect(() => {
     // const isConnect = client.current?.connected;
@@ -211,12 +209,12 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
       {!!chatBubbles.length && (
         <MyChatBubbles>
           {chatBubbles.map((bubble) => {
-            const isMyBubble = bubble.from === '1';
+            const isMyBubble = bubble.sender === userId;
             const BubbleComponent = isMyBubble ? MyBubble : MyPartnerBubble;
 
             const renderBubbleComponent = (
               <BubbleComponent>
-                <span>{bubble.contents}</span>
+                <span>{bubble.message}</span>
               </BubbleComponent>
             );
 
