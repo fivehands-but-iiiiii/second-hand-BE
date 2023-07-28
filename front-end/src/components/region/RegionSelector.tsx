@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, MouseEvent } from 'react';
 
 import Icon from '@assets/Icon';
 import Button from '@common/Button/Button';
@@ -10,15 +10,26 @@ import { styled } from 'styled-components';
 interface RegionSelectorProps {
   selectedRegions: RegionInfo[];
   onClickRegionButton: (id: number) => void;
+  onClickRemoveButton: (id: number) => void;
   onClickAddButton: () => void;
 }
 
 const RegionSelector = ({
   selectedRegions,
   onClickRegionButton,
+  onClickRemoveButton,
   onClickAddButton,
 }: RegionSelectorProps) => {
   const [regionMessage, setRegionMessage] = useState('');
+
+  const handleRegionClick = (id: number) => {
+    onClickRegionButton(id);
+  };
+
+  const handleRemoveClick = (id: number, event: MouseEvent) => {
+    event.stopPropagation();
+    onClickRemoveButton(id);
+  };
 
   const regionButtons = useMemo(() => {
     const selectedRegionButtons = selectedRegions.map(
@@ -28,10 +39,15 @@ const RegionSelector = ({
             key={id}
             fullWidth
             active={onFocus}
-            onClick={() => onClickRegionButton(id)}
+            onClick={() => handleRegionClick(id)}
           >
             {district}
-            <Icon name={'x'} size={'xs'} fill={palette.neutral.background} />
+            <MyRemoveIcon
+              name={'x'}
+              size={'xs'}
+              fill={palette.neutral.background}
+              onClick={(event) => handleRemoveClick(id, event)}
+            />
           </Button>
         );
       },
@@ -65,6 +81,14 @@ const RegionSelector = ({
 const MyRegionButton = styled.div`
   display: flex;
   gap: 7px;
+`;
+
+const MyRemoveIcon = styled(Icon)`
+  margin-left: 10px;
+  &:hover {
+    stroke-width: 2;
+    stroke: ${({ theme }) => theme.colors.neutral.background};
+  }
 `;
 
 const MyRegionMessage = styled.p`

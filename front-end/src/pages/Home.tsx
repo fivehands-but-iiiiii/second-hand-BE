@@ -15,7 +15,7 @@ import New from '@components/new/New';
 import SettingRegionMap from '@components/region/SettingRegionMap';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
 import palette from '@styles/colors';
-import { getStoredValue } from '@utils/sessionStorage';
+import { getStoredValue, setStorageValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
 
@@ -117,10 +117,14 @@ const Home = () => {
         id: userInfo?.id,
         regions: updatedRegions,
       });
-      setUserRegions(updatedRegions);
+      const updatedUserAccount = { ...userInfo, regions: updatedRegions };
+      if (data) {
+        setUserRegions(updatedRegions);
+        setStorageValue({ key: 'userInfo', value: updatedUserAccount });
+      }
       return data.data;
     } catch (error) {
-      console.error(`Failed to patch user region: ${error}`);
+      console.error(error);
     }
   };
 
@@ -146,9 +150,16 @@ const Home = () => {
     setIsRegionPopupSheetOpen((prev) => !prev);
   };
 
+  // 지도 닫으면 초기화 (유저정보도 새로 받고, 데이터도 새로 받고)
   const handleRegionMapModal = () => {
     setIsRegionMapModalOpen((prev) => !prev);
     setIsRegionPopupSheetOpen(false);
+    if (isRegionMapModalOpen) {
+      const userInfo = getStoredValue({ key: 'userInfo' });
+      setUserRegions(userInfo.regions);
+      initData();
+      setOnRefresh(true);
+    }
   };
 
   const handleCategoryModal = () => {

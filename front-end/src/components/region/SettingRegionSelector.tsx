@@ -11,7 +11,6 @@ interface SettingRegionSelectorProps {
   onSetRegions: (regions: RegionInfo[]) => void;
 }
 
-// TODO: 지역 설정하고 닫기 누르면 요청하는 로직추가
 const SettingRegionSelector = ({
   regions,
   onSetRegions,
@@ -34,6 +33,16 @@ const SettingRegionSelector = ({
     setIsSettingRegionsModalOpen(false);
   };
 
+  const handleRegionClick = (id: number) => {
+    setSelectedRegions((prev) =>
+      prev.map((region) =>
+        region.id === +id
+          ? { ...region, onFocus: true }
+          : { ...region, onFocus: false },
+      ),
+    );
+  };
+
   const handleRemoveRegion = (id: number) => {
     if (selectedRegions.length === 1) return;
     setSelectedRegions((prev) =>
@@ -44,21 +53,6 @@ const SettingRegionSelector = ({
           onFocus: true,
         })),
     );
-  };
-
-  const handleRegionButtonsClick = (id: number) => {
-    const isSelectedId =
-      selectedRegions.find((region) => region.onFocus)?.id === id;
-    if (isSelectedId) handleRemoveRegion(id);
-    else {
-      setSelectedRegions((prev) =>
-        prev.map((region) =>
-          region.id === +id
-            ? { ...region, onFocus: true }
-            : { ...region, onFocus: false },
-        ),
-      );
-    }
   };
 
   const handleRegionModal = () => {
@@ -73,7 +67,8 @@ const SettingRegionSelector = ({
     <>
       <RegionSelector
         selectedRegions={selectedRegions}
-        onClickRegionButton={handleRegionButtonsClick}
+        onClickRegionButton={handleRegionClick}
+        onClickRemoveButton={handleRemoveRegion}
         onClickAddButton={handleRegionModal}
       />
       {isSettingRegionsModalOpen &&

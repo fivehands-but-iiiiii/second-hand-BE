@@ -3,8 +3,10 @@ import { useCallback, useState, useEffect } from 'react';
 import NavBar from '@common/NavBar/NavBar';
 import PortalLayout from '@components/layout/PortalLayout';
 import { RegionInfo } from '@components/login/Join';
+import useAPI from '@hooks/useAPI';
 import useGeoLocation, { coordsType } from '@hooks/useGeoLocation';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import { getStoredValue, setStorageValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
 
@@ -28,6 +30,7 @@ interface SettingRegionMapProps {
 }
 
 const SettingRegionMap = ({ regions, onPortal }: SettingRegionMapProps) => {
+  const userInfo = getStoredValue({ key: 'userInfo' });
   const [updatedRegions, setUpdatedRegions] = useState<RegionInfo[]>(regions);
   const [, setMap] = useState(null);
   const [center, setCenter] = useState<coordsType>({
@@ -35,6 +38,7 @@ const SettingRegionMap = ({ regions, onPortal }: SettingRegionMapProps) => {
     lng: 127.0385419,
   });
   const { getCoordinatesFromAddress } = useGeoLocation();
+  const { request } = useAPI();
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -50,6 +54,64 @@ const SettingRegionMap = ({ regions, onPortal }: SettingRegionMapProps) => {
   const onUnmount = useCallback(function callback() {
     setMap(null);
   }, []);
+
+  const handleSettingRegions = async () => {
+    const prevRegions = regions;
+    const isSame = areRegionsSame(prevRegions, updatedRegions);
+    const isSwitched = haveSwitchedRegions(prevRegions, updatedRegions);
+    const isChanged = haveChangedRegions(prevRegions, updatedRegions);
+
+    if (isSame) return onPortal();
+    if (!isSwitched && !isChanged) return;
+
+    const endpoint = '/members/region';
+    const method = isSwitched ? 'patch' : 'put';
+    const requestBody = { id: userInfo.id, regions: updatedRegions };
+    const updatedUserAccount = { ...userInfo, regions: updatedRegions };
+    try {
+      const { data } = await request({
+        url: endpoint,
+        method: method,
+        config: { data: requestBody },
+      });
+      if (data) {
+        setStorageValue({ key: 'userInfo', value: updatedUserAccount });
+        onPortal();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const areRegionsSame = (prev: RegionInfo[], updated: RegionInfo[]) => {
+    return prev.every((prevRegion) =>
+      updated.some(
+        (updatedRegion) =>
+          prevRegion.id === updatedRegion.id &&
+          prevRegion.onFocus === updatedRegion.onFocus,
+      ),
+    );
+  };
+
+  const haveSwitchedRegions = (prev: RegionInfo[], updated: RegionInfo[]) => {
+    return prev.some((prevRegion) =>
+      updated.some(
+        (updatedRegion) =>
+          prevRegion.id === updatedRegion.id &&
+          prevRegion.onFocus !== updatedRegion.onFocus,
+      ),
+    );
+  };
+
+  const haveChangedRegions = (prev: RegionInfo[], updated: RegionInfo[]) => {
+    return (
+      prev.length !== updated.length ||
+      prev.some(
+        (prevRegion) =>
+          !updated.some((updated) => prevRegion.id === updated.id),
+      )
+    );
+  };
 
   const handleUpdateRegions = (regions: RegionInfo[]) => {
     setUpdatedRegions(regions);
@@ -68,7 +130,7 @@ const SettingRegionMap = ({ regions, onPortal }: SettingRegionMapProps) => {
   return (
     <PortalLayout>
       <NavBar
-        left={<button onClick={onPortal}>닫기</button>}
+        left={<button onClick={handleSettingRegions}>닫기</button>}
         center={'동네 설정'}
       />
       <MySettingRegionMap>
