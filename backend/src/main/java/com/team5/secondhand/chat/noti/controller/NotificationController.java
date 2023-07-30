@@ -17,4 +17,8 @@ import java.net.http.HttpResponse;
 public class NotificationController {
     private final NotificationService notificationService;
 
+    @GetMapping(value = "/subscribe", produces = "text/event-stream")
+    public SseEmitter subscribe(MemberDetails loginMember, @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId, HttpServletResponse response) {
+        return notificationService.subscribe(loginMember.getId(), lastEventId, response);
+    }
 }
