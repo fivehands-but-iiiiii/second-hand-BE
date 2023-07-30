@@ -1,7 +1,14 @@
 import { useEffect, useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
+import Alert from '@common/Alert';
+import {
+  ALERT_ACTIONS,
+  ALERT_TITLE,
+  AlertActionsProps,
+} from '@common/Alert/constants';
 import Button from '@common/Button/Button';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
@@ -40,6 +47,7 @@ interface HomeFilterInfo {
 export type HomePageInfo = Omit<HomeInfo, 'items'>;
 
 const Home = () => {
+  const navigator = useNavigate();
   const userInfo = getStoredValue({ key: 'userInfo' });
   const userRegion = userInfo?.regions;
   const [userRegions, setUserRegions] = useState<RegionInfo[]>(
@@ -63,6 +71,7 @@ const Home = () => {
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [isRegionPopupSheetOpen, setIsRegionPopupSheetOpen] = useState(false);
   const [isRegionMapModalOpen, setIsRegionMapModalOpen] = useState(false);
+  const [isLoginAlertOpen, setIsLoginAlertOpen] = useState(false);
   const [filterInfo, setFilterInfo] = useState<HomeFilterInfo>({
     regionId: currentRegionId,
     isSales: null,
@@ -192,6 +201,31 @@ const Home = () => {
   }, [userRegions]);
 
   const [onRefresh, setOnRefresh] = useState(false);
+
+  const handleNewButtonClick = () => {
+    if (!userInfo) {
+      setIsLoginAlertOpen(true);
+      return;
+    }
+    setIsNewModalOpen((prev) => !prev);
+  };
+
+  const handleAlert = (type: AlertActionsProps['id']) => {
+    if (type !== 'home' && type !== 'login') return;
+    const actions = {
+      home: () => setIsLoginAlertOpen(false),
+      login: () => navigator('/login'),
+    };
+    return actions[type]();
+  };
+
+  const alertButtons = (actions: AlertActionsProps[]) =>
+    actions.map(({ id, action }) => (
+      <button key={id} onClick={() => handleAlert(id)}>
+        {action}
+      </button>
+    ));
+
   const handleNewModal = () => {
     setIsNewModalOpen((prev) => !prev);
     if (isNewModalOpen) {
@@ -314,14 +348,18 @@ const Home = () => {
           />,
           document.body,
         )}
-      <MyNewBtn active circle={'lg'} onClick={handleNewModal}>
+      <MyNewBtn active circle={'lg'} onClick={handleNewButtonClick}>
         <Icon name={'plus'} fill={palette.neutral.backgroundWeak} />
       </MyNewBtn>
+      <Alert isOpen={isLoginAlertOpen}>
+        <Alert.Title>{ALERT_TITLE.LOGIN}</Alert.Title>
+        <Alert.Button>{alertButtons(ALERT_ACTIONS.LOGIN)}</Alert.Button>
+      </Alert>
       {isNewModalOpen &&
         createPortal(
           <New categoryInfo={categories} onClick={handleNewModal} />,
           document.body,
-      )}
+        )}
     </>
   );
 };
