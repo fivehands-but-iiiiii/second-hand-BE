@@ -56,6 +56,13 @@ const SettingRegionSelector = ({
 
   const handleDeleteRegion = (id: number) => {
     if (selectedRegions.length === 1) return;
+    const isSelectingRegion = selectedRegions.some(
+      (region) => region.id === id && region.onFocus,
+    );
+    if (!isSelectingRegion) {
+      handleRegionClick(id);
+      return;
+    }
     setIsDeleteRegionAlertOpen(true);
     setDeleteRegionId(id);
   };
