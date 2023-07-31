@@ -22,7 +22,7 @@ class ChatController {
     public void message(ChatBubble message) {
         log.debug("pub controller");
         redisMessagePublisher.publish(channelTopic.getTopic(), message);
-        chatNotification.sendChatNotificationToMember(message.getSender(), ChatNotification.of(message));
+        chatNotification.sendChatNotificationToMember(message.getSender(), ChatNotification.of(message)); //TODO 테스트용 임시 코드
     }
 
 }
