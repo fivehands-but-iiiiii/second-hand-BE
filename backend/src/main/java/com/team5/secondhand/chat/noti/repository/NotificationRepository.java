@@ -1,13 +1,17 @@
 package com.team5.secondhand.chat.noti.repository;
 
+import com.team5.secondhand.chat.noti.domain.SseId;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.Map;
+import java.util.Optional;
 
 public interface NotificationRepository {
-    SseEmitter save(String id, SseEmitter sseEmitter);
+    SseEmitter save(SseId id, SseEmitter sseEmitter);
 
     void deleteAllStartByWithId(String id);
 
-    Map<String, SseEmitter> findAllStartById(String memberId);
+    Map<SseId, SseEmitter> findAllStartById(String id);
+
+    Optional<SseEmitter> findStartById(String id);
 }
