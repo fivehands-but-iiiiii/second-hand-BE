@@ -67,6 +67,7 @@ const ChatPage = () => {
     if (itemId) {
       url += `&itemId=${itemId}`;
     }
+
     return url;
   };
 

@@ -77,10 +77,10 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
       setOpponentId(opponentId);
 
       if (chatroomId) {
-        // await getChatBubbles(chatroomId);
+        getChatBubbles(chatroomId);
       }
     } catch (error) {
-      // 오류 처리
+      console.error(error);
     }
   };
 
@@ -91,16 +91,23 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
       });
 
       setRoomId(data.data);
-      return data.data;
     } catch (error) {
-      // 오류 처리
+      console.error(error);
     }
   };
 
+  const [page, setPage] = useState(0);
+
   const getChatBubbles = async (chatroomId: number) => {
-    const { data } = await api.get(`chat/${chatroomId}`);
+    const { data } = await api.get(`chats/${chatroomId}/logs?page=${page}`);
     setChatBubbles(data);
   };
+
+  // 채팅리스트에서 채팅방 입장 시
+  // const getChatBubbles = async (chatroomId: number) => {
+  //   const { data } = await api.get(`chats/${chatroomId}`);
+  //   setChatBubbles(data);
+  // };
 
   useEffect(() => {
     getChatInfo();
@@ -121,7 +128,6 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
   };
 
   const publish = (chat: string) => {
-    console.log('publish!!!!!!!!!!!!');
     if (!client.current?.connected) return;
 
     client.current.publish({
@@ -138,8 +144,6 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
 
   const handleMessage = (messageBody: { body: string }) => {
     const parsedMessage = JSON.parse(messageBody.body);
-    console.log(parsedMessage);
-
     setChatBubbles((prevChatList) => [...prevChatList, parsedMessage]);
   };
 
@@ -167,14 +171,7 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
   };
 
   useEffect(() => {
-    // const isConnect = client.current?.connected;
-
-    // if (roomId && !isConnect) {
-    //   connect();
-    // }
-
     roomId && connect();
-    // connect();
 
     return () => disconnect();
   }, [roomId]);
