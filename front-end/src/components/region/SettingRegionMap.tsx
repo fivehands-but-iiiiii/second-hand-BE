@@ -94,12 +94,11 @@ const SettingRegionMap = ({ regions, onPortal }: SettingRegionMapProps) => {
   };
 
   const haveSwitchedRegions = (prev: RegionInfo[], updated: RegionInfo[]) => {
-    return prev.every((prevRegion) =>
-      updated.every(
-        (updatedRegion) =>
-          prevRegion.id === updatedRegion.id &&
-          prevRegion.onFocus !== updatedRegion.onFocus,
-      ),
+    return (
+      prev.length === updated.length &&
+      prev.every(
+        (prevRegion, index) => prevRegion.onFocus !== updated[index].onFocus,
+      )
     );
   };
 
