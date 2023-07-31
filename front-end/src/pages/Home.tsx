@@ -49,9 +49,8 @@ export type HomePageInfo = Omit<HomeInfo, 'items'>;
 const Home = () => {
   const navigator = useNavigate();
   const userInfo = getStoredValue({ key: 'userInfo' });
-  const userRegion = userInfo?.regions;
   const [userRegions, setUserRegions] = useState<RegionInfo[]>(
-    userRegion || [
+    userInfo?.regions || [
       {
         id: 1168064000,
         district: '역삼1동',
@@ -107,7 +106,6 @@ const Home = () => {
   };
 
   const patchUserRegion = async (regionId: number) => {
-    if (currentRegionId === regionId) return;
     try {
       const updatedRegions = userRegions.map((region) => {
         return region.id === regionId
@@ -127,6 +125,7 @@ const Home = () => {
       const updatedUserAccount = { ...userInfo, regions: updatedRegions };
       if (data) {
         setUserRegions(updatedRegions);
+        setCurrentRegionId(regionId);
         setStorageValue({ key: 'userInfo', value: updatedUserAccount });
       }
       return data.data;
@@ -135,10 +134,9 @@ const Home = () => {
     }
   };
 
-  const handleRegionSwitch = async (id: number) => {
-    const patchResult = await patchUserRegion(id);
+  const handleRegionSwitch = async (regionId: number) => {
+    const patchResult = await patchUserRegion(regionId);
     if (patchResult) {
-      setCurrentRegionId(id);
       setHomePageInfo({
         page: 0,
         hasPrevious: false,
@@ -146,7 +144,7 @@ const Home = () => {
       });
       setFilterInfo((prevFilterInfo) => ({
         ...prevFilterInfo,
-        regionId: id,
+        regionId: regionId,
       }));
       setSaleItems([]);
       setIsRegionPopupSheetOpen((prev) => !prev);
@@ -162,9 +160,13 @@ const Home = () => {
     setIsRegionPopupSheetOpen(false);
     if (isRegionMapModalOpen) {
       const userInfo = getStoredValue({ key: 'userInfo' });
-      setUserRegions(userInfo.regions);
+      const userRegion: RegionInfo[] = userInfo?.regions;
       initData();
-      setOnRefresh(true);
+      setUserRegions(userRegion);
+      setFilterInfo((prevFilterInfo) => ({
+        ...prevFilterInfo,
+        regionId: userRegion.find(({ onFocus }) => onFocus)?.id || 0,
+      }));
     }
   };
 
@@ -244,7 +246,6 @@ const Home = () => {
       ...prevFilterInfo,
       categoryId: categoryId,
     }));
-
     setSaleItems([]);
   };
 
