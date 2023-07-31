@@ -49,8 +49,9 @@ export type HomePageInfo = Omit<HomeInfo, 'items'>;
 const Home = () => {
   const navigator = useNavigate();
   const userInfo = getStoredValue({ key: 'userInfo' });
+  const userRegion = userInfo?.regions;
   const [userRegions, setUserRegions] = useState<RegionInfo[]>(
-    userInfo?.regions || [
+    userRegion || [
       {
         id: 1168064000,
         district: '역삼1동',
@@ -59,9 +60,8 @@ const Home = () => {
     ],
   );
   const currentRegion = userRegions.find(({ onFocus }) => onFocus);
-  const [currentRegionId, setCurrentRegionId] = useState(
-    currentRegion?.id || userRegions[0].id,
-  );
+  if (!currentRegion) return;
+  const currentRegionId = currentRegion?.id;
   const categories = useCategories();
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -125,7 +125,10 @@ const Home = () => {
       const updatedUserAccount = { ...userInfo, regions: updatedRegions };
       if (data) {
         setUserRegions(updatedRegions);
-        setCurrentRegionId(regionId);
+        setFilterInfo((prevFilterInfo) => ({
+          ...prevFilterInfo,
+          regionId: regionId,
+        }));
         setStorageValue({ key: 'userInfo', value: updatedUserAccount });
       }
       return data.data;
@@ -161,11 +164,13 @@ const Home = () => {
     if (isRegionMapModalOpen) {
       const userInfo = getStoredValue({ key: 'userInfo' });
       const userRegion: RegionInfo[] = userInfo?.regions;
+      const currentRegion = userRegion.find(({ onFocus }) => onFocus);
+      if (!currentRegion) return;
       initData();
       setUserRegions(userRegion);
       setFilterInfo((prevFilterInfo) => ({
         ...prevFilterInfo,
-        regionId: userRegion.find(({ onFocus }) => onFocus)?.id || 0,
+        regionId: currentRegion.id,
       }));
     }
   };
