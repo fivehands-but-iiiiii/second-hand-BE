@@ -68,7 +68,6 @@ const ItemEditor = ({
   const pageTitle = isEdit ? '상품 수정' : '새 상품 등록';
   const userInfo = getStoredValue({ key: 'userInfo' });
   const region = userInfo?.regions.find(({ onFocus }: RegionInfo) => onFocus);
-  if (!region) return;
   const [title, setTitle] = useState('');
   const [firstClickCTitle, setFirstClickCTitle] = useState(false);
   const [contents, setContents] = useState('');
@@ -378,10 +377,7 @@ const ItemEditor = ({
           onChange={handleContents}
         />
       </MyNew>
-      <SubTabBar
-        icon={'location'}
-        content={`${region.district}`}
-      >
+      <SubTabBar icon={'location'} content={`${region.district}`}>
         <Icon name="keyboard" />
       </SubTabBar>
     </>

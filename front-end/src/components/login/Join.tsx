@@ -136,7 +136,7 @@ const Join = () => {
       }
     }
     setIsReadyToSubmit(false);
-  }, [userInputId, idExists]);
+  }, [userInputId, idExists, userRegions]);
 
   return (
     <MyJoin>

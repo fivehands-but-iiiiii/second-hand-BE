@@ -36,6 +36,7 @@ Alert.Button = ({ children }: AlertProtoProps) => {
 const MyAlert = styled.div`
   border-radius: 11px;
   width: 70%;
+  min-width: 170px;
   font-weight: 600;
 `;
 
@@ -54,6 +55,7 @@ const MyAlertButton = styled.div`
   justify-content: space-between;
   > button {
     flex-grow: 1;
+    flex-basis: 100px;
     &:not(:last-child) {
       border-right: 1px solid ${({ theme }) => theme.colors.neutral.border};
     }

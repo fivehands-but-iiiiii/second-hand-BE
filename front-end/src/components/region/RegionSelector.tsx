@@ -10,14 +10,14 @@ import { styled } from 'styled-components';
 interface RegionSelectorProps {
   selectedRegions: RegionInfo[];
   onClickRegionButton: (id: number) => void;
-  onClickRemoveButton: (id: number) => void;
+  onClickDeleteButton: (id: number) => void;
   onClickAddButton: () => void;
 }
 
 const RegionSelector = ({
   selectedRegions,
   onClickRegionButton,
-  onClickRemoveButton,
+  onClickDeleteButton,
   onClickAddButton,
 }: RegionSelectorProps) => {
   const [regionMessage, setRegionMessage] = useState('');
@@ -28,7 +28,7 @@ const RegionSelector = ({
 
   const handleRemoveClick = (id: number, event: MouseEvent) => {
     event.stopPropagation();
-    onClickRemoveButton(id);
+    onClickDeleteButton(id);
   };
 
   const regionButtons = useMemo(() => {
