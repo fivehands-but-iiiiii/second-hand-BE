@@ -1,6 +1,11 @@
 import { useEffect, useCallback } from 'react';
 
-const useBackDismiss = (isOpen: boolean, onClose: () => void): void => {
+interface UseBackDismissProps {
+  isOpen: boolean,
+  onClose: () => void
+}
+
+const useBackDismiss = ({isOpen, onClose}:UseBackDismissProps ) => {
   const handlePopState = useCallback(
     (event: PopStateEvent) => {
       if (isOpen) {
