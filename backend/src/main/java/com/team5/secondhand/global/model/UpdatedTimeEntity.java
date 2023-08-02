@@ -16,7 +16,7 @@ import java.time.Instant;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @ToString
-public class UpdatedTimeEntity extends BasedTimeEntity {
+public abstract class UpdatedTimeEntity extends BasedTimeEntity {
     @LastModifiedDate
     private Instant updatedAt;
 }
