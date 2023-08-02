@@ -15,8 +15,10 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 @EnableWebSocketMessageBroker
 public class WebSocketMessageBroker implements WebSocketMessageBrokerConfigurer {
+    private final StompMessageProcessor stompMessageProcessor;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -33,13 +35,6 @@ public class WebSocketMessageBroker implements WebSocketMessageBrokerConfigurer 
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(new ChannelInterceptor() {
-            @Override
-            public Message<?> preSend(Message<?> message, MessageChannel channel) {
-                StompHeaderAccessor headerAccessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-                log.debug("stomp command : {} , destination :  {} , sessionId : {}", headerAccessor.getCommand(), headerAccessor.getDestination(), headerAccessor.getSessionId());
-                return message;
-            }
-        });
+        registration.interceptors(stompMessageProcessor);
     }
 }
