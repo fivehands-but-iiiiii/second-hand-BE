@@ -75,4 +75,16 @@ public class NotificationService implements SendChatNotificationUsecase {
         SseEmitter sseEmitter = notificationRepository.findStartById(id).orElseThrow(); //TODO 에러 작성해주기
         sendToClient(sseEmitter, id, chatNotification);
     }
+
+    //TODO Transaction 관련된 문제가 나지는 않을까?
+    @Async
+    @EventListener
+    public void getChatBubble (ChatBubbleArrivedEvent event) {
+        String receiverId = event.getChatReceiverId();
+        ChatBubble chatBubble = event.getChatBubble();
+        //TODO 유효성 검증이 필요
+            //TODO 현재 채팅방에 존재하는 멤버(1인 이상)에게 알람을 보내야 한다.
+            //TODO 현재 채팅방을 구독중(websocket 통신중인) 멤버에게는 보내지 않아야 한다.
+        sendChatNotificationToMember(receiverId, ChatNotification.of(chatBubble));
+    }
 }
