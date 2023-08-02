@@ -2,8 +2,8 @@ package com.team5.secondhand.chat.bubble.controller;
 
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.chat.bubble.service.RedisMessagePublisher;
-import com.team5.secondhand.chat.noti.dto.ChatNotification;
-import com.team5.secondhand.chat.noti.service.SendChatNotificationUsecase;
+import com.team5.secondhand.chat.notification.dto.ChatNotification;
+import com.team5.secondhand.chat.notification.service.SendChatNotificationUsecase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -22,7 +22,6 @@ class ChatController {
     public void message(ChatBubble message) {
         log.debug("pub controller");
         redisMessagePublisher.publish(channelTopic.getTopic(), message);
-        chatNotification.sendChatNotificationToMember(message.getSender(), ChatNotification.of(message)); //TODO 테스트용 임시 코드
     }
 
 }
