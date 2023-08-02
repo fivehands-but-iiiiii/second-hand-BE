@@ -1,7 +1,7 @@
-package com.team5.secondhand.chat.noti.controller;
+package com.team5.secondhand.chat.notification.controller;
 
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
-import com.team5.secondhand.chat.noti.service.NotificationService;
+import com.team5.secondhand.chat.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;

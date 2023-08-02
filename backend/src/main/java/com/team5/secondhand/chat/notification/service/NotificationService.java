@@ -1,11 +1,15 @@
-package com.team5.secondhand.chat.noti.service;
+package com.team5.secondhand.chat.notification.service;
 
-import com.team5.secondhand.chat.noti.domain.Event;
-import com.team5.secondhand.chat.noti.domain.SseId;
-import com.team5.secondhand.chat.noti.dto.ChatNotification;
-import com.team5.secondhand.chat.noti.repository.NotificationRepository;
+import com.team5.secondhand.chat.bubble.domain.ChatBubble;
+import com.team5.secondhand.chat.notification.domain.SseEvent;
+import com.team5.secondhand.chat.notification.domain.SseKey;
+import com.team5.secondhand.chat.notification.dto.ChatNotification;
+import com.team5.secondhand.chat.notification.repository.NotificationRepository;
+import com.team5.secondhand.global.events.ChatBubbleArrivedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -21,11 +25,12 @@ public class NotificationService implements SendChatNotificationUsecase {
     private final NotificationRepository notificationRepository;
 
     public SseEmitter subscribe(String id, String lastEventId, HttpServletResponse response) {
-        SseId sseId = SseId.of(id);
+        SseKey sseId = SseKey.of(id);
 
         SseEmitter emitter = notificationRepository.save(sseId, new SseEmitter(DEFAULT_TIMEOUT));
         response.setHeader("X-Accel-Buffering", "no");
         response.setHeader("Transfer-Encoding", "chunked"); //본문 크기를 미리 알 수 없음
+        response.setHeader("Last-Event-ID", sseId.getKey());
 
         emitter.onCompletion(() -> {
             log.info("SSE onCompletion");
@@ -44,10 +49,10 @@ public class NotificationService implements SendChatNotificationUsecase {
         sendToClient(emitter, id, String.format("connected successfully member key : %s", id));
 
         if (!lastEventId.isEmpty()) {
-            Map<SseId, SseEmitter> events = notificationRepository.findAllStartById(id);
+            Map<SseKey, SseEmitter> events = notificationRepository.findAllStartById(id);
             events.entrySet().stream()
                     .filter(entry -> lastEventId.compareTo(entry.getKey().getMemberId()) < 0)
-                    .forEach(entry -> sendToClient(emitter, entry.getKey().getId(), entry.getValue()));
+                    .forEach(entry -> sendToClient(emitter, entry.getKey().getKey(), entry.getValue())); //클라이언트가 연결을 끊기 전까지 받지 못한 새로운 이벤트를 보내준다.
         }
 
         return emitter;
@@ -57,7 +62,7 @@ public class NotificationService implements SendChatNotificationUsecase {
         try {
             emitter.send(SseEmitter.event()
                     .id(id)
-                    .name(Event.CHAT_NOTIFICATION.getEvent())
+                    .name(SseEvent.CHAT_NOTIFICATION.getEvent())
                     .data(data));
         } catch (IOException e) {
             log.error("SSE 전송 오류", e);

@@ -1,10 +1,10 @@
-package com.team5.secondhand.chat.noti.domain;
+package com.team5.secondhand.chat.notification.domain;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum Event {
+public enum SseEvent {
     CHAT_NOTIFICATION("chatNotification");
 
     private final String camelExpression;

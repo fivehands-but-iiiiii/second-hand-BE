@@ -1,4 +1,4 @@
-package com.team5.secondhand.chat.noti.dto;
+package com.team5.secondhand.chat.notification.dto;
 
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import lombok.Getter;
