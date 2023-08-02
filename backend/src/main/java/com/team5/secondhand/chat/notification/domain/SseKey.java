@@ -1,4 +1,4 @@
-package com.team5.secondhand.chat.noti.domain;
+package com.team5.secondhand.chat.notification.domain;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -6,22 +6,22 @@ import lombok.Getter;
 import java.time.Instant;
 
 @Getter
-public class SseId {
-    private final String id;
+public class SseKey {
+    private final String key;
     private final String memberId;
     private final Instant createdAt;
 
     @Builder
-    private SseId(String id, String memberId, Instant createdAt) {
-        this.id = id;
+    private SseKey(String key, String memberId, Instant createdAt) {
+        this.key = key;
         this.memberId = memberId;
         this.createdAt = createdAt;
     }
 
-    public static SseId of(String memberId) {
+    public static SseKey of(String memberId) {
         Instant createdAt = Instant.now();
-        return SseId.builder()
-                .id(generateId(memberId, createdAt))
+        return SseKey.builder()
+                .key(generateId(memberId, createdAt))
                 .memberId(memberId)
                 .createdAt(createdAt)
                 .build();
