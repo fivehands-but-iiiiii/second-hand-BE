@@ -22,6 +22,7 @@ const MobileLayout = () => {
       console.error(error);
     }
   };
+  
   useEffect(() => {
     getCategories();
   }, []);

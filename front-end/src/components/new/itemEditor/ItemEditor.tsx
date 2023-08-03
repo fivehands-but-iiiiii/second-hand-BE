@@ -62,7 +62,6 @@ interface ItemEditorProps {
 const ItemEditor = ({
   categoryInfo,
   isEdit = false,
-  origin,
   handleClose,
 }: ItemEditorProps) => {
   const pageTitle = isEdit ? '상품 수정' : '새 상품 등록';
