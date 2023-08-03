@@ -12,6 +12,7 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +26,8 @@ public class ChatLogService {
     private int chatLoadSize;
 
     private final RedisTemplate<String, ChatBubble> redisChatBubbleTemplate;
-
+    
+    @Transactional(readOnly = true)
     public Slice<ChatBubble> getChatBubbles(int page, String roomId) {
         ListOperations<String, ChatBubble> listOperations = redisChatBubbleTemplate.opsForList();
 
@@ -53,6 +55,7 @@ public class ChatLogService {
         return new SliceImpl<>(messages, pageable, hasNext);
     }
 
+    @Transactional(readOnly = true)
     public void saveChatBubble(ChatBubble chatBubble) {
         String key = chatBucketPrefix + chatBubble.getRoomId();
         redisChatBubbleTemplate.opsForList().rightPush(key, chatBubble);
