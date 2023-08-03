@@ -2,6 +2,7 @@ package com.team5.secondhand.api.member.controller;
 
 import com.team5.secondhand.api.member.domain.BasedRegion;
 import com.team5.secondhand.api.member.domain.Oauth;
+import com.team5.secondhand.api.member.domain.OauthEnv;
 import com.team5.secondhand.api.member.dto.request.MemberJoin;
 import com.team5.secondhand.api.member.dto.request.MemberLogin;
 import com.team5.secondhand.api.member.dto.request.MemberProfileImageUpdate;
@@ -97,8 +98,8 @@ public class MemberController {
             description = "사용자는 깃허브로 로그인을 할 수 있다."
     )
     @GetMapping("/git/login")
-    public GenericResponse<MemberDetails> getGithubUser(String code, HttpServletResponse response) throws MemberException, EmptyBasedRegionException, IOException {
-        UserProfile profile = oAuthService.getGithubUser(code);
+    public GenericResponse<MemberDetails> getGithubUser(String code, String env, HttpServletResponse response) throws MemberException, EmptyBasedRegionException, IOException {
+        UserProfile profile = oAuthService.getGithubUser(code, OauthEnv.valueOf(env));
         MemberDetails member = memberService.loginByOAuth(profile);
         jwtService.setTokenHeader(member, response);
 

@@ -55,6 +55,7 @@ public class WishlistController {
         Item item = itemService.findById(itemId);
 
         wishlistService.unlikeItem(member, item);
+        //TODO item like 숫자 -1 해주기
 
         return GenericResponse.send("좋아요 등록이 취소되었습니다.", null);
     }

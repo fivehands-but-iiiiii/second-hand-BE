@@ -27,7 +27,6 @@ public class ItemSliceRepositoryImpl implements ItemSliceRepository {
         int pageSize = pageable.getPageSize();
 
         List<Item> fetch = jpaQueryFactory.selectFrom(item)
-                .innerJoin(item.region)
                 .where(
                         eqRegion(region),
                         eqCategory(categoryId),
@@ -37,7 +36,6 @@ public class ItemSliceRepositoryImpl implements ItemSliceRepository {
                 .offset(pageable.getOffset())
                 .limit(pageSize+1)
                 .orderBy(item.id.desc())
-                .fetchJoin()
                 .fetch();
         return new SliceImpl<>(getContents(fetch, pageSize), pageable, hasNext(fetch, pageSize));
     }

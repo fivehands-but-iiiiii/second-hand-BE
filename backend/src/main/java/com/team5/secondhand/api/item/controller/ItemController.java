@@ -2,18 +2,18 @@ package com.team5.secondhand.api.item.controller;
 
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.domain.ItemDetailImage;
+import com.team5.secondhand.api.item.dto.request.MyItemFilteredSlice;
 import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
 import com.team5.secondhand.api.item.dto.request.ItemPost;
 import com.team5.secondhand.api.item.dto.request.ItemStatusUpdate;
 import com.team5.secondhand.api.item.dto.request.ItemPostWithUrl;
-import com.team5.secondhand.api.item.dto.response.CategoryList;
-import com.team5.secondhand.api.item.dto.response.ItemDetail;
-import com.team5.secondhand.api.item.dto.response.ItemList;
+import com.team5.secondhand.api.item.dto.response.*;
 import com.team5.secondhand.api.item.exception.ExistItemException;
 import com.team5.secondhand.api.item.service.ItemService;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.member.exception.ExistMemberIdException;
+import com.team5.secondhand.api.member.exception.UnauthorizedException;
 import com.team5.secondhand.api.member.service.MemberService;
 import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.region.exception.NotValidRegionException;
@@ -33,8 +33,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.security.sasl.AuthenticationException;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -55,10 +53,21 @@ public class ItemController {
             description = "사용자는 자신의 동네의 상품 목록을 볼 수 있다."
     )
     @GetMapping
-    public ItemList getItemList(ItemFilteredSlice itemSlice, @RequestAttribute MemberDetails loginMember) throws NotValidRegionException {
-        Map<Long, Region> regions = getValidRegions.getRegions(List.of(itemSlice.getRegionId()));
+    public GenericResponse<ItemList> getItemList(ItemFilteredSlice itemSlice, @RequestAttribute(required = false) MemberDetails loginMember) throws NotValidRegionException {
+        Region regions = getValidRegions.getRegion(itemSlice.getRegionId());
+        ItemList itemList = itemService.getItemList(itemSlice, regions, loginMember);
         //TODO Category 유효성 검사
-        return itemService.getItemList(itemSlice, regions.get(itemSlice.getPage()), loginMember);
+        return GenericResponse.send("상품 목록이 조회되었습니다.", itemList);
+    }
+
+    @Operation(
+            summary = "내가 등록한 상품 목록",
+            tags = "Items",
+            description = "사용자는 자신이 판매 중인/완료한 상품 목록을 볼 수 있다"
+    )
+    @GetMapping("/mine")
+    public GenericResponse<MyItemList> getItemMyList(MyItemFilteredSlice itemSlice, @RequestAttribute MemberDetails loginMember) throws UnauthorizedException {
+        return GenericResponse.send("판매 내역이 조회되었습니다.", itemService.getMyItemList(itemSlice, loginMember));
     }
 
     @Operation(

@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class AuthorityInterceptor implements HandlerInterceptor {
-    public static final String[] LOGIN_ESSENTIAL = {"/members/**", "/logout"};
+    public static final String[] LOGIN_ESSENTIAL = {"/members/**", "/logout", "/chats", "/chats/**"};
     public static final String[] LOGIN_INESSENTIAL = {"/", "/join", "/git/**", "/login", "/items", "/items/**"};
 
 

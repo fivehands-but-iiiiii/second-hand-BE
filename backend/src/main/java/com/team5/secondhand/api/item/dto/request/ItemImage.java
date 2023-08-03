@@ -3,13 +3,17 @@ package com.team5.secondhand.api.item.dto.request;
 import com.team5.secondhand.api.item.domain.ItemDetailImage;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
-@Builder
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class ItemImage {
-    private final String url;
+    private String url;
+
+    @Builder
+    private ItemImage(String url) {
+        this.url = url;
+    }
 
     public ItemDetailImage toEntity() {
         return ItemDetailImage.builder()

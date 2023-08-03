@@ -11,9 +11,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-
     @Value("${server.address.frontend}")
     private String FRONTEND_SERVER;
+    @Value("${server.address.domain}")
+    private String DOMAIN;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -27,10 +28,12 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "http://127.0.0.1:5173", "http://localhost:5173",
-                        "http://3.37.51.148:81/", "https://apic.app/online/#/tester",
-                        FRONTEND_SERVER, "http://fivehands-but-iiiiii.site"
+                        "http://127.0.0.1:5174", "http://localhost:5174",
+                        "http://3.37.51.148", "http://localhost:8080",
+                        FRONTEND_SERVER, DOMAIN
                 )
-                .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS", "HEAD")
+//                .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS", "HEAD")
+                .allowedMethods("*")
                 .allowedHeaders("*")
                 .maxAge(36000);
     }

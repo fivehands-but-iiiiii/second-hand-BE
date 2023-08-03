@@ -1,8 +1,11 @@
 package com.team5.secondhand.api.oauth.service;
 
+import com.team5.secondhand.api.member.domain.OauthEnv;
+import com.team5.secondhand.api.oauth.config.OAuthProperties;
+import com.team5.secondhand.api.oauth.config.OAuthProvider;
+import com.team5.secondhand.api.oauth.config.OAuthServerProperties;
 import com.team5.secondhand.api.oauth.dto.OAuthToken;
 import com.team5.secondhand.api.oauth.dto.UserProfile;
-import com.team5.secondhand.api.oauth.config.OAuthProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -14,10 +17,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequiredArgsConstructor
 @Service
 public class OAuthService {
-    private final OAuthProperties oAuthProperties;
+    private final OAuthServerProperties requestServer;
+    private final OAuthProvider oAuthProvider;
 
-    public UserProfile getGithubUser(String code) {
-        OAuthToken oAuthToken = getToken(code);
+    public UserProfile getGithubUser(String code, OauthEnv env) {
+        OAuthProperties oAuthProperties = oAuthProvider.createOAuthProperties(env);
+        OAuthToken oAuthToken = getToken(code, oAuthProperties);
         UserProfile user = getUserProfile(oAuthToken);
         return user;
     }
@@ -26,7 +31,7 @@ public class OAuthService {
 
         return WebClient.create()
                 .get()
-                .uri(oAuthProperties.getUserInfoUri())
+                .uri(requestServer.getUserInfoUri())
                 .header("Authorization", oAuthToken.toString())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
@@ -34,16 +39,16 @@ public class OAuthService {
                 .block();
     }
 
-    private OAuthToken getToken(String code) {
+    private OAuthToken getToken(String code, OAuthProperties env) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("code", code);
-        formData.add("client_id", oAuthProperties.getClientId());
-        formData.add("client_secret", oAuthProperties.getClientSecret());
-        formData.add("redirect_uri", oAuthProperties.getRedirectUri());
+        formData.add("client_id", env.getClientId());
+        formData.add("client_secret", env.getClientSecret());
+        formData.add("redirect_uri", env.getRedirectUri());
 
         return WebClient.create()
                 .post()
-                .uri(oAuthProperties.getTokenUri())
+                .uri(requestServer.getTokenUri())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData(formData))
