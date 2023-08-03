@@ -11,7 +11,7 @@ import { useCategories } from '@components/layout/MobileLayout';
 import useAPI from '@hooks/useAPI';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
 import ItemDetail from '@pages/ItemDetail';
-import { getStoredValue } from '@utils/sessionStorage';
+// import { getStoredValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
 
