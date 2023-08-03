@@ -24,6 +24,7 @@ public class NotificationService implements SendChatNotificationUsecase {
     private final Long DEFAULT_TIMEOUT = 120L * 1000 * 60;
     private final NotificationRepository notificationRepository;
 
+    @Transactional
     public SseEmitter subscribe(String id, String lastEventId, HttpServletResponse response) {
         SseKey sseId = SseKey.of(id);
 
@@ -71,6 +72,7 @@ public class NotificationService implements SendChatNotificationUsecase {
     }
 
     @Override
+    @Transactional
     public void sendChatNotificationToMember(String id, ChatNotification chatNotification) {
         SseEmitter sseEmitter = notificationRepository.findStartById(id).orElseThrow(); //TODO 에러 작성해주기
         sendToClient(sseEmitter, id, chatNotification);
