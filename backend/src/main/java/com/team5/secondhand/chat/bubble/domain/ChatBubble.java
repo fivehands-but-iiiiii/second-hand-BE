@@ -20,21 +20,23 @@ public class ChatBubble implements Serializable, Comparable {
     @Indexed
     private String roomId;
     private String sender;
+    private String receiver;
     private String message;
     private String createdAt;
 
     @Builder
-    private ChatBubble(String id, String roomId, String sender, String message, String createdAt) {
+    private ChatBubble(String id, String roomId, String sender, String receiver, String message, String createdAt) {
         this.id = id;
         this.roomId = roomId;
         this.sender = sender;
+        this.receiver = receiver;
         this.message = message;
         this.createdAt = createdAt;
     }
 
     private static String generateKey(String id) {
         if (id==null) {
-            return UUID.randomUUID().toString().replace("-", "");
+            return UUID.randomUUID().toString();
         }
         return id;
     }

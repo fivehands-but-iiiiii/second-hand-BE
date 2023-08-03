@@ -14,8 +14,8 @@ import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.region.exception.EmptyBasedRegionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
@@ -40,6 +40,7 @@ public class MemberService implements JoinService {
         return newMember.getId();
     }
 
+    @Transactional(readOnly = true)
     public MemberDetails login(MemberLogin loginDTO) throws UnauthorizedException, EmptyBasedRegionException {
         Member member = memberRepository.findByMemberIdAndOauth(loginDTO.getMemberId(), Oauth.NONE)
                 .orElseThrow(() -> new UnauthorizedException("가입되지 않은 회원입니다"));
@@ -47,6 +48,7 @@ public class MemberService implements JoinService {
         return MemberDetails.fromMember(member);
     }
 
+    @Transactional(readOnly = true)
     public MemberDetails loginByOAuth(UserProfile loginDTO) throws UnauthorizedGithubMemberException, EmptyBasedRegionException {
         Member member = memberRepository.findByMemberIdAndOauth(loginDTO.getLogin(), Oauth.GITHUB)
                 .orElseThrow(() -> new UnauthorizedGithubMemberException("가입되지 않은 GITHUB 회원입니다", loginDTO));
