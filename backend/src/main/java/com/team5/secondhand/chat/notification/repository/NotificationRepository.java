@@ -8,10 +8,7 @@ import java.util.Optional;
 
 public interface NotificationRepository {
     SseEmitter save(SseKey id, SseEmitter sseEmitter);
-
     void deleteAllStartByWithId(String id);
-
     Map<SseKey, SseEmitter> findAllStartById(String id);
-
     Optional<SseEmitter> findStartById(String id);
 }

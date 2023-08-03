@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Getter
@@ -17,6 +18,7 @@ public class RedisMessagePublisher {
     private final ApplicationEventPublisher eventPublisher;
     private final RedisTemplate<String, Object> redisTemplate;
 
+    @Transactional
     public void publish(String topic, ChatBubble message) {
         log.debug("pub log : " +  message.toString() + "/ topic: " + topic);
         message.ready();

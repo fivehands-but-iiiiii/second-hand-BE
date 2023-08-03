@@ -56,10 +56,12 @@ public class MemberService implements JoinService {
         return MemberDetails.fromMember(member);
     }
 
+    @Transactional(readOnly = true)
     public boolean isExistMemberId(String memberId, Oauth oauth) {
         return memberRepository.existsByMemberIdAndOauth(memberId, oauth);
     }
 
+    @Transactional
     public Member findById(Long id) throws ExistMemberIdException {
         return memberRepository.findById(id).orElseThrow(() -> new ExistMemberIdException("잘못된 회원입니다."));
     }
@@ -69,6 +71,7 @@ public class MemberService implements JoinService {
         return memberRepository.updateMemberProfileImage(id, uploadUrl);
     }
 
+    @Transactional(readOnly = true)
     public void isValidMemberId(String memberId) throws ExistMemberIdException, NotValidMemberIdException {
         if (isExistMemberId(memberId, Oauth.NONE)) {
             throw new ExistMemberIdException("이미 존재하는 회원 아이디입니다.");
@@ -82,6 +85,7 @@ public class MemberService implements JoinService {
         return Pattern.matches(ID_PATTERN, memberId);
     }
 
+    @Transactional(readOnly = true)
     public void checkDataCorruption(MemberJoin request, UserProfile tempMember) throws MemberDataCorruptedException {
         if (!request.toMember().equals(tempMember.toMember())) {
             throw new MemberDataCorruptedException("유효하지 않은 회원가입 요청입니다.");

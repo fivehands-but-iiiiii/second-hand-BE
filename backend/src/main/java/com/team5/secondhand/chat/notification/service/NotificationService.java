@@ -60,7 +60,7 @@ public class NotificationService implements SendChatNotificationUsecase {
         return emitter;
     }
 
-    public void sendToClient(SseEmitter emitter, String id, Object data) {
+    private void sendToClient(SseEmitter emitter, String id, Object data) {
         try {
             emitter.send(SseEmitter.event()
                     .id(id)

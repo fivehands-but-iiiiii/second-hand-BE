@@ -14,6 +14,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,12 +27,13 @@ public class ChatLogService {
     private int chatLoadSize;
 
     private final RedisTemplate<String, ChatBubble> redisChatBubbleTemplate;
-    
+
+    //TODO Repository 로직 Repository 로 분리하기
     @Transactional(readOnly = true)
     public Slice<ChatBubble> getChatBubbles(int page, String roomId) {
         ListOperations<String, ChatBubble> listOperations = redisChatBubbleTemplate.opsForList();
 
-        String key = chatBucketPrefix + roomId;
+        String key = generateChatLogKey(roomId);
         long startIndex = getStartIndex(page);
         long endIndex = startIndex - chatLoadSize;
 
@@ -57,14 +59,19 @@ public class ChatLogService {
 
     @Transactional(readOnly = true)
     public void saveChatBubble(ChatBubble chatBubble) {
-        String key = chatBucketPrefix + chatBubble.getRoomId();
+        String key = generateChatLogKey(chatBubble.getRoomId());
         redisChatBubbleTemplate.opsForList().rightPush(key, chatBubble);
     }
 
     @Async
     @EventListener
+    @Transactional
     public void getChatBubble(ChatBubbleArrivedEvent chatBubbleArrivedEvent) {
         ChatBubble chatBubble = chatBubbleArrivedEvent.getChatBubble();
         saveChatBubble(chatBubble);
+    }
+
+    private String generateChatLogKey (String roomId) {
+        return String.format("%s%s:logs", chatBucketPrefix, roomId);
     }
 }
