@@ -1,4 +1,4 @@
-import { useRef, ComponentPropsWithRef, KeyboardEvent } from 'react';
+import { useRef, ComponentPropsWithRef, KeyboardEvent, useEffect } from 'react';
 
 import Icon from '@assets/Icon';
 import * as iconTypes from '@assets/svgs/index';
@@ -11,6 +11,7 @@ interface TextareaProps extends ComponentPropsWithRef<'textarea'> {
   type?: 'default' | 'icon' | 'chat';
   singleLine?: boolean;
   icon?: keyof typeof iconTypes;
+  autoFocus?: boolean;
 }
 
 const Textarea = ({
@@ -18,6 +19,7 @@ const Textarea = ({
   type = 'default',
   singleLine = false,
   icon,
+  autoFocus = false,
   ...rest
 }: TextareaProps) => {
   const textareaTypes = {
@@ -41,6 +43,12 @@ const Textarea = ({
       event.preventDefault();
     }
   };
+
+  useEffect(() => {
+    if (autoFocus) {
+      textRef.current?.focus();
+    }
+  });
 
   return (
     <MyTextareaContainer>

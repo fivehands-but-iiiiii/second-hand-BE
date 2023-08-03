@@ -3,6 +3,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID;
 const REDIRECT_URL = import.meta.env.VITE_REDIRECT_URL;
+import Alert from '@common/Alert';
+import {
+  ALERT_ACTIONS,
+  ALERT_TITLE,
+  AlertActionsProps,
+} from '@common/Alert/constants';
 import Button from '@common/Button';
 import NavBar from '@common/NavBar';
 import LabelInput from '@components/common/LabelInput';
@@ -26,6 +32,7 @@ const Login = () => {
   const [isLogin, setIsLogin] = useState(false);
   const [userId, setUserId] = useState('');
   const [validationMessage, setValidationMessage] = useState('');
+  const [isLogoutAlertOpen, setIsLogoutAlertOpen] = useState(false);
   const storedUserInfo = getStoredValue({ key: 'userInfo' });
   const OAUTH_URL = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_url=${REDIRECT_URL}`;
   const { response, error, request } = useAPI();
@@ -46,10 +53,31 @@ const Login = () => {
   };
 
   const handleLogout = () => {
+    setIsLogoutAlertOpen(true);
+  };
+
+  const logout = () => {
     setIsLogin(false);
     removeStorageValue({ key: 'userInfo' });
     removeStorageValue({ key: 'token' });
+    setIsLogoutAlertOpen(false);
   };
+
+  const handleAlert = (type: AlertActionsProps['id']) => {
+    if (type !== 'cancel' && type !== 'logout') return;
+    const actions = {
+      logout: () => logout(),
+      cancel: () => setIsLogoutAlertOpen(false),
+    };
+    return actions[type]();
+  };
+
+  const alertButtons = (actions: AlertActionsProps[]) =>
+    actions.map(({ id, action }) => (
+      <button key={id} onClick={() => handleAlert(id)}>
+        {action}
+      </button>
+    ));
 
   const handleCreateAccount = () => {
     navigate('/join');
@@ -139,6 +167,10 @@ const Login = () => {
             </>
           )}
         </MyButtons>
+        <Alert isOpen={isLogoutAlertOpen}>
+          <Alert.Title>{ALERT_TITLE.LOGOUT}</Alert.Title>
+          <Alert.Button>{alertButtons(ALERT_ACTIONS.LOGOUT)}</Alert.Button>
+        </Alert>
       </MyLogin>
     </>
   );

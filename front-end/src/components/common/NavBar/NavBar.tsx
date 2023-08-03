@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { styled } from 'styled-components';
 
 interface NavBarProps {
+  type?: 'default' | 'blur' | 'transparent';
   left?: ReactNode;
   center?: ReactNode;
   right?: ReactNode;
@@ -10,11 +11,25 @@ interface NavBarProps {
   children?: ReactNode;
 }
 
-const NavBar = ({ left, center, right, className, children }: NavBarProps) => {
+const NavBar = ({
+  type = 'default',
+  left,
+  center,
+  right,
+  className,
+  children,
+}: NavBarProps) => {
+  const navBarTypes = {
+    default: MyDefaultNavBar,
+    blur: MyBlurNavBar,
+    transparent: MyTransparentNavBar,
+  };
+  const MyNavBar = navBarTypes[type];
+
   return (
     <MyNavBar className={className}>
       <MyNavBarTitle>
-        <MyLeftTitle>{left}</MyLeftTitle>
+        {left && <MyLeftTitle>{left}</MyLeftTitle>}
         <MyCenter>{center}</MyCenter>
         {right && <MyRightTitle>{right}</MyRightTitle>}
       </MyNavBarTitle>
@@ -23,13 +38,22 @@ const NavBar = ({ left, center, right, className, children }: NavBarProps) => {
   );
 };
 
-const MyNavBar = styled.div`
+const MyDefaultNavBar = styled.div`
+  width: 100%;
   min-height: 70px;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.neutral.border};
+`;
+
+const MyBlurNavBar = styled(MyDefaultNavBar)`
   position: sticky;
   top: 0;
   background-color: ${({ theme }) => theme.colors.neutral.backgroundBlur};
   backdrop-filter: blur(3px);
-  border-bottom: 1px solid ${({ theme }) => theme.colors.neutral.border};
+`;
+
+const MyTransparentNavBar = styled(MyDefaultNavBar)`
+  position: fixed;
+  border: none;
 `;
 
 const MyNavBarTitle = styled.div`
@@ -38,16 +62,17 @@ const MyNavBarTitle = styled.div`
   grid-template-columns: 1fr 1fr 1fr;
   height: 100%;
   padding: 10px 10px;
-  color: ${({ theme }) => theme.colors.neutral.textWeak};
   ${({ theme }) => theme.fonts.body};
 `;
 
 const MyLeftTitle = styled.p`
   text-align: left;
+  grid-column: 1;
 `;
 
 const MyRightTitle = styled.p`
   text-align: right;
+  grid-column: 3;
 `;
 
 const MyCenter = styled.p`
@@ -55,6 +80,7 @@ const MyCenter = styled.p`
   font-weight: 600;
   color: ${({ theme }) => theme.colors.neutral.textStrong};
   text-align: center;
+  grid-column: 2;
 `;
 
 const MyChildren = styled.div`

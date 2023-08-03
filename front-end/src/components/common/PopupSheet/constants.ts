@@ -4,17 +4,14 @@ export const DETAIL_STATUS_MENU = [
   {
     id: 0,
     title: '판매중 상태로 전환',
-    style: `color: ${palette.neutral.text};`,
   },
   {
     id: 1,
     title: '예약중 상태로 전환',
-    style: `color: ${palette.neutral.text};`,
   },
   {
     id: 2,
     title: '판매 완료 상태로 전환',
-    style: `color: ${palette.neutral.text}`,
   },
 ];
 
@@ -76,6 +73,5 @@ export const REGION_MENU = [
   {
     id: 'selectLocale',
     title: '내 동네 설정하기',
-    style: 'font-weight: 400',
   },
 ];

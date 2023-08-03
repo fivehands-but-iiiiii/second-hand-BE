@@ -1,26 +1,42 @@
-import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Outlet, useOutletContext } from 'react-router-dom';
 
 import MainTabBar from '@common/TabBar/MainTabBar';
+import { CategoryInfo } from '@components/home/category';
+import useAPI from '@hooks/useAPI';
 
 import { styled } from 'styled-components';
 
-export interface OutletContext {
-  handleMainTabBar: (status: boolean) => void;
-}
-
 const MobileLayout = () => {
-  const [isMainTabBarOpen, setIsMainTabBarOpen] = useState(true);
-  const handleMainTabBar = (status: boolean) => {
-    setIsMainTabBarOpen(status);
+  const [categories, setCategories] = useState<CategoryInfo[]>([]);
+  const { request } = useAPI();
+
+  const getCategories = async () => {
+    if (categories.length) return;
+    try {
+      const { data } = await request({
+        url: '/resources/categories',
+      });
+      setCategories(data.categories);
+    } catch (error) {
+      console.error(error);
+    }
   };
+  
+  useEffect(() => {
+    getCategories();
+  }, []);
 
   return (
     <MyMobileLayout>
-      <Outlet context={handleMainTabBar} />
-      {isMainTabBarOpen && <MainTabBar />}
+      <Outlet context={categories} />
+      <MainTabBar />
     </MyMobileLayout>
   );
+};
+
+export const useCategories = () => {
+  return useOutletContext<CategoryInfo[]>();
 };
 
 const MyMobileLayout = styled.div`
