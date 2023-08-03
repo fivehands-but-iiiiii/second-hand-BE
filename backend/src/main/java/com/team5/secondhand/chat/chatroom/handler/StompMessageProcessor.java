@@ -53,6 +53,15 @@ public class StompMessageProcessor implements ChannelInterceptor {
     }
 
     private void enterToChatRoom(StompHeaderAccessor headerAccessor, String memberId) {
-        //todo: redis에 현재 존재하는 멤버 저장
+        String roomId = extractRoomId(headerAccessor.getDestination());
+        //todo: redis에 해당 채팅방에 멤버 상태 변경
+        //todo: 읽은 메시지 0으로 초기화
+    }
+
+    private String extractRoomId(String destination) {
+        if (destination == null) {
+            throw new MessageDeliveryException(ErrorType.BAD_REQUEST.getMessage());
+        }
+        return destination.replace("/sub/", "");
     }
 }
