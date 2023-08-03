@@ -276,6 +276,7 @@ const Home = () => {
         data.data.items.forEach((item: SaleItem) => newSet.add(item));
         return [...newSet];
       });
+      
 
       setHomePageInfo({
         page: data.number + 1,
