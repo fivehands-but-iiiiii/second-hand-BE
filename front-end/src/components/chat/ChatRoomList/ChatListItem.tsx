@@ -2,35 +2,36 @@ import { ComponentPropsWithRef } from 'react';
 
 import Button from '@common/Button/Button';
 import ImgBox from '@common/ImgBox/ImgBox';
+import { SaleItem } from '@common/Item';
 import UserProfile from '@components/login/UserProfile';
 
 import { styled } from 'styled-components';
 
-interface ChatListItem extends ComponentPropsWithRef<'button'> {
+interface ChatListItem {
   id: string;
   userImage: string;
   userName: string;
   lastMessageTime: string;
   lastMessage: string;
   unreadCount: number;
-  itemImage: string;
+  itemInfo: Pick<SaleItem, 'id' | 'title' | 'thumbnailUrl'>;
 }
 
-interface ChatListProps {
+interface ChatListProps extends ComponentPropsWithRef<'button'> {
   chatItem: ChatListItem;
 }
 
-const ChatListItem = ({ chatItem }: ChatListProps) => {
+const ChatListItem = ({ chatItem, ...rest }: ChatListProps) => {
   const {
     userImage,
     userName,
     lastMessageTime,
     lastMessage,
     unreadCount,
-    itemImage,
+    itemInfo,
   } = chatItem;
   return (
-    <MyChatListItem>
+    <MyChatListItem {...rest}>
       <UserProfile size="s" profileImgUrl={userImage} />
       <MyChatInfo>
         <MyChatUserName>
@@ -43,7 +44,7 @@ const ChatListItem = ({ chatItem }: ChatListProps) => {
         <Button active circle="sm">
           {unreadCount}
         </Button>
-        <ImgBox src={itemImage} size="sm" alt={itemImage} />
+        <ImgBox src={itemInfo.thumbnailUrl} alt={itemInfo.title} size="sm" />
       </MyChatItem>
     </MyChatListItem>
   );

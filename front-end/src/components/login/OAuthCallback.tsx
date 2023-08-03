@@ -5,6 +5,7 @@ import { setStorageValue } from '@utils/sessionStorage';
 import { AxiosError } from 'axios';
 
 import api from '../../api';
+const ENV_MODE = import.meta.env.VITE_ENV_MODE;
 
 export interface GitHubUserInfo {
   id: number;
@@ -20,7 +21,7 @@ const OAuthCallback = () => {
   useEffect(() => {
     const authenticateWithSessionId = async () => {
       try {
-        await api.get(`/git/login?code=${queryCode}`);
+        await api.get(`/git/login?code=${queryCode}&env=${ENV_MODE}`);
       } catch (error) {
         if (error instanceof AxiosError) {
           if (error.response?.status === 401) {

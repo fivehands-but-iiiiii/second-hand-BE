@@ -9,3 +9,10 @@ export const getFormattedPrice = (input: string): string => {
   const formattedPrice = numericValue.toLocaleString();
   return formattedPrice;
 };
+
+export const getFormattedNumber = (won: string): number => {
+  const noPricePattern = /가격없음/i;
+  if (noPricePattern.test(won)) return 0;
+  const numericValue = parseInt(won.replace(/,/g, ''), 10);
+  return numericValue;
+};

@@ -28,33 +28,33 @@ const CategoryList = ({
         center={'카테고리'}
       ></NavBar>
       <MyCategoryList>
-        {categories?.map(({ id, title }) => (
-          <MyCategory
-            active={id === selectedId}
-            key={id}
-            onClick={() => onClickCategory({ id, title })}
-          >
-            {title}
-          </MyCategory>
-        ))}
+        <ul>
+          {categories?.map(({ id, title }) => (
+            <MyCategory
+              active={id === selectedId}
+              key={id}
+              onClick={() => onClickCategory({ id, title })}
+            >
+              {title}
+            </MyCategory>
+          ))}
+        </ul>
       </MyCategoryList>
     </PortalLayout>
   );
 };
 
-const MyCategoryList = styled.ul`
-  position: absolute;
-  width: 100vw;
+const MyCategoryList = styled.div`
   height: 89vh;
-  ${({ theme }) => theme.fonts.subhead}
-  color: ${({ theme }) => theme.colors.neutral.text};
-  overflow-y: auto;
-  -ms-overflow-style: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  > li:not(:last-child) {
-    border-bottom: 1px solid ${({ theme }) => theme.colors.neutral.border};
+  padding: 0 3vw 10px;
+  ul {
+    height: 100%;
+    ${({ theme }) => theme.fonts.subhead}
+    color: ${({ theme }) => theme.colors.neutral.text};
+    overflow: auto;
+    > li:not(:last-child) {
+      border-bottom: 1px solid ${({ theme }) => theme.colors.neutral.border};
+    }
   }
 `;
 
@@ -63,7 +63,6 @@ const MyCategory = styled.li<CategoryStyleProps>`
     active ? theme.colors.accent.backgroundPrimary : theme.colors.neutral.text};
   height: 6vh;
   line-height: 6vh;
-  padding: 0 2.7vw;
   text-align: start;
 `;
 

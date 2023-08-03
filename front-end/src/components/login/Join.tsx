@@ -1,10 +1,9 @@
 import { useState, ChangeEvent, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import Icon from '@assets/Icon';
-import Button from '@common/Button';
 import LabelInput from '@common/LabelInput';
 import NavBar from '@common/NavBar';
+import SettingRegionSelector from '@components/region/SettingRegionSelector';
 import useJoin from '@hooks/useJoin';
 import { getFormattedId } from '@utils/formatText';
 
@@ -12,49 +11,47 @@ import { styled } from 'styled-components';
 
 import api from '../../api';
 
-import { GitHubUserInfo } from './OAuthCallback';
 import UserProfile from './UserProfile';
-
-export interface UserInfo {
-  memberId: string;
-  profileImgUrl?: string;
-  regions: {
-    id: number;
-    onFocus: boolean;
-  }[];
-}
 
 export interface InputFile {
   preview: string;
   file?: File;
 }
 
+export interface RegionInfo {
+  id: number;
+  district: string;
+  onFocus: boolean;
+}
+
+export interface UserInfo {
+  id?: number;
+  memberId: string;
+  profileImgUrl?: string;
+  regions: RegionInfo[];
+}
+
+export type UserRegion = Omit<RegionInfo, 'district'>;
+
 const Join = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [gitHubUserInfo] = useState<GitHubUserInfo>(location.state);
+  const gitHubUserInfo = location.state;
   const [userInputId, setUserInputId] = useState('');
   const [validationMessage, setValidationMessage] = useState('');
   const [files, setFiles] = useState<InputFile>();
-  const [regionId] = useState(1);
+  const [userRegions, setUserRegions] = useState<RegionInfo[]>([]);
   const [userAccount, setUserAccount] = useState<UserInfo>({
     memberId: gitHubUserInfo?.login,
     profileImgUrl: gitHubUserInfo?.avatar_url,
-    regions: [
-      {
-        id: regionId,
-        onFocus: true,
-      },
-    ],
+    regions: userRegions,
   });
   const [isReadyToSubmit, setIsReadyToSubmit] = useState(false);
   const [idExists, setIdExists] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const { join } = useJoin();
 
-  const handleInputChange = async ({
-    target,
-  }: ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const { value } = target;
     const regExp = /[^0-9a-z]/;
     if (regExp.test(value)) {
@@ -94,6 +91,15 @@ const Join = () => {
     });
   };
 
+  const handleUserRegions = (regions: RegionInfo[]) => {
+    setUserRegions(regions);
+    setUserAccount({
+      ...userAccount,
+      memberId: userInputId,
+      regions: regions,
+    });
+  };
+
   const handlePostUserAccount = async () => {
     try {
       const response = await join({ files, account: userAccount });
@@ -117,16 +123,22 @@ const Join = () => {
       setValidationMessage('6~12자 이내로 입력하세요');
     } else if (idExists) {
       setValidationMessage('이미 사용중인 아이디예요');
-      setIsReadyToSubmit(false);
     } else {
       setValidationMessage('사용 가능한 아이디예요');
-      setIsReadyToSubmit(true);
-      setUserAccount({ ...userAccount, memberId: userInputId });
+      if (userRegions.length > 0) {
+        setUserAccount({
+          ...userAccount,
+          memberId: userInputId,
+          regions: userRegions,
+        });
+        return setIsReadyToSubmit(true);
+      }
     }
-  }, [userInputId, idExists]);
+    setIsReadyToSubmit(false);
+  }, [userInputId, idExists, userRegions]);
 
   return (
-    <MyBack>
+    <MyJoin>
       <NavBar
         left={<button onClick={() => navigate('/login')}>닫기</button>}
         center={'회원가입'}
@@ -140,7 +152,7 @@ const Join = () => {
           </button>
         }
       />
-      <MyJoin>
+      <MyUserAccount>
         <MyUserInfo>
           <UserProfile
             profileImgUrl={gitHubUserInfo?.avatar_url}
@@ -157,27 +169,26 @@ const Join = () => {
             />
           )}
         </MyUserInfo>
-        <Button fullWidth>
-          <Icon name={'plus'} />
-          위치추가
-        </Button>
-      </MyJoin>
-    </MyBack>
+        <SettingRegionSelector onSetRegions={handleUserRegions} />
+      </MyUserAccount>
+    </MyJoin>
   );
 };
 
-const MyBack = styled.div`
+const MyJoin = styled.div`
   background-color: white;
 `;
 
-const MyUserInfo = styled.div`
-  height: 200px;
-  margin-bottom: 20px;
+const MyUserAccount = styled.div`
+  padding: 5vh 2.7vw;
 `;
 
-const MyJoin = styled.div`
-  height: 90vh;
-  padding: 5vh 2.7vw;
+const MyUserInfo = styled.div`
+  height: 150px;
+  margin-bottom: 20px;
+  > div {
+    padding-bottom: 10px;
+  }
 `;
 
 export default Join;
