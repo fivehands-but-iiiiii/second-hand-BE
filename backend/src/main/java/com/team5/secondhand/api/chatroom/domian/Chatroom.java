@@ -34,7 +34,7 @@ public class Chatroom extends BasedTimeEntity {
     @JoinColumn(name = "item_id")
     private Item item;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "buyer_id")
     private Member buyer;
 
