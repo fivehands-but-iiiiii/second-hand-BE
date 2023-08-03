@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,6 +25,7 @@ public class NotificationService implements SendChatNotificationUsecase {
     private final Long DEFAULT_TIMEOUT = 120L * 1000 * 60;
     private final NotificationRepository notificationRepository;
 
+    @Transactional
     public SseEmitter subscribe(String id, String lastEventId, HttpServletResponse response) {
         SseKey sseId = SseKey.of(id);
 
@@ -58,7 +60,7 @@ public class NotificationService implements SendChatNotificationUsecase {
         return emitter;
     }
 
-    public void sendToClient(SseEmitter emitter, String id, Object data) {
+    private void sendToClient(SseEmitter emitter, String id, Object data) {
         try {
             emitter.send(SseEmitter.event()
                     .id(id)
@@ -71,6 +73,7 @@ public class NotificationService implements SendChatNotificationUsecase {
     }
 
     @Override
+    @Transactional
     public void sendChatNotificationToMember(String id, ChatNotification chatNotification) {
         SseEmitter sseEmitter = notificationRepository.findStartById(id).orElseThrow(); //TODO 에러 작성해주기
         sendToClient(sseEmitter, id, chatNotification);

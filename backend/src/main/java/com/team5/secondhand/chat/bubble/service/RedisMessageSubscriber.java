@@ -11,6 +11,8 @@ import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 @Getter
 @Slf4j
 @RequiredArgsConstructor
@@ -21,6 +23,7 @@ public class RedisMessageSubscriber implements MessageListener {
     private final SimpMessageSendingOperations messagingTemplate;
 
     @Override
+    @Transactional
     public void onMessage(Message message, byte[] pattern) {
         log.debug("on message : ");
         //redis 로부터 온 메시지를 역질렬화하여
