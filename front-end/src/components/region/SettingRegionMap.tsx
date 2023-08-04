@@ -78,6 +78,7 @@ const SettingRegionMap = ({ regions, onPortal }: SettingRegionMapProps) => {
         setStorageValue({ key: 'userInfo', value: updatedUserAccount });
         onPortal();
       }
+      return;
     } catch (error) {
       console.error(error);
     }
@@ -103,12 +104,13 @@ const SettingRegionMap = ({ regions, onPortal }: SettingRegionMapProps) => {
   };
 
   const haveChangedRegions = (prev: RegionInfo[], updated: RegionInfo[]) => {
+    if (prev.length !== updated.length) return true;
     return (
-      prev.length !== updated.length ||
       prev.some(
         (prevRegion) =>
           !updated.some((updated) => prevRegion.id === updated.id),
-      )
+      ) ||
+      !prev.every((prevRegion, index) => prevRegion.id === updated[index].id)
     );
   };
 
