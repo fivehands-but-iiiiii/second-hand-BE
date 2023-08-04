@@ -82,9 +82,9 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
   };
 
   // TODO: HTTP API 완성 시 주석 제거
-  // useEffect(() => {
-  //   getChatInfo();
-  // }, []);
+  useEffect(() => {
+    getChatInfo();
+  }, []);
 
   const client = useRef<StompJs.Client | null>(null);
 

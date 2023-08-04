@@ -1,0 +1,24 @@
+spring:
+  profiles:
+    active: prod
+    group:
+      local: [ db-local, local ] # localhost
+      prod: [ prod ] # production
+#      dev: [ dev ] #test
+    include: [ aws, jwt, oauth ]
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 500MB
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+        default_batch_fetch_size: 100
+server:
+  address:
+    domain: "http://fivehands-but-iiiiii.site"
+const:
+  chat:
+    bucket: "chatroom:"
+    page-size: 25

@@ -19,7 +19,6 @@ import BlankPage from './BlankPage';
 import ItemDetail from './ItemDetail';
 
 type WishCategory = Omit<CategoryInfo, 'iconUrl'>;
-
 const WishList = () => {
   const title = '관심 목록';
   const categories = useCategories();
