@@ -276,7 +276,6 @@ const Home = () => {
         data.data.items.forEach((item: SaleItem) => newSet.add(item));
         return [...newSet];
       });
-      
 
       setHomePageInfo({
         page: data.number + 1,
@@ -334,7 +333,9 @@ const Home = () => {
           />,
           document.body,
         )}
-      <ItemList saleItems={saleItems} onItemClick={handleItemDetail} />
+      {!!saleItems.length && (
+        <ItemList saleItems={saleItems} onItemClick={handleItemDetail} />
+      )}
       {!!saleItems.length && <MyOnFetchItems ref={setTarget}></MyOnFetchItems>}
       {isLoading && <Spinner />}
       {!!selectedItem &&

@@ -13,3 +13,5 @@ const useAlert = () => {
 
   return { isOpen, open, close };
 };
+
+export default useAlert;
