@@ -333,7 +333,9 @@ const Home = () => {
           />,
           document.body,
         )}
-      <ItemList saleItems={saleItems} onItemClick={handleItemDetail} />
+      {!!saleItems.length && (
+        <ItemList saleItems={saleItems} onItemClick={handleItemDetail} />
+      )}
       {!!saleItems.length && <MyOnFetchItems ref={setTarget}></MyOnFetchItems>}
       {isLoading && <Spinner />}
       {!!selectedItem &&
