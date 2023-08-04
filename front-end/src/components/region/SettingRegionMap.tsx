@@ -78,6 +78,7 @@ const SettingRegionMap = ({ regions, onPortal }: SettingRegionMapProps) => {
         setStorageValue({ key: 'userInfo', value: updatedUserAccount });
         onPortal();
       }
+      return;
     } catch (error) {
       console.error(error);
     }
