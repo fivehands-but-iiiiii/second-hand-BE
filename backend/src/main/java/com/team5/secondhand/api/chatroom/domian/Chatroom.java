@@ -30,7 +30,7 @@ public class Chatroom extends BasedTimeEntity {
     @Generated(GenerationTime.INSERT)
     private UUID chatroomId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER) //TODO 일단 임시로 에러 기워 사용하기
     @JoinColumn(name = "item_id")
     private Item item;
 
