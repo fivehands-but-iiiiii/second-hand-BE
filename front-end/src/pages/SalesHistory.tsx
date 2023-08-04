@@ -32,8 +32,6 @@ const SALES_STATUS = [
 const SalesHistory = () => {
   const title = '판매 내역';
   const categories = useCategories();
-  // TODO: API 바뀌면 userInfo 필요없음
-  const userInfo = getStoredValue({ key: 'userInfo' });
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
   const [selectedItem, setSelectedItem] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState(ItemStatus.ON_SALE);
@@ -54,6 +52,8 @@ const SalesHistory = () => {
 
   const getSalesHistory = async () => {
     if (!pageInfo.hasNext) return;
+    const userInfo = getStoredValue({ key: 'userInfo' });
+    if (!userInfo) return;
     try {
       setIsLoading(true);
       const { data } = await request({
