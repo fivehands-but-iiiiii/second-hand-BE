@@ -15,6 +15,7 @@ import LabelInput from '@components/common/LabelInput';
 import LoginButtons from '@components/login/LoginButtons';
 import UserProfile from '@components/login/UserProfile';
 import useAPI from '@hooks/useAPI';
+import useEnterKeyPress from '@hooks/useEnterKeyPress';
 import { getFormattedId } from '@utils/formatText';
 import {
   setStorageValue,
@@ -102,6 +103,8 @@ const Login = () => {
     setUserId(formattedValue);
   };
 
+  const { handleKeyDown } = useEnterKeyPress({ onEnterPress: handleLogin });
+
   useEffect(() => {
     if (response) {
       setStorageValue({
@@ -151,6 +154,7 @@ const Login = () => {
               subText={validationMessage}
               ref={inputRef}
               onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
             />
           </>
         )}
