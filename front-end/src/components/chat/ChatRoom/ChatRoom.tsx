@@ -135,6 +135,7 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
       body: JSON.stringify({
         roomId,
         sender: userId,
+        receiver: opponentId,
         message: chat,
       }),
     });
