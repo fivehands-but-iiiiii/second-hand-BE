@@ -18,7 +18,9 @@ import api from '../../../api';
 interface ChatBubble {
   roomId: string;
   sender: string;
+  // receiver: string;
   message: string;
+  // createdAt: string;
 }
 
 interface SaleItemSummary {
@@ -31,6 +33,7 @@ interface SaleItemSummary {
 }
 
 interface ChatRoomProps {
+  // TODO: chat list 에서 채팅방 입장 시 필요한 정보 : roomId (서버 에러 수정 후 작업 예정)
   itemId: number;
   onRoomClose: () => void;
 }
@@ -42,26 +45,16 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
     {} as SaleItemSummary,
   );
   const [roomId, setRoomId] = useState<Pick<ChatBubble, 'roomId'> | null>(null);
+  const [page, setPage] = useState(0);
   const [opponentId, setOpponentId] = useState('');
   const [chatBubbles, setChatBubbles] = useState<ChatBubble[]>([]);
   const [chat, setChat] = useState('');
   const [isMoreViewPopupOpen, setIsMoreViewPopupOpen] = useState(false);
 
-  const handleViewMorePopup = () => {
-    setIsMoreViewPopupOpen(!isMoreViewPopupOpen);
-  };
-
-  const viewMorePopupSheetMenu = CHAT_VIEWMORE_MENU.map((menu) => ({
-    ...menu,
-    onClick: () => {
-      console.log('');
-      setIsMoreViewPopupOpen(false);
-    },
-  }));
-
   const endRef = useRef<HTMLDivElement | null>(null);
+  const client = useRef<StompJs.Client | null>(null);
 
-  const getChatInfo = async () => {
+  const getChatInfo = async (itemId: number) => {
     try {
       const { data } = await api.get(`chats/items/${itemId}`);
       const { item, chatroomId, opponentId } = data.data;
@@ -77,7 +70,7 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
       setOpponentId(opponentId);
 
       if (chatroomId) {
-        getChatBubbles(chatroomId);
+        getChatBubbles(chatroomId, page);
       }
     } catch (error) {
       console.error(error);
@@ -96,24 +89,19 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
     }
   };
 
-  const [page, setPage] = useState(0);
-
-  const getChatBubbles = async (chatroomId: number) => {
+  const getChatBubbles = async (chatroomId: number, page: number) => {
+    // TODO: data: { cahtBubbles: [], hasNext: boolean, hasPrev: boolean } 데이터로 무한 스크롤 구현하기
     const { data } = await api.get(`chats/${chatroomId}/logs?page=${page}`);
-    setChatBubbles(data);
+    const { hasNext, hasPrev, chatBubbles } = data.data;
+
+    setChatBubbles(chatBubbles);
   };
 
-  // 채팅리스트에서 채팅방 입장 시
+  // TODO: chat list 에서 채팅방 입장 시
   // const getChatBubbles = async (chatroomId: number) => {
   //   const { data } = await api.get(`chats/${chatroomId}`);
   //   setChatBubbles(data);
   // };
-
-  useEffect(() => {
-    getChatInfo();
-  }, []);
-
-  const client = useRef<StompJs.Client | null>(null);
 
   const connect = () => {
     client.current = new StompJs.Client({
@@ -127,6 +115,15 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
     client.current.activate();
   };
 
+  const handleMessage = (messageBody: { body: string }) => {
+    const parsedMessage = JSON.parse(messageBody.body);
+    setChatBubbles((prevChatList) => [...prevChatList, parsedMessage]);
+  };
+
+  const subscribe = () => {
+    client.current?.subscribe(`/sub/${roomId}`, handleMessage);
+  };
+
   const publish = (chat: string) => {
     if (!client.current?.connected) return;
 
@@ -135,21 +132,12 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
       body: JSON.stringify({
         roomId,
         sender: userId,
-        receiver: opponentId,
+        // receiver: opponentId,
         message: chat,
       }),
     });
 
     setChat('');
-  };
-
-  const handleMessage = (messageBody: { body: string }) => {
-    const parsedMessage = JSON.parse(messageBody.body);
-    setChatBubbles((prevChatList) => [...prevChatList, parsedMessage]);
-  };
-
-  const subscribe = () => {
-    client.current?.subscribe(`/sub/${roomId}`, handleMessage);
   };
 
   const disconnect = () => {
@@ -170,6 +158,23 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
 
     publish(chat);
   };
+
+  const handleViewMorePopup = () => {
+    setIsMoreViewPopupOpen(!isMoreViewPopupOpen);
+  };
+
+  const viewMorePopupSheetMenu = CHAT_VIEWMORE_MENU.map((menu) => ({
+    ...menu,
+    onClick: () => {
+      // TODO: popup sheet 메뉴 클릭 시 동작
+      console.log('');
+      setIsMoreViewPopupOpen(false);
+    },
+  }));
+
+  useEffect(() => {
+    getChatInfo(itemId);
+  }, [itemId]);
 
   useEffect(() => {
     roomId && connect();
