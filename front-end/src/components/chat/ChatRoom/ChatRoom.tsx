@@ -213,7 +213,7 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
         <MyChatBubbles>
           {chatBubbles.map((bubble) => {
             const isMyBubble = bubble.sender === userId;
-            const BubbleComponent = isMyBubble ? MyBubble : MyPartnerBubble;
+            const BubbleComponent = isMyBubble ? MyBubble : MyOpponentBubble;
 
             const renderBubbleComponent = (
               <BubbleComponent>
@@ -224,9 +224,9 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
             return isMyBubble ? (
               <>{renderBubbleComponent}</>
             ) : (
-              <MyPartnerBubbleWrapper>
+              <MyOpponentBubbleWrapper>
                 {renderBubbleComponent}
-              </MyPartnerBubbleWrapper>
+              </MyOpponentBubbleWrapper>
             );
           })}
         </MyChatBubbles>
@@ -300,12 +300,12 @@ const MyBubble = styled(MyChatBubble)`
   background-color: ${({ theme }) => theme.colors.neutral.backgroundBold};
 `;
 
-const MyPartnerBubbleWrapper = styled.div`
+const MyOpponentBubbleWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
 `;
 
-const MyPartnerBubble = styled(MyChatBubble)`
+const MyOpponentBubble = styled(MyChatBubble)`
   background-color: ${({ theme }) => theme.colors.accent.backgroundPrimary};
   & > span {
     color: ${({ theme }) => theme.colors.accent.text};
