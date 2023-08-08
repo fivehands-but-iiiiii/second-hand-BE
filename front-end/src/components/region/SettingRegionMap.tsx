@@ -51,9 +51,7 @@ const SettingRegionMap = ({ regions, onPortal }: SettingRegionMapProps) => {
     setMap(map);
   }, []);
 
-  const onUnmount = useCallback(() => {
-    setMap(null);
-  }, []);
+  const onUnmount = useCallback(() => setMap(null), []);
 
   const handleSettingRegions = async () => {
     const prevRegions = regions;
@@ -78,7 +76,6 @@ const SettingRegionMap = ({ regions, onPortal }: SettingRegionMapProps) => {
         setStorageValue({ key: 'userInfo', value: updatedUserAccount });
         onPortal();
       }
-      return;
     } catch (error) {
       console.error(error);
     }

@@ -22,9 +22,7 @@ const RegionSelector = ({
 }: RegionSelectorProps) => {
   const [regionMessage, setRegionMessage] = useState('');
 
-  const handleRegionClick = (id: number) => {
-    onClickRegionButton(id);
-  };
+  const handleRegionClick = (id: number) => onClickRegionButton(id);
 
   const handleRemoveClick = (id: number, event: MouseEvent) => {
     event.stopPropagation();
@@ -67,7 +65,9 @@ const RegionSelector = ({
   useEffect(() => {
     if (selectedRegions.length < 2) {
       setRegionMessage('최소 1개 이상 최대 2개까지 선택 가능해요');
-    } else setRegionMessage('');
+      return;
+    }
+    setRegionMessage('');
   }, [selectedRegions.length]);
 
   return (
