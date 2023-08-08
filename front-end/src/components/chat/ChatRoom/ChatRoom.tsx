@@ -2,11 +2,14 @@ import { SetStateAction, useEffect, useRef, useState } from 'react';
 
 import Icon from '@assets/Icon';
 import ImgBox from '@common/ImgBox';
-import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
+import PopupSheet from '@common/PopupSheet';
+import { CHAT_VIEWMORE_MENU } from '@common/PopupSheet/constants';
 import ChatTabBar from '@common/TabBar/ChatTabBar';
 import PortalLayout from '@components/layout/PortalLayout';
 import * as StompJs from '@stomp/stompjs';
+import { getFormattedPrice } from '@utils/formatPrice';
+import { getStoredValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
 
@@ -14,88 +17,111 @@ import api from '../../../api';
 
 interface ChatBubble {
   roomId: string;
-  from: string;
+  sender: string;
+  // receiver: string;
   message: string;
+  // createdAt: string;
+}
+
+interface SaleItemSummary {
+  id: number;
+  title: string;
+  price: number;
+  thumbnailUrl: string;
+  status: number;
+  isDelete: boolean;
 }
 
 interface ChatRoomProps {
+  // TODO: chat list 에서 채팅방 입장 시 필요한 정보 : roomId (서버 에러 수정 후 작업 예정)
   itemId: number;
+  onRoomClose: () => void;
 }
 
-type SaleItemSummary = Pick<
-  SaleItem,
-  'id' | 'title' | 'price' | 'thumbnailUrl' | 'status'
->;
+const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
+  const { id: userId } = getStoredValue({ key: 'userInfo' });
 
-const ChatRoom = ({ itemId }: ChatRoomProps) => {
   const [itemInfo, setItemInfo] = useState<SaleItemSummary>(
-    // {} as SaleItemSummary,
-    // NOTO: HTTP API 완성 시 아래 데이터 제거
-    {
-      id: 230,
-      title: '팝니다요',
-      price: 10000,
-      thumbnailUrl: 'https://picsum.photos/200/300',
-      status: 0,
-    },
+    {} as SaleItemSummary,
   );
   const [roomId, setRoomId] = useState<Pick<ChatBubble, 'roomId'> | null>(null);
+  const [page, setPage] = useState(0);
   const [opponentId, setOpponentId] = useState('');
   const [chatBubbles, setChatBubbles] = useState<ChatBubble[]>([]);
   const [chat, setChat] = useState('');
+  const [isMoreViewPopupOpen, setIsMoreViewPopupOpen] = useState(false);
 
   const endRef = useRef<HTMLDivElement | null>(null);
+  const client = useRef<StompJs.Client | null>(null);
 
-  const getChatInfo = async () => {
+  const getChatInfo = async (itemId: number) => {
     try {
       const { data } = await api.get(`chats/items/${itemId}`);
+      const { item, chatroomId, opponentId } = data.data;
 
-      setItemInfo(data.item);
-      setRoomId(data.chatId);
-      setOpponentId(data.opponentId);
+      setItemInfo({
+        ...item,
+        id: item.itemId,
+        price: getFormattedPrice(item.price),
+        status: parseInt(item.status),
+        thumbnailUrl: item.thumbnailImgUrl,
+      });
+      setRoomId(chatroomId);
+      setOpponentId(opponentId);
 
-      if (roomId) {
-        await getChatBubbles();
-      } else {
-        // TODO: chatId, chatBubbles가 null이고 first bubble이 입력되면 chatId를 생성
-        await createChatId();
+      if (chatroomId) {
+        getChatBubbles(chatroomId, page);
       }
     } catch (error) {
-      // 오류 처리
+      console.error(error);
     }
   };
 
-  const createChatId = async () => {
+  const createChatRoomId = async () => {
     try {
-      const { data } = await api.post('chats', {
+      const { data } = await api.post('/chats', {
         itemId,
       });
-      setRoomId(data.chatId);
+
+      setRoomId(data.data);
     } catch (error) {
-      // 오류 처리
+      console.error(error);
     }
   };
 
-  const getChatBubbles = async () => {
-    const { data } = await api.get(`chat/${roomId}`);
-    setChatBubbles(data);
+  const getChatBubbles = async (chatroomId: number, page: number) => {
+    // TODO: data: { cahtBubbles: [], hasNext: boolean, hasPrev: boolean } 데이터로 무한 스크롤 구현하기
+    const { data } = await api.get(`chats/${chatroomId}/logs?page=${page}`);
+    const { hasNext, hasPrev, chatBubbles } = data.data;
+
+    setChatBubbles(chatBubbles);
   };
 
-  // TODO: HTTP API 완성 시 주석 제거
-  // useEffect(() => {
-  //   getChatInfo();
-  // }, []);
-
-  const client = useRef<StompJs.Client | null>(null);
+  // TODO: chat list 에서 채팅방 입장 시
+  // const getChatBubbles = async (chatroomId: number) => {
+  //   const { data } = await api.get(`chats/${chatroomId}`);
+  //   setChatBubbles(data);
+  // };
 
   const connect = () => {
     client.current = new StompJs.Client({
       brokerURL: 'ws://3.37.51.148:81/chat',
       onConnect: () => {
         subscribe();
+        chat && publish(chat);
       },
     });
+
     client.current.activate();
+  };
+
+  const handleMessage = (messageBody: { body: string }) => {
+    const parsedMessage = JSON.parse(messageBody.body);
+    setChatBubbles((prevChatList) => [...prevChatList, parsedMessage]);
+  };
+
+  const subscribe = () => {
+    client.current?.subscribe(`/sub/${roomId}`, handleMessage);
   };
 
   const publish = (chat: string) => {
@@ -104,20 +130,14 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
     client.current.publish({
       destination: '/pub/message',
       body: JSON.stringify({
-        roomId: 'room1',
-        from: 2,
+        roomId,
+        sender: userId,
+        // receiver: opponentId,
         message: chat,
       }),
     });
 
     setChat('');
-  };
-
-  const subscribe = () => {
-    client.current?.subscribe('/sub/room1', (body) => {
-      const jsonBody = JSON.parse(body.body);
-      setChatBubbles((_chatList) => [..._chatList, jsonBody]);
-    });
   };
 
   const disconnect = () => {
@@ -130,14 +150,34 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
     setChat(event.target.value);
   };
 
-  const handleSubmit = (chat: string) => {
+  const handleSubmit = async (chat: string) => {
+    if (!roomId) {
+      await createChatRoomId();
+      connect();
+    }
+
     publish(chat);
   };
 
+  const handleViewMorePopup = () => {
+    setIsMoreViewPopupOpen(!isMoreViewPopupOpen);
+  };
+
+  const viewMorePopupSheetMenu = CHAT_VIEWMORE_MENU.map((menu) => ({
+    ...menu,
+    onClick: () => {
+      // TODO: popup sheet 메뉴 클릭 시 동작
+      console.log('');
+      setIsMoreViewPopupOpen(false);
+    },
+  }));
+
   useEffect(() => {
-    // TODO: HTTP API 완성 시 주석으로 로직 변경
-    // roomId && connect();
-    connect();
+    getChatInfo(itemId);
+  }, [itemId]);
+
+  useEffect(() => {
+    roomId && connect();
 
     return () => disconnect();
   }, [roomId]);
@@ -150,14 +190,14 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
     <PortalLayout>
       <NavBar
         left={
-          <MyNavBarBtn onClick={() => console.log('뒤로')}>
+          <MyNavBarBtn onClick={onRoomClose}>
             <Icon name={'chevronLeft'} />
             <span>뒤로</span>
           </MyNavBarBtn>
         }
         center={opponentId}
         right={
-          <button onClick={() => console.log('handleViewMorePopup')}>
+          <button onClick={handleViewMorePopup}>
             <Icon name={'ellipsis'} />
           </button>
         }
@@ -172,8 +212,8 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
       {!!chatBubbles.length && (
         <MyChatBubbles>
           {chatBubbles.map((bubble) => {
-            const isMyBubble = bubble.from === '1';
-            const BubbleComponent = isMyBubble ? MyBubble : MyPartnerBubble;
+            const isMyBubble = bubble.sender === userId;
+            const BubbleComponent = isMyBubble ? MyBubble : MyOpponentBubble;
 
             const renderBubbleComponent = (
               <BubbleComponent>
@@ -184,12 +224,19 @@ const ChatRoom = ({ itemId }: ChatRoomProps) => {
             return isMyBubble ? (
               <>{renderBubbleComponent}</>
             ) : (
-              <MyPartnerBubbleWrapper>
+              <MyOpponentBubbleWrapper>
                 {renderBubbleComponent}
-              </MyPartnerBubbleWrapper>
+              </MyOpponentBubbleWrapper>
             );
           })}
         </MyChatBubbles>
+      )}
+      {isMoreViewPopupOpen && (
+        <PopupSheet
+          type={'slideUp'}
+          menu={viewMorePopupSheetMenu}
+          onSheetClose={handleViewMorePopup}
+        ></PopupSheet>
       )}
       <div ref={endRef}></div>
       <ChatTabBar
@@ -233,7 +280,6 @@ const MyChatBubbles = styled.section`
   flex-direction: column;
   padding: 16px;
   margin-bottom: 75px;
-  overflow: scroll;
 `;
 
 const MyChatBubble = styled.div`
@@ -254,12 +300,12 @@ const MyBubble = styled(MyChatBubble)`
   background-color: ${({ theme }) => theme.colors.neutral.backgroundBold};
 `;
 
-const MyPartnerBubbleWrapper = styled.div`
+const MyOpponentBubbleWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
 `;
 
-const MyPartnerBubble = styled(MyChatBubble)`
+const MyOpponentBubble = styled(MyChatBubble)`
   background-color: ${({ theme }) => theme.colors.accent.backgroundPrimary};
   & > span {
     color: ${({ theme }) => theme.colors.accent.text};

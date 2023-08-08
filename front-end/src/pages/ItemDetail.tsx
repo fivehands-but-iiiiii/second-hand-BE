@@ -17,6 +17,7 @@ import {
 } from '@common/PopupSheet/constants';
 import PopupSheet from '@common/PopupSheet/PopupSheet';
 import SubTabBar from '@common/TabBar/SubTabBar';
+import ChatRoom from '@components/chat/ChatRoom';
 import { CategoryInfo } from '@components/home/category';
 import Carousel from '@components/home/ItemDetail/Carousel';
 import { ItemStatus } from '@components/ItemStatus';
@@ -24,6 +25,7 @@ import { useCategories } from '@components/layout/MobileLayout';
 import PortalLayout from '@components/layout/PortalLayout';
 import New from '@components/new/New';
 import { formatNumberToSI } from '@utils/formatNumberToSI';
+import { getFormattedPrice } from '@utils/formatPrice';
 import getElapsedTime from '@utils/getElapsedTime';
 import { getStoredValue } from '@utils/sessionStorage';
 
@@ -100,6 +102,7 @@ const ItemDetail = ({
     price: '',
     isMyItem: false,
   });
+  const [isChatRoomOpen, setIsChatRoomOpen] = useState(false);
   const [isStatusPopupOpen, setIsStatusPopupOpen] = useState(false);
   const [isMoreViewPopupOpen, setIsMoreViewPopupOpen] = useState(false);
   const {
@@ -257,6 +260,14 @@ const ItemDetail = ({
   const handleViewMorePopup = () =>
     setIsMoreViewPopupOpen(!isMoreViewPopupOpen);
 
+  const handleChatRoom = () => setIsChatRoomOpen(!isChatRoomOpen);
+
+  const navigate = useNavigate();
+
+  const handleChatButton = () => {
+    isMyItem ? navigate(`/chat-list/${id}`) : handleChatRoom();
+  };
+
   const handleNewModal = () => {
     setIsNewModalOpen(!isNewModalOpen);
     // TODO: EDit을 하고 변경사항이 있을 때만 새로고침을 해야하는데 지금은 닫으면 무조건 새로고침함
@@ -264,17 +275,13 @@ const ItemDetail = ({
   };
 
   const mapItemDetailInfo = (data: any) => {
-    const formattedPrice = data.price
-      ? `${data.price.toLocaleString()}원`
-      : '가격없음';
-
     const categoryTitle = categoryInfo.find(
       (item) => item.id === data.category,
     );
 
     const mappedDetails = {
       ...data,
-      price: formattedPrice,
+      price: getFormattedPrice(data.price),
       category: categoryTitle?.title,
       elapsedTime: getElapsedTime(data.createAt),
       hits: data.hits && formatNumberToSI(data.hits),
@@ -361,10 +368,15 @@ const ItemDetail = ({
         </MyItemInfo>
       </MyItemDetail>
       <SubTabBar icon={likeIcon} content={price} onIconClick={handleLike}>
-        <Button active onClick={() => console.log('move to chat')}>
+        <Button active onClick={handleChatButton}>
           {isMyItem ? `대화 중인 채팅방 ${chatCount}` : '채팅하기'}
         </Button>
       </SubTabBar>
+      {!!isChatRoomOpen &&
+        createPortal(
+          <ChatRoom itemId={id} onRoomClose={handleChatRoom}></ChatRoom>,
+          document.body,
+        )}
       {isStatusPopupOpen && (
         <PopupSheet
           type={'slideUp'}
