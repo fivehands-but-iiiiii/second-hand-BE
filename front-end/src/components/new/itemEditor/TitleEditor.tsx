@@ -32,9 +32,7 @@ const TitleEditor = ({
     handleCategoryModal();
   };
 
-  const handleCategoryModal = () => {
-    setIsCategoryModalOpen(!isCategoryModalOpen);
-  };
+  const handleCategoryModal = () => setIsCategoryModalOpen(!isCategoryModalOpen);
 
   return (
     <MyTitleBox>
