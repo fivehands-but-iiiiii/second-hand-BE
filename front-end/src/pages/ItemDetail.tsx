@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
-import Alert from '@common/Alert/Alert';
+import Alert from '@common/Alert';
 import {
   ALERT_ACTIONS,
   ALERT_TITLE,
@@ -15,7 +15,7 @@ import {
   DETAIL_STATUS_MENU,
   DETAIL_VIEWMORE_MENU,
 } from '@common/PopupSheet/constants';
-import PopupSheet from '@common/PopupSheet/PopupSheet';
+import PopupSheet from '@common/PopupSheet';
 import SubTabBar from '@common/TabBar/SubTabBar';
 import { CategoryInfo } from '@components/home/category';
 import Carousel from '@components/home/ItemDetail/Carousel';
@@ -77,6 +77,7 @@ interface ItemDetailProps {
   handleBackBtnClick: (id: number) => void;
 }
 
+// TODO: Event Handler Prop prefix 'on'
 const ItemDetail = ({
   id,
   categoryInfo,
@@ -155,9 +156,7 @@ const ItemDetail = ({
   };
 
   const handleAlert = (type: AlertActionsProps['id']) => {
-    if (type === 'leave' || type === 'logout') {
-      return;
-    }
+    if (type === 'leave' || type === 'logout') return;
 
     const actions = {
       delete: () => handleDeleteAlert(type),
@@ -178,10 +177,8 @@ const ItemDetail = ({
     }
   };
 
-  const handleLoginAlertOpen = () => {
-    // TODO: 채팅하기 버튼에도 적용하기
-    setIsLoginAlertOpen(true);
-  };
+  // TODO: 채팅하기 버튼에도 적용하기
+  const handleLoginAlertOpen = () => setIsLoginAlertOpen(true);
 
   const navigator = useNavigate();
 
@@ -259,7 +256,6 @@ const ItemDetail = ({
 
   const handleNewModal = () => {
     setIsNewModalOpen(!isNewModalOpen);
-    // TODO: EDit을 하고 변경사항이 있을 때만 새로고침을 해야하는데 지금은 닫으면 무조건 새로고침함
     if (isNewModalOpen) setOnRefresh(true);
   };
 
@@ -304,10 +300,9 @@ const ItemDetail = ({
   };
 
   useEffect(() => {
-    if (onRefresh) {
-      getItemDetail();
-      setOnRefresh(false);
-    }
+    if (!onRefresh) return;
+    getItemDetail();
+    setOnRefresh(false);
   }, [onRefresh]);
 
   useEffect(() => {
