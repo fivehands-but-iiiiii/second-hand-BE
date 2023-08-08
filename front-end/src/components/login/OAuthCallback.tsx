@@ -12,7 +12,7 @@ export interface GitHubUserInfo {
   login: string;
   avatar_url: string;
 }
-
+// TODO: 배포용 Callback 재확인
 const OAuthCallback = () => {
   const location = useLocation();
   const navigate = useNavigate();

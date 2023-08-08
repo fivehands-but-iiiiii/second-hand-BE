@@ -39,23 +39,20 @@ const Login = () => {
   const { response, error, request } = useAPI();
 
   const handleLogin = () => {
-    if (inputRef.current) {
-      setUserId(inputRef.current.value);
-      request({
-        url: '/login',
-        method: 'post',
-        config: {
-          data: {
-            memberId: userId,
-          },
+    if (!inputRef.current) return;
+    setUserId(inputRef.current.value);
+    request({
+      url: '/login',
+      method: 'post',
+      config: {
+        data: {
+          memberId: userId,
         },
-      });
-    }
+      },
+    });
   };
 
-  const handleLogout = () => {
-    setIsLogoutAlertOpen(true);
-  };
+  const handleLogout = () => setIsLogoutAlertOpen(true);
 
   const logout = () => {
     setIsLogin(false);
@@ -80,10 +77,9 @@ const Login = () => {
       </button>
     ));
 
-  const handleCreateAccount = () => {
-    navigate('/join');
-  };
+  const handleCreateAccount = () => navigate('/join');
 
+  // TODO: if...else 수정
   const handleInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const { value } = target;
     const regExp = /[^0-9a-z]/;
@@ -106,6 +102,7 @@ const Login = () => {
   const { handleKeyDown } = useEnterKeyPress({ onEnterPress: handleLogin });
 
   useEffect(() => {
+    // TODO: if...else 수정
     if (response) {
       setStorageValue({
         key: 'userInfo',

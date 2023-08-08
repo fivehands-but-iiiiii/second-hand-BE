@@ -16,7 +16,7 @@ interface CategoryProps {
   handleCategoryModal: () => void;
   onCategoryClick?: (categoryId: number) => void;
 }
-
+// TODO: Event Handler Prop prefix 'on'
 const Category = ({
   categoryInfo,
   handleCategoryModal,

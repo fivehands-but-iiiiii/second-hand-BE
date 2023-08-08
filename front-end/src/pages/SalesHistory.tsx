@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 import { SaleItem } from '@common/Item';
-import NavBar from '@common/NavBar/NavBar';
+import NavBar from '@common/NavBar';
 import SegmentedControl from '@common/SegmentedControl';
 import Spinner from '@common/Spinner/Spinner';
-import ItemList from '@components/home/ItemList/ItemList';
+import ItemList from '@components/home/ItemList';
 import { ItemStatus } from '@components/ItemStatus';
 import { useCategories } from '@components/layout/MobileLayout';
 import useAPI from '@hooks/useAPI';
@@ -115,9 +115,13 @@ const SalesHistory = () => {
           onClick={handleSelectedStatus}
         />
       </NavBar>
-      {saleItems.length > 0 ? (
+      {!!saleItems.length ? (
         <>
-          <ItemList saleItems={saleItems} onItemClick={handleItemDetail} />
+          <ItemList
+            saleItems={saleItems}
+            onItemClick={handleItemDetail}
+            // TODO : 더보기 버튼 추가 onHistoryPage={true}
+          />
           {!!saleItems.length && (
             <MyOnFetchItems ref={setTarget}></MyOnFetchItems>
           )}

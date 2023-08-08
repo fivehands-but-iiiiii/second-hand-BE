@@ -9,11 +9,11 @@ import {
   ALERT_TITLE,
   AlertActionsProps,
 } from '@common/Alert/constants';
-import Button from '@common/Button/Button';
+import Button from '@common/Button';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
 import { REGION_MENU } from '@common/PopupSheet/constants';
-import PopupSheet from '@common/PopupSheet/PopupSheet';
+import PopupSheet from '@common/PopupSheet';
 import Spinner from '@common/Spinner/Spinner';
 import Category from '@components/home/category';
 import ItemList from '@components/home/ItemList';
@@ -154,30 +154,25 @@ const Home = () => {
     }
   };
 
-  const handleRegionPopupSheetModal = () => {
-    setIsRegionPopupSheetOpen((prev) => !prev);
-  };
+  const handleRegionPopupSheetModal = () => setIsRegionPopupSheetOpen((prev) => !prev);
 
   const handleRegionMapModal = () => {
     setIsRegionMapModalOpen((prev) => !prev);
     setIsRegionPopupSheetOpen(false);
-    if (isRegionMapModalOpen) {
-      const userInfo = getStoredValue({ key: 'userInfo' });
-      const userRegion: RegionInfo[] = userInfo?.regions;
-      const currentRegion = userRegion.find(({ onFocus }) => onFocus);
-      if (!currentRegion) return;
-      initData();
-      setUserRegions(userRegion);
-      setFilterInfo((prevFilterInfo) => ({
-        ...prevFilterInfo,
-        regionId: currentRegion.id,
-      }));
-    }
+    if (!isRegionMapModalOpen) return;
+    const userInfo = getStoredValue({ key: 'userInfo' });
+    const userRegion: RegionInfo[] = userInfo?.regions;
+    const currentRegion = userRegion.find(({ onFocus }) => onFocus);
+    if (!currentRegion) return;
+    initData();
+    setUserRegions(userRegion);
+    setFilterInfo((prevFilterInfo) => ({
+      ...prevFilterInfo,
+      regionId: currentRegion.id,
+    }));
   };
 
-  const handleCategoryModal = () => {
-    setIsCategoryModalOpen((prev) => !prev);
-  };
+  const handleCategoryModal = () => setIsCategoryModalOpen((prev) => !prev);
 
   const regionPopupSheetMenu = useMemo(() => {
     if (!userInfo)
@@ -235,10 +230,9 @@ const Home = () => {
 
   const handleNewModal = () => {
     setIsNewModalOpen((prev) => !prev);
-    if (isNewModalOpen) {
-      initData();
-      setOnRefresh(true);
-    }
+    if (!isNewModalOpen) return;
+    initData();
+    setOnRefresh(true);
   };
 
   const handleFilterCategory = (categoryId: number) => {
@@ -256,10 +250,9 @@ const Home = () => {
 
   const handleItemDetail = (id: number) => {
     setSelectedItem(id);
-    if (id === 0) {
-      initData();
-      setOnRefresh(true);
-    }
+    if (id) return;
+    initData();
+    setOnRefresh(true);
   };
 
   const fetchItems = async () => {

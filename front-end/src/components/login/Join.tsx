@@ -118,6 +118,7 @@ const Join = () => {
   };
 
   useEffect(() => {
+    // TODO: if...else 수정
     if (userInputId.length < 3) {
       setValidationMessage('');
     } else if (userInputId.length >= 3 && userInputId.length < 6) {

@@ -9,7 +9,7 @@ interface LoginButtonsProps {
   handleLogin: () => void;
   handleCreateAccount: () => void;
 }
-
+// TODO: Event Handler props prefix 'on'
 const LoginButtons = ({
   OAUTH_URL,
   handleLogin,

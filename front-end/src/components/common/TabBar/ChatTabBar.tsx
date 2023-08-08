@@ -12,7 +12,7 @@ interface ChatTabBarProps {
   handleInputChange: (event: ChangeEvent<HTMLTextAreaElement>) => void;
   handleChatSubmit: (chat: string) => void;
 }
-
+// TODO: Event Handler props prefix 'on'
 const ChatTabBar = ({
   chatInput,
   handleInputChange,

@@ -58,7 +58,8 @@ interface ItemEditorProps {
   origin?: OriginItem;
   handleClose: () => void;
 }
-
+// TODO: 렌더링과 상관없는 정보 ref로 변경해보기
+// TODO: 로직 분리하기..
 const ItemEditor = ({
   categoryInfo,
   isEdit = false,
@@ -218,7 +219,7 @@ const ItemEditor = ({
 
   const getRandomCategories = useCallback((): Category[] => {
     const RANDOM_COUNT = 3;
-    const usedId = new Set();
+    const usedId = [];
     const randomCategories: Category[] = [];
     if (isEdit && origin) {
       const categoryId = categoryInfo.find(
@@ -228,11 +229,11 @@ const ItemEditor = ({
         id: categoryId,
         title: origin.category as string,
       });
-      usedId.add(categoryId);
+      usedId.push(categoryId);
     }
     while (randomCategories.length < RANDOM_COUNT) {
       const randomIndex = Math.floor(Math.random() * categoryInfo.length);
-      if (!usedId.has(randomIndex))
+      if (!usedId.includes(randomIndex))
         randomCategories.push(categoryInfo[randomIndex]);
     }
     return randomCategories;
@@ -241,10 +242,10 @@ const ItemEditor = ({
   const handleRecommendation = useCallback(() => {
     if (firstClickCTitle) return;
     const timeOutId = setTimeout(() => {
-      const category = getRandomCategories();
+      const randomCategories = getRandomCategories();
       setCategory((prev) => ({
         ...prev,
-        recommendedCategory: category,
+        recommendedCategory: randomCategories,
       }));
       setFirstClickCTitle(true);
     }, 1500);
@@ -253,7 +254,8 @@ const ItemEditor = ({
     };
   }, [firstClickCTitle, getRandomCategories]);
 
-  // TODO: 랜덤 3개 추출하는 함수 (중복 절대 불가!!)
+  // TODO: 랜덤 카테고리 API 연동
+  // TODO: if...else 수정
   const handleCategory = (updatedCategory: Category) => {
     const isSameCategory = category.selectedId === updatedCategory.id;
     const isExistingCategory = category.recommendedCategory.some(

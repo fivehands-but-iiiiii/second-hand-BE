@@ -41,6 +41,7 @@ const Item = ({ item, onHistoryPage = false, onItemClick }: ItemProps) => {
     id,
     title,
     price,
+    region,
     thumbnailUrl,
     status,
     createdAt,
@@ -63,8 +64,7 @@ const Item = ({ item, onHistoryPage = false, onItemClick }: ItemProps) => {
           {onHistoryPage && <Icon name="ellipsis" size="sm" />}
         </MyItemTitle>
         <MyItemTime>
-          {/* TODO: add region */}
-          <div>역삼1동 &middot;</div>
+          <div>{region.district}</div>
           {getElapsedTime(createdAt)}
         </MyItemTime>
         <MyItemStatus>

@@ -7,6 +7,7 @@ import useAPI from '@hooks/useAPI';
 
 import { styled } from 'styled-components';
 
+// TODO: createPortal 레이아웃에 적용하기
 const MobileLayout = () => {
   const [categories, setCategories] = useState<CategoryInfo[]>([]);
   const { request } = useAPI();

@@ -6,7 +6,7 @@ import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
 import Spinner from '@common/Spinner/Spinner';
 import { CategoryInfo } from '@components/home/category';
-import ItemList from '@components/home/ItemList/ItemList';
+import ItemList from '@components/home/ItemList';
 import { useCategories } from '@components/layout/MobileLayout';
 import useAPI from '@hooks/useAPI';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
@@ -20,6 +20,7 @@ import ItemDetail from './ItemDetail';
 
 type WishCategory = Omit<CategoryInfo, 'iconUrl'>;
 
+// TODO: 카테고리 refresh 후 일치 항목 없으면 빈페이지말고 전체카테고리로 변경
 const WishList = () => {
   const title = '관심 목록';
   const categories = useCategories();
@@ -110,10 +111,9 @@ const WishList = () => {
 
   const handleItemDetail = (itemId: number) => {
     setSelectedItem(itemId);
-    if (!itemId) {
-      initData();
-      setOnRefresh(true);
-    }
+    if(itemId) return;
+    initData();
+    setOnRefresh(true);
   };
 
   useEffect(() => {
@@ -121,10 +121,9 @@ const WishList = () => {
   }, [selectedCategoryId]);
 
   useEffect(() => {
-    if (onRefresh) {
-      getWishListData();
-      setOnRefresh(false);
-    }
+    if(!onRefresh) return;
+    getWishListData();
+    setOnRefresh(false);
   }, [onRefresh]);
 
   return (
@@ -148,7 +147,7 @@ const WishList = () => {
             })}
           </MyCategories>
         )}
-        {wishItems.length > 0 ? (
+        {!!wishItems.length ? (
           <>
             <ItemList saleItems={wishItems} onItemClick={handleItemDetail} />
             {!!wishItems.length && (

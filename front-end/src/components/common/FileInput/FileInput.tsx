@@ -12,9 +12,8 @@ interface FileInputProps {
 
 const FileInput = ({ fileCount, onChage }: FileInputProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const handleInputFile = () => {
-    fileInputRef.current?.click();
-  };
+
+  const handleInputFile = () => fileInputRef.current?.click();
 
   return (
     <MyFileInput>

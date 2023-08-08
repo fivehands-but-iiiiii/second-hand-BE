@@ -100,9 +100,7 @@ const SettingRegionSelector = ({
       </button>
     ));
 
-  const handleRegionModal = () => {
-    setIsSettingRegionsModalOpen((prev) => !prev);
-  };
+  const handleRegionModal = () => setIsSettingRegionsModalOpen((prev) => !prev);
 
   useEffect(() => {
     onSetRegions(selectedRegions);
