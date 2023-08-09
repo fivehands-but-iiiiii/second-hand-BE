@@ -1,6 +1,7 @@
 package com.team5.secondhand.api.chatroom.service;
 
 import com.team5.secondhand.api.chatroom.domian.Chatroom;
+import com.team5.secondhand.api.chatroom.dto.ChatroomInfo;
 import com.team5.secondhand.api.chatroom.dto.response.ChatroomList;
 import com.team5.secondhand.api.chatroom.dto.response.ChatroomSummary;
 import com.team5.secondhand.api.chatroom.exception.BuyerException;
@@ -9,7 +10,9 @@ import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
 import com.team5.secondhand.api.chatroom.repository.ChatroomRepository;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.member.domain.Member;
+import com.team5.secondhand.global.event.chatroom.ChatroomCreatedEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ChatroomService {
     private final ChatroomRepository chatRoomRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public String create(Item item, Member buyer) throws ExistChatRoomException, BuyerException {
@@ -35,8 +39,11 @@ public class ChatroomService {
         }
 
         Chatroom chatRoom = Chatroom.create(item, buyer);
+        Chatroom savedChatroom = chatRoomRepository.save(chatRoom);
 
-        return chatRoomRepository.save(chatRoom).getChatroomId().toString();
+        eventPublisher.publishEvent(new ChatroomCreatedEvent(ChatroomInfo.from(savedChatroom)));
+
+        return savedChatroom.getChatroomId().toString();
     }
 
     @Transactional
