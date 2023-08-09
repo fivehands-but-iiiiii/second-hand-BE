@@ -8,24 +8,21 @@ import java.time.Instant;
 @Getter
 public class ParticipantInfo {
     private String memberId;
-    private String sessionId;
     private Instant lastDisconnectedAt;
     private Boolean isConnected;
     private Integer messageStock;
 
     @Builder
-    private ParticipantInfo(String memberId, String sessionId, Instant lastDisconnectedAt, Boolean isConnected, Integer messageStock) {
+    private ParticipantInfo(String memberId, Instant lastDisconnectedAt, Boolean isConnected, Integer messageStock) {
         this.memberId = memberId;
-        this.sessionId = sessionId;
         this.lastDisconnectedAt = lastDisconnectedAt;
         this.isConnected = isConnected;
         this.messageStock = messageStock;
     }
 
-    public static ParticipantInfo init(String memberId, String sessionId) {
+    public static ParticipantInfo init(String memberId) {
         return ParticipantInfo.builder()
                 .memberId(memberId)
-                .sessionId(sessionId)
                 .lastDisconnectedAt(null)
                 .isConnected(null)
                 .messageStock(0)
@@ -38,10 +35,12 @@ public class ParticipantInfo {
 
     public void connect() {
         this.isConnected = true;
+        this.messageStock = 0;
     }
 
     public void disconnect() {
         this.isConnected = false;
+        this.messageStock = 0;
         this.lastDisconnectedAt = Instant.now();
     }
 }
