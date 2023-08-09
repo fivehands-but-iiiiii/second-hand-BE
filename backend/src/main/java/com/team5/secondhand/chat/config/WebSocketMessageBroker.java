@@ -1,4 +1,4 @@
-package com.team5.secondhand.chat.bubble.config;
+package com.team5.secondhand.chat.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;

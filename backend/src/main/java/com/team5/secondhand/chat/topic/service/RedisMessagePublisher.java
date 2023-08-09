@@ -1,4 +1,4 @@
-package com.team5.secondhand.chat.bubble.service;
+package com.team5.secondhand.chat.topic.service;
 
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.global.event.ChatBubbleArrivedEvent;

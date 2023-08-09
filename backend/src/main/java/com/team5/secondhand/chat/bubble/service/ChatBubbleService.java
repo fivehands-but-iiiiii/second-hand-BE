@@ -19,7 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ChatLogService {
+public class ChatBubbleService {
     @Value("${const.chat.bucket}")
     private String chatBucketPrefix;
     @Value("${const.chat.page-size}")
