@@ -48,8 +48,8 @@ public class ChatBubble implements Serializable, Comparable {
         return time;
     }
 
-    public Boolean isSender(MemberDetails loginMember) {
-        return this.sender.equals(loginMember.getMemberId());
+    public Boolean isSender(String memberId) {
+        return this.sender.equals(memberId);
     }
 
     @Override
