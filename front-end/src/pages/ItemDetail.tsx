@@ -149,7 +149,7 @@ const ItemDetail = ({
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [isLoginAlertOpen, setIsLoginAlertOpen] = useState(false);
 
-  const handleViewMoreSheet = async (type: string) => {
+  const handleViewMoreSheet = (type: string) => {
     if (type === 'delete') {
       setIsDeleteAlertOpen(true);
     }

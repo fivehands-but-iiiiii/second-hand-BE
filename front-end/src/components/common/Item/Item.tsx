@@ -1,3 +1,5 @@
+import { MouseEvent } from 'react';
+
 import Icon from '@assets/Icon';
 import Chip from '@common/Chip';
 import { ItemStatus } from '@components/ItemStatus';
@@ -34,9 +36,15 @@ interface ItemProps {
   item: SaleItem;
   onHistoryPage?: boolean;
   onItemClick: (id: number) => void;
+  onViewMoreButton?: (id: number) => void;
 }
 
-const Item = ({ item, onHistoryPage = false, onItemClick }: ItemProps) => {
+const Item = ({
+  item,
+  onHistoryPage = false,
+  onItemClick,
+  onViewMoreButton,
+}: ItemProps) => {
   const {
     id,
     title,
@@ -51,8 +59,11 @@ const Item = ({ item, onHistoryPage = false, onItemClick }: ItemProps) => {
   } = item;
   const hasChip = status !== ItemStatus.ON_SALE;
 
-  const handleItemClick = () => {
-    onItemClick(id);
+  const handleItemClick = () => onItemClick(id);
+
+  const handleViewMoreButton = (id: number, event: MouseEvent) => {
+    event.stopPropagation();
+    onViewMoreButton && onViewMoreButton(id);
   };
 
   return (
@@ -61,7 +72,13 @@ const Item = ({ item, onHistoryPage = false, onItemClick }: ItemProps) => {
       <MyItemInfo>
         <MyItemTitle>
           <div>{title}</div>
-          {onHistoryPage && <Icon name="ellipsis" size="sm" />}
+          {onHistoryPage && (
+            <Icon
+              name="ellipsis"
+              size="sm"
+              onClick={(event) => handleViewMoreButton(id, event)}
+            />
+          )}
         </MyItemTitle>
         <MyItemTime>
           <div>{region.district}</div>
