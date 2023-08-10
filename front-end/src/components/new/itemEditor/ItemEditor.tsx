@@ -101,7 +101,6 @@ const ItemEditor = ({
     return title && category.selectedId && region.id && files.length;
   }, [title, region, category, files]);
 
-  // TODO: 전송 실패 처리
   const handleSubmit = async () => {
     try {
       if (isEdit) {
@@ -109,7 +108,8 @@ const ItemEditor = ({
         handleClose();
         return;
       }
-      await postNew();
+      const isPosted = await postNew();
+      if (!isPosted) return;
       handleClose();
     } catch (error) {
       console.error('error');
@@ -190,7 +190,7 @@ const ItemEditor = ({
     );
     formData.append('region', region.id.toString());
     try {
-      await request({
+      const response = await request({
         url: '/items',
         method: 'post',
         config: {
@@ -200,8 +200,9 @@ const ItemEditor = ({
           },
         },
       });
+      return response.data ? true : false;
     } catch (error) {
-      console.log(error);
+      return false;
     }
   };
 
