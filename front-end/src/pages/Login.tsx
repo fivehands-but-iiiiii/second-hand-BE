@@ -40,13 +40,12 @@ const Login = () => {
 
   const handleLogin = () => {
     if (!inputRef.current) return;
-    setUserId(inputRef.current.value);
     request({
       url: '/login',
       method: 'post',
       config: {
         data: {
-          memberId: userId,
+          memberId: inputRef.current.value,
         },
       },
     });
@@ -56,8 +55,7 @@ const Login = () => {
 
   const logout = () => {
     setIsLogin(false);
-    removeStorageValue({ key: 'userInfo' });
-    removeStorageValue({ key: 'token' });
+    removeStorageValue('userInfo', 'token');
     setIsLogoutAlertOpen(false);
   };
 
@@ -79,30 +77,33 @@ const Login = () => {
 
   const handleCreateAccount = () => navigate('/join');
 
-  // TODO: if...else 수정
   const handleInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const { value } = target;
+    const validationMessage = getValidationMessage(value);
+    setValidationMessage(validationMessage);
+
+    const formattedId = getFormattedId(value);
+    const formattedValue = formattedId || value;
+    setUserId(formattedValue);
+  };
+
+  const getValidationMessage = (value: string) => {
     const regExp = /[^0-9a-z]/;
     const regRange = /^.{6,12}$/;
-    if (regExp.test(value)) {
-      setValidationMessage('영문 소문자와 숫자만 입력하세요');
-      return;
-    }
-    if (value.length < 3) {
-      setValidationMessage('');
-    } else if (!regRange.test(value)) {
-      setValidationMessage('6~12자 이내로 입력하세요');
-    } else setValidationMessage('');
-    const inputValue = value;
-    const formattedId = getFormattedId(inputValue);
-    const formattedValue = formattedId ? formattedId : inputValue;
-    setUserId(formattedValue);
+    const isInvalid = regExp.test(value);
+    const isInValidRange = regRange.test(value);
+    const isValidLength =
+      !value.length || (value.length >= 3 && isInValidRange);
+    return isInvalid
+      ? '영문 소문자와 숫자만 입력하세요'
+      : isValidLength
+      ? ''
+      : '6~12자 이내로 입력하세요';
   };
 
   const { handleKeyDown } = useEnterKeyPress({ onEnterPress: handleLogin });
 
   useEffect(() => {
-    // TODO: if...else 수정
     if (response) {
       setStorageValue({
         key: 'userInfo',
@@ -118,9 +119,10 @@ const Login = () => {
         value: response.data.token,
       });
       navigate('/');
-    } else if (error) {
-      if (userId) setValidationMessage(error.message);
+      return;
     }
+
+    if (error && userId) setValidationMessage(error.message);
   }, [response, error]);
 
   useEffect(() => {
@@ -156,16 +158,17 @@ const Login = () => {
           </>
         )}
         <MyButtons>
-          {isLogin ? (
+          {isLogin && (
             <Button active fullWidth onClick={handleLogout}>
               로그아웃
             </Button>
-          ) : (
-            <>
-              <LoginButtons
-                {...{ OAUTH_URL, handleLogin, handleCreateAccount }}
-              />
-            </>
+          )}
+          {!isLogin && (
+            <LoginButtons
+              OAUTH_URL={OAUTH_URL}
+              onLoginButton={handleLogin}
+              onCreateAccount={handleCreateAccount}
+            />
           )}
         </MyButtons>
         <Alert isOpen={isLogoutAlertOpen}>

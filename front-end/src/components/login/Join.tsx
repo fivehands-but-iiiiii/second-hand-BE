@@ -41,11 +41,10 @@ const Join = () => {
   const [userInputId, setUserInputId] = useState('');
   const [validationMessage, setValidationMessage] = useState('');
   const [files, setFiles] = useState<InputFile>();
-  const [userRegions, setUserRegions] = useState<RegionInfo[]>([]);
   const [userAccount, setUserAccount] = useState<UserInfo>({
     memberId: gitHubUserInfo?.login,
     profileImgUrl: gitHubUserInfo?.avatar_url,
-    regions: userRegions,
+    regions: [],
   });
   const [isReadyToSubmit, setIsReadyToSubmit] = useState(false);
   const [idExists, setIdExists] = useState(false);
@@ -72,7 +71,7 @@ const Join = () => {
     const timerId = setTimeout(async () => {
       const idExists = await checkUserIdAvailability(value);
       setIdExists(idExists);
-    }, 500);
+    }, 1000);
     timerRef.current = timerId;
   };
 
@@ -93,7 +92,6 @@ const Join = () => {
   };
 
   const handleUserRegions = (regions: RegionInfo[]) => {
-    setUserRegions(regions);
     setUserAccount({
       ...userAccount,
       memberId: userInputId,
@@ -102,42 +100,44 @@ const Join = () => {
   };
 
   const handlePostUserAccount = async () => {
-    try {
-      const response = await join({ files, account: userAccount });
-      if (response.success) {
-        navigate('/login', {
-          state: {
-            memberId: userInputId,
-            validationMessage: '회원가입이 완료되었어요! 로그인을 진행하세요',
-          },
-        });
-      }
-    } catch (error) {
-      console.error('회원가입 실패', error);
+    const response = await join({ files, account: userAccount });
+    if (response.success) {
+      navigate('/login', {
+        state: {
+          memberId: userInputId,
+          validationMessage: '회원가입이 완료되었어요! 로그인을 진행하세요',
+        },
+      });
+      return;
     }
+    setValidationMessage('회원가입 실패');
+    return;
+  };
+
+  const getValidationMessage = () => {
+    const validationMessage =
+      userInputId.length < 3
+        ? ''
+        : userInputId.length < 6
+        ? '6~12자 이내로 입력하세요'
+        : idExists
+        ? '이미 사용중인 아이디예요'
+        : '사용 가능한 아이디예요';
+    setValidationMessage(validationMessage);
   };
 
   useEffect(() => {
-    // TODO: if...else 수정
-    if (userInputId.length < 3) {
-      setValidationMessage('');
-    } else if (userInputId.length >= 3 && userInputId.length < 6) {
-      setValidationMessage('6~12자 이내로 입력하세요');
-    } else if (idExists) {
-      setValidationMessage('이미 사용중인 아이디예요');
-    } else {
-      setValidationMessage('사용 가능한 아이디예요');
-      if (userRegions.length > 0) {
-        setUserAccount({
-          ...userAccount,
-          memberId: userInputId,
-          regions: userRegions,
-        });
-        return setIsReadyToSubmit(true);
-      }
-    }
-    setIsReadyToSubmit(false);
-  }, [userInputId, idExists, userRegions]);
+    const isReadyToSubmit =
+      userInputId.length > 5 && !idExists && userAccount.regions.length > 0;
+    getValidationMessage();
+    setIsReadyToSubmit(isReadyToSubmit);
+    if (!isReadyToSubmit) return;
+
+    setUserAccount({
+      ...userAccount,
+      memberId: userInputId,
+    });
+  }, [userInputId, idExists, userAccount.regions]);
 
   return (
     <MyJoin>
