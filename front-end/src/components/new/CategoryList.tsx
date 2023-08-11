@@ -65,6 +65,7 @@ const MyCategory = styled.li<CategoryStyleProps>`
   line-height: 6vh;
   margin: 0 1rem;
   text-align: start;
+  cursor: pointer;
 `;
 
 export default CategoryList;

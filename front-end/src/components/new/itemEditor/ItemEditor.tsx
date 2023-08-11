@@ -58,7 +58,7 @@ interface ItemEditorProps {
   origin?: OriginItem;
   handleClose: () => void;
 }
-// TODO: 렌더링과 상관없는 정보 ref로 변경해보기
+
 // TODO: 로직 분리하기..
 const ItemEditor = ({
   categoryInfo,
@@ -80,7 +80,7 @@ const ItemEditor = ({
     selectedId: 0,
   });
   const [files, setFiles] = useState<InputFile[]>([]);
-  const [isFormValid, setFormValid] = useState(true);
+  const [isFormValid, setIsFormValid] = useState(true);
   const { request } = useAPI();
 
   const handleFiles = async ({ target }: ChangeEvent<HTMLInputElement>) => {
@@ -222,6 +222,7 @@ const ItemEditor = ({
     const RANDOM_COUNT = 3;
     const usedId = [];
     const randomCategories: Category[] = [];
+
     if (isEdit && origin) {
       const categoryId = categoryInfo.find(
         (item) => item.title === origin.category,
@@ -232,10 +233,13 @@ const ItemEditor = ({
       });
       usedId.push(categoryId);
     }
+
     while (randomCategories.length < RANDOM_COUNT) {
       const randomIndex = Math.floor(Math.random() * categoryInfo.length);
-      if (!usedId.includes(randomIndex))
+      if (!usedId.includes(randomIndex)) {
+        usedId.push(randomIndex);
         randomCategories.push(categoryInfo[randomIndex]);
+      }
     }
     return randomCategories;
   }, [categoryInfo]);
@@ -256,37 +260,39 @@ const ItemEditor = ({
   }, [firstClickCTitle, getRandomCategories]);
 
   // TODO: 랜덤 카테고리 API 연동
-  // TODO: if...else 수정
   const handleCategory = (updatedCategory: Category) => {
     const isSameCategory = category.selectedId === updatedCategory.id;
     const isExistingCategory = category.recommendedCategory.some(
       ({ id }) => id === updatedCategory.id,
     );
-    if (isSameCategory) {
-      return setCategory((prev) => ({
-        ...prev,
-        selectedId: 0,
-      }));
-    } else if (isExistingCategory) {
-      setCategory((prev) => ({
-        ...prev,
-        selectedId: updatedCategory.id,
-      }));
-    } else {
-      const updatedRecommendedCategory = [
-        ...[
-          updatedCategory,
-          ...category.recommendedCategory.filter(
-            (category) => category.id !== updatedCategory.id,
-          ),
-        ],
-      ].splice(0, 3);
-      setCategory((prev) => ({
-        ...prev,
-        recommendedCategory: updatedRecommendedCategory,
-        selectedId: updatedCategory.id,
-      }));
-    }
+
+    return isSameCategory
+      ? resetSelectedCategory()
+      : isExistingCategory
+      ? updateSelectedCategory(updatedCategory.id)
+      : updateRecommendedCategory(updatedCategory);
+  };
+
+  const resetSelectedCategory = () => {
+    setCategory((prev) => ({ ...prev, selectedId: 0 }));
+  };
+
+  const updateSelectedCategory = (categoryId: number) => {
+    setCategory((prev) => ({ ...prev, selectedId: categoryId }));
+  };
+
+  const updateRecommendedCategory = (updatedCategory: Category) => {
+    const updatedRecommendedCategory = [
+      updatedCategory,
+      ...category.recommendedCategory.filter(
+        (category) => category.id !== updatedCategory.id,
+      ),
+    ].slice(0, 3);
+    setCategory((prev) => ({
+      ...prev,
+      recommendedCategory: updatedRecommendedCategory,
+      selectedId: updatedCategory.id,
+    }));
   };
 
   const handlePrice = ({ target }: ChangeEvent<HTMLInputElement>) => {
@@ -326,7 +332,7 @@ const ItemEditor = ({
   };
 
   useEffect(() => {
-    setFormValid(validateForm());
+    setIsFormValid(validateForm());
   }, [title, region, category, files, validateForm]);
 
   useEffect(() => {
@@ -396,9 +402,9 @@ const MyNew = styled.div`
   }
   > div:last-child {
     padding-top: 10px;
-    max-height: 40vh;
+    max-height: 45vh;
     > textarea {
-      max-height: 40vh;
+      max-height: 45vh;
       overflow: auto;
     }
   }

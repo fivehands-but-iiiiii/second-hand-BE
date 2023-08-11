@@ -26,13 +26,12 @@ const TitleEditor = ({
 }: TitleEditorProps) => {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
-  const handleSelectCategory = (category: Category) => {
-    onClickCategory(category);
-    handleCategoryModal();
+  const handleSelectCategory = (selectedCategory: Category) => {
+    onClickCategory(selectedCategory);
+    if (category.selectedId !== selectedCategory.id) handleCategoryModal();
   };
 
-  const handleCategoryModal = () =>
-    setIsCategoryModalOpen(!isCategoryModalOpen);
+  const handleCategoryModal = () => setIsCategoryModalOpen((prev) => !prev);
 
   return (
     <MyTitleBox>
