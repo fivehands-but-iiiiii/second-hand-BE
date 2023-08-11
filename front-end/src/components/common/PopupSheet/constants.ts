@@ -33,11 +33,11 @@ export const SALESHISTORY_VIEWMORE_MENU = [
     title: '게시글 수정',
   },
   {
-    id: 'onSale',
+    id: 0,
     title: '판매중 상태로 전환',
   },
   {
-    id: 'soldOut',
+    id: 2,
     title: '판매 완료 상태로 전환',
   },
   {
