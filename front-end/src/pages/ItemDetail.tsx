@@ -11,11 +11,11 @@ import {
 } from '@common/Alert/constants';
 import Button from '@common/Button';
 import NavBar from '@common/NavBar';
+import PopupSheet from '@common/PopupSheet';
 import {
   DETAIL_STATUS_MENU,
   DETAIL_VIEWMORE_MENU,
 } from '@common/PopupSheet/constants';
-import PopupSheet from '@common/PopupSheet';
 import SubTabBar from '@common/TabBar/SubTabBar';
 import ChatRoom from '@components/chat/ChatRoom';
 import { CategoryInfo } from '@components/home/category';
@@ -407,7 +407,6 @@ const ItemDetail = ({
     </PortalLayout>
   );
 };
-
 
 const MyItemDetail = styled.div`
   height: calc(100vh - 83px);

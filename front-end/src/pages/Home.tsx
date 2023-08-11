@@ -12,8 +12,8 @@ import {
 import Button from '@common/Button';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
-import { REGION_MENU } from '@common/PopupSheet/constants';
 import PopupSheet from '@common/PopupSheet';
+import { REGION_MENU } from '@common/PopupSheet/constants';
 import Spinner from '@common/Spinner/Spinner';
 import Category from '@components/home/category';
 import ItemList from '@components/home/ItemList';
@@ -154,7 +154,8 @@ const Home = () => {
     }
   };
 
-  const handleRegionPopupSheetModal = () => setIsRegionPopupSheetOpen((prev) => !prev);
+  const handleRegionPopupSheetModal = () =>
+    setIsRegionPopupSheetOpen((prev) => !prev);
 
   const handleRegionMapModal = () => {
     setIsRegionMapModalOpen((prev) => !prev);
