@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
@@ -162,15 +161,13 @@ const SalesHistory = () => {
           />
           <MyOnFetchItems ref={setTarget}></MyOnFetchItems>
           {isLoading && <Spinner />}
-          {!!selectedItem &&
-            createPortal(
-              <ItemDetail
-                id={selectedItem}
-                categoryInfo={categories}
-                handleBackBtnClick={handleItemDetail}
-              />,
-              document.body,
-            )}
+          {!!selectedItem && (
+            <ItemDetail
+              id={selectedItem}
+              categoryInfo={categories}
+              handleBackBtnClick={handleItemDetail}
+            />
+          )}
           {isViewMorePopupOpen && (
             <PopupSheet
               type={'slideUp'}

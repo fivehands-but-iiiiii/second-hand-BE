@@ -1,5 +1,4 @@
 import { useEffect, useState, useMemo } from 'react';
-import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
@@ -12,8 +11,8 @@ import {
 import Button from '@common/Button';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
-import { REGION_MENU } from '@common/PopupSheet/constants';
 import PopupSheet from '@common/PopupSheet';
+import { REGION_MENU } from '@common/PopupSheet/constants';
 import Spinner from '@common/Spinner/Spinner';
 import Category from '@components/home/category';
 import ItemList from '@components/home/ItemList';
@@ -154,7 +153,8 @@ const Home = () => {
     }
   };
 
-  const handleRegionPopupSheetModal = () => setIsRegionPopupSheetOpen((prev) => !prev);
+  const handleRegionPopupSheetModal = () =>
+    setIsRegionPopupSheetOpen((prev) => !prev);
 
   const handleRegionMapModal = () => {
     setIsRegionMapModalOpen((prev) => !prev);
@@ -318,35 +318,29 @@ const Home = () => {
           </button>
         }
       />
-      {isRegionMapModalOpen &&
-        createPortal(
-          <SettingRegionMap
-            regions={userRegions}
-            onPortal={handleRegionMapModal}
-          />,
-          document.body,
-        )}
+      {isRegionMapModalOpen && (
+        <SettingRegionMap
+          regions={userRegions}
+          onPortal={handleRegionMapModal}
+        />
+      )}
       <ItemList saleItems={saleItems} onItemClick={handleItemDetail} />
       {!!saleItems.length && <MyOnFetchItems ref={setTarget}></MyOnFetchItems>}
       {isLoading && <Spinner />}
-      {!!selectedItem &&
-        createPortal(
-          <ItemDetail
-            id={selectedItem}
-            categoryInfo={categories}
-            handleBackBtnClick={handleItemDetail}
-          />,
-          document.body,
-        )}
-      {isCategoryModalOpen &&
-        createPortal(
-          <Category
-            categoryInfo={categories}
-            handleCategoryModal={handleCategoryModal}
-            onCategoryClick={handleFilterCategory}
-          />,
-          document.body,
-        )}
+      {!!selectedItem && (
+        <ItemDetail
+          id={selectedItem}
+          categoryInfo={categories}
+          handleBackBtnClick={handleItemDetail}
+        />
+      )}
+      {isCategoryModalOpen && (
+        <Category
+          categoryInfo={categories}
+          handleCategoryModal={handleCategoryModal}
+          onCategoryClick={handleFilterCategory}
+        />
+      )}
       <MyNewBtn active circle={'lg'} onClick={handleNewButtonClick}>
         <Icon name={'plus'} fill={palette.neutral.backgroundWeak} />
       </MyNewBtn>
@@ -354,11 +348,9 @@ const Home = () => {
         <Alert.Title>{ALERT_TITLE.LOGIN}</Alert.Title>
         <Alert.Button>{alertButtons(ALERT_ACTIONS.LOGIN)}</Alert.Button>
       </Alert>
-      {isNewModalOpen &&
-        createPortal(
-          <New categoryInfo={categories} onClick={handleNewModal} />,
-          document.body,
-        )}
+      {isNewModalOpen && (
+        <New categoryInfo={categories} onClick={handleNewModal} />
+      )}
     </>
   );
 };

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 
 import Button from '@common/Button';
 import { SaleItem } from '@common/Item';
@@ -59,7 +58,7 @@ const WishList = () => {
       const { data: itemData } = wishlistResponse;
       const { data: categoriesData } = categoriesResponse;
       matchCategories(categoriesData.categories);
-      if(!itemData.items.length) {
+      if (!itemData.items.length) {
         setSelectedCategoryId(0);
         initData();
         return;
@@ -87,8 +86,10 @@ const WishList = () => {
         }
       );
     });
-    setWishCategories(
-      [{ id: 0, title: '전체' }, ...matchedCategories.filter((item) => !!item?.id) as WishCategory[]])
+    setWishCategories([
+      { id: 0, title: '전체' },
+      ...(matchedCategories.filter((item) => !!item?.id) as WishCategory[]),
+    ]);
   };
 
   const initData = () => {
@@ -108,7 +109,7 @@ const WishList = () => {
 
   const handleItemDetail = (itemId: number) => {
     setSelectedItem(itemId);
-    if(itemId) return;
+    if (itemId) return;
     initData();
     setOnRefresh(true);
   };
@@ -118,7 +119,7 @@ const WishList = () => {
   }, [selectedCategoryId]);
 
   useEffect(() => {
-    if(!onRefresh) return;
+    if (!onRefresh) return;
     getWishListData();
     setOnRefresh(false);
   }, [onRefresh]);
@@ -144,22 +145,18 @@ const WishList = () => {
             })}
           </MyCategories>
         )}
-        {!!wishItems.length ? (
+        {wishItems.length ? (
           <>
             <ItemList saleItems={wishItems} onItemClick={handleItemDetail} />
-            {!!wishItems.length && (
-              <MyOnFetchItems ref={setTarget}></MyOnFetchItems>
-            )}
+            <MyOnFetchItems ref={setTarget}></MyOnFetchItems>
             {isLoading && <Spinner />}
-            {!!selectedItem &&
-              createPortal(
-                <ItemDetail
-                  id={selectedItem}
-                  categoryInfo={categories}
-                  handleBackBtnClick={handleItemDetail}
-                />,
-                document.body,
-              )}
+            {!!selectedItem && (
+              <ItemDetail
+                id={selectedItem}
+                categoryInfo={categories}
+                handleBackBtnClick={handleItemDetail}
+              />
+            )}
           </>
         ) : (
           <BlankPage title={title} />

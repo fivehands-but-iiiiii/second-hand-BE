@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
@@ -11,11 +10,11 @@ import {
 } from '@common/Alert/constants';
 import Button from '@common/Button';
 import NavBar from '@common/NavBar';
+import PopupSheet from '@common/PopupSheet';
 import {
   DETAIL_STATUS_MENU,
   DETAIL_VIEWMORE_MENU,
 } from '@common/PopupSheet/constants';
-import PopupSheet from '@common/PopupSheet';
 import SubTabBar from '@common/TabBar/SubTabBar';
 import ChatRoom from '@components/chat/ChatRoom';
 import { CategoryInfo } from '@components/home/category';
@@ -367,11 +366,9 @@ const ItemDetail = ({
           {isMyItem ? `대화 중인 채팅방 ${chatCount}` : '채팅하기'}
         </Button>
       </SubTabBar>
-      {!!isChatRoomOpen &&
-        createPortal(
-          <ChatRoom itemId={id} onRoomClose={handleChatRoom}></ChatRoom>,
-          document.body,
-        )}
+      {!!isChatRoomOpen && (
+        <ChatRoom itemId={id} onRoomClose={handleChatRoom}></ChatRoom>
+      )}
       {isStatusPopupOpen && (
         <PopupSheet
           type={'slideUp'}
@@ -386,16 +383,14 @@ const ItemDetail = ({
           onSheetClose={handleViewMorePopup}
         ></PopupSheet>
       )}
-      {isNewModalOpen &&
-        createPortal(
-          <New
-            isEdit={true}
-            origin={itemDetailInfo}
-            categoryInfo={categories}
-            onClick={handleNewModal}
-          />,
-          document.body,
-        )}
+      {isNewModalOpen && (
+        <New
+          isEdit={true}
+          origin={itemDetailInfo}
+          categoryInfo={categories}
+          onClick={handleNewModal}
+        />
+      )}
       <Alert isOpen={isDeleteAlertOpen}>
         <Alert.Title>{ALERT_TITLE.DELETE('삭제')}</Alert.Title>
         <Alert.Button>{alertButtons(ALERT_ACTIONS.DELETE)}</Alert.Button>
@@ -407,7 +402,6 @@ const ItemDetail = ({
     </PortalLayout>
   );
 };
-
 
 const MyItemDetail = styled.div`
   height: calc(100vh - 83px);
