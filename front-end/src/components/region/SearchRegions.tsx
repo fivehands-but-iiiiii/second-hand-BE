@@ -46,8 +46,9 @@ const SearchRegions = ({ onPortal, onSelectRegion }: SearchRegionsProps) => {
     ({ target }: ChangeEvent<HTMLTextAreaElement>) => {
       const { value } = target;
       setSearchKeyword(value);
-      if (value.length < 2) return;
-      debounce(() => getRegionList(value), 500)();
+      if (value.length > 2) {
+        debounce(() => getRegionList(value), 5000)();
+      }
     },
     [debounce],
   );
