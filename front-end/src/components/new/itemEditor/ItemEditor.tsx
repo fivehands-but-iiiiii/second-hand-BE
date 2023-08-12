@@ -5,6 +5,7 @@ import {
   MouseEvent,
   useCallback,
   useRef,
+  useMemo,
 } from 'react';
 
 import Icon from '@assets/Icon';
@@ -15,7 +16,7 @@ import Textarea from '@common/Textarea';
 import { InputFile, RegionInfo } from '@components/login/Join';
 import useAPI from '@hooks/useAPI';
 import { getPreviewURL } from '@utils/convertFile';
-import { getFormattedPrice, getFormattedNumber } from '@utils/formatText';
+import { getFormattedPrice } from '@utils/formatText';
 import { getStoredValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
@@ -47,7 +48,7 @@ export interface OriginItem {
   id: number;
   title: string;
   contents: string;
-  category: string | number;
+  category: number;
   price: string;
   images: { url: string }[];
 }
@@ -75,13 +76,18 @@ const ItemEditor = ({
   const [price, setPrice] = useState('');
   const priceRef = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState<CategoryInfo>({
-    total: categoryInfo,
+    total: [...categoryInfo],
     recommendedCategory: [],
     selectedId: 0,
   });
   const [files, setFiles] = useState<InputFile[]>([]);
-  const [isFormValid, setIsFormValid] = useState(true);
   const { request } = useAPI();
+
+  const isFormValid =
+    title.length > 0 &&
+    category.selectedId > 0 &&
+    region.id > 0 &&
+    files.length > 0;
 
   const handleFiles = async ({ target }: ChangeEvent<HTMLInputElement>) => {
     const file = target.files?.[0];
@@ -96,10 +102,6 @@ const ItemEditor = ({
       },
     ]);
   };
-
-  const validateForm = useCallback(() => {
-    return title && category.selectedId && region.id && files.length;
-  }, [title, region, category, files]);
 
   const handleSubmit = async () => {
     try {
@@ -218,46 +220,53 @@ const ItemEditor = ({
     setTitle(value);
   };
 
-  const getRandomCategories = useCallback((): Category[] => {
-    const RANDOM_COUNT = 3;
-    const usedId = [];
-    const randomCategories: Category[] = [];
+  const randomCategories = useMemo(() => {
+    const getRandomCategories = (): Category[] => {
+      const RANDOM_COUNT = 3;
+      const randomCategories: Category[] = [];
+      const usedId = [];
 
-    if (isEdit && origin) {
-      const categoryId = categoryInfo.find(
-        (item) => item.title === origin.category,
-      )?.id as number;
-      randomCategories.push({
-        id: categoryId,
-        title: origin.category as string,
-      });
-      usedId.push(categoryId);
-    }
-
-    while (randomCategories.length < RANDOM_COUNT) {
-      const randomIndex = Math.floor(Math.random() * categoryInfo.length);
-      if (!usedId.includes(randomIndex)) {
-        usedId.push(randomIndex);
-        randomCategories.push(categoryInfo[randomIndex]);
+      if (isEdit && origin) {
+        const originCategoryId = origin.category;
+        const categoryTitle = categoryInfo.find(
+          (item) => item.id === originCategoryId,
+        )?.title;
+        if (categoryTitle) {
+          randomCategories.push({
+            id: originCategoryId,
+            title: categoryTitle,
+          });
+          usedId.push(originCategoryId);
+        }
       }
-    }
-    return randomCategories;
-  }, [categoryInfo]);
+      while (randomCategories.length < RANDOM_COUNT) {
+        const randomId = Math.floor(Math.random() * categoryInfo.length);
+        if (!usedId.includes(randomId)) {
+          usedId.push(randomId);
+          const randomCategory = categoryInfo.find(({ id }) => id === randomId);
+          if (randomCategory) randomCategories.push(randomCategory);
+        }
+      }
+      return randomCategories;
+    };
+
+    return getRandomCategories;
+  }, [categoryInfo, isEdit, origin]);
 
   const handleRecommendation = useCallback(() => {
     if (firstClickCTitle) return;
     const timeOutId = setTimeout(() => {
-      const randomCategories = getRandomCategories();
+      const recommendedCategories = randomCategories();
       setCategory((prev) => ({
         ...prev,
-        recommendedCategory: randomCategories,
+        recommendedCategory: recommendedCategories,
       }));
       setFirstClickCTitle(true);
     }, 1500);
     return () => {
       clearTimeout(timeOutId);
     };
-  }, [firstClickCTitle, getRandomCategories]);
+  }, [firstClickCTitle, randomCategories]);
 
   // TODO: 랜덤 카테고리 API 연동
   const handleCategory = (updatedCategory: Category) => {
@@ -308,43 +317,32 @@ const ItemEditor = ({
 
   const getMappedOrigin = (origin: OriginItem) => {
     if (!origin) return;
-    const formattedPrice = getFormattedNumber(origin.price);
-    const categoryId = categoryInfo.find(
-      (item) => item.title === origin.category,
+    const originCategory = categoryInfo.find(
+      (item) => item.id === origin.category,
     );
-    const mappedOrigin = {
-      ...origin,
-      price: formattedPrice.toString(),
-      category: categoryId?.id,
-    };
-    setTitle(mappedOrigin.title);
-    setContents(mappedOrigin.contents);
-    setPrice(mappedOrigin.price);
+    setTitle(origin.title);
+    setContents(origin.contents);
+    setPrice(origin.price);
     setCategory((prev) => ({
       ...prev,
-      selectedId: mappedOrigin.category as number,
+      selectedId: originCategory?.id as number,
     }));
     setFiles(
-      mappedOrigin.images.map((image) => ({
+      origin.images.map((image) => ({
         preview: image.url,
       })),
     );
   };
 
   useEffect(() => {
-    setIsFormValid(validateForm());
-  }, [title, region, category, files, validateForm]);
-
-  useEffect(() => {
-    if (isEdit && origin) {
-      getMappedOrigin(origin);
-      const category = getRandomCategories();
-      setCategory((prev) => ({
-        ...prev,
-        recommendedCategory: category,
-      }));
-    }
-  }, [isEdit, origin]);
+    if (!(isEdit && origin)) return;
+    getMappedOrigin(origin);
+    const category = randomCategories();
+    setCategory((prev) => ({
+      ...prev,
+      recommendedCategory: category,
+    }));
+  }, [isEdit]);
 
   return (
     <>

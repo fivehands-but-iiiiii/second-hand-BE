@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import Alert from '@common/Alert';
 import {
@@ -40,13 +40,13 @@ const SALES_STATUS = [
 ];
 
 const SalesHistory = () => {
-  const title = '판매 내역';
   const categories = useCategories();
   const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
-  const [selectedItem, setSelectedItem] = useState(0);
+  const [selectedItemId, setSelectedItemId] = useState(0);
   const [selectedStatusIndex, setSelectedStatusIndex] = useState(
     ItemStatus.ON_SALE,
   );
+  const itemInfoRef = useRef(undefined);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isViewMorePopupOpen, setIsViewMorePopupOpen] = useState(false);
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
@@ -105,7 +105,7 @@ const SalesHistory = () => {
   };
 
   const handleItemDetail = (id: number) => {
-    setSelectedItem(id);
+    setSelectedItemId(id);
     setIsDetailModalOpen((pre) => !pre);
     if (!id) {
       initData();
@@ -114,7 +114,7 @@ const SalesHistory = () => {
   };
 
   const handleViewMoreButton = (id: number) => {
-    setSelectedItem(id);
+    setSelectedItemId(id);
     setIsViewMorePopupOpen(true);
   };
 
@@ -128,28 +128,26 @@ const SalesHistory = () => {
     },
   }));
 
-  // TODO: 로직 예쁘게 수정
   const getViewMorePopupSheet = async (typeId: string | number) => {
-    if (typeId === 'edit') {
-      console.log('수정'); // <New> item id, origin data 있어야됨 컴포넌트에 수정기능
-      setIsNewModalOpen(true);
-    }
-    if (typeId === 'delete') {
-      setIsDeleteAlertOpen(true);
-    }
-    if (typeId === ItemStatus.ON_SALE) {
-      const response = await switchStatus(ItemStatus.ON_SALE);
-      if (response) {
-        initData();
-        setOnRefresh(true);
-      }
-    }
-    if (typeId === ItemStatus.SOLD_OUT) {
-      const response = await switchStatus(ItemStatus.SOLD_OUT);
-      if (response) {
-        initData();
-        setOnRefresh(true);
-      }
+    switch (typeId) {
+      case 'edit':
+        const itemInfo = await getItemInfo(selectedItemId);
+        itemInfoRef.current = { ...itemInfo };
+        if (itemInfo) setIsNewModalOpen(true);
+        break;
+      case 'delete':
+        setIsDeleteAlertOpen(true);
+        break;
+      case ItemStatus.ON_SALE:
+      case ItemStatus.SOLD_OUT:
+        const response = await switchStatus(typeId);
+        if (response) {
+          initData();
+          setOnRefresh(true);
+        }
+        break;
+      default:
+        return;
     }
   };
 
@@ -160,9 +158,18 @@ const SalesHistory = () => {
     if (isNewModalOpen) setOnRefresh(true);
   };
 
+  const getItemInfo = async (id: number) => {
+    try {
+      const { data } = await api.get(`/items/${id}`);
+      return data.data;
+    } catch (error) {
+      console.error(`Failed to request: ${error}`);
+    }
+  };
+
   const switchStatus = async (status: ItemStatus) => {
     try {
-      const { data } = await api.patch(`/items/${selectedItem}/status`, {
+      const { data } = await api.patch(`/items/${selectedItemId}/status`, {
         status: status,
       });
       return data;
@@ -190,7 +197,7 @@ const SalesHistory = () => {
 
   const deleteAlertConfirm = async (type: AlertActionsProps['id']) => {
     if (type !== 'delete') return;
-    const response = await deleteItem(selectedItem);
+    const response = await deleteItem(selectedItemId);
     if (response) {
       setIsDeleteAlertOpen(false);
       initData();
@@ -219,14 +226,16 @@ const SalesHistory = () => {
 
   return (
     <>
-      <NavBar center={title}>
+      <NavBar center={'판매 내역'}>
         <SegmentedControl
           options={SALES_STATUS}
           value={selectedStatusIndex}
           onClick={handleSelectedStatusIndex}
         />
       </NavBar>
-      {!saleItems.length && <BlankPage title={title} />}
+      {!saleItems.length && (
+        <BlankPage title={`${SALES_STATUS[selectedStatusIndex].label} 내역`} />
+      )}
       {!!saleItems.length && (
         <>
           <ItemList
@@ -241,7 +250,7 @@ const SalesHistory = () => {
           {isLoading && <Spinner />}
           {isDetailModalOpen && (
             <ItemDetail
-              id={selectedItem}
+              id={selectedItemId}
               categoryInfo={categories}
               handleBackBtnClick={handleItemDetail}
             />
@@ -256,7 +265,7 @@ const SalesHistory = () => {
           {isNewModalOpen && (
             <New
               isEdit={true}
-              origin={selectedItemInfo}
+              origin={itemInfoRef?.current}
               categoryInfo={categories}
               onClick={handleNewModal}
             />

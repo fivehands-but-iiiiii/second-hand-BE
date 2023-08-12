@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
@@ -120,6 +120,7 @@ const ItemDetail = ({
     price,
     isMyItem,
   } = itemDetailInfo;
+  const itemInfoRef = useRef(undefined);
   const [onRefresh, setOnRefresh] = useState(false);
   const likeIcon = isLike ? 'fullHeart' : 'heart';
 
@@ -300,6 +301,7 @@ const ItemDetail = ({
         data: { data },
       } = await api.get(`/items/${id}`);
       mapItemDetailInfo(data);
+      itemInfoRef.current = data;
     } catch (error) {
       console.error(`Failed to get item info: ${error}`);
     }
@@ -386,7 +388,7 @@ const ItemDetail = ({
       {isNewModalOpen && (
         <New
           isEdit={true}
-          origin={itemDetailInfo}
+          origin={itemInfoRef?.current}
           categoryInfo={categories}
           onClick={handleNewModal}
         />
