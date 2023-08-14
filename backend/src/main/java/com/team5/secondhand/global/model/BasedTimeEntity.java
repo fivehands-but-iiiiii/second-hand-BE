@@ -12,11 +12,11 @@ import javax.persistence.MappedSuperclass;
 import java.time.Instant;
 
 @Getter
+@ToString
 @MappedSuperclass
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-@ToString
-public class BasedTimeEntity {
+public abstract class BasedTimeEntity {
     @CreatedDate
     private Instant createdAt;
 }

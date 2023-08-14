@@ -41,17 +41,20 @@ public class WishlistService implements CheckMemberLikedUsecase {
         }
     }
 
+    @Transactional
     public void unlikeItem(Member member, Item item) {
         Wishlist wishlist = wishlistRepository.findByMemberAndItem(member, item).orElseThrow(() -> new EntityExistsException("좋아요하지 않은 아이템입니다."));
         wishlistRepository.delete(wishlist);
     }
 
+    @Transactional(readOnly = true)
     public CategoryList getCategories(Long memberId) {
         List<Long> categoryList = wishlistRepository.findByDistinctCategoryByMember(memberId);
 
         return CategoryList.of(categoryList);
     }
 
+    @Transactional
     public WishItemList getWishlist(Long memberId, int page, Long category) {
         PageRequest pageRequest = PageRequest.of(page, FILTER_SIZE, Sort.by(Sort.Direction.DESC, "id"));
         Slice<Wishlist> wishlistSlice = wishlistRepository.findAllByItemCategoryAndMemberIdOrderById(pageRequest, category, memberId);
@@ -63,6 +66,7 @@ public class WishlistService implements CheckMemberLikedUsecase {
     }
 
     @Override
+    @Transactional
     public Boolean isMemberLiked(Long itemId, MemberDetails member) {
         if (!member.isEmpty()) {
             return wishlistRepository.existsByMemberIdAndItemId(member.getId(), itemId);
@@ -71,6 +75,7 @@ public class WishlistService implements CheckMemberLikedUsecase {
     }
 
     @Override
+    @Transactional
     public List<Boolean> isMemberLiked(List<Long> itemId, Long memberId) {
         List<Long> itemIds = wishlistRepository.findAllItemIdByMemberId(memberId);
         return itemId.stream().map(itemIds::contains).collect(Collectors.toList());

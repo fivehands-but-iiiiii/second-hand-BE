@@ -82,12 +82,14 @@ public class ItemService {
         return items;
     }
 
+    @Transactional
     public Long postItem(Item item, Member seller, Region region, String thumbnailUrl) {
         item.updateThumbnail(thumbnailUrl);
         itemRepository.save(item.owned(seller, region));
         return item.getId();
     }
 
+    @Transactional
     public void updateItem(Long id, ItemPostWithUrl itemPost, String thumbanilUrl) throws ExistItemException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
         Item newItem = item.updatePost(itemPost, thumbanilUrl);
@@ -108,6 +110,7 @@ public class ItemService {
         return ItemDetail.of(item, isSeller, isLike);
     }
 
+    @Transactional
     public CategoryList getCategoryList(Long regionId) {
         List<Long> categories = itemRepository.countCategoryByRegion(regionId);
         return CategoryList.of(categories);

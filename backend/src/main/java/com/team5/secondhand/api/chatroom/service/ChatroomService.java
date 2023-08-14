@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 public class ChatroomService {
     private final ChatroomRepository chatRoomRepository;
 
+    @Transactional
     public String create(Item item, Member buyer) throws ExistChatRoomException, BuyerException {
         if (chatRoomRepository.findByBuyer_IdAndItem_Id(buyer.getId(), item.getId()).isPresent()) {
             throw new ExistChatRoomException("이미 존재하는 채팅방입니다.");
@@ -37,14 +39,17 @@ public class ChatroomService {
         return chatRoomRepository.save(chatRoom).getChatroomId().toString();
     }
 
+    @Transactional
     public Optional<Chatroom> findChatroom(long memberId, long itemId) {
         return chatRoomRepository.findByBuyer_IdAndItem_Id(memberId, itemId);
     }
 
+    @Transactional
     public Chatroom findByChatroomId(String chatroomId) throws ExistChatRoomException {
         return chatRoomRepository.findByChatroomId(UUID.fromString(chatroomId)).orElseThrow(() -> new ExistChatRoomException("해당하는 채팅방이 없습니다."));
     }
 
+    @Transactional
     public ChatroomList findChatroomListByMember(Pageable page, Member member) {
         Slice<Chatroom> chatroomSlice = chatRoomRepository.findAllByBuyerIdOrSellerIdOrderByIdDesc(page, member.getId(), member.getId());
         List<ChatroomSummary> chatroomSummaries = chatroomSlice.getContent().stream()
@@ -54,6 +59,7 @@ public class ChatroomService {
         return ChatroomList.of(chatroomSummaries, page.getPageNumber(), chatroomSlice.hasNext(), chatroomSlice.hasPrevious());
     }
 
+    @Transactional
     public ChatroomList findChatroomListByItem(Pageable page, Item item) {
         Slice<Chatroom> chatroomSlice = chatRoomRepository.findAllByItemIdOrderByIdDesc(page, item.getId());
         List<ChatroomSummary> chatroomSummaries = chatroomSlice.getContent().stream()
@@ -63,6 +69,7 @@ public class ChatroomService {
         return ChatroomList.of(chatroomSummaries, page.getPageNumber(), chatroomSlice.hasNext(), chatroomSlice.hasPrevious());
     }
 
+    @Transactional
     public void exitChatroom(Chatroom chatroom, Member member) throws NotChatroomMemberException {
         chatroom.exitMember(member);
         chatRoomRepository.save(chatroom);
