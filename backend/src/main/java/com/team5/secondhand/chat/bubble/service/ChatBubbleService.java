@@ -1,7 +1,7 @@
 package com.team5.secondhand.chat.bubble.service;
 
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
-import com.team5.secondhand.global.event.ChatBubbleArrivedEvent;
+import com.team5.secondhand.global.event.chatbubble.ChatBubbleArrivedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
@@ -20,7 +20,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ChatLogService {
+public class ChatBubbleService {
     @Value("${const.chat.bucket}")
     private String chatBucketPrefix;
     @Value("${const.chat.page-size}")

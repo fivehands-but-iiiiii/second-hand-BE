@@ -1,4 +1,4 @@
-package com.team5.secondhand.chat.bubble.service;
+package com.team5.secondhand.chat.topic.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
