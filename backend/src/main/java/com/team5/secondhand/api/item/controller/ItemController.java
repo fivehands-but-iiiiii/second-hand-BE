@@ -125,7 +125,7 @@ public class ItemController {
             description = "사용자는 상품의 상세 정보를 볼 수 있다."
     )
     @GetMapping("/{id}")
-    public GenericResponse<ItemDetail> getItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember) throws ExistMemberIdException, ExistItemException {
+    public GenericResponse<ItemDetail> getItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember) throws ExistItemException {
         Boolean isLike = wishlistService.isMemberLiked(id, loginMember);
         ItemDetail item = itemService.viewAItem(id, loginMember, isLike);
 
