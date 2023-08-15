@@ -32,7 +32,9 @@ const LoginButtons = ({
 
 const MyGitHubButton = styled(Button)`
   background-color: ${({ theme }) => theme.colors.accent.textWeak};
+  padding: 0;
   > a {
+    padding: 16px 20px;
     width: 100%;
     color: ${({ theme }) => theme.colors.accent.text};
   }

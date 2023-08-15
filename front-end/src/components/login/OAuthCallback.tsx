@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { setStorageValue } from '@utils/sessionStorage';
 import { AxiosError } from 'axios';
@@ -14,9 +14,9 @@ export interface GitHubUserInfo {
 }
 
 const OAuthCallback = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const queryCode = new URLSearchParams(location.search).get('code');
+  const currentURL = new URL(window.location.href);
+  const queryCode = currentURL.searchParams.get('code');
 
   useEffect(() => {
     const authenticateWithSessionId = async () => {
