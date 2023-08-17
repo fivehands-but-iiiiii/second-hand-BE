@@ -42,7 +42,7 @@ public class CacheConfig {
                         RedisSerializationContext.SerializationPair
                                 .fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper))
                 )
-                .entryTtl(Duration.ofDays(1L));//TTL 적용
+                .entryTtl(Duration.ofDays(100L));//TTL 적용
 
         return RedisCacheManager.RedisCacheManagerBuilder
                 .fromConnectionFactory(redisConnectionFactory)
@@ -53,7 +53,7 @@ public class CacheConfig {
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
         return RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofDays(7))
+                .entryTtl(Duration.ofDays(100))
                 .disableCachingNullValues()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
     }
