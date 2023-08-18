@@ -111,7 +111,7 @@ const WishList = () => {
 
   const handleItemDetail = (itemId: number) => {
     setSelectedItem(itemId);
-    if(itemId) return;
+    if (itemId) return;
     initData();
     setOnRefresh(true);
   };
@@ -121,7 +121,7 @@ const WishList = () => {
   }, [selectedCategoryId]);
 
   useEffect(() => {
-    if(!onRefresh) return;
+    if (!onRefresh) return;
     getWishListData();
     setOnRefresh(false);
   }, [onRefresh]);
@@ -200,3 +200,4 @@ const MyOnFetchItems = styled.div`
 `;
 
 export default WishList;
+
