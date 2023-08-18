@@ -10,6 +10,7 @@ interface ChatRoomListProps {
 }
 
 const ChatRoomList = ({ chatItems }: ChatRoomListProps) => {
+  // TODO: 비지니스 로직 분리
   const [selectedItemId, setSelectedItemId] = useState(0);
 
   const handleChatRoomClick = (itemId: number) => {

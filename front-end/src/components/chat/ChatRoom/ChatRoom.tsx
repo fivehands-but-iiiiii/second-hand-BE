@@ -15,6 +15,7 @@ import { styled } from 'styled-components';
 
 import api from '../../../api';
 
+// TODO: API 확정 이후 타입 정의
 interface ChatBubble {
   roomId: string;
   sender: string;
@@ -209,12 +210,12 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
           <span>{itemInfo.price}</span>
         </MyChatRoomItemInfo>
       </MyChatRoomItem>
+      {/* TODO: MyChatBubbles component 분리 */}
       {!!chatBubbles.length && (
         <MyChatBubbles>
           {chatBubbles.map((bubble) => {
             const isMyBubble = bubble.sender === userId;
             const BubbleComponent = isMyBubble ? MyBubble : MyOpponentBubble;
-
             const renderBubbleComponent = (
               <BubbleComponent>
                 <span>{bubble.message}</span>

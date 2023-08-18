@@ -57,6 +57,7 @@ const ChatListItem = ({ chatItem, ...rest }: ChatListProps) => {
       <UserProfile size="s" profileImgUrl={userImage} />
       <MyChatInfo>
         <MyChatUserName>
+          {/* TODO: Semantic Tag로 수정 */}
           <div>{userName}</div>
           <div>{lastMessageTime}</div>
         </MyChatUserName>

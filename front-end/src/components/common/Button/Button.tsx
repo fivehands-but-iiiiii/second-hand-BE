@@ -2,15 +2,6 @@ import { ComponentPropsWithRef, ReactNode, forwardRef } from 'react';
 
 import { css, styled } from 'styled-components';
 
-interface Circle {
-  [key: string]: number;
-}
-
-interface ButtonStyleProps extends ButtonProps {
-  circleSize?: number;
-  children?: ReactNode;
-}
-
 interface ButtonProps extends ComponentPropsWithRef<'button'> {
   active?: boolean;
   category?: boolean;
@@ -19,6 +10,15 @@ interface ButtonProps extends ComponentPropsWithRef<'button'> {
   fullWidth?: boolean;
   spaceBetween?: boolean;
   disabled?: boolean;
+  children?: ReactNode;
+}
+
+interface Circle {
+  [key: string]: number;
+}
+
+interface ButtonStyleProps extends ButtonProps {
+  circleSize?: number;
   children?: ReactNode;
 }
 
