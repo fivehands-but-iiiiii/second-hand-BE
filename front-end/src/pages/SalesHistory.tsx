@@ -128,34 +128,40 @@ const SalesHistory = () => {
     },
   }));
 
+  const handleViewMorePopup = () => setIsViewMorePopupOpen((pre) => !pre);
+
+  const handleNewModal = () => {
+    setIsNewModalOpen((pre) => !pre);
+    if (isNewModalOpen) setOnRefresh(true);
+  };
+
   const getViewMorePopupSheet = async (typeId: string | number) => {
+    const handleEdit = async () => {
+      const itemInfo = await getItemInfo(selectedItemId);
+      itemInfoRef.current = { ...itemInfo };
+      if (itemInfo) setIsNewModalOpen(true);
+    };
+    const handleStatusSwitch = async (typeId: number) => {
+      const response = await switchStatus(typeId);
+      if (response) {
+        initData();
+        setOnRefresh(true);
+      }
+    };
     switch (typeId) {
       case 'edit':
-        const itemInfo = await getItemInfo(selectedItemId);
-        itemInfoRef.current = { ...itemInfo };
-        if (itemInfo) setIsNewModalOpen(true);
+        await handleEdit();
         break;
       case 'delete':
         setIsDeleteAlertOpen(true);
         break;
       case ItemStatus.ON_SALE:
       case ItemStatus.SOLD_OUT:
-        const response = await switchStatus(typeId);
-        if (response) {
-          initData();
-          setOnRefresh(true);
-        }
+        await handleStatusSwitch(typeId);
         break;
       default:
         return;
     }
-  };
-
-  const handleViewMorePopup = () => setIsViewMorePopupOpen((pre) => !pre);
-
-  const handleNewModal = () => {
-    setIsNewModalOpen((pre) => !pre);
-    if (isNewModalOpen) setOnRefresh(true);
   };
 
   const getItemInfo = async (id: number) => {
@@ -233,10 +239,7 @@ const SalesHistory = () => {
           onClick={handleSelectedStatusIndex}
         />
       </NavBar>
-      {!saleItems.length && (
-        <BlankPage title={`${SALES_STATUS[selectedStatusIndex].label} 내역`} />
-      )}
-      {!!saleItems.length && (
+      {!!saleItems.length ? (
         <>
           <ItemList
             saleItems={saleItems}
@@ -264,7 +267,6 @@ const SalesHistory = () => {
           )}
           {isNewModalOpen && (
             <New
-              isEdit={true}
               origin={itemInfoRef?.current}
               categoryInfo={categories}
               onClick={handleNewModal}
@@ -275,6 +277,8 @@ const SalesHistory = () => {
             <Alert.Button>{alertButtons(ALERT_ACTIONS.DELETE)}</Alert.Button>
           </Alert>
         </>
+      ) : (
+        <BlankPage title={`${SALES_STATUS[selectedStatusIndex].label} 내역`} />
       )}
     </>
   );

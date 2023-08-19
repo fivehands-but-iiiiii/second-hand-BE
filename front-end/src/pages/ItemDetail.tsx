@@ -387,7 +387,6 @@ const ItemDetail = ({
       )}
       {isNewModalOpen && (
         <New
-          isEdit={true}
           origin={itemInfoRef?.current}
           categoryInfo={categories}
           onClick={handleNewModal}

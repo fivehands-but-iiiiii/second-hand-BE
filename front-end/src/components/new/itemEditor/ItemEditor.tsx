@@ -55,19 +55,13 @@ export interface OriginItem {
 
 interface ItemEditorProps {
   categoryInfo: Category[];
-  isEdit?: boolean;
   origin?: OriginItem;
   handleClose: () => void;
 }
 
 // TODO: 로직 분리하기..
-const ItemEditor = ({
-  categoryInfo,
-  isEdit = false,
-  origin,
-  handleClose,
-}: ItemEditorProps) => {
-  const pageTitle = isEdit ? '상품 수정' : '새 상품 등록';
+const ItemEditor = ({ categoryInfo, origin, handleClose }: ItemEditorProps) => {
+  const pageTitle = origin ? '상품 수정' : '새 상품 등록';
   const userInfo = getStoredValue({ key: 'userInfo' });
   const region = userInfo?.regions.find(({ onFocus }: RegionInfo) => onFocus);
   const [title, setTitle] = useState('');
@@ -105,7 +99,7 @@ const ItemEditor = ({
 
   const handleSubmit = async () => {
     try {
-      if (isEdit) {
+      if (origin) {
         await putEdit();
         handleClose();
         return;
@@ -226,7 +220,7 @@ const ItemEditor = ({
       const randomCategories: Category[] = [];
       const usedId = [];
 
-      if (isEdit && origin) {
+      if (origin) {
         const originCategoryId = origin.category;
         const categoryTitle = categoryInfo.find(
           (item) => item.id === originCategoryId,
@@ -251,7 +245,7 @@ const ItemEditor = ({
     };
 
     return getRandomCategories;
-  }, [categoryInfo, isEdit, origin]);
+  }, [categoryInfo, origin]);
 
   const handleRecommendation = useCallback(() => {
     if (firstClickCTitle) return;
@@ -275,11 +269,9 @@ const ItemEditor = ({
       ({ id }) => id === updatedCategory.id,
     );
 
-    return isSameCategory
-      ? resetSelectedCategory()
-      : isExistingCategory
-      ? updateSelectedCategory(updatedCategory.id)
-      : updateRecommendedCategory(updatedCategory);
+    if (isSameCategory) return resetSelectedCategory();
+    if (isExistingCategory) return updateSelectedCategory(updatedCategory.id);
+    return updateRecommendedCategory(updatedCategory);
   };
 
   const resetSelectedCategory = () => {
@@ -335,14 +327,14 @@ const ItemEditor = ({
   };
 
   useEffect(() => {
-    if (!(isEdit && origin)) return;
+    if (!origin) return;
     getMappedOrigin(origin);
     const category = randomCategories();
     setCategory((prev) => ({
       ...prev,
       recommendedCategory: category,
     }));
-  }, [isEdit]);
+  }, [origin]);
 
   return (
     <>

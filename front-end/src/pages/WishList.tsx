@@ -145,7 +145,7 @@ const WishList = () => {
             })}
           </MyCategories>
         )}
-        {wishItems.length ? (
+        {!!wishItems.length ? (
           <>
             <ItemList saleItems={wishItems} onItemClick={handleItemDetail} />
             <MyOnFetchItems ref={setTarget}></MyOnFetchItems>

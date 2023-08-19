@@ -44,10 +44,11 @@ const SearchRegions = ({ onPortal, onSelectRegion }: SearchRegionsProps) => {
 
   const handleSearchChange = useCallback(
     ({ target }: ChangeEvent<HTMLTextAreaElement>) => {
+      const DEBOUNCE_DELAY = 5000;
       const { value } = target;
       setSearchKeyword(value);
       if (value.length > 2) {
-        debounce(() => getRegionList(value), 5000)();
+        debounce(() => getRegionList(value), DEBOUNCE_DELAY)();
       }
     },
     [debounce],

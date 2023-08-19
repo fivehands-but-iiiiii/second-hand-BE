@@ -30,17 +30,17 @@ const Login = () => {
   const joinedUserInfo = location.state;
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [isLogin, setIsLogin] = useState(false);
   const [userId, setUserId] = useState('');
   const [validationMessage, setValidationMessage] = useState('');
   const [isLogoutAlertOpen, setIsLogoutAlertOpen] = useState(false);
   const storedUserInfo = getStoredValue({ key: 'userInfo' });
+  const isLogin = !!storedUserInfo;
   const OAUTH_URL = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_url=${REDIRECT_URL}`;
-  const { response, error, request } = useAPI();
+  const { request } = useAPI();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!inputRef.current) return;
-    request({
+    const { data } = await request({
       url: '/login',
       method: 'post',
       config: {
@@ -49,12 +49,26 @@ const Login = () => {
         },
       },
     });
+    if (!data) return;
+    setStorageValue({
+      key: 'userInfo',
+      value: {
+        id: data.id,
+        memberId: data.memberId,
+        profileImgUrl: data.profileImgUrl,
+        regions: data.regions,
+      },
+    });
+    setStorageValue({
+      key: 'token',
+      value: data.token,
+    });
+    navigate('/');
   };
 
   const handleLogout = () => setIsLogoutAlertOpen(true);
 
   const logout = () => {
-    setIsLogin(false);
     removeStorageValue('userInfo', 'token');
     setIsLogoutAlertOpen(false);
   };
@@ -88,46 +102,15 @@ const Login = () => {
   };
 
   const getValidationMessage = (value: string) => {
-    const regExp = /[^0-9a-z]/;
-    const regRange = /^.{6,12}$/;
-    const isInvalid = regExp.test(value);
-    const isInValidRange = regRange.test(value);
-    const isValidLength =
-      !value.length || (value.length >= 3 && isInValidRange);
-    return isInvalid
-      ? '영문 소문자와 숫자만 입력하세요'
-      : isValidLength
-      ? ''
-      : '6~12자 이내로 입력하세요';
+    const isInvalid = /[^0-9a-z]/.test(value);
+    const isValidLength = /^(?:.{6,12}|)$/.test(value);
+
+    if (isInvalid) return '영문 소문자와 숫자만 입력하세요';
+    if (!isValidLength) return '6~12자 이내로 입력하세요';
+    return '';
   };
 
   const { handleKeyDown } = useEnterKeyPress({ onEnterPress: handleLogin });
-
-  useEffect(() => {
-    if (response) {
-      setStorageValue({
-        key: 'userInfo',
-        value: {
-          id: response.data.id,
-          memberId: response.data.memberId,
-          profileImgUrl: response.data.profileImgUrl,
-          regions: response.data.regions,
-        },
-      });
-      setStorageValue({
-        key: 'token',
-        value: response.data.token,
-      });
-      navigate('/');
-      return;
-    }
-
-    if (error && userId) setValidationMessage(error.message);
-  }, [response, error]);
-
-  useEffect(() => {
-    setIsLogin(!!storedUserInfo);
-  }, [storedUserInfo]);
 
   useEffect(() => {
     if (!joinedUserInfo) return;
@@ -142,6 +125,15 @@ const Login = () => {
         {isLogin ? (
           <>
             <UserProfile {...storedUserInfo} />
+            <MyButtons>
+              <Button active fullWidth onClick={handleLogout}>
+                로그아웃
+              </Button>
+            </MyButtons>
+            <Alert isOpen={isLogoutAlertOpen}>
+              <Alert.Title>{ALERT_TITLE.LOGOUT}</Alert.Title>
+              <Alert.Button>{alertButtons(ALERT_ACTIONS.LOGOUT)}</Alert.Button>
+            </Alert>
           </>
         ) : (
           <>
@@ -155,26 +147,15 @@ const Login = () => {
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
             />
+            <MyButtons>
+              <LoginButtons
+                OAUTH_URL={OAUTH_URL}
+                onLoginButton={handleLogin}
+                onCreateAccount={handleCreateAccount}
+              />
+            </MyButtons>
           </>
         )}
-        <MyButtons>
-          {isLogin && (
-            <Button active fullWidth onClick={handleLogout}>
-              로그아웃
-            </Button>
-          )}
-          {!isLogin && (
-            <LoginButtons
-              OAUTH_URL={OAUTH_URL}
-              onLoginButton={handleLogin}
-              onCreateAccount={handleCreateAccount}
-            />
-          )}
-        </MyButtons>
-        <Alert isOpen={isLogoutAlertOpen}>
-          <Alert.Title>{ALERT_TITLE.LOGOUT}</Alert.Title>
-          <Alert.Button>{alertButtons(ALERT_ACTIONS.LOGOUT)}</Alert.Button>
-        </Alert>
       </MyLogin>
     </>
   );

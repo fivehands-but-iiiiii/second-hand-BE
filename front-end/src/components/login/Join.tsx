@@ -39,7 +39,6 @@ const Join = () => {
   const location = useLocation();
   const gitHubUserInfo = location.state;
   const [userInputId, setUserInputId] = useState('');
-  const isRegexValid = /[^0-9a-z]/.test(userInputId);
   const [files, setFiles] = useState<InputFile>();
   const [userAccount, setUserAccount] = useState<UserInfo>({
     memberId: gitHubUserInfo?.login,
@@ -105,15 +104,19 @@ const Join = () => {
   const isReadyToSubmit =
     userInputId.length > 5 && !idExists && userAccount.regions.length > 0;
 
-  const validationMessage = isRegexValid
-    ? '영문 소문자와 숫자만 입력하세요'
-    : userInputId.length < 3
-    ? ''
-    : userInputId.length < 6
-    ? '6~12자 이내로 입력하세요'
-    : idExists
-    ? '이미 사용중인 아이디예요'
-    : '사용 가능한 아이디예요';
+  const getValidationMessage = () => {
+    const isInvalid = /[^0-9a-z]/.test(userInputId);
+    const isShort = userInputId.length < 4;
+    const isValidLength = /^.{6,12}$/.test(userInputId);
+
+    if (isInvalid) return '영문 소문자와 숫자만 입력하세요';
+    if (isShort) return '';
+    if (!isValidLength) return '6~12자리로 입력하세요';
+    if (idExists) return '이미 사용중인 아이디예요';
+    return '사용 가능한 아이디예요';
+  };
+
+  const validationMessage = getValidationMessage();
 
   return (
     <MyJoin>
