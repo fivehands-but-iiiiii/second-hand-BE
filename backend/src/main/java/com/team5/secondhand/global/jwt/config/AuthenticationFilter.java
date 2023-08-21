@@ -8,25 +8,25 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class AuthenticationFilter implements Filter {
+public class AuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProperties jwtProperties;
     private final ObjectMapper objectMapper;
     private final JwtUtils jwtUtils;
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-
-        String headValue = httpServletRequest.getHeader(jwtProperties.getAuthorizationHeader());
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        String headValue = request.getHeader(jwtProperties.getAuthorizationHeader());
 
         MemberDetails loginMember = MemberDetails.empty();
         if (headValue != null && headValue.startsWith(jwtProperties.getTokenType())) {
@@ -42,4 +42,5 @@ public class AuthenticationFilter implements Filter {
     private String getToken(String headValue) {
         return headValue.split(" ")[1];
     }
+
 }
