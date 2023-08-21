@@ -32,10 +32,11 @@ public class StompMessageProcessor implements ChannelInterceptor {
             throw new MessageDeliveryException(ErrorType.BAD_REQUEST.getMessage());
         }
 
-        String memberId = getMemberIdByToken(headerAccessor.getFirstNativeHeader("Authorization"));
-
         switch (headerAccessor.getCommand()) {
             case CONNECT:
+                String memberId = getMemberIdByToken(headerAccessor.getFirstNativeHeader("Authorization"));
+                sessionService.saveSession(headerAccessor.getSessionId(), memberId);
+                break;
             case SUBSCRIBE:
                 enterToChatRoom(headerAccessor, memberId);
             case SEND:
