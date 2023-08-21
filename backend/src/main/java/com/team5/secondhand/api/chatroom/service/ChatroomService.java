@@ -30,7 +30,7 @@ public class ChatroomService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public String create(Item item, Member buyer) throws ExistChatRoomException, BuyerException {
+    public Chatroom create(Item item, Member buyer) throws ExistChatRoomException, BuyerException {
         if (chatRoomRepository.findByBuyer_IdAndItem_Id(buyer.getId(), item.getId()).isPresent()) {
             throw new ExistChatRoomException("이미 존재하는 채팅방입니다.");
         }
@@ -43,7 +43,7 @@ public class ChatroomService {
 
         eventPublisher.publishEvent(new ChatroomCreatedEvent(ChatroomInfo.from(savedChatroom)));
 
-        return savedChatroom.getChatroomId().toString();
+        return savedChatroom;
     }
 
     @Transactional
