@@ -1,7 +1,6 @@
 package com.team5.secondhand.api.chatroom.service;
 
 import com.team5.secondhand.api.chatroom.domian.Chatroom;
-import com.team5.secondhand.api.chatroom.dto.ChatroomInfo;
 import com.team5.secondhand.api.chatroom.dto.request.ChatItem;
 import com.team5.secondhand.api.chatroom.dto.response.ChatroomDetails;
 import com.team5.secondhand.api.chatroom.dto.response.ChatroomList;
@@ -14,7 +13,6 @@ import com.team5.secondhand.api.item.service.ItemService;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.exception.ExistMemberIdException;
 import com.team5.secondhand.api.member.service.MemberService;
-import com.team5.secondhand.global.event.chatroom.ChatroomCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
