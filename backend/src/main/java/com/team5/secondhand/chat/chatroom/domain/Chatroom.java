@@ -8,7 +8,8 @@ import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Map;
+import java.io.Serializable;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
@@ -30,6 +31,14 @@ public class Chatroom { // NoSQL 에 저장될 자료 구조
         return Chatroom.builder()
                 .chatroomId(info.getRoomId())
                 .participants(Participants.init(info.getMembers()))
+                .lastMessage("")
+                .build();
+    }
+
+    public static Chatroom create(String chatroomId, String memberId) {
+        return Chatroom.builder()
+                .chatroomId(chatroomId)
+                .participants(Participants.init(List.of(memberId)))
                 .lastMessage("")
                 .build();
     }
