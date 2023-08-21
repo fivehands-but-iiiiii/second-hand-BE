@@ -74,8 +74,8 @@ public class ChatroomFacade {
     public String create(Long itemId, Long memberId) throws ExistMemberIdException, ExistItemException, ExistChatRoomException, BuyerException {
         Member buyer = memberService.findById(memberId);
         Item item = itemService.findById(itemId);
-
-        return chatRoomService.create(item, buyer);
+        Chatroom createdChatroom = chatRoomService.create(item, buyer);
+        return createdChatroom.getChatroomId().toString();
     }
 
     public void exitChatroom(String chatId, Long memberId) throws ExistMemberIdException, ExistChatRoomException, NotChatroomMemberException {
