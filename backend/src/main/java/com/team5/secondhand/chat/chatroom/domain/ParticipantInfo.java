@@ -3,10 +3,11 @@ package com.team5.secondhand.chat.chatroom.domain;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 @Getter
-public class ParticipantInfo {
+public class ParticipantInfo implements Serializable {
     private String memberId;
     private Instant lastDisconnectedAt;
     private Boolean isConnected;
