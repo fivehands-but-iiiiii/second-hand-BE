@@ -1,12 +1,18 @@
 package com.team5.secondhand.chat.chatroom.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.util.*;
+import java.io.Serializable;
+import java.util.DuplicateFormatFlagsException;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
-public class Participants {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Participants implements Serializable {
     private Map<String, ParticipantInfo> info = new ConcurrentHashMap<>();
 
     public Participants(Map<String, ParticipantInfo> info) {
