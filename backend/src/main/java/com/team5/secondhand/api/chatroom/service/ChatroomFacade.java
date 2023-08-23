@@ -13,6 +13,7 @@ import com.team5.secondhand.api.item.service.ItemService;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.exception.ExistMemberIdException;
 import com.team5.secondhand.api.member.service.MemberService;
+import com.team5.secondhand.chat.chatroom.service.ChatroomCacheService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +29,7 @@ public class ChatroomFacade {
     private final ChatroomService chatRoomService;
     private final ItemService itemService;
     private final MemberService memberService;
+    private final ChatroomCacheService chatroomCacheService;
     private final ApplicationEventPublisher eventPublisher;
 
     private final int FILTER_SIZE = 10;
@@ -58,14 +60,20 @@ public class ChatroomFacade {
 
     public ChatroomList findChatroomList(ChatItem chatItem, Long id) throws ExistMemberIdException, ExistItemException {
         PageRequest pageRequest = PageRequest.of(chatItem.getPage(), FILTER_SIZE, Sort.by(Sort.Direction.DESC, "id"));
+        ChatroomList chatroomList;
+        Member member = memberService.findById(id);
         //채팅방 id가 존재하지 않고 멤버id가 존재할 경우
         if (chatItem.getItemId() == null) {
-            Member member = memberService.findById(id);
-            return chatRoomService.findChatroomListByMember(pageRequest, member);
+            chatroomList = chatRoomService.findChatroomListByMember(pageRequest, member);
+        } else {
+            //채팅방 id가 존재할 경우
+            Item item = itemService.findById(chatItem.getItemId());
+            chatroomList = chatRoomService.findChatroomListByItem(pageRequest, item);
         }
-        //채팅방 id가 존재할 경우
-        Item item = itemService.findById(chatItem.getItemId());
-        return chatRoomService.findChatroomListByItem(pageRequest, item);
+        //마지막 채팅로그 추가
+        chatroomList.addLastMessage(chatroomCacheService.addLastMessage(chatroomList.getChatRooms(), member.getMemberId()));
+
+        return chatroomList;
     }
 
     @Transactional
