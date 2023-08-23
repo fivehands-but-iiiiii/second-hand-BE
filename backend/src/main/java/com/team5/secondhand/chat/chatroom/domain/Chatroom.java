@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,12 +20,14 @@ public class Chatroom implements Serializable { // NoSQL 에 저장될 자료 �
     private String chatroomId;
     private Participants participants = new Participants(new ConcurrentHashMap<>());
     private String lastMessage;
+    private Instant updateAt;
 
     @Builder
-    private Chatroom(String chatroomId, Participants participants, String lastMessage) {
+    private Chatroom(String chatroomId, Participants participants, String lastMessage, Instant updateAt) {
         this.chatroomId = chatroomId;
         this.participants = participants;
         this.lastMessage = lastMessage;
+        this.updateAt = updateAt;
     }
 
     public static Chatroom init(ChatroomInfo info) {
@@ -45,6 +48,7 @@ public class Chatroom implements Serializable { // NoSQL 에 저장될 자료 �
 
     public boolean updateLastMessage (ChatBubble chatBubble) throws NotChatroomMemberException {
         this.lastMessage = chatBubble.getMessage();
+        this.updateAt = Instant.now();
         return participants.getMessage(chatBubble.getReceiver());
     }
 
