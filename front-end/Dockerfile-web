@@ -1,0 +1,15 @@
+FROM node:16 as builder
+
+WORKDIR /usr/src/app
+COPY ./front-end/package.json .
+RUN yarn
+COPY ./front-end .
+RUN yarn build
+
+FROM nginx
+RUN rm -rf /etc/nginx/conf.d
+COPY ./front-end/nginx-web.conf /etc/nginx/conf.d/nginx.conf
+COPY --from=builder /usr/src/app/dist /usr/share/nginx/html
+
+EXPOSE 5173
+CMD ["nginx", "-g", "daemon off;"]

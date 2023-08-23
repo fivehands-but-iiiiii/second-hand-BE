@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { setStorageValue } from '@utils/sessionStorage';
 import { AxiosError } from 'axios';
 
@@ -17,7 +16,7 @@ const OAuthCallback = () => {
   const navigate = useNavigate();
   const currentURL = new URL(window.location.href);
   const queryCode = currentURL.searchParams.get('code');
-
+  
   useEffect(() => {
     const authenticateWithSessionId = async () => {
       try {
@@ -58,7 +57,7 @@ const OAuthCallback = () => {
       }
     };
     authenticateWithSessionId();
-  }, [location, navigate, queryCode]);
+  }, [location]);
 
   return <></>;
 };

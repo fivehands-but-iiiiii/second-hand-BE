@@ -5,7 +5,6 @@ import LabelInput from '@common/LabelInput';
 import NavBar from '@common/NavBar';
 import SettingRegionSelector from '@components/region/SettingRegionSelector';
 import useJoin from '@hooks/useJoin';
-import UserInfo from '@pages/ItemDetail';
 import { getFormattedId } from '@utils/formatText';
 
 import { styled } from 'styled-components';

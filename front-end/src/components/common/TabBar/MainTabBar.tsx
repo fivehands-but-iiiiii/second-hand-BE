@@ -55,7 +55,7 @@ const MainTabBar = () => {
     <MyTabBar>
       {tabBarInfo.map(({ id, icon, label, path }) => (
         <MyNavLink key={id} to={path}>
-          {({ isActive }) => (
+          {({ isActive }: { isActive: boolean }) => (
             <>
               <MyIcon name={icon} size="md" isActive={isActive} />
               <MyTabLabel>{label}</MyTabLabel>
