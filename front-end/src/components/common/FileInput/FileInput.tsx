@@ -6,15 +6,15 @@ import Button from '@common/Button';
 import { styled } from 'styled-components';
 
 interface FileInputProps {
+  // TODO: count라서 number가 더 적절해보이는데 string으로 해야하는 이유가 있는지 검토하기
   fileCount?: string;
-  onChage: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const FileInput = ({ fileCount, onChage }: FileInputProps) => {
+const FileInput = ({ fileCount, onChange }: FileInputProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const handleInputFile = () => {
-    fileInputRef.current?.click();
-  };
+
+  const handleInputFile = () => fileInputRef.current?.click();
 
   return (
     <MyFileInput>
@@ -26,7 +26,7 @@ const FileInput = ({ fileCount, onChage }: FileInputProps) => {
         type="file"
         ref={fileInputRef}
         accept="image/jpg, image/png, image/jpeg, image/gif"
-        onChange={onChage}
+        onChange={onChange}
         multiple
       />
     </MyFileInput>

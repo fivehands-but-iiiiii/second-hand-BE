@@ -11,15 +11,15 @@ import { styled } from 'styled-components';
 
 interface ImageEditorProps {
   files: InputFile[];
-  onChage: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onClick: (e: MouseEvent<HTMLButtonElement>) => void;
 }
 
-const ImageEditor = ({ files, onChage, onClick }: ImageEditorProps) => {
+const ImageEditor = ({ files, onChange, onClick }: ImageEditorProps) => {
   return (
     <MyImagesList>
       <MyFileBox>
-        <FileInput fileCount={`${files.length}/10`} onChage={onChage} />
+        <FileInput fileCount={`${files.length}/10`} onChange={onChange} />
       </MyFileBox>
       {files.map((img, index) => (
         <MyImageBox key={index}>
@@ -78,7 +78,7 @@ const MyImageBox = styled.li`
 const MyThumbnail = styled.div`
   position: absolute;
   width: 100%;
-  bottom: 5px;
+  bottom: 0px;
   padding: 4px 8px;
   border-radius: 0 0 10px 10px;
   background-color: ${({ theme }) => theme.colors.neutral.overlay};

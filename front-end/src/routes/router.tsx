@@ -33,7 +33,7 @@ const router = createBrowserRouter([
         element: <SalesHistory />,
       },
       {
-        path: 'chat-list',
+        path: 'chat-list/:itemId?',
         element: <ChatPage />,
       },
     ],

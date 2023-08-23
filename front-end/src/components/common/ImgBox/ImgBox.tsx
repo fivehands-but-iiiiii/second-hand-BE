@@ -19,6 +19,7 @@ const ImgBox = ({ src, alt, size = 'lg' }: ImgBoxProps) => {
     lg: 120,
   };
   const boxSize = boxType[size];
+
   return (
     <MyImgBox boxSize={boxSize}>
       <MyImg src={src} alt={alt} />
@@ -33,15 +34,14 @@ const MyImgBox = styled.div<ImgBoxStyleProps>`
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background-color: #f2f2f2;
-  border: 1px solid ${({ theme }) => theme.colors.neutral.border};
 `;
 
 const MyImg = styled.img`
   width: inherit;
   height: inherit;
-  border-radius: 10px;
   object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid ${({ theme }) => theme.colors.neutral.border};
 `;
 
 export default ImgBox;

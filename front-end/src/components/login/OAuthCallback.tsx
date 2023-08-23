@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-
+import { useNavigate } from 'react-router-dom';
 import { setStorageValue } from '@utils/sessionStorage';
 import { AxiosError } from 'axios';
 
 import api from '../../api';
+const ENV_MODE = import.meta.env.VITE_ENV_MODE;
 
 export interface GitHubUserInfo {
   id: number;
@@ -13,14 +13,14 @@ export interface GitHubUserInfo {
 }
 
 const OAuthCallback = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const queryCode = new URLSearchParams(location.search).get('code');
-
+  const currentURL = new URL(window.location.href);
+  const queryCode = currentURL.searchParams.get('code');
+  
   useEffect(() => {
     const authenticateWithSessionId = async () => {
       try {
-        await api.get(`/git/login?code=${queryCode}`);
+        await api.get(`/git/login?code=${queryCode}&env=${ENV_MODE}`);
       } catch (error) {
         if (error instanceof AxiosError) {
           if (error.response?.status === 401) {
@@ -57,7 +57,7 @@ const OAuthCallback = () => {
       }
     };
     authenticateWithSessionId();
-  }, [location, navigate, queryCode]);
+  }, [location]);
 
   return <></>;
 };
