@@ -1,6 +1,8 @@
 package com.team5.secondhand.chat.chatroom.handler;
 
+import com.team5.secondhand.chat.chatroom.service.ChatroomCacheService;
 import com.team5.secondhand.chat.exception.ErrorType;
+import com.team5.secondhand.chat.session.service.SessionService;
 import com.team5.secondhand.global.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class StompMessageProcessor implements ChannelInterceptor {
     private final JwtService jwtService;
+    private final SessionService sessionService;
+    private final ChatroomCacheService chatroomCacheService;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -35,11 +39,16 @@ public class StompMessageProcessor implements ChannelInterceptor {
         switch (headerAccessor.getCommand()) {
             case CONNECT:
                 String memberId = getMemberIdByToken(headerAccessor.getFirstNativeHeader("Authorization"));
-                enterToChatRoom(headerAccessor, memberId);
+                sessionService.saveSession(headerAccessor.getSessionId(), memberId);
                 break;
             case SUBSCRIBE:
-            case SEND:
-            default:
+                enterToChatRoom(headerAccessor);
+                break;
+            case UNSUBSCRIBE:
+                exitToChatRoom(headerAccessor);
+                break;
+            case DISCONNECT:
+                sessionService.deleteSession(headerAccessor.getSessionId());
                 break;
         }
     }
@@ -52,7 +61,22 @@ public class StompMessageProcessor implements ChannelInterceptor {
         return jwtService.getMemberId(authorization).orElseThrow(() -> new MessageDeliveryException(ErrorType.UNAUTHORIZED.getMessage()));
     }
 
-    private void enterToChatRoom(StompHeaderAccessor headerAccessor, String memberId) {
-        //todo: redis에 현재 존재하는 멤버 저장
+    private void enterToChatRoom(StompHeaderAccessor headerAccessor) {
+        String memberId = sessionService.getMemberIdBySessionId(headerAccessor.getSessionId());
+        String roomId = extractRoomId(headerAccessor.getDestination());
+        chatroomCacheService.enterToChatRoom(roomId, memberId);
+    }
+
+    private void exitToChatRoom(StompHeaderAccessor headerAccessor) {
+        String memberId = sessionService.getMemberIdBySessionId(headerAccessor.getSessionId());
+        String roomId = extractRoomId(headerAccessor.getDestination());
+        chatroomCacheService.exitToChatRoom(roomId, memberId);
+    }
+
+    private String extractRoomId(String destination) {
+        if (destination == null) {
+            throw new MessageDeliveryException(ErrorType.BAD_REQUEST.getMessage());
+        }
+        return destination.replace("/sub/", "");
     }
 }

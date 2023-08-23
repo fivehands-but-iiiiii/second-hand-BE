@@ -3,7 +3,7 @@ package com.team5.secondhand.chat.bubble.controller;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.chat.bubble.dto.response.ChatroomLog;
-import com.team5.secondhand.chat.bubble.service.ChatLogService;
+import com.team5.secondhand.chat.bubble.service.ChatBubbleService;
 import com.team5.secondhand.global.dto.GenericResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/chats")
 public class ChatLogController {
 
-    private final ChatLogService chatLogService;
+    private final ChatBubbleService chatLogService;
 
     @Operation(
             summary = "채팅방 로그 조회",

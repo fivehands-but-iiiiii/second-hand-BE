@@ -1,4 +1,4 @@
-package com.team5.secondhand.global.event;
+package com.team5.secondhand.global.event.chatbubble;
 
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.global.model.BaseEvent;

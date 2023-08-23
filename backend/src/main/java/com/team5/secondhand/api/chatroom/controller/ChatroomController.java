@@ -57,6 +57,11 @@ public class ChatroomController {
         return GenericResponse.send("채팅방이 생성되었습니다.", chatRoomId);
     }
 
+    @Operation(
+            summary = "채팅방 리스트 조회",
+            tags = "Chatroom",
+            description = "사용자는 채팅방 리스트를 조회할 수 있다."
+    )
     @GetMapping()
     public GenericResponse<ChatroomList> getChatroomList(ChatItem chatItem, @RequestAttribute MemberDetails loginMember) throws ExistMemberIdException, ExistItemException {
         ChatroomList chatroomList = chatRoomFacade.findChatroomList(chatItem, loginMember.getId());
@@ -64,6 +69,11 @@ public class ChatroomController {
         return GenericResponse.send("채팅방 목록을 조회되었습니다.", chatroomList);
     }
 
+    @Operation(
+            summary = "채팅방 완전히 나가기",
+            tags = "Chatroom",
+            description = "사용자는 채팅방을 완전히 나갈 수 있다."
+    )
     @DeleteMapping("/{chatId}")
     public GenericResponse<String> exitChatroom(@PathVariable String chatId, @RequestAttribute MemberDetails loginMember) throws ExistMemberIdException, ExistChatRoomException, NotChatroomMemberException {
         chatRoomFacade.exitChatroom(chatId, loginMember.getId());

@@ -24,12 +24,12 @@ public class BubbleSummary {
         this.createdAt = createdAt;
     }
 
-    public static BubbleSummary from(ChatBubble bubble, MemberDetails loginMember) {
+    public static BubbleSummary from(ChatBubble bubble, String memberId) {
         return BubbleSummary.builder()
                 .id(bubble.getId())
                 .senderId(bubble.getSender())
                 .contents(bubble.getMessage())
-                .isMine(bubble.isSender(loginMember))
+                .isMine(bubble.isSender(memberId))
                 .createdAt(bubble.getCreatedAt())
                 .build();
     }

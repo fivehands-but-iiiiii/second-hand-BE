@@ -5,7 +5,8 @@ import com.team5.secondhand.chat.notification.domain.SseEvent;
 import com.team5.secondhand.chat.notification.domain.SseKey;
 import com.team5.secondhand.chat.notification.dto.ChatNotification;
 import com.team5.secondhand.chat.notification.repository.NotificationRepository;
-import com.team5.secondhand.global.event.ChatBubbleArrivedEvent;
+import com.team5.secondhand.global.event.chatbubble.ChatBubbleArrivedEvent;
+import com.team5.secondhand.global.event.chatbubble.ChatNotificationEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -82,12 +83,11 @@ public class NotificationService implements SendChatNotificationUsecase {
     //TODO Transaction 관련된 문제가 나지는 않을까?
     @Async
     @EventListener
-    public void getChatBubble (ChatBubbleArrivedEvent event) {
-        String receiverId = event.getChatReceiverId();
-        ChatBubble chatBubble = event.getChatBubble();
+    public void getChatBubble (ChatNotificationEvent event) {
+        String receiverId = event.getChatBubble().getReceiver();
         //TODO 유효성 검증이 필요
             //TODO 현재 채팅방에 존재하는 멤버(1인 이상)에게 알람을 보내야 한다.
             //TODO 현재 채팅방을 구독중(websocket 통신중인) 멤버에게는 보내지 않아야 한다.
-        sendChatNotificationToMember(receiverId, ChatNotification.of(chatBubble));
+        sendChatNotificationToMember(receiverId, ChatNotification.of(event.getChatBubble(), event.getChatroom()));
     }
 }

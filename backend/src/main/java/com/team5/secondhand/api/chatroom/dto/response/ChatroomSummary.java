@@ -7,14 +7,20 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@Builder
 @RequiredArgsConstructor
 public class ChatroomSummary {
     private final String chatroomId;
     private final ChatMember opponent;
     private final ChatItemSummary item;
+    private ChatLog chatLogs;
 
-    //TODO: 채팅의 마지막 로그 추가
+    @Builder
+    private ChatroomSummary(String chatroomId, ChatMember opponent, ChatItemSummary item, ChatLog chatLogs) {
+        this.chatroomId = chatroomId;
+        this.opponent = opponent;
+        this.item = item;
+        this.chatLogs = chatLogs;
+    }
 
     public static ChatroomSummary of(Chatroom chatroom, Member member) {
         return ChatroomSummary.builder()
@@ -30,5 +36,11 @@ public class ChatroomSummary {
                 .opponent(ChatMember.of(chatroom.getBuyer()))
                 .item(ChatItemSummary.of(chatroom.getItem()))
                 .build();
+    }
+
+    public ChatroomSummary addChatLogs(ChatLog chatLog) {
+        this.chatLogs = chatLog;
+
+        return this;
     }
 }
