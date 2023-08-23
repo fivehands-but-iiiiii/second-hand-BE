@@ -9,6 +9,7 @@ import com.team5.secondhand.chat.chatroom.repository.ChatroomCacheRepository;
 import com.team5.secondhand.global.event.chatbubble.ChatBubbleArrivedEvent;
 import com.team5.secondhand.global.event.chatroom.ChatroomCreatedEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class ChatroomCacheService {
     private final ObjectMapper objectMapper;
     private final String MAIN_KEY = "chatroom";
     private final ChatroomCacheRepository chatroomCacheRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public void enterToChatRoom(String roomId, String memberId) {
         Chatroom chatroom = chatroomCacheRepository.findByChatroomId(roomId).orElseThrow();
@@ -48,6 +50,7 @@ public class ChatroomCacheService {
         ChatBubble chatBubble = event.getChatBubble();
         Chatroom chatroom = getChatroom(chatBubble.getRoomId());
         chatroom.updateLastMessage(chatBubble);
-        chatroomCacheRepository.saveChatroom(chatBubble.getRoomId(), chatroom);
+        Chatroom saveChatroom = chatroomCacheRepository.saveChatroom(chatBubble.getRoomId(), chatroom);
+        eventPublisher.publishEvent(ChatNotificationEvent.of(chatBubble, chatroom));
     }
 }

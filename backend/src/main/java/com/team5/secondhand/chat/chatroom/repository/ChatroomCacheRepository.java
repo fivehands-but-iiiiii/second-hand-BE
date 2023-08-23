@@ -13,8 +13,9 @@ public class ChatroomCacheRepository {
     private final RedisTemplate<String, Chatroom> redisChatroomTemplate;
     private final String MAIN_KEY = "chatroom";
 
-    public void saveChatroom(String chatroomId, Chatroom chatroom) {
+    public Chatroom saveChatroom(String chatroomId, Chatroom chatroom) {
         redisChatroomTemplate.opsForValue().set(generateKey(chatroomId), chatroom);
+        return redisChatroomTemplate.opsForValue().get(generateKey((chatroomId)));
     }
 
     public Optional<Chatroom> findByChatroomId(String chatroomId) {
