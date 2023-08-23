@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
-import Alert from '@common/Alert/Alert';
+import Alert from '@common/Alert';
 import {
   ALERT_ACTIONS,
   ALERT_TITLE,
@@ -11,12 +10,13 @@ import {
 } from '@common/Alert/constants';
 import Button from '@common/Button';
 import NavBar from '@common/NavBar';
+import PopupSheet from '@common/PopupSheet';
 import {
   DETAIL_STATUS_MENU,
   DETAIL_VIEWMORE_MENU,
 } from '@common/PopupSheet/constants';
-import PopupSheet from '@common/PopupSheet/PopupSheet';
 import SubTabBar from '@common/TabBar/SubTabBar';
+import ChatRoom from '@components/chat/ChatRoom';
 import { CategoryInfo } from '@components/home/category';
 import Carousel from '@components/home/ItemDetail/Carousel';
 import { ItemStatus } from '@components/ItemStatus';
@@ -24,6 +24,7 @@ import { useCategories } from '@components/layout/MobileLayout';
 import PortalLayout from '@components/layout/PortalLayout';
 import New from '@components/new/New';
 import { formatNumberToSI } from '@utils/formatNumberToSI';
+import { getFormattedPrice } from '@utils/formatPrice';
 import getElapsedTime from '@utils/getElapsedTime';
 import { getStoredValue } from '@utils/sessionStorage';
 
@@ -77,6 +78,7 @@ interface ItemDetailProps {
   handleBackBtnClick: (id: number) => void;
 }
 
+// TODO: Event Handler Prop prefix 'on'
 const ItemDetail = ({
   id,
   categoryInfo,
@@ -100,6 +102,7 @@ const ItemDetail = ({
     price: '',
     isMyItem: false,
   });
+  const [isChatRoomOpen, setIsChatRoomOpen] = useState(false);
   const [isStatusPopupOpen, setIsStatusPopupOpen] = useState(false);
   const [isMoreViewPopupOpen, setIsMoreViewPopupOpen] = useState(false);
   const {
@@ -117,6 +120,7 @@ const ItemDetail = ({
     price,
     isMyItem,
   } = itemDetailInfo;
+  const itemInfoRef = useRef(undefined);
   const [onRefresh, setOnRefresh] = useState(false);
   const likeIcon = isLike ? 'fullHeart' : 'heart';
 
@@ -145,7 +149,7 @@ const ItemDetail = ({
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [isLoginAlertOpen, setIsLoginAlertOpen] = useState(false);
 
-  const handleViewMoreSheet = async (type: string) => {
+  const handleViewMoreSheet = (type: string) => {
     if (type === 'delete') {
       setIsDeleteAlertOpen(true);
     }
@@ -155,9 +159,7 @@ const ItemDetail = ({
   };
 
   const handleAlert = (type: AlertActionsProps['id']) => {
-    if (type === 'leave' || type === 'logout') {
-      return;
-    }
+    if (type === 'leave' || type === 'logout') return;
 
     const actions = {
       delete: () => handleDeleteAlert(type),
@@ -178,10 +180,8 @@ const ItemDetail = ({
     }
   };
 
-  const handleLoginAlertOpen = () => {
-    // TODO: 채팅하기 버튼에도 적용하기
-    setIsLoginAlertOpen(true);
-  };
+  // TODO: 채팅하기 버튼에도 적용하기
+  const handleLoginAlertOpen = () => setIsLoginAlertOpen(true);
 
   const navigator = useNavigate();
 
@@ -257,24 +257,27 @@ const ItemDetail = ({
   const handleViewMorePopup = () =>
     setIsMoreViewPopupOpen(!isMoreViewPopupOpen);
 
+  const handleChatRoom = () => setIsChatRoomOpen(!isChatRoomOpen);
+
+  const navigate = useNavigate();
+
+  const handleChatButton = () => {
+    isMyItem ? navigate(`/chat-list/${id}`) : handleChatRoom();
+  };
+
   const handleNewModal = () => {
     setIsNewModalOpen(!isNewModalOpen);
-    // TODO: EDit을 하고 변경사항이 있을 때만 새로고침을 해야하는데 지금은 닫으면 무조건 새로고침함
     if (isNewModalOpen) setOnRefresh(true);
   };
 
   const mapItemDetailInfo = (data: any) => {
-    const formattedPrice = data.price
-      ? `${data.price.toLocaleString()}원`
-      : '가격없음';
-
     const categoryTitle = categoryInfo.find(
       (item) => item.id === data.category,
     );
 
     const mappedDetails = {
       ...data,
-      price: formattedPrice,
+      price: getFormattedPrice(data.price),
       category: categoryTitle?.title,
       elapsedTime: getElapsedTime(data.createAt),
       hits: data.hits && formatNumberToSI(data.hits),
@@ -298,16 +301,16 @@ const ItemDetail = ({
         data: { data },
       } = await api.get(`/items/${id}`);
       mapItemDetailInfo(data);
+      itemInfoRef.current = data;
     } catch (error) {
       console.error(`Failed to get item info: ${error}`);
     }
   };
 
   useEffect(() => {
-    if (onRefresh) {
-      getItemDetail();
-      setOnRefresh(false);
-    }
+    if (!onRefresh) return;
+    getItemDetail();
+    setOnRefresh(false);
   }, [onRefresh]);
 
   useEffect(() => {
@@ -361,10 +364,13 @@ const ItemDetail = ({
         </MyItemInfo>
       </MyItemDetail>
       <SubTabBar icon={likeIcon} content={price} onIconClick={handleLike}>
-        <Button active onClick={() => console.log('move to chat')}>
+        <Button active onClick={handleChatButton}>
           {isMyItem ? `대화 중인 채팅방 ${chatCount}` : '채팅하기'}
         </Button>
       </SubTabBar>
+      {!!isChatRoomOpen && (
+        <ChatRoom itemId={id} onRoomClose={handleChatRoom}></ChatRoom>
+      )}
       {isStatusPopupOpen && (
         <PopupSheet
           type={'slideUp'}
@@ -379,16 +385,13 @@ const ItemDetail = ({
           onSheetClose={handleViewMorePopup}
         ></PopupSheet>
       )}
-      {isNewModalOpen &&
-        createPortal(
-          <New
-            isEdit={true}
-            origin={itemDetailInfo}
-            categoryInfo={categories}
-            onClick={handleNewModal}
-          />,
-          document.body,
-        )}
+      {isNewModalOpen && (
+        <New
+          origin={itemInfoRef?.current}
+          categoryInfo={categories}
+          onClick={handleNewModal}
+        />
+      )}
       <Alert isOpen={isDeleteAlertOpen}>
         <Alert.Title>{ALERT_TITLE.DELETE('삭제')}</Alert.Title>
         <Alert.Button>{alertButtons(ALERT_ACTIONS.DELETE)}</Alert.Button>
@@ -400,7 +403,6 @@ const ItemDetail = ({
     </PortalLayout>
   );
 };
-
 
 const MyItemDetail = styled.div`
   height: calc(100vh - 83px);

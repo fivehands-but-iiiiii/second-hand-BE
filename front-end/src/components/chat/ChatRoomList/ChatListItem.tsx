@@ -7,6 +7,28 @@ import UserProfile from '@components/login/UserProfile';
 
 import { styled } from 'styled-components';
 
+// {
+//   page : {number},
+//   hasPrevious: {boolean},
+//   hasNext: {boolean},
+//   chatRooms:[{
+//     chatroomId: string
+//     opponent: {
+//       memberId: string,
+//       profileImgUrl: string
+//     },
+//     item:{
+//       itemId: number,
+//       title: string,
+//       thumbnailImgUrl: string,
+//     },
+//     chatLogs:{
+//       lastMessage: string,
+//       updatedAt: date,
+//       unReadCount: number
+//     }
+//   }]
+//   }
 interface ChatListItem {
   id: string;
   userImage: string;
@@ -35,6 +57,7 @@ const ChatListItem = ({ chatItem, ...rest }: ChatListProps) => {
       <UserProfile size="s" profileImgUrl={userImage} />
       <MyChatInfo>
         <MyChatUserName>
+          {/* TODO: Semantic Tag로 수정 */}
           <div>{userName}</div>
           <div>{lastMessageTime}</div>
         </MyChatUserName>

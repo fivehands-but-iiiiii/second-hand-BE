@@ -1,7 +1,10 @@
+import { MouseEvent } from 'react';
+
 import Icon from '@assets/Icon';
 import Chip from '@common/Chip';
 import { ItemStatus } from '@components/ItemStatus';
 import { formatNumberToSI } from '@utils/formatNumberToSI';
+import { getFormattedPrice } from '@utils/formatPrice';
 import getElapsedTime from '@utils/getElapsedTime';
 
 import { styled } from 'styled-components';
@@ -33,13 +36,20 @@ interface ItemProps {
   item: SaleItem;
   onHistoryPage?: boolean;
   onItemClick: (id: number) => void;
+  onViewMoreButton?: (id: number) => void;
 }
 
-const Item = ({ item, onHistoryPage = false, onItemClick }: ItemProps) => {
+const Item = ({
+  item,
+  onHistoryPage = false,
+  onItemClick,
+  onViewMoreButton,
+}: ItemProps) => {
   const {
     id,
     title,
     price,
+    region,
     thumbnailUrl,
     status,
     createdAt,
@@ -48,10 +58,12 @@ const Item = ({ item, onHistoryPage = false, onItemClick }: ItemProps) => {
     isLike,
   } = item;
   const hasChip = status !== ItemStatus.ON_SALE;
-  const formattedPrice = price ? `${price.toLocaleString()}원` : '가격없음';
 
-  const handleItemClick = () => {
-    onItemClick(id);
+  const handleItemClick = () => onItemClick(id);
+
+  const handleViewMoreButton = (id: number, event: MouseEvent) => {
+    event.stopPropagation();
+    onViewMoreButton && onViewMoreButton(id);
   };
 
   return (
@@ -60,16 +72,21 @@ const Item = ({ item, onHistoryPage = false, onItemClick }: ItemProps) => {
       <MyItemInfo>
         <MyItemTitle>
           <div>{title}</div>
-          {onHistoryPage && <Icon name="ellipsis" size="sm" />}
+          {onHistoryPage && (
+            <Icon
+              name="ellipsis"
+              size="sm"
+              onClick={(event) => handleViewMoreButton(id, event)}
+            />
+          )}
         </MyItemTitle>
         <MyItemTime>
-          {/* TODO: add region */}
-          <div>역삼1동 &middot;</div>
+          <div>{region.district}</div>
           {getElapsedTime(createdAt)}
         </MyItemTime>
         <MyItemStatus>
           {hasChip && <Chip status={status} />}
-          <div>{formattedPrice}</div>
+          <div>{getFormattedPrice(price)}</div>
         </MyItemStatus>
         <MyItemSubInfo>
           {!!chatCount && (
@@ -79,6 +96,7 @@ const Item = ({ item, onHistoryPage = false, onItemClick }: ItemProps) => {
             </MyItemIcon>
           )}
           {!!likeCount && (
+            // TODO: MyItemIcon component 분리 (여러 곳에서 쓰임)
             <MyItemIcon>
               {<Icon name={isLike ? 'fullHeart' : 'heart'} size="sm" />}
               {formatNumberToSI(likeCount)}

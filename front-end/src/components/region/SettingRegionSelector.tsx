@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 
 import Alert from '@common/Alert';
 import {
@@ -100,9 +99,7 @@ const SettingRegionSelector = ({
       </button>
     ));
 
-  const handleRegionModal = () => {
-    setIsSettingRegionsModalOpen((prev) => !prev);
-  };
+  const handleRegionModal = () => setIsSettingRegionsModalOpen((prev) => !prev);
 
   useEffect(() => {
     onSetRegions(selectedRegions);
@@ -116,14 +113,12 @@ const SettingRegionSelector = ({
         onClickDeleteButton={handleDeleteRegion}
         onClickAddButton={handleRegionModal}
       />
-      {isSettingRegionsModalOpen &&
-        createPortal(
-          <SearchRegions
-            onPortal={handleRegionModal}
-            onSelectRegion={handleSelectRegion}
-          />,
-          document.body,
-        )}
+      {isSettingRegionsModalOpen && (
+        <SearchRegions
+          onPortal={handleRegionModal}
+          onSelectRegion={handleSelectRegion}
+        />
+      )}
       <Alert isOpen={isDeleteRegionAlertOpen}>
         <Alert.Title>{ALERT_TITLE.DELETE(deleteRegionDistrict)}</Alert.Title>
         <Alert.Button>

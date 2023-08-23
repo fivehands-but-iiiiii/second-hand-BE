@@ -22,6 +22,7 @@ interface PopupSheetBackgroundProps {
   isSlideDown?: boolean;
 }
 
+// TODO: type을 받는 대신 component composition로 구현하는 게 어떨지 고민해보기
 const PopupSheet = ({ type, menu, onSheetClose }: PopupSheetProps) => {
   const isSlideDown = type === 'slideDown';
 
@@ -90,6 +91,7 @@ const MyMenuPopUp = styled.div`
 const MyPopupSheet = styled.div`
   position: absolute;
   z-index: 10;
+  width: 100%;
   padding: 0 8px;
   bottom: 0;
   color: ${({ theme }) => theme.colors.system.default};

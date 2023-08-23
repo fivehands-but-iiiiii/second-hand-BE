@@ -1,11 +1,11 @@
 import { ReactNode } from 'react';
-import { createPortal } from 'react-dom';
 
 import PortalLayout from '@components/layout/PortalLayout';
 
 import { styled } from 'styled-components';
 
 interface AlertProps {
+  // TODO: isOpen이 옵셔널이어야 하는지 검토하기
   isOpen?: boolean;
   children?: ReactNode;
 }
@@ -17,11 +17,10 @@ interface AlertProtoProps {
 const Alert = ({ isOpen, children }: AlertProps) => {
   if (!isOpen) return null;
 
-  return createPortal(
+  return (
     <PortalLayout.Alert>
       <MyAlert>{children}</MyAlert>
-    </PortalLayout.Alert>,
-    document.body,
+    </PortalLayout.Alert>
   );
 };
 

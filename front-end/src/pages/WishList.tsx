@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 
 import Button from '@common/Button';
 import { SaleItem } from '@common/Item';
 import NavBar from '@common/NavBar';
 import Spinner from '@common/Spinner/Spinner';
 import { CategoryInfo } from '@components/home/category';
-import ItemList from '@components/home/ItemList/ItemList';
+import ItemList from '@components/home/ItemList';
 import { useCategories } from '@components/layout/MobileLayout';
 import useAPI from '@hooks/useAPI';
 import useIntersectionObserver from '@hooks/useIntersectionObserver';
@@ -56,14 +55,19 @@ const WishList = () => {
         }),
       ]);
       const { data: itemData } = wishlistResponse;
+      const { data: categoriesData } = categoriesResponse;
+      matchCategories(categoriesData.categories);
+      if (!itemData.items.length) {
+        setSelectedCategoryId(0);
+        initData();
+        return;
+      }
       setWishItems((pre) => [...pre, ...itemData.items]);
       setPageInfo({
         page: itemData.page + 1,
         hasPrevious: itemData.hasPrevious,
         hasNext: itemData.hasNext,
       });
-      const { data: categoriesData } = categoriesResponse;
-      matchCategories(categoriesData.categories);
     } catch (error) {
       console.error(error);
     } finally {
@@ -81,15 +85,10 @@ const WishList = () => {
         }
       );
     });
-    setWishCategories(
-      [{ id: 0, title: '전체' }, ...matchedCategories].reduce(
-        (acc: { id: number; title: string }[], category) => {
-          if (category) acc.push(category);
-          return acc;
-        },
-        [],
-      ),
-    );
+    setWishCategories([
+      { id: 0, title: '전체' },
+      ...(matchedCategories.filter((item) => !!item?.id) as WishCategory[]),
+    ]);
   };
 
   const initData = () => {
@@ -109,10 +108,9 @@ const WishList = () => {
 
   const handleItemDetail = (itemId: number) => {
     setSelectedItem(itemId);
-    if (!itemId) {
-      initData();
-      setOnRefresh(true);
-    }
+    if (itemId) return;
+    initData();
+    setOnRefresh(true);
   };
 
   useEffect(() => {
@@ -120,10 +118,9 @@ const WishList = () => {
   }, [selectedCategoryId]);
 
   useEffect(() => {
-    if (onRefresh) {
-      getWishListData();
-      setOnRefresh(false);
-    }
+    if (!onRefresh) return;
+    getWishListData();
+    setOnRefresh(false);
   }, [onRefresh]);
 
   return (
@@ -147,22 +144,18 @@ const WishList = () => {
             })}
           </MyCategories>
         )}
-        {wishItems.length > 0 ? (
+        {!!wishItems.length ? (
           <>
             <ItemList saleItems={wishItems} onItemClick={handleItemDetail} />
-            {!!wishItems.length && (
-              <MyOnFetchItems ref={setTarget}></MyOnFetchItems>
-            )}
+            <MyOnFetchItems ref={setTarget}></MyOnFetchItems>
             {isLoading && <Spinner />}
-            {!!selectedItem &&
-              createPortal(
-                <ItemDetail
-                  id={selectedItem}
-                  categoryInfo={categories}
-                  handleBackBtnClick={handleItemDetail}
-                />,
-                document.body,
-              )}
+            {!!selectedItem && (
+              <ItemDetail
+                id={selectedItem}
+                categoryInfo={categories}
+                handleBackBtnClick={handleItemDetail}
+              />
+            )}
           </>
         ) : (
           <BlankPage title={title} />
@@ -200,3 +193,4 @@ const MyOnFetchItems = styled.div`
 `;
 
 export default WishList;
+

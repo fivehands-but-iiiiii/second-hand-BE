@@ -30,6 +30,7 @@ const Textarea = ({
   const MyTextarea = textareaTypes[type];
   const textRef = useRef<HTMLTextAreaElement>(null);
 
+  // TODO: 고치기...
   const handleResizeHeight = () => {
     if (!singleLine && textRef.current) {
       textRef.current.style.height = textRef.current.scrollHeight + 'px';

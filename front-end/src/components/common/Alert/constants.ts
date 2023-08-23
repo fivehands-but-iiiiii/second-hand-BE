@@ -1,3 +1,4 @@
+// TODO: 해당 파일에서 사용하지 않는 type, interface 위치 수정
 export type AlertActionType =
   | 'delete'
   | 'cancel'

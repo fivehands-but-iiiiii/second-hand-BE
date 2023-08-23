@@ -44,7 +44,7 @@ const UserProfile = ({
         <>
           <MyDefaultImgBox>
             {previewURL && <MyPreviewFile src={previewURL} alt="미리 보기" />}
-            <FileInput onChage={handleFileChange} />
+            <FileInput onChange={handleFileChange} />
           </MyDefaultImgBox>
         </>
       )}

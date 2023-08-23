@@ -42,7 +42,7 @@ export const useCategories = () => {
 const MyMobileLayout = styled.div`
   width: 100vw;
   height: 100vh;
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.colors.neutral.background};
   text-align: center;
   overflow: auto;
   -ms-overflow-style: none;
