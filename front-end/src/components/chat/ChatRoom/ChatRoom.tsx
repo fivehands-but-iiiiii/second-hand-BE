@@ -46,7 +46,7 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
     {} as SaleItemSummary,
   );
   const [roomId, setRoomId] = useState<Pick<ChatBubble, 'roomId'> | null>(null);
-  const [page, setPage] = useState(0);
+  const [page] = useState(0);
   const [opponentId, setOpponentId] = useState('');
   const [chatBubbles, setChatBubbles] = useState<ChatBubble[]>([]);
   const [chat, setChat] = useState('');
@@ -93,7 +93,7 @@ const ChatRoom = ({ itemId, onRoomClose }: ChatRoomProps) => {
   const getChatBubbles = async (chatroomId: number, page: number) => {
     // TODO: data: { cahtBubbles: [], hasNext: boolean, hasPrev: boolean } 데이터로 무한 스크롤 구현하기
     const { data } = await api.get(`chats/${chatroomId}/logs?page=${page}`);
-    const { hasNext, hasPrev, chatBubbles } = data.data;
+    const { chatBubbles } = data.data;
 
     setChatBubbles(chatBubbles);
   };
