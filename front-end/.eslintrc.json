@@ -49,6 +49,7 @@
     "spaced-comment": "error",
     "quotes": ["error", "single"],
     "no-duplicate-imports": "error",
-    "react/no-unescaped-entities": 0
+    "react/no-unescaped-entities": 0,
+    "no-extra-boolean-cast": "off"
   }
 }

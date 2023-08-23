@@ -20,9 +20,11 @@ const setStorageValue = ({ key, value }: sessionStorageProps) => {
   }
 };
 
-const removeStorageValue = ({ key }: sessionStorageProps) => {
+const removeStorageValue = (...keys: sessionStorageProps['key'][]) => {
   try {
-    sessionStorage.removeItem(key);
+    keys.forEach((key) => {
+      sessionStorage.removeItem(key);
+    });
   } catch (err) {
     console.error('Error removing sessionStorage:', err);
   }

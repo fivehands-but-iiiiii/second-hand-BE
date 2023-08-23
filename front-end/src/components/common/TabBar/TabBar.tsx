@@ -7,6 +7,7 @@ interface TabBarProps {
   children: ReactNode;
 }
 
+// TODO: component composition로 구현하는 게 어떨지 고민해보기
 const TabBar = ({ className, children }: TabBarProps) => {
   return <MyTabBar className={className}>{children}</MyTabBar>;
 };

@@ -1,5 +1,4 @@
 import { ChangeEvent, useState } from 'react';
-import { createPortal } from 'react-dom';
 
 import Icon from '@assets/Icon';
 import Button from '@common/Button';
@@ -26,9 +25,13 @@ const TitleEditor = ({
   onClickCategory,
 }: TitleEditorProps) => {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
-  const handleCategoryModal = () => {
-    setIsCategoryModalOpen((prev) => !prev);
+
+  const handleSelectCategory = (selectedCategory: Category) => {
+    onClickCategory(selectedCategory);
+    if (category.selectedId !== selectedCategory.id) handleCategoryModal();
   };
+
+  const handleCategoryModal = () => setIsCategoryModalOpen((prev) => !prev);
 
   return (
     <MyTitleBox>
@@ -65,16 +68,14 @@ const TitleEditor = ({
           />
         </MyTitleCategories>
       )}
-      {isCategoryModalOpen &&
-        createPortal(
-          <CategoryList
-            categories={category.total}
-            selectedId={category.selectedId}
-            onClickCategory={onClickCategory}
-            onPortal={handleCategoryModal}
-          />,
-          document.body,
-        )}
+      {isCategoryModalOpen && (
+        <CategoryList
+          categories={category.total}
+          selectedId={category.selectedId}
+          onClickCategory={handleSelectCategory}
+          onPortal={handleCategoryModal}
+        />
+      )}
     </MyTitleBox>
   );
 };

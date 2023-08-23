@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_URL,
+  headers: { 'x-api-key': import.meta.env.VITE_X_API_KEY },
 });
 
 api.interceptors.request.use(
