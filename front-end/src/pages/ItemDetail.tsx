@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Icon from '@assets/Icon';
@@ -121,6 +120,7 @@ const ItemDetail = ({
     price,
     isMyItem,
   } = itemDetailInfo;
+  const itemInfoRef = useRef(undefined);
   const [onRefresh, setOnRefresh] = useState(false);
   const likeIcon = isLike ? 'fullHeart' : 'heart';
 
@@ -149,7 +149,7 @@ const ItemDetail = ({
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [isLoginAlertOpen, setIsLoginAlertOpen] = useState(false);
 
-  const handleViewMoreSheet = async (type: string) => {
+  const handleViewMoreSheet = (type: string) => {
     if (type === 'delete') {
       setIsDeleteAlertOpen(true);
     }
@@ -301,6 +301,7 @@ const ItemDetail = ({
         data: { data },
       } = await api.get(`/items/${id}`);
       mapItemDetailInfo(data);
+      itemInfoRef.current = data;
     } catch (error) {
       console.error(`Failed to get item info: ${error}`);
     }
@@ -367,11 +368,9 @@ const ItemDetail = ({
           {isMyItem ? `대화 중인 채팅방 ${chatCount}` : '채팅하기'}
         </Button>
       </SubTabBar>
-      {!!isChatRoomOpen &&
-        createPortal(
-          <ChatRoom itemId={id} onRoomClose={handleChatRoom}></ChatRoom>,
-          document.body,
-        )}
+      {!!isChatRoomOpen && (
+        <ChatRoom itemId={id} onRoomClose={handleChatRoom}></ChatRoom>
+      )}
       {isStatusPopupOpen && (
         <PopupSheet
           type={'slideUp'}
@@ -386,16 +385,13 @@ const ItemDetail = ({
           onSheetClose={handleViewMorePopup}
         ></PopupSheet>
       )}
-      {isNewModalOpen &&
-        createPortal(
-          <New
-            isEdit={true}
-            origin={itemDetailInfo}
-            categoryInfo={categories}
-            onClick={handleNewModal}
-          />,
-          document.body,
-        )}
+      {isNewModalOpen && (
+        <New
+          origin={itemInfoRef?.current}
+          categoryInfo={categories}
+          onClick={handleNewModal}
+        />
+      )}
       <Alert isOpen={isDeleteAlertOpen}>
         <Alert.Title>{ALERT_TITLE.DELETE('삭제')}</Alert.Title>
         <Alert.Button>{alertButtons(ALERT_ACTIONS.DELETE)}</Alert.Button>

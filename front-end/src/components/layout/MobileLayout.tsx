@@ -7,7 +7,6 @@ import useAPI from '@hooks/useAPI';
 
 import { styled } from 'styled-components';
 
-// TODO: createPortal 레이아웃에 적용하기
 const MobileLayout = () => {
   const [categories, setCategories] = useState<CategoryInfo[]>([]);
   const { request } = useAPI();
@@ -42,7 +41,7 @@ export const useCategories = () => {
 const MyMobileLayout = styled.div`
   width: 100vw;
   height: 100vh;
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.colors.neutral.background};
   text-align: center;
   overflow: auto;
   -ms-overflow-style: none;

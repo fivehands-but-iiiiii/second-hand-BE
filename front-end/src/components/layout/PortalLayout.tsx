@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 
 import { styled } from 'styled-components';
 
@@ -7,17 +8,20 @@ interface PortalLayoutProps {
 }
 
 const PortalLayout = ({ children }: PortalLayoutProps) => {
-  return <MyPortalLayout>{children}</MyPortalLayout>;
+  return createPortal(
+    <MyPortalLayout>{children}</MyPortalLayout>,
+    document.body,
+  );
 };
 
 PortalLayout.Alert = ({ children }: PortalLayoutProps) => {
-  return <MyAlertPortal>{children}</MyAlertPortal>;
+  return createPortal(<MyAlertPortal>{children}</MyAlertPortal>, document.body);
 };
 
 const MyDefaultPortal = styled.div`
-  /* NOTE: slick의 기본 z-index 값이 10000임 */
   z-index: 11000;
   position: absolute;
+  left: 0;
   bottom: 0;
   width: 100vw;
   height: 100vh;

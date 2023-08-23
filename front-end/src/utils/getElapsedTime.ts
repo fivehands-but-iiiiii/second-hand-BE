@@ -2,6 +2,7 @@ const getElapsedTime = (createdAt: string) => {
   const currentTime = new Date();
   const timeDifference =
     (currentTime.getTime() - new Date(createdAt).getTime()) / 1000;
+  if (timeDifference <= 0) return '방금 전';
   const timeOptions = {
     seconds: {
       value: 1,

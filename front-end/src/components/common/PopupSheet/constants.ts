@@ -19,7 +19,6 @@ export const DETAIL_VIEWMORE_MENU = [
   {
     id: 'edit',
     title: '게시글 수정',
-    style: `color: ${palette.system.default}`,
   },
   {
     id: 'delete',
@@ -32,17 +31,14 @@ export const SALESHISTORY_VIEWMORE_MENU = [
   {
     id: 'edit',
     title: '게시글 수정',
-    style: `color: ${palette.system.default}`,
   },
   {
-    id: 'onSale',
+    id: 0,
     title: '판매중 상태로 전환',
-    style: `color: ${palette.system.default}`,
   },
   {
-    id: 'soldOut',
+    id: 2,
     title: '판매 완료 상태로 전환',
-    style: `color: ${palette.system.default}`,
   },
   {
     id: 'delete',
@@ -55,17 +51,14 @@ export const CHAT_VIEWMORE_MENU = [
   {
     id: 'alarmOff',
     title: '알람끄기',
-    style: `color: ${palette.system.default}`,
   },
   {
     id: 'report',
     title: '신고하기',
-    style: `color: ${palette.system.default}`,
   },
   {
     id: 'quitChat',
     title: '채팅방 나가기',
-    style: `color: ${palette.system.default}`,
   },
 ];
 

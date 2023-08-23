@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 
 import Button from '@common/Button';
 import { SaleItem } from '@common/Item';
@@ -20,7 +19,6 @@ import ItemDetail from './ItemDetail';
 
 type WishCategory = Omit<CategoryInfo, 'iconUrl'>;
 
-// TODO: 카테고리 refresh 후 일치 항목 없으면 빈페이지말고 전체카테고리로 변경
 const WishList = () => {
   const title = '관심 목록';
   const categories = useCategories();
@@ -58,14 +56,19 @@ const WishList = () => {
         }),
       ]);
       const { data: itemData } = wishlistResponse;
+      const { data: categoriesData } = categoriesResponse;
+      matchCategories(categoriesData.categories);
+      if (!itemData.items.length) {
+        setSelectedCategoryId(0);
+        initData();
+        return;
+      }
       setWishItems((pre) => [...pre, ...itemData.items]);
       setPageInfo({
         page: itemData.page + 1,
         hasPrevious: itemData.hasPrevious,
         hasNext: itemData.hasNext,
       });
-      const { data: categoriesData } = categoriesResponse;
-      matchCategories(categoriesData.categories);
     } catch (error) {
       console.error(error);
     } finally {
@@ -83,15 +86,10 @@ const WishList = () => {
         }
       );
     });
-    setWishCategories(
-      [{ id: 0, title: '전체' }, ...matchedCategories].reduce(
-        (acc: { id: number; title: string }[], category) => {
-          if (category) acc.push(category);
-          return acc;
-        },
-        [],
-      ),
-    );
+    setWishCategories([
+      { id: 0, title: '전체' },
+      ...(matchedCategories.filter((item) => !!item?.id) as WishCategory[]),
+    ]);
   };
 
   const initData = () => {
@@ -111,7 +109,7 @@ const WishList = () => {
 
   const handleItemDetail = (itemId: number) => {
     setSelectedItem(itemId);
-    if(itemId) return;
+    if (itemId) return;
     initData();
     setOnRefresh(true);
   };
@@ -121,7 +119,7 @@ const WishList = () => {
   }, [selectedCategoryId]);
 
   useEffect(() => {
-    if(!onRefresh) return;
+    if (!onRefresh) return;
     getWishListData();
     setOnRefresh(false);
   }, [onRefresh]);
@@ -150,19 +148,15 @@ const WishList = () => {
         {!!wishItems.length ? (
           <>
             <ItemList saleItems={wishItems} onItemClick={handleItemDetail} />
-            {!!wishItems.length && (
-              <MyOnFetchItems ref={setTarget}></MyOnFetchItems>
-            )}
+            <MyOnFetchItems ref={setTarget}></MyOnFetchItems>
             {isLoading && <Spinner />}
-            {!!selectedItem &&
-              createPortal(
-                <ItemDetail
-                  id={selectedItem}
-                  categoryInfo={categories}
-                  handleBackBtnClick={handleItemDetail}
-                />,
-                document.body,
-              )}
+            {!!selectedItem && (
+              <ItemDetail
+                id={selectedItem}
+                categoryInfo={categories}
+                handleBackBtnClick={handleItemDetail}
+              />
+            )}
           </>
         ) : (
           <BlankPage title={title} />

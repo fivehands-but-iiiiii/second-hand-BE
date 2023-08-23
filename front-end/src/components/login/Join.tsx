@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, useRef, useEffect } from 'react';
+import { useState, ChangeEvent, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import LabelInput from '@common/LabelInput';
@@ -39,32 +39,22 @@ const Join = () => {
   const location = useLocation();
   const gitHubUserInfo = location.state;
   const [userInputId, setUserInputId] = useState('');
-  const [validationMessage, setValidationMessage] = useState('');
   const [files, setFiles] = useState<InputFile>();
-  const [userRegions, setUserRegions] = useState<RegionInfo[]>([]);
   const [userAccount, setUserAccount] = useState<UserInfo>({
     memberId: gitHubUserInfo?.login,
     profileImgUrl: gitHubUserInfo?.avatar_url,
-    regions: userRegions,
+    regions: [],
   });
-  const [isReadyToSubmit, setIsReadyToSubmit] = useState(false);
   const [idExists, setIdExists] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const { join } = useJoin();
 
   const handleInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const { value } = target;
-    const regExp = /[^0-9a-z]/;
-    if (regExp.test(value)) {
-      setValidationMessage('영문 소문자와 숫자만 입력하세요');
-      return;
-    }
-    const inputValue = value;
-    const formattedId = getFormattedId(inputValue);
-    const formattedValue = formattedId ? formattedId : inputValue;
+    const formattedId = getFormattedId(value);
+    const formattedValue = formattedId ? formattedId : value;
     setUserInputId(formattedValue);
-    if (value.length < 6) return;
-    validateThrottling(value);
+    if (value.length > 5) validateThrottling(value);
   };
 
   const validateThrottling = (value: string) => {
@@ -72,7 +62,7 @@ const Join = () => {
     const timerId = setTimeout(async () => {
       const idExists = await checkUserIdAvailability(value);
       setIdExists(idExists);
-    }, 500);
+    }, 1000);
     timerRef.current = timerId;
   };
 
@@ -93,7 +83,6 @@ const Join = () => {
   };
 
   const handleUserRegions = (regions: RegionInfo[]) => {
-    setUserRegions(regions);
     setUserAccount({
       ...userAccount,
       memberId: userInputId,
@@ -102,42 +91,32 @@ const Join = () => {
   };
 
   const handlePostUserAccount = async () => {
-    try {
-      const response = await join({ files, account: userAccount });
-      if (response.success) {
-        navigate('/login', {
-          state: {
-            memberId: userInputId,
-            validationMessage: '회원가입이 완료되었어요! 로그인을 진행하세요',
-          },
-        });
-      }
-    } catch (error) {
-      console.error('회원가입 실패', error);
-    }
+    const response = await join({ files, account: userAccount });
+    if (!response.success) return;
+    navigate('/login', {
+      state: {
+        memberId: userInputId,
+        validationMessage: '회원가입이 완료되었어요! 로그인을 진행하세요',
+      },
+    });
   };
 
-  useEffect(() => {
-    // TODO: if...else 수정
-    if (userInputId.length < 3) {
-      setValidationMessage('');
-    } else if (userInputId.length >= 3 && userInputId.length < 6) {
-      setValidationMessage('6~12자 이내로 입력하세요');
-    } else if (idExists) {
-      setValidationMessage('이미 사용중인 아이디예요');
-    } else {
-      setValidationMessage('사용 가능한 아이디예요');
-      if (userRegions.length > 0) {
-        setUserAccount({
-          ...userAccount,
-          memberId: userInputId,
-          regions: userRegions,
-        });
-        return setIsReadyToSubmit(true);
-      }
-    }
-    setIsReadyToSubmit(false);
-  }, [userInputId, idExists, userRegions]);
+  const isReadyToSubmit =
+    userInputId.length > 5 && !idExists && userAccount.regions.length > 0;
+
+  const getValidationMessage = () => {
+    const isInvalid = /[^0-9a-z]/.test(userInputId);
+    const isShort = userInputId.length < 4;
+    const isValidLength = /^.{6,12}$/.test(userInputId);
+
+    if (isInvalid) return '영문 소문자와 숫자만 입력하세요';
+    if (isShort) return '';
+    if (!isValidLength) return '6~12자리로 입력하세요';
+    if (idExists) return '이미 사용중인 아이디예요';
+    return '사용 가능한 아이디예요';
+  };
+
+  const validationMessage = getValidationMessage();
 
   return (
     <MyJoin>

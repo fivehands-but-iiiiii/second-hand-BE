@@ -90,6 +90,7 @@ const MyMenuPopUp = styled.div`
 const MyPopupSheet = styled.div`
   position: absolute;
   z-index: 10;
+  width: 100%;
   padding: 0 8px;
   bottom: 0;
   color: ${({ theme }) => theme.colors.system.default};

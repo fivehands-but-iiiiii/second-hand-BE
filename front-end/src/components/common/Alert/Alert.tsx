@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-import { createPortal } from 'react-dom';
 
 import PortalLayout from '@components/layout/PortalLayout';
 
@@ -17,11 +16,10 @@ interface AlertProtoProps {
 const Alert = ({ isOpen, children }: AlertProps) => {
   if (!isOpen) return null;
 
-  return createPortal(
+  return (
     <PortalLayout.Alert>
       <MyAlert>{children}</MyAlert>
-    </PortalLayout.Alert>,
-    document.body,
+    </PortalLayout.Alert>
   );
 };
 

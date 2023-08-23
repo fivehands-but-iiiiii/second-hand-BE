@@ -5,6 +5,7 @@ import {
   MouseEvent,
   useCallback,
   useRef,
+  useMemo,
 } from 'react';
 
 import Icon from '@assets/Icon';
@@ -15,7 +16,7 @@ import Textarea from '@common/Textarea';
 import { InputFile, RegionInfo } from '@components/login/Join';
 import useAPI from '@hooks/useAPI';
 import { getPreviewURL } from '@utils/convertFile';
-import { getFormattedPrice, getFormattedNumber } from '@utils/formatText';
+import { getFormattedPrice } from '@utils/formatText';
 import { getStoredValue } from '@utils/sessionStorage';
 
 import { styled } from 'styled-components';
@@ -47,26 +48,20 @@ export interface OriginItem {
   id: number;
   title: string;
   contents: string;
-  category: string | number;
+  category: number;
   price: string;
   images: { url: string }[];
 }
 
 interface ItemEditorProps {
   categoryInfo: Category[];
-  isEdit?: boolean;
   origin?: OriginItem;
   handleClose: () => void;
 }
-// TODO: 렌더링과 상관없는 정보 ref로 변경해보기
+
 // TODO: 로직 분리하기..
-const ItemEditor = ({
-  categoryInfo,
-  isEdit = false,
-  origin,
-  handleClose,
-}: ItemEditorProps) => {
-  const pageTitle = isEdit ? '상품 수정' : '새 상품 등록';
+const ItemEditor = ({ categoryInfo, origin, handleClose }: ItemEditorProps) => {
+  const pageTitle = origin ? '상품 수정' : '새 상품 등록';
   const userInfo = getStoredValue({ key: 'userInfo' });
   const region = userInfo?.regions.find(({ onFocus }: RegionInfo) => onFocus);
   const [title, setTitle] = useState('');
@@ -75,13 +70,18 @@ const ItemEditor = ({
   const [price, setPrice] = useState('');
   const priceRef = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState<CategoryInfo>({
-    total: categoryInfo,
+    total: [...categoryInfo],
     recommendedCategory: [],
     selectedId: 0,
   });
   const [files, setFiles] = useState<InputFile[]>([]);
-  const [isFormValid, setFormValid] = useState(true);
   const { request } = useAPI();
+
+  const isFormValid =
+    title.length > 0 &&
+    category.selectedId > 0 &&
+    region.id > 0 &&
+    files.length > 0;
 
   const handleFiles = async ({ target }: ChangeEvent<HTMLInputElement>) => {
     const file = target.files?.[0];
@@ -97,19 +97,15 @@ const ItemEditor = ({
     ]);
   };
 
-  const validateForm = useCallback(() => {
-    return title && category.selectedId && region.id && files.length;
-  }, [title, region, category, files]);
-
-  // TODO: 전송 실패 처리
   const handleSubmit = async () => {
     try {
-      if (isEdit) {
+      if (origin) {
         await putEdit();
         handleClose();
         return;
       }
-      await postNew();
+      const isPosted = await postNew();
+      if (!isPosted) return;
       handleClose();
     } catch (error) {
       console.error('error');
@@ -190,7 +186,7 @@ const ItemEditor = ({
     );
     formData.append('region', region.id.toString());
     try {
-      await request({
+      const response = await request({
         url: '/items',
         method: 'post',
         config: {
@@ -200,8 +196,9 @@ const ItemEditor = ({
           },
         },
       });
+      return response.data ? true : false;
     } catch (error) {
-      console.log(error);
+      return false;
     }
   };
 
@@ -217,75 +214,86 @@ const ItemEditor = ({
     setTitle(value);
   };
 
-  const getRandomCategories = useCallback((): Category[] => {
-    const RANDOM_COUNT = 3;
-    const usedId = [];
-    const randomCategories: Category[] = [];
-    if (isEdit && origin) {
-      const categoryId = categoryInfo.find(
-        (item) => item.title === origin.category,
-      )?.id as number;
-      randomCategories.push({
-        id: categoryId,
-        title: origin.category as string,
-      });
-      usedId.push(categoryId);
-    }
-    while (randomCategories.length < RANDOM_COUNT) {
-      const randomIndex = Math.floor(Math.random() * categoryInfo.length);
-      if (!usedId.includes(randomIndex))
-        randomCategories.push(categoryInfo[randomIndex]);
-    }
-    return randomCategories;
-  }, [categoryInfo]);
+  const randomCategories = useMemo(() => {
+    const getRandomCategories = (): Category[] => {
+      const RANDOM_COUNT = 3;
+      const randomCategories: Category[] = [];
+      const usedId = [];
+
+      if (origin) {
+        const originCategoryId = origin.category;
+        const categoryTitle = categoryInfo.find(
+          (item) => item.id === originCategoryId,
+        )?.title;
+        if (categoryTitle) {
+          randomCategories.push({
+            id: originCategoryId,
+            title: categoryTitle,
+          });
+          usedId.push(originCategoryId);
+        }
+      }
+      while (randomCategories.length < RANDOM_COUNT) {
+        const randomId = Math.floor(Math.random() * categoryInfo.length);
+        if (!usedId.includes(randomId)) {
+          usedId.push(randomId);
+          const randomCategory = categoryInfo.find(({ id }) => id === randomId);
+          if (randomCategory) randomCategories.push(randomCategory);
+        }
+      }
+      return randomCategories;
+    };
+
+    return getRandomCategories;
+  }, [categoryInfo, origin]);
 
   const handleRecommendation = useCallback(() => {
     if (firstClickCTitle) return;
     const timeOutId = setTimeout(() => {
-      const randomCategories = getRandomCategories();
+      const recommendedCategories = randomCategories();
       setCategory((prev) => ({
         ...prev,
-        recommendedCategory: randomCategories,
+        recommendedCategory: recommendedCategories,
       }));
       setFirstClickCTitle(true);
     }, 1500);
     return () => {
       clearTimeout(timeOutId);
     };
-  }, [firstClickCTitle, getRandomCategories]);
+  }, [firstClickCTitle, randomCategories]);
 
   // TODO: 랜덤 카테고리 API 연동
-  // TODO: if...else 수정
   const handleCategory = (updatedCategory: Category) => {
     const isSameCategory = category.selectedId === updatedCategory.id;
     const isExistingCategory = category.recommendedCategory.some(
       ({ id }) => id === updatedCategory.id,
     );
-    if (isSameCategory) {
-      return setCategory((prev) => ({
-        ...prev,
-        selectedId: 0,
-      }));
-    } else if (isExistingCategory) {
-      setCategory((prev) => ({
-        ...prev,
-        selectedId: updatedCategory.id,
-      }));
-    } else {
-      const updatedRecommendedCategory = [
-        ...[
-          updatedCategory,
-          ...category.recommendedCategory.filter(
-            (category) => category.id !== updatedCategory.id,
-          ),
-        ],
-      ].splice(0, 3);
-      setCategory((prev) => ({
-        ...prev,
-        recommendedCategory: updatedRecommendedCategory,
-        selectedId: updatedCategory.id,
-      }));
-    }
+
+    if (isSameCategory) return resetSelectedCategory();
+    if (isExistingCategory) return updateSelectedCategory(updatedCategory.id);
+    return updateRecommendedCategory(updatedCategory);
+  };
+
+  const resetSelectedCategory = () => {
+    setCategory((prev) => ({ ...prev, selectedId: 0 }));
+  };
+
+  const updateSelectedCategory = (categoryId: number) => {
+    setCategory((prev) => ({ ...prev, selectedId: categoryId }));
+  };
+
+  const updateRecommendedCategory = (updatedCategory: Category) => {
+    const updatedRecommendedCategory = [
+      updatedCategory,
+      ...category.recommendedCategory.filter(
+        (category) => category.id !== updatedCategory.id,
+      ),
+    ].slice(0, 3);
+    setCategory((prev) => ({
+      ...prev,
+      recommendedCategory: updatedRecommendedCategory,
+      selectedId: updatedCategory.id,
+    }));
   };
 
   const handlePrice = ({ target }: ChangeEvent<HTMLInputElement>) => {
@@ -301,43 +309,32 @@ const ItemEditor = ({
 
   const getMappedOrigin = (origin: OriginItem) => {
     if (!origin) return;
-    const formattedPrice = getFormattedNumber(origin.price);
-    const categoryId = categoryInfo.find(
-      (item) => item.title === origin.category,
+    const originCategory = categoryInfo.find(
+      (item) => item.id === origin.category,
     );
-    const mappedOrigin = {
-      ...origin,
-      price: formattedPrice.toString(),
-      category: categoryId?.id,
-    };
-    setTitle(mappedOrigin.title);
-    setContents(mappedOrigin.contents);
-    setPrice(mappedOrigin.price);
+    setTitle(origin.title);
+    setContents(origin.contents);
+    setPrice(origin.price);
     setCategory((prev) => ({
       ...prev,
-      selectedId: mappedOrigin.category as number,
+      selectedId: originCategory?.id as number,
     }));
     setFiles(
-      mappedOrigin.images.map((image) => ({
+      origin.images.map((image) => ({
         preview: image.url,
       })),
     );
   };
 
   useEffect(() => {
-    setFormValid(validateForm());
-  }, [title, region, category, files, validateForm]);
-
-  useEffect(() => {
-    if (isEdit && origin) {
-      getMappedOrigin(origin);
-      const category = getRandomCategories();
-      setCategory((prev) => ({
-        ...prev,
-        recommendedCategory: category,
-      }));
-    }
-  }, [isEdit, origin]);
+    if (!origin) return;
+    getMappedOrigin(origin);
+    const category = randomCategories();
+    setCategory((prev) => ({
+      ...prev,
+      recommendedCategory: category,
+    }));
+  }, [origin]);
 
   return (
     <>
@@ -395,9 +392,9 @@ const MyNew = styled.div`
   }
   > div:last-child {
     padding-top: 10px;
-    max-height: 40vh;
+    max-height: 45vh;
     > textarea {
-      max-height: 40vh;
+      max-height: 45vh;
       overflow: auto;
     }
   }
