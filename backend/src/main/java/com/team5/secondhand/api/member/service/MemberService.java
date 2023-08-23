@@ -35,6 +35,11 @@ public class MemberService implements JoinService {
         Member newMember = joinDto.toMember();
         newMember.updatePlatform(joinPlatform);
         newMember.updateBasedRegions(regions);
+
+        if (newMember.getProfileImgUrl().length()==0){
+            newMember.setDefaultProfileImg();
+        }
+
         memberRepository.save(newMember);
 
         return newMember.getId();
