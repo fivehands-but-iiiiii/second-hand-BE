@@ -1,10 +1,7 @@
 package com.team5.secondhand.api.item.domain;
 
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,7 +14,6 @@ import javax.validation.constraints.Min;
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE item_counts SET is_deleted = true WHERE id = ?")
-@Where(clause = "is_deleted = false")
 public class ItemCounts {
 
     private static final long INIT_COUNT_NUMBER = 0L;
