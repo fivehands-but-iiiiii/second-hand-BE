@@ -96,6 +96,7 @@ const Item = ({
             </MyItemIcon>
           )}
           {!!likeCount && (
+            // TODO: MyItemIcon component 분리 (여러 곳에서 쓰임)
             <MyItemIcon>
               {<Icon name={isLike ? 'fullHeart' : 'heart'} size="sm" />}
               {formatNumberToSI(likeCount)}

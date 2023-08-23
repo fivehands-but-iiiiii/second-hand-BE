@@ -22,6 +22,7 @@ interface PopupSheetBackgroundProps {
   isSlideDown?: boolean;
 }
 
+// TODO: type을 받는 대신 component composition로 구현하는 게 어떨지 고민해보기
 const PopupSheet = ({ type, menu, onSheetClose }: PopupSheetProps) => {
   const isSlideDown = type === 'slideDown';
 

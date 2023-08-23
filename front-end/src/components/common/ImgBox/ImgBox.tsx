@@ -19,6 +19,7 @@ const ImgBox = ({ src, alt, size = 'lg' }: ImgBoxProps) => {
     lg: 120,
   };
   const boxSize = boxType[size];
+
   return (
     <MyImgBox boxSize={boxSize}>
       <MyImg src={src} alt={alt} />

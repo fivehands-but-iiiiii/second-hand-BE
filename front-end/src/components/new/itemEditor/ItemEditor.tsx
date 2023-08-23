@@ -350,7 +350,7 @@ const ItemEditor = ({ categoryInfo, origin, handleClose }: ItemEditorProps) => {
       <MyNew>
         <ImageEditor
           files={files}
-          onChage={handleFiles}
+          onChange={handleFiles}
           onClick={handleDeleteFile}
         />
         <TitleEditor

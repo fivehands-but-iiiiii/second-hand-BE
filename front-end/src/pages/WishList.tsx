@@ -194,3 +194,4 @@ const MyOnFetchItems = styled.div`
 `;
 
 export default WishList;
+

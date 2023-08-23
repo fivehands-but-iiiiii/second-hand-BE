@@ -11,15 +11,15 @@ import { styled } from 'styled-components';
 
 interface ImageEditorProps {
   files: InputFile[];
-  onChage: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onClick: (e: MouseEvent<HTMLButtonElement>) => void;
 }
 
-const ImageEditor = ({ files, onChage, onClick }: ImageEditorProps) => {
+const ImageEditor = ({ files, onChange, onClick }: ImageEditorProps) => {
   return (
     <MyImagesList>
       <MyFileBox>
-        <FileInput fileCount={`${files.length}/10`} onChage={onChage} />
+        <FileInput fileCount={`${files.length}/10`} onChange={onChange} />
       </MyFileBox>
       {files.map((img, index) => (
         <MyImageBox key={index}>

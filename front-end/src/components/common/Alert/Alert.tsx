@@ -5,6 +5,7 @@ import PortalLayout from '@components/layout/PortalLayout';
 import { styled } from 'styled-components';
 
 interface AlertProps {
+  // TODO: isOpen이 옵셔널이어야 하는지 검토하기
   isOpen?: boolean;
   children?: ReactNode;
 }

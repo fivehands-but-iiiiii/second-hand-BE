@@ -22,6 +22,7 @@ interface IconStyleProps {
 }
 
 const MainTabBar = () => {
+  // TODO: 상수 파일 분리하기
   const tabBarInfo: TabBarInfo[] = [
     { id: 1, icon: 'home', label: '홈화면', path: '/' },
     {
