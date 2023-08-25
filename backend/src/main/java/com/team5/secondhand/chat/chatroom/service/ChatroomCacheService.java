@@ -43,13 +43,15 @@ public class ChatroomCacheService {
 
     @Transactional(readOnly = true)
     public ChatLog getMessageInfo(String roomId, String memberId) {
-        Chatroom chatroom = chatroomCacheRepository.findByChatroomId(roomId).orElseThrow();
+
+        Chatroom chatroom = chatroomCacheRepository.findByChatroomId(roomId).orElseGet(() -> Chatroom.create(roomId, memberId));
 
         return ChatLog.of(chatroom, memberId);
     }
 
     @Transactional(readOnly = true)
     public List<ChatroomSummary> addLastMessage(List<ChatroomSummary> chatroomSummaries, String memberId) {
+
         return chatroomSummaries.stream().map(s -> s.addChatLogs(getMessageInfo(s.getChatroomId(), memberId)))
                 .collect(Collectors.toList());
     }
