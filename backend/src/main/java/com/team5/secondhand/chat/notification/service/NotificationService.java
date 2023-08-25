@@ -32,7 +32,6 @@ public class NotificationService implements SendChatNotificationUsecase {
 
         SseEmitter emitter = notificationRepository.save(sseId, new SseEmitter(DEFAULT_TIMEOUT));
         response.setHeader("X-Accel-Buffering", "no");
-        response.setHeader("Transfer-Encoding", "chunked"); //본문 크기를 미리 알 수 없음
         response.setHeader("Last-Event-ID", sseId.getKey());
 
         emitter.onCompletion(() -> {

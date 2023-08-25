@@ -65,7 +65,6 @@ public class ChatroomController {
     @GetMapping
     public GenericResponse<ChatroomList> getChatroomList(ChatItem chatItem, @RequestAttribute MemberDetails loginMember) throws ExistMemberIdException, ExistItemException {
         ChatroomList chatroomList = chatRoomFacade.findChatroomList(chatItem, loginMember.getId());
-
         return GenericResponse.send("채팅방 목록을 조회되었습니다.", chatroomList);
     }
 
