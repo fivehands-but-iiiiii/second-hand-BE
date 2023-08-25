@@ -62,7 +62,7 @@ public class ChatroomController {
             tags = "Chatroom",
             description = "사용자는 채팅방 리스트를 조회할 수 있다."
     )
-    @GetMapping()
+    @GetMapping
     public GenericResponse<ChatroomList> getChatroomList(ChatItem chatItem, @RequestAttribute MemberDetails loginMember) throws ExistMemberIdException, ExistItemException {
         ChatroomList chatroomList = chatRoomFacade.findChatroomList(chatItem, loginMember.getId());
 

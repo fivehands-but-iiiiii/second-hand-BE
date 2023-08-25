@@ -66,7 +66,6 @@ public class ChatroomFacade {
         if (chatItem.getItemId() == null) {
             chatroomList = chatRoomService.findChatroomListByMember(pageRequest, member);
         } else {
-            //채팅방 id가 존재할 경우
             Item item = itemService.findById(chatItem.getItemId());
             chatroomList = chatRoomService.findChatroomListByItem(pageRequest, item);
         }
