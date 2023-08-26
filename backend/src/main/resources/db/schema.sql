@@ -71,11 +71,7 @@ create table if not exists based_region
         primary key,
     member_id   bigint  not null,
     region_id   bigint  not null,
-    represented tinyint not null,
-    constraint fk_member_has_region_member1
-        foreign key (member_id) references member (id),
-    constraint fk_member_has_region_region1
-        foreign key (region_id) references region (id)
+    represented tinyint not null
 );
 
 create index fk_member_has_region_member1_idx
@@ -100,10 +96,6 @@ create table if not exists item
     region_id        bigint           not null,
     item_contents_id bigint           not null,
     is_deleted       bit default b'0' null,
-    constraint fk_item_item_contents1
-        foreign key (item_contents_id) references item_contents (id),
-    constraint fk_item_item_image1
-        foreign key (item_counts_id) references item_counts (id),
     constraint fk_item_member
         foreign key (seller_id) references member (id),
     constraint fk_item_region1
@@ -140,13 +132,7 @@ create table if not exists chat_log
     contents     varchar(300) null,
     sender_id    bigint       not null,
     reciver_id   bigint       not null,
-    chat_room_id bigint       not null,
-    constraint fk_chat_log_member1
-        foreign key (sender_id) references member (id),
-    constraint fk_chat_log_member2
-        foreign key (reciver_id) references member (id),
-    constraint fk_chat_log_member_chat_about_item1
-        foreign key (chat_room_id) references chatroom (id)
+    chat_room_id bigint       not null
 );
 
 create index fk_chat_log_member1_idx
@@ -185,11 +171,7 @@ create table if not exists wishlist
         primary key,
     member_id  bigint   not null,
     item_id    bigint   not null,
-    created_at datetime null,
-    constraint fk_member_has_item_item1
-        foreign key (item_id) references item (id),
-    constraint fk_member_has_item_member1
-        foreign key (member_id) references member (id)
+    created_at datetime null
 );
 
 create index fk_member_has_item_item1_idx
