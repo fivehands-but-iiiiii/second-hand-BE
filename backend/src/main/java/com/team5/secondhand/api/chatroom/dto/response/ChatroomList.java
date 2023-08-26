@@ -7,13 +7,20 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 @Getter
-@Builder
 @RequiredArgsConstructor
 public class ChatroomList {
     private final int page;
     private final boolean hasPrevious;
     private final boolean hasNext;
-    private final List<ChatroomSummary> chatRooms;
+    private List<ChatroomSummary> chatRooms;
+
+    @Builder
+    private ChatroomList(int page, boolean hasPrevious, boolean hasNext, List<ChatroomSummary> chatRooms) {
+        this.page = page;
+        this.hasPrevious = hasPrevious;
+        this.hasNext = hasNext;
+        this.chatRooms = chatRooms;
+    }
 
     public static ChatroomList of(List<ChatroomSummary> chatRooms, int page, boolean hasNext, boolean hasPrevious) {
         return ChatroomList.builder()
@@ -22,5 +29,11 @@ public class ChatroomList {
                 .hasNext(hasNext)
                 .hasPrevious(hasPrevious)
                 .build();
+    }
+
+    public ChatroomList addLastMessage(List<ChatroomSummary> chatRooms) {
+        this.chatRooms = chatRooms;
+
+        return this;
     }
 }

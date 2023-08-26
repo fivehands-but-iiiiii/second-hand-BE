@@ -31,7 +31,8 @@ public class ItemSliceRepositoryImpl implements ItemSliceRepository {
                         eqRegion(region),
                         eqCategory(categoryId),
                         inSales(sales),
-                        eqSeller(sellerId)
+                        eqSeller(sellerId),
+                        item.isDeleted.eq(false)
                 )
                 .offset(pageable.getOffset())
                 .limit(pageSize+1)
