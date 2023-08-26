@@ -2,7 +2,7 @@ name: Deploy to Amazon ECS
 
 on:
   push:
-    branches: [ "dev/BE-test" ]
+    branches: [ "dev/BE" ]
 
 env:
   working-directory: ./backend
