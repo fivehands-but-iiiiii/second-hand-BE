@@ -1,5 +1,7 @@
+version: "3"
+
 services:
-  proxy:
+  balancer:
     image: nginx
     container_name: proxy
     ports:
@@ -20,7 +22,6 @@ services:
     depends_on:
       - redis
     networks:
-      - app-net
       - default
 
   redis:
@@ -28,6 +29,8 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
+    volumes:
+      - ./data/redis:/data/redisdb
 
   web-application:
     image: inewpow/secondhand-web
@@ -38,11 +41,6 @@ services:
       - was-application
     networks:
       - default
-      - app-net
 
 volumes:
   mongodb-data:
-
-networks:
-  app-net:
-    driver: bridge
