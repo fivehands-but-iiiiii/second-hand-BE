@@ -90,9 +90,14 @@ public class ItemService {
     }
 
     @Transactional
-    public void updateItem(Long id, ItemPostWithUrl itemPost, String thumbanilUrl) throws ExistItemException {
+    public void updateItem(Long id, ItemPostWithUrl itemPost, Member seller) throws ExistItemException, UnauthorizedException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
-        Item newItem = item.updatePost(itemPost, thumbanilUrl);
+
+        if (!item.isSeller(seller.getId())) {
+            throw new UnauthorizedException("본인의 글만 수정할 수 있습니다.");
+        }
+
+        Item newItem = item.updatePost(itemPost, itemPost.getImages().get(0).getUrl());
         itemRepository.save(newItem);
     }
 

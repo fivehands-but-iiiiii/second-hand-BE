@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SessionService {
     private final RedisTemplate<String, String> redisSessionTemplate;
-    private final String MAIN_KEY = "session-store";
+    private final String MAIN_KEY = "sessionStore";
 
     @Transactional
     public void saveSession(String sessionId, String memberId) {
