@@ -59,4 +59,8 @@ public class Participants implements Serializable {
         info.put(memberId, participantInfo);
         return true;
     }
+
+    public boolean hasMember(String id) {
+        return this.info.get(id).getIsConnected();
+    }
 }

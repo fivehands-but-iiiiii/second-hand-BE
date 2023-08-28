@@ -1,11 +1,10 @@
 package com.team5.secondhand.chat.notification.service;
 
-import com.team5.secondhand.chat.bubble.domain.ChatBubble;
+import com.team5.secondhand.chat.chatroom.domain.Chatroom;
 import com.team5.secondhand.chat.notification.domain.SseEvent;
 import com.team5.secondhand.chat.notification.domain.SseKey;
 import com.team5.secondhand.chat.notification.dto.ChatNotification;
 import com.team5.secondhand.chat.notification.repository.NotificationRepository;
-import com.team5.secondhand.global.event.chatbubble.ChatBubbleArrivedEvent;
 import com.team5.secondhand.global.event.chatbubble.ChatNotificationEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,15 +67,17 @@ public class NotificationService implements SendChatNotificationUsecase {
                     .data(data));
         } catch (IOException e) {
             log.error("SSE 전송 오류", e);
-            notificationRepository.deleteAllStartByWithId(id);
+//            notificationRepository.deleteAllStartByWithId(id);
         }
     }
 
     @Override
     @Transactional
-    public void sendChatNotificationToMember(String id, ChatNotification chatNotification) {
+    public void sendChatNotificationToMember(String id, Chatroom chatroom, ChatNotification chatNotification) {
         SseEmitter sseEmitter = notificationRepository.findStartById(id).orElseThrow(); //TODO 에러 작성해주기
-        sendToClient(sseEmitter, id, chatNotification);
+        if (!chatroom.hasPaticipant(id)) {
+            sendToClient(sseEmitter, id, chatNotification);
+        }
     }
 
     //TODO Transaction 관련된 문제가 나지는 않을까?
@@ -87,6 +88,7 @@ public class NotificationService implements SendChatNotificationUsecase {
         //TODO 유효성 검증이 필요
             //TODO 현재 채팅방에 존재하는 멤버(1인 이상)에게 알람을 보내야 한다.
             //TODO 현재 채팅방을 구독중(websocket 통신중인) 멤버에게는 보내지 않아야 한다.
-        sendChatNotificationToMember(receiverId, ChatNotification.of(event.getChatBubble(), event.getChatroom()));
+        sendChatNotificationToMember(receiverId, event.getChatroom(), ChatNotification.of(event.getChatBubble(), event.getChatroom()));
     }
+
 }
