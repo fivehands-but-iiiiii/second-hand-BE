@@ -59,4 +59,8 @@ public class Chatroom implements Serializable { // NoSQL 에 저장될 자료 �
     public boolean exit(String memberId) {
         return participants.exit(memberId);
     }
+
+    public boolean hasPaticipant(String id) {
+        return this.participants.hasMember(id);
+    }
 }

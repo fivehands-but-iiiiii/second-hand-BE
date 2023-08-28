@@ -65,6 +65,11 @@ create table if not exists region
     primary key (id)
 );
 
+ALTER TABLE region
+    ADD FULLTEXT INDEX idx_fulltext_ngram (city, county, district)
+        WITH PARSER ngram;
+
+
 create table if not exists based_region
 (
     id          bigint auto_increment
@@ -95,11 +100,7 @@ create table if not exists item
     item_counts_id   bigint           not null,
     region_id        bigint           not null,
     item_contents_id bigint           not null,
-    is_deleted       bit default b'0' null,
-    constraint fk_item_member
-        foreign key (seller_id) references member (id),
-    constraint fk_item_region1
-        foreign key (region_id) references region (id)
+    is_deleted       bit default b'0' null
 );
 
 DROP TABLE IF EXISTS chatroom;
@@ -111,13 +112,7 @@ create table if not exists chatroom
     seller_id bigint not null,
     buyer_id   bigint   not null,
     created_at datetime null,
-    chatroom_status enum('EMPTY', 'SELLER_ONLY', 'BUYER_ONLY', 'FULL') default 'FULL' null,
-    constraint fk_chatroom_has_item
-        foreign key (item_id) references item (id),
-    constraint fk_chatroom_has_buyer
-        foreign key (buyer_id) references member (id),
-    constraint fk_chatroom_has_seller
-        foreign key (seller_id) references member (id)
+    chatroom_status enum('EMPTY', 'SELLER_ONLY', 'BUYER_ONLY', 'FULL') default 'FULL' null
 );
 CREATE UNIQUE INDEX idx_my_chatroom_id on chatroom (chatroom_id);
 
@@ -161,9 +156,6 @@ create index fk_item_member_idx
 
 create index fk_item_region1_idx
     on item (region_id);
-
-create fulltext index fulltext_address
-    on region (city, county, district);
 
 create table if not exists wishlist
 (
