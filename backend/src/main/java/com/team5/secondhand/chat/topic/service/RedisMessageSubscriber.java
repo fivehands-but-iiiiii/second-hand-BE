@@ -26,6 +26,7 @@ public class RedisMessageSubscriber implements MessageListener {
     @Transactional
     public void onMessage(Message message, byte[] pattern) {
         log.debug("on message : ");
+        byte[] channel = message.getChannel();
         //redis 로부터 온 메시지를 역질렬화하여
         String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
 

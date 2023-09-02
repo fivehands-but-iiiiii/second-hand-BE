@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -66,18 +67,22 @@ public class NotificationService implements SendChatNotificationUsecase {
                     .name(SseEvent.CHAT_NOTIFICATION.getEvent())
                     .data(data));
         } catch (IOException e) {
-            log.error("SSE 전송 오류", e);
-//            notificationRepository.deleteAllStartByWithId(id);
+            log.info("상대방이 접속중이 아닙니다.");
         }
     }
 
     @Override
     @Transactional
     public void sendChatNotificationToMember(String id, Chatroom chatroom, ChatNotification chatNotification) {
-        SseEmitter sseEmitter = notificationRepository.findStartById(id).orElseThrow(); //TODO 에러 작성해주기
-        if (!chatroom.hasPaticipant(id)) {
-            sendToClient(sseEmitter, id, chatNotification);
+        try {
+            SseEmitter sseEmitter = notificationRepository.findStartById(id).get(); //TODO 에러 작성해주기
+            if (!chatroom.hasPaticipant(id)) {
+                sendToClient(sseEmitter, id, chatNotification);
+            }
+        } catch (NoSuchElementException e) {
+            log.info("상대방이 접속중이 아닙니다.");
         }
+
     }
 
     //TODO Transaction 관련된 문제가 나지는 않을까?
