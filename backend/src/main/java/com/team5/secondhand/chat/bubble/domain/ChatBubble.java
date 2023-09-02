@@ -1,9 +1,8 @@
 package com.team5.secondhand.chat.bubble.domain;
 
-import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.redis.core.index.Indexed;
 
 import java.io.Serializable;
@@ -12,11 +11,11 @@ import java.util.UUID;
 
 @Getter
 @ToString
-@RedisHash("chat-bubble")
+@Document("chatbubbles")
 @NoArgsConstructor
 public class ChatBubble implements Serializable, Comparable {
     @Id
-    private String id;
+    private UUID id;
     @Indexed
     private String roomId;
     private String sender;
@@ -25,7 +24,7 @@ public class ChatBubble implements Serializable, Comparable {
     private String createdAt;
 
     @Builder
-    private ChatBubble(String id, String roomId, String sender, String receiver, String message, String createdAt) {
+    private ChatBubble(UUID id, String roomId, String sender, String receiver, String message, String createdAt) {
         this.id = id;
         this.roomId = roomId;
         this.sender = sender;
@@ -34,9 +33,9 @@ public class ChatBubble implements Serializable, Comparable {
         this.createdAt = createdAt;
     }
 
-    private static String generateKey(String id) {
+    private UUID generateKey() {
         if (id==null) {
-            return UUID.randomUUID().toString();
+            return UUID.randomUUID();
         }
         return id;
     }
@@ -62,7 +61,7 @@ public class ChatBubble implements Serializable, Comparable {
     }
 
     public void ready() {
-        this.id = generateKey(id);
+        this.id = generateKey();
         this.createdAt = generateCreatedAt(createdAt);
     }
 }

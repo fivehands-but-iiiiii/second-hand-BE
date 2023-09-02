@@ -1,6 +1,5 @@
 package com.team5.secondhand.chat.bubble.dto.response;
 
-import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,7 +25,7 @@ public class BubbleSummary {
 
     public static BubbleSummary from(ChatBubble bubble, String memberId) {
         return BubbleSummary.builder()
-                .id(bubble.getId())
+                .id(bubble.getId().toString())
                 .senderId(bubble.getSender())
                 .contents(bubble.getMessage())
                 .isMine(bubble.isSender(memberId))

@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 class ChatController {
     private final RedisMessagePublisher redisMessagePublisher;
-    private final ChannelTopic channelTopic;
+    private final ChannelTopic chatTopic;
 
     @MessageMapping("/message")
     public void message(ChatBubble message) {
         log.debug("pub controller");
-        redisMessagePublisher.publish(channelTopic.getTopic(), message);
+        redisMessagePublisher.publish(chatTopic.getTopic(), message);
     }
 
 }
