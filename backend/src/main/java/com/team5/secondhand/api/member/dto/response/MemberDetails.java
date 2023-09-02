@@ -44,6 +44,7 @@ public class MemberDetails {
         return MemberDetails.builder().build();
     }
 
+    @JsonIgnore
     public boolean isEmpty() {
         return this.id == null;
     }
