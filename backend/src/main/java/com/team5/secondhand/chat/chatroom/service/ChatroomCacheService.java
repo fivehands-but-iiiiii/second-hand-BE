@@ -6,7 +6,7 @@ import com.team5.secondhand.api.chatroom.dto.response.ChatroomSummary;
 import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.chat.chatroom.domain.Chatroom;
-import com.team5.secondhand.chat.chatroom.repository.ChatroomCacheRepository;
+import com.team5.secondhand.chat.chatroom.repository.ChatroomMetaRepository;
 import com.team5.secondhand.global.event.chatbubble.ChatBubbleArrivedEvent;
 import com.team5.secondhand.global.event.chatbubble.ChatNotificationEvent;
 import com.team5.secondhand.global.event.chatroom.ChatroomCreatedEvent;
@@ -23,29 +23,27 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ChatroomCacheService {
     private final String MAIN_KEY = "chatroom";
-    private final ChatroomCacheRepository chatroomCacheRepository;
+    private final ChatroomMetaRepository metaInfoRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     public void enterToChatRoom(String roomId, String memberId) {
-        Chatroom chatroom = chatroomCacheRepository.findByChatroomId(roomId).orElseThrow();
+        Chatroom chatroom = metaInfoRepository.findById(roomId).orElseThrow();
         chatroom.enter(memberId);
-        chatroomCacheRepository.saveChatroom(roomId, chatroom);
+        metaInfoRepository.save(chatroom);
     }
 
     public void exitToChatRoom(String roomId, String memberId) {
-        Chatroom chatroom = chatroomCacheRepository.findByChatroomId(roomId).orElseThrow();
+        Chatroom chatroom = metaInfoRepository.findById(roomId).orElseThrow();
         chatroom.exit(memberId);
     }
 
     public Chatroom getChatroom(String chatroomId) {
-        return chatroomCacheRepository.findByChatroomId(chatroomId).orElseThrow();
+        return metaInfoRepository.findById(chatroomId).orElseThrow();
     }
 
     @Transactional(readOnly = true)
     public ChatLog getMessageInfo(String roomId, String memberId) {
-
-        Chatroom chatroom = chatroomCacheRepository.findByChatroomId(roomId).orElseGet(() -> Chatroom.create(roomId, memberId));
-
+        Chatroom chatroom = metaInfoRepository.findById(roomId).orElseGet(() -> Chatroom.create(roomId, memberId));
         return ChatLog.of(chatroom, memberId);
     }
 
@@ -60,7 +58,7 @@ public class ChatroomCacheService {
     public void chatroomCreatedEventHandler(ChatroomCreatedEvent event) {
         ChatroomInfo info = event.getInfo();
         Chatroom chatroom = Chatroom.init(info);
-        chatroomCacheRepository.saveChatroom(chatroom.getChatroomId(), chatroom);
+        metaInfoRepository.save(chatroom);
     }
 
     @EventListener
@@ -68,7 +66,7 @@ public class ChatroomCacheService {
         ChatBubble chatBubble = event.getChatBubble();
         Chatroom chatroom = getChatroom(chatBubble.getRoomId());
         chatroom.updateLastMessage(chatBubble);
-        Chatroom saveChatroom = chatroomCacheRepository.saveChatroom(chatBubble.getRoomId(), chatroom);
+        Chatroom saveChatroom = metaInfoRepository.save(chatroom);
         eventPublisher.publishEvent(ChatNotificationEvent.of(saveChatroom,chatBubble));
     }
 }

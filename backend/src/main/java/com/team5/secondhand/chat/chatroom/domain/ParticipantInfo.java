@@ -25,7 +25,7 @@ public class ParticipantInfo implements Serializable {
         return ParticipantInfo.builder()
                 .memberId(memberId)
                 .lastDisconnectedAt(null)
-                .isConnected(null)
+                .isConnected(false)
                 .messageStock(0)
                 .build();
     }
