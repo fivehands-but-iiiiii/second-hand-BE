@@ -56,7 +56,6 @@ public class ItemController {
     public GenericResponse<ItemList> getItemList(ItemFilteredSlice itemSlice, @RequestAttribute(required = false) MemberDetails loginMember) throws NotValidRegionException {
         Region regions = getValidRegions.getRegion(itemSlice.getRegionId());
         ItemList itemList = itemService.getItemList(itemSlice, regions, loginMember);
-        //TODO Category 유효성 검사
         return GenericResponse.send("상품 목록이 조회되었습니다.", itemList);
     }
 
@@ -67,6 +66,10 @@ public class ItemController {
     )
     @GetMapping("/mine")
     public GenericResponse<MyItemList> getItemMyList(MyItemFilteredSlice itemSlice, @RequestAttribute MemberDetails loginMember) throws UnauthorizedException {
+        if (loginMember.isEmpty()) {
+            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
+        }
+
         return GenericResponse.send("판매 내역이 조회되었습니다.", itemService.getMyItemList(itemSlice, loginMember));
     }
 
@@ -110,11 +113,11 @@ public class ItemController {
             description = "사용자는 상품 정보를 수정할 수 있다."
     )
     @PutMapping("/{id}")
-    public GenericResponse<Long> updateItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemPostWithUrl itemPost) throws ExistMemberIdException, NotValidRegionException, ExistItemException, ExistItemException {
+    public GenericResponse<Long> updateItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemPostWithUrl itemPost) throws ExistMemberIdException, NotValidRegionException, ExistItemException, ExistItemException, UnauthorizedException {
         Member seller = memberService.findById(loginMember.getId());
         Region region = getValidRegions.getRegion(itemPost.getRegion());
-        String thumbanilUrl = itemPost.getImages().get(0).getUrl();
-        itemService.updateItem(id, itemPost, thumbanilUrl);
+
+        itemService.updateItem(id, itemPost, seller);
 
         return GenericResponse.send("상품 수정이 완료되었습니다.", id);
     }
@@ -125,7 +128,7 @@ public class ItemController {
             description = "사용자는 상품의 상세 정보를 볼 수 있다."
     )
     @GetMapping("/{id}")
-    public GenericResponse<ItemDetail> getItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember) throws ExistMemberIdException, ExistItemException {
+    public GenericResponse<ItemDetail> getItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember) throws ExistItemException {
         Boolean isLike = wishlistService.isMemberLiked(id, loginMember);
         ItemDetail item = itemService.viewAItem(id, loginMember, isLike);
 

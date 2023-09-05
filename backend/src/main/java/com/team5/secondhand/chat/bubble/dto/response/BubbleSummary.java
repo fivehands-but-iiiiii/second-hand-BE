@@ -1,6 +1,5 @@
 package com.team5.secondhand.chat.bubble.dto.response;
 
-import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,12 +23,12 @@ public class BubbleSummary {
         this.createdAt = createdAt;
     }
 
-    public static BubbleSummary from(ChatBubble bubble, MemberDetails loginMember) {
+    public static BubbleSummary from(ChatBubble bubble, String memberId) {
         return BubbleSummary.builder()
-                .id(bubble.getId())
+                .id(bubble.getId().toString())
                 .senderId(bubble.getSender())
                 .contents(bubble.getMessage())
-                .isMine(bubble.isSender(loginMember))
+                .isMine(bubble.isSender(memberId))
                 .createdAt(bubble.getCreatedAt())
                 .build();
     }

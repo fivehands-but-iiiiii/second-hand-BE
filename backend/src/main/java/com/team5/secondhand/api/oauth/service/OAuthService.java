@@ -9,6 +9,7 @@ import com.team5.secondhand.api.oauth.dto.UserProfile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -20,6 +21,7 @@ public class OAuthService {
     private final OAuthServerProperties requestServer;
     private final OAuthProvider oAuthProvider;
 
+    @Transactional
     public UserProfile getGithubUser(String code, OauthEnv env) {
         OAuthProperties oAuthProperties = oAuthProvider.createOAuthProperties(env);
         OAuthToken oAuthToken = getToken(code, oAuthProperties);
@@ -39,6 +41,7 @@ public class OAuthService {
                 .block();
     }
 
+    @Transactional
     private OAuthToken getToken(String code, OAuthProperties env) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("code", code);

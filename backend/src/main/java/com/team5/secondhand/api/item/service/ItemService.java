@@ -82,15 +82,22 @@ public class ItemService {
         return items;
     }
 
+    @Transactional
     public Long postItem(Item item, Member seller, Region region, String thumbnailUrl) {
         item.updateThumbnail(thumbnailUrl);
         itemRepository.save(item.owned(seller, region));
         return item.getId();
     }
 
-    public void updateItem(Long id, ItemPostWithUrl itemPost, String thumbanilUrl) throws ExistItemException {
+    @Transactional
+    public void updateItem(Long id, ItemPostWithUrl itemPost, Member seller) throws ExistItemException, UnauthorizedException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
-        Item newItem = item.updatePost(itemPost, thumbanilUrl);
+
+        if (!item.isSeller(seller.getId())) {
+            throw new UnauthorizedException("본인의 글만 수정할 수 있습니다.");
+        }
+
+        Item newItem = item.updatePost(itemPost, itemPost.getImages().get(0).getUrl());
         itemRepository.save(newItem);
     }
 
@@ -108,6 +115,7 @@ public class ItemService {
         return ItemDetail.of(item, isSeller, isLike);
     }
 
+    @Transactional
     public CategoryList getCategoryList(Long regionId) {
         List<Long> categories = itemRepository.countCategoryByRegion(regionId);
         return CategoryList.of(categories);

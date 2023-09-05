@@ -14,8 +14,8 @@ import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.region.exception.EmptyBasedRegionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
@@ -35,11 +35,17 @@ public class MemberService implements JoinService {
         Member newMember = joinDto.toMember();
         newMember.updatePlatform(joinPlatform);
         newMember.updateBasedRegions(regions);
+
+        if (newMember.getProfileImgUrl().length()==0){
+            newMember.setDefaultProfileImg();
+        }
+
         memberRepository.save(newMember);
 
         return newMember.getId();
     }
 
+    @Transactional(readOnly = true)
     public MemberDetails login(MemberLogin loginDTO) throws UnauthorizedException, EmptyBasedRegionException {
         Member member = memberRepository.findByMemberIdAndOauth(loginDTO.getMemberId(), Oauth.NONE)
                 .orElseThrow(() -> new UnauthorizedException("가입되지 않은 회원입니다"));
@@ -47,6 +53,7 @@ public class MemberService implements JoinService {
         return MemberDetails.fromMember(member);
     }
 
+    @Transactional(readOnly = true)
     public MemberDetails loginByOAuth(UserProfile loginDTO) throws UnauthorizedGithubMemberException, EmptyBasedRegionException {
         Member member = memberRepository.findByMemberIdAndOauth(loginDTO.getLogin(), Oauth.GITHUB)
                 .orElseThrow(() -> new UnauthorizedGithubMemberException("가입되지 않은 GITHUB 회원입니다", loginDTO));
@@ -54,10 +61,12 @@ public class MemberService implements JoinService {
         return MemberDetails.fromMember(member);
     }
 
+    @Transactional(readOnly = true)
     public boolean isExistMemberId(String memberId, Oauth oauth) {
         return memberRepository.existsByMemberIdAndOauth(memberId, oauth);
     }
 
+    @Transactional
     public Member findById(Long id) throws ExistMemberIdException {
         return memberRepository.findById(id).orElseThrow(() -> new ExistMemberIdException("잘못된 회원입니다."));
     }
@@ -67,6 +76,7 @@ public class MemberService implements JoinService {
         return memberRepository.updateMemberProfileImage(id, uploadUrl);
     }
 
+    @Transactional(readOnly = true)
     public void isValidMemberId(String memberId) throws ExistMemberIdException, NotValidMemberIdException {
         if (isExistMemberId(memberId, Oauth.NONE)) {
             throw new ExistMemberIdException("이미 존재하는 회원 아이디입니다.");
@@ -80,6 +90,7 @@ public class MemberService implements JoinService {
         return Pattern.matches(ID_PATTERN, memberId);
     }
 
+    @Transactional(readOnly = true)
     public void checkDataCorruption(MemberJoin request, UserProfile tempMember) throws MemberDataCorruptedException {
         if (!request.toMember().equals(tempMember.toMember())) {
             throw new MemberDataCorruptedException("유효하지 않은 회원가입 요청입니다.");

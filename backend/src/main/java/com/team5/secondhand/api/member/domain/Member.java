@@ -93,4 +93,8 @@ public class Member {
     public boolean equals(long memberId) {
         return this.id == memberId;
     }
+
+    public void setDefaultProfileImg() {
+        this.profileImgUrl = "https://secondhand-team5-bucket.s3.ap-northeast-2.amazonaws.com/members/3689aa38-fb45-4908-94ef-d32b1dfff318-%E1%84%85%E1%85%AE%E1%84%91%E1%85%B53.jpeg";
+    }
 }

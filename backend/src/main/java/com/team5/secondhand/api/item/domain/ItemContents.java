@@ -4,7 +4,6 @@ import com.team5.secondhand.api.item.dto.request.ItemImage;
 import com.team5.secondhand.api.item.util.ImageUrlConverter;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 @Table(name = "item_contents")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE item_contents SET is_deleted = true WHERE id = ?")
-@Where(clause = "is_deleted = false")
 public class ItemContents {
 
     @Id

@@ -1,4 +1,4 @@
-package com.team5.secondhand.chat.bubble.service;
+package com.team5.secondhand.chat.topic.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +11,8 @@ import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 @Getter
 @Slf4j
 @RequiredArgsConstructor
@@ -21,8 +23,10 @@ public class RedisMessageSubscriber implements MessageListener {
     private final SimpMessageSendingOperations messagingTemplate;
 
     @Override
+    @Transactional
     public void onMessage(Message message, byte[] pattern) {
         log.debug("on message : ");
+        byte[] channel = message.getChannel();
         //redis 로부터 온 메시지를 역질렬화하여
         String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
 

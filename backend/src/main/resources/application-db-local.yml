@@ -10,3 +10,6 @@ spring:
       cache-null-values: true
       host: localhost
       port: 6379
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/secondhand

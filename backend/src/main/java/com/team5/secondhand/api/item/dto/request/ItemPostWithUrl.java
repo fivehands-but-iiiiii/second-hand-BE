@@ -1,7 +1,7 @@
 package com.team5.secondhand.api.item.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team5.secondhand.api.item.domain.Item;
-import com.team5.secondhand.api.item.domain.ItemContents;
 import com.team5.secondhand.api.item.domain.ItemCounts;
 import com.team5.secondhand.api.item.domain.Status;
 import lombok.Getter;
@@ -25,6 +25,7 @@ public class ItemPostWithUrl {
     @NotNull
     private final List<ItemImage> images;
 
+    @JsonIgnore
     public Optional<ItemImage> getFirstImageUrl() {
         return images.stream().sorted().findAny();
     }

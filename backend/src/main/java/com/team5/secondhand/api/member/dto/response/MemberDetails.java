@@ -1,5 +1,6 @@
 package com.team5.secondhand.api.member.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.domain.Oauth;
 import com.team5.secondhand.api.member.dto.request.BasedRegionSummary;
@@ -38,10 +39,12 @@ public class MemberDetails {
                 .build();
     }
 
+    @JsonIgnore
     public static MemberDetails empty() {
         return MemberDetails.builder().build();
     }
 
+    @JsonIgnore
     public boolean isEmpty() {
         return this.id == null;
     }

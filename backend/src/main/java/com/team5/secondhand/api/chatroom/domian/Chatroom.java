@@ -26,15 +26,13 @@ public class Chatroom extends BasedTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Generated(GenerationTime.INSERT)
     private UUID chatroomId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER) //TODO 일단 임시로 에러 기워 사용하기
     @JoinColumn(name = "item_id")
     private Item item;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "buyer_id")
     private Member buyer;
 
@@ -55,6 +53,7 @@ public class Chatroom extends BasedTimeEntity {
 
     public static Chatroom create(Item item, Member buyer) {
         return com.team5.secondhand.api.chatroom.domian.Chatroom.builder()
+                .chatroomId(UUID.randomUUID())
                 .item(item)
                 .buyer(buyer)
                 .sellerId(item.getSeller().getId())

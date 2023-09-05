@@ -20,6 +20,7 @@ public class RegionService implements GetValidRegionsUsecase {
     private final RegionRepository regionRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public Map<Long, Region> getRegions(List<Long> ids) throws NotValidRegionException {
         Map<Long, Region> regions = new HashMap<>();
         for (Region region : regionRepository.findAllById(ids)) {
@@ -40,6 +41,7 @@ public class RegionService implements GetValidRegionsUsecase {
     }
 
 //    @Cacheable(value = "itemListCache")
+    @Transactional(readOnly = true)
     public List<Region> findRegionByAddress (String address) {
         return regionRepository.findAllByAddress(address);
     }
