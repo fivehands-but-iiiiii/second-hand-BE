@@ -1,14 +1,14 @@
 package com.team5.secondhand.api.item.service;
 
+import com.team5.secondhand.api.item.controller.dto.ItemSummary;
+import com.team5.secondhand.api.item.controller.v1.dto.response.*;
+import com.team5.secondhand.api.item.controller.v2.dto.FilteredItems;
 import com.team5.secondhand.api.item.domain.Item;
-import com.team5.secondhand.api.item.dto.request.ItemPostWithUrl;
 import com.team5.secondhand.api.item.domain.Status;
-import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
-import com.team5.secondhand.api.item.dto.request.MyItemFilteredSlice;
-import com.team5.secondhand.api.item.dto.response.*;
+import com.team5.secondhand.api.item.controller.v1.dto.request.ItemFilteredSlice;
+import com.team5.secondhand.api.item.controller.v1.dto.request.MyItemFilteredSlice;
 import com.team5.secondhand.api.item.exception.ExistItemException;
 import com.team5.secondhand.api.item.repository.ItemRepository;
-import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.member.exception.UnauthorizedException;
 import com.team5.secondhand.api.region.domain.Region;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ItemService {
+public class ItemReadService {
 
     private final int PAGE_SIZE = 10;
 
@@ -50,6 +50,25 @@ public class ItemService {
         }
 
         return ItemList.getSlice(pageResult.getNumber(), pageResult.hasPrevious(), pageResult.hasNext(), items);
+    }
+
+    @Transactional(readOnly = true)
+    public FilteredItems.Response getItemList(FilteredItems.Request request, Region region, MemberDetails loginMember) {
+        Pageable pageable = PageRequest.ofSize(PAGE_SIZE);
+        Slice<Item> pageResult = itemRepository.findAllByIdAndRegion(request.getLast(), request.getCategoryId(), request.getSellerId(), Status.isSales(request.getIsSales()), region, pageable);
+
+        List<Item> itemEntities = pageResult.getContent();
+
+        List<ItemSummary> items = new ArrayList<>();
+        if (!loginMember.isEmpty()) {
+            items = getItemSummariesWithIsLike(loginMember, itemEntities);
+        }
+
+        if (loginMember.isEmpty()) {
+            items = getItemSummaries(itemEntities);
+        }
+
+        return FilteredItems.Response.getSlice(items.get(items.size()-1).getId(), pageResult.hasPrevious(), pageResult.hasNext(), items);
     }
 
     @Transactional(readOnly = true)
@@ -82,28 +101,9 @@ public class ItemService {
         return items;
     }
 
-    @Transactional
-    public Long postItem(Item item, Member seller, Region region, String thumbnailUrl) {
-        item.updateThumbnail(thumbnailUrl);
-        itemRepository.save(item.owned(seller, region));
-        return item.getId();
-    }
-
-    @Transactional
-    public void updateItem(Long id, ItemPostWithUrl itemPost, Member seller) throws ExistItemException, UnauthorizedException {
-        Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
-
-        if (!item.isSeller(seller.getId())) {
-            throw new UnauthorizedException("본인의 글만 수정할 수 있습니다.");
-        }
-
-        Item newItem = item.updatePost(itemPost, itemPost.getImages().get(0).getUrl());
-        itemRepository.save(newItem);
-    }
-
     // @Cacheable(value = "itemCache")
+    @Transactional(readOnly = true)
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Transactional
     public ItemDetail viewAItem(Long id, MemberDetails member, Boolean isLike) throws ExistItemException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
         itemRepository.updateHits(item.getCount().getId());
@@ -115,28 +115,20 @@ public class ItemService {
         return ItemDetail.of(item, isSeller, isLike);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public CategoryList getCategoryList(Long regionId) {
         List<Long> categories = itemRepository.countCategoryByRegion(regionId);
         return CategoryList.of(categories);
     }
 
-    @Transactional
-    public boolean updateItemStatus(Long id, Status status) {
-        return itemRepository.updateStatus(id, status) == 1;
-    }
-
-    public boolean isValidSeller(Long id, long memberId) {
-        Item item = itemRepository.findById(id).orElseThrow();
-        return item.isSeller(memberId);
-    }
-
-    public void deleteById(Long id) {
-        itemRepository.deleteById(id);
-    }
-
     public Item findById(Long itemId) throws ExistItemException {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
         return item;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isValidSeller(Long id, long memberId) {
+        Item item = itemRepository.findById(id).orElseThrow();
+        return item.isSeller(memberId);
     }
 }

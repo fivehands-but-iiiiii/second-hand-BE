@@ -1,4 +1,4 @@
-package com.team5.secondhand.api.item.dto.request;
+package com.team5.secondhand.api.item.controller.v1.dto.request;
 
 import com.team5.secondhand.api.item.domain.Status;
 import lombok.Getter;

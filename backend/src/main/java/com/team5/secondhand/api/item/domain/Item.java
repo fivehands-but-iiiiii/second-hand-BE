@@ -1,7 +1,7 @@
 package com.team5.secondhand.api.item.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.team5.secondhand.api.item.dto.request.ItemPostWithUrl;
+import com.team5.secondhand.api.item.controller.v1.dto.request.ItemPostWithUrl;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.global.model.UpdatedTimeEntity;

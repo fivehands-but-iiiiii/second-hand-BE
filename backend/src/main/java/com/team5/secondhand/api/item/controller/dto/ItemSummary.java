@@ -1,4 +1,4 @@
-package com.team5.secondhand.api.item.dto.response;
+package com.team5.secondhand.api.item.controller.dto;
 
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.domain.Status;

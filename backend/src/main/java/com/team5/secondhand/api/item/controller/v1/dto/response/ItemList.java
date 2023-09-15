@@ -1,5 +1,6 @@
-package com.team5.secondhand.api.item.dto.response;
+package com.team5.secondhand.api.item.controller.v1.dto.response;
 
+import com.team5.secondhand.api.item.controller.dto.ItemSummary;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

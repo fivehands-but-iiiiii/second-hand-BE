@@ -1,42 +1,41 @@
-package com.team5.secondhand.api.item.dto.request;
+package com.team5.secondhand.api.item.controller.v1.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.team5.secondhand.api.item.domain.Item;
-import com.team5.secondhand.api.item.domain.ItemCounts;
-import com.team5.secondhand.api.item.domain.Status;
+import com.team5.secondhand.api.item.domain.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
-import java.util.Optional;
 
 @Getter
 @RequiredArgsConstructor
-public class ItemPostWithUrl {
+public class ItemPost {
     @NotNull
     private final String title;
+    @Size(max = 2000000)
     private final String contents;
     @NotNull
     private final Long category;
     @NotNull
     private final Long region;
+    @Size(min = 0)
     private final int price;
     @NotNull
-    private final List<ItemImage> images;
+    @Size(min = 1, max = 10)
+    private final List<MultipartFile> images;
 
-    @JsonIgnore
-    public Optional<ItemImage> getFirstImageUrl() {
-        return images.stream().sorted().findAny();
-    }
-
-    public Item toEntity() {
+    public Item toEntity(List<ItemDetailImage> images) {
         return Item.builder()
                 .title(title)
-                .category(category)
                 .price(price)
+                .category(category)
                 .status(Status.ON_SALE)
                 .count(ItemCounts.createRelated())
+                .contents(ItemContents.createdRelated(contents, images))
+                .isDeleted(false)
                 .build();
     }
 }

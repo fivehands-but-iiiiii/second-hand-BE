@@ -9,13 +9,12 @@ import com.team5.secondhand.api.chatroom.exception.ExistChatRoomException;
 import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.exception.ExistItemException;
-import com.team5.secondhand.api.item.service.ItemService;
+import com.team5.secondhand.api.item.service.ItemReadService;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.exception.ExistMemberIdException;
 import com.team5.secondhand.api.member.service.MemberService;
 import com.team5.secondhand.chat.chatroom.service.ChatroomCacheService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -27,10 +26,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ChatroomFacade {
     private final ChatroomService chatRoomService;
-    private final ItemService itemService;
+    private final ItemReadService itemService;
     private final MemberService memberService;
     private final ChatroomCacheService chatroomCacheService;
-    private final ApplicationEventPublisher eventPublisher;
 
     private final int FILTER_SIZE = 10;
 
