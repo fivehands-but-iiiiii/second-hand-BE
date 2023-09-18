@@ -1,6 +1,7 @@
 package com.team5.secondhand.api.item.controller.v2;
 
-import com.team5.secondhand.api.item.controller.v2.dto.FilteredItems;
+import com.team5.secondhand.api.item.controller.v2.dto.ItemsRequest;
+import com.team5.secondhand.api.item.controller.v2.dto.ItemsResponse;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.region.exception.NotValidRegionException;
 import com.team5.secondhand.global.dto.GenericResponse;
@@ -26,8 +27,8 @@ public class ItemControllerV2 {
             description = "사용자는 자신의 동네의 상품 목록을 볼 수 있다."
     )
     @GetMapping
-    public GenericResponse<FilteredItems.Response> getItemList(FilteredItems.Request request, @RequestAttribute(required = false) MemberDetails loginMember) throws NotValidRegionException {
-        FilteredItems.Response allFilteredItems = itemFacade.findAllFilteredItems(request, loginMember);
+    public GenericResponse<ItemsResponse> getItemList(ItemsRequest itemsRequest, @RequestAttribute(required = false) MemberDetails loginMember) throws NotValidRegionException {
+        ItemsResponse allFilteredItems = itemFacade.findAllFilteredItems(itemsRequest, loginMember);
         return GenericResponse.send("상품 목록이 조회되었습니다.", allFilteredItems);
     }
 }

@@ -10,8 +10,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public
-class ItemsResponse implements Serializable {
+public class ItemsResponse implements Serializable {
     private final Long last;
     private final boolean hasPrevious;
     private final boolean hasNext;
