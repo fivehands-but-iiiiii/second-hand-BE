@@ -1,6 +1,6 @@
 package com.team5.secondhand.api.item.domain;
 
-import com.team5.secondhand.api.item.dto.request.ItemImage;
+import com.team5.secondhand.api.item.controller.v1.dto.request.ItemImage;
 import com.team5.secondhand.api.item.util.ImageUrlConverter;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;

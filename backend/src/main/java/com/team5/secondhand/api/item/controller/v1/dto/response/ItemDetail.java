@@ -1,8 +1,8 @@
-package com.team5.secondhand.api.item.dto.response;
+package com.team5.secondhand.api.item.controller.v1.dto.response;
 
+import com.team5.secondhand.api.item.controller.v1.dto.request.ItemImage;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.domain.Status;
-import com.team5.secondhand.api.item.dto.request.ItemImage;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

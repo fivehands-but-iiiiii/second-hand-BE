@@ -3,6 +3,7 @@ package com.team5.secondhand.api.item.repository;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.domain.Status;
 import com.team5.secondhand.api.region.domain.Region;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,6 +20,8 @@ public interface ItemRepository extends JpaRepository<Item, Long>, ItemSliceRepo
     Optional<Item> findById(Long id);
 
     Slice<Item> findAllByRegion(Region region, Pageable pageable);
+
+    Optional<Item> getTopByRegion(Region region);
 
     int countAllByRegion(Region region);
 

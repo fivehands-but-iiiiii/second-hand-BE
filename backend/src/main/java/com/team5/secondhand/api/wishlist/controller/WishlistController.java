@@ -2,7 +2,7 @@ package com.team5.secondhand.api.wishlist.controller;
 
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.exception.ExistItemException;
-import com.team5.secondhand.api.item.service.ItemService;
+import com.team5.secondhand.api.item.service.ItemReadService;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.member.exception.ExistMemberIdException;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 public class WishlistController {
     private final WishlistService wishlistService;
     private final MemberService memberService;
-    private final ItemService itemService;
+    private final ItemReadService itemService;
 
     @Operation(
             summary = "좋아요 누르기",

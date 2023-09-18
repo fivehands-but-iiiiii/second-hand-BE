@@ -1,15 +1,14 @@
-package com.team5.secondhand.api.item.dto.request;
+package com.team5.secondhand.api.item.controller.v2.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 @Getter
 @RequiredArgsConstructor
-public class ItemFilteredSlice {
-    @Size(min = 0)
-    private final int page;
+public class ItemsRequest implements Serializable {
+    private final Long last;
     private final Long sellerId;
     private final Long regionId;
     private final Boolean isSales;
