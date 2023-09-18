@@ -1,4 +1,4 @@
-package com.team5.secondhand.api.item.controller.v1.dto.response;
+package com.team5.secondhand.api.item.controller.v2.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team5.secondhand.api.item.controller.dto.ItemSummary;
@@ -10,14 +10,15 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class ItemList implements Serializable {
-    private final int number;
+public
+class ItemsResponse implements Serializable {
+    private final Long last;
     private final boolean hasPrevious;
     private final boolean hasNext;
     private final List<ItemSummary> items;
 
     @JsonIgnore
-    public static ItemList getSlice(int number, boolean hasPrevious, boolean hasNext, List<ItemSummary> contents){
-        return new ItemList(number, hasPrevious, hasNext, contents);
+    public static ItemsResponse getSlice(Long last, boolean hasPrevious, boolean hasNext, List<ItemSummary> contents){
+        return new ItemsResponse(last, hasPrevious, hasNext, contents);
     }
 }

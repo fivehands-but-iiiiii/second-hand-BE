@@ -42,7 +42,7 @@ public class Item extends UpdatedTimeEntity {
     @JoinColumn(name = "region_id")
     private Region region;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "item_counts_id")
     private ItemCounts count;
 

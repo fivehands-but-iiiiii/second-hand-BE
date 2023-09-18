@@ -12,5 +12,5 @@ public interface ItemSliceRepository {
 
     Slice<Item> findAllByBasedRegion(Long categoryId, Long sellerId, List<Status> sales, Region region, Pageable pageable);
 
-    Slice<Item> findAllByIdAndRegion(Long last, Long categoryId, Long sellerId, List<Status> sales, Region region, Pageable pageable);
+    Slice<Item> findAllByIdAndRegion(Long last, Long categoryId, Long sellerId, List<Status> sales, Long regionId, Pageable pageable);
 }

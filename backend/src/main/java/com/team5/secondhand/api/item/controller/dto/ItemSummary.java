@@ -1,18 +1,21 @@
 package com.team5.secondhand.api.item.controller.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.domain.Status;
+import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.region.dto.RegionSummary;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 @Getter
 @Builder
 @RequiredArgsConstructor
-public class ItemSummary {
+public class ItemSummary implements Serializable {
     private final Long id;
     private final String title;
     private final String thumbnailUrl;
@@ -25,12 +28,13 @@ public class ItemSummary {
     private final Long likeCount;
     private final Boolean isLike;
 
-    public static ItemSummary of(Item item, Boolean isLike) {
+    @JsonIgnore
+    public static ItemSummary of(Region region, Item item, Boolean isLike) {
         return ItemSummary.builder()
                 .id(item.getId())
                 .title(item.getTitle())
                 .thumbnailUrl(item.getThumbnailUrl())
-                .region(RegionSummary.fromRegion(item.getRegion()))
+                .region(RegionSummary.fromRegion(region))
                 .createdAt(item.getCreatedAt())
                 .price(item.getPrice())
                 .status(item.getStatus())

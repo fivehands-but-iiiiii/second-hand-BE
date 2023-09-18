@@ -41,7 +41,7 @@ BEGIN
 
     SET i = i + 1;
 
-    -- 100000건마다 COMMIT 수행
+    -- 10000건마다 COMMIT 수행
     IF i % 10000 = 0 THEN
       COMMIT;
     END IF;
