@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.time.Instant;
+
 @Getter
 @RequiredArgsConstructor
 public class ChatroomSummary {
@@ -13,6 +15,7 @@ public class ChatroomSummary {
     private final ChatMember opponent;
     private final ChatItemSummary item;
     private ChatLog chatLogs;
+    private Instant lastUpdate;
 
     @Builder
     private ChatroomSummary(String chatroomId, ChatMember opponent, ChatItemSummary item, ChatLog chatLogs) {
@@ -40,7 +43,7 @@ public class ChatroomSummary {
 
     public ChatroomSummary addChatLogs(ChatLog chatLog) {
         this.chatLogs = chatLog;
-
+        this.lastUpdate = chatLog.getUpdateAt();
         return this;
     }
 }

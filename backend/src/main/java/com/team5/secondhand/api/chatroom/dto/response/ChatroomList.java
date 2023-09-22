@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Getter
@@ -33,7 +35,10 @@ public class ChatroomList {
 
     public ChatroomList addLastMessage(List<ChatroomSummary> chatRooms) {
         this.chatRooms = chatRooms;
-
         return this;
+    }
+
+    public void sort() {
+        chatRooms.sort(Comparator.comparing(ChatroomSummary::getLastUpdate).reversed());
     }
 }
