@@ -35,6 +35,7 @@ public class Chatroom implements Serializable { // NoSQL 에 저장될 자료 �
         return Chatroom.builder()
                 .chatroomId(info.getRoomId())
                 .participants(Participants.init(info.getMembers()))
+                .updateAt(Instant.now())
                 .lastMessage("")
                 .build();
     }
@@ -43,6 +44,7 @@ public class Chatroom implements Serializable { // NoSQL 에 저장될 자료 �
         return Chatroom.builder()
                 .chatroomId(chatroomId)
                 .participants(Participants.init(List.of(memberId)))
+                .updateAt(Instant.now())
                 .lastMessage("")
                 .build();
     }

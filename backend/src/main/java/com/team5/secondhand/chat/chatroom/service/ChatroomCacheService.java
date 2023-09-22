@@ -52,7 +52,8 @@ public class ChatroomCacheService {
     @Transactional(readOnly = true)
     public List<ChatroomSummary> addLastMessage(List<ChatroomSummary> chatroomSummaries, String memberId) {
 
-        return chatroomSummaries.stream().map(s -> s.addChatLogs(getMessageInfo(s.getChatroomId(), memberId)))
+        return chatroomSummaries.stream()
+                .map(s -> s.addChatLogs(getMessageInfo(s.getChatroomId(), memberId)))
                 .collect(Collectors.toList());
     }
 
