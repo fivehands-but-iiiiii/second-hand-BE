@@ -44,6 +44,13 @@ public class ChatroomSummary {
                 .build();
     }
 
+    public Instant getLastUpdate() {
+        if (this.lastUpdate==null) {
+            return Instant.now();
+        }
+        return this.lastUpdate;
+    }
+
     public ChatroomSummary addChatLogs(ChatLog chatLog) {
         this.chatLogs = chatLog;
         this.lastUpdate = chatLog.getUpdateAt();
