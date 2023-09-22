@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -17,7 +18,8 @@ class ChatController {
     private final ChannelTopic chatTopic;
 
     @MessageMapping("/message")
-    public void message(ChatBubble message) {
+    public void message(ChatBubble message, SimpMessageHeaderAccessor messageHeaderAccessor) {
+        messageHeaderAccessor.getSessionAttributes();
         log.debug("pub controller");
         redisMessagePublisher.publish(chatTopic.getTopic(), message);
     }
