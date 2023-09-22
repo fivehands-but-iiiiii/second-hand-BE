@@ -35,7 +35,6 @@ public class ItemReadService {
     private final CheckMemberLikedUsecase checkMemberLiked;
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "itemsPage", key = "#region.id+'-'+#request.page")
     public ItemList getItemList(ItemFilteredSlice request, Region region, MemberDetails loginMember) {
         Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
 
@@ -55,7 +54,6 @@ public class ItemReadService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "items", key = "#itemsRequest.last + '-' + #region.id")
     public ItemsResponse getItemList(ItemsRequest itemsRequest, Region region, MemberDetails loginMember) {
         Pageable pageable = PageRequest.ofSize(PAGE_SIZE);
         Slice<Item> pageResult = itemRepository.findAllByIdAndRegion(itemsRequest.getLast(), itemsRequest.getCategoryId(), itemsRequest.getSellerId(), Status.isSales(itemsRequest.getIsSales()), region.getId(), pageable);
@@ -112,7 +110,6 @@ public class ItemReadService {
      * @return
      * @throws ExistItemException
      */
-    @Cacheable(value = "aItem", key = "id")
     @Transactional(readOnly = true)
     @Lock(LockModeType.OPTIMISTIC)
     public ItemDetail viewAItem(Long id, MemberDetails member, Boolean isLike) throws ExistItemException {

@@ -21,7 +21,6 @@ public class ItemPostService {
     private final ItemRepository itemRepository;
 
     @Transactional
-    @CachePut(value = "myItem", key = "#seller.id")
     public Long postItem(Item item, Member seller, Region region, String thumbnailUrl) {
         item.updateThumbnail(thumbnailUrl);
         itemRepository.save(item.owned(seller, region));
@@ -29,7 +28,6 @@ public class ItemPostService {
     }
 
     @Transactional
-    @CachePut(value = "aItem", key = "#id")
     public void updateItem(Long id, ItemPostWithUrl itemPost, Member seller) throws ExistItemException, UnauthorizedException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
 
