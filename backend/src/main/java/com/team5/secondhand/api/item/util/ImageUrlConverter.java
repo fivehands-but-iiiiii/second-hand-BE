@@ -14,7 +14,6 @@ public class ImageUrlConverter implements AttributeConverter<List<ItemDetailImag
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    //@SneakyThrows
     @Override
     public String convertToDatabaseColumn(List<ItemDetailImage> attribute) {
         try {

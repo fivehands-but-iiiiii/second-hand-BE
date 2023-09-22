@@ -34,8 +34,8 @@ public class ItemReadService {
     private final ItemRepository itemRepository;
     private final CheckMemberLikedUsecase checkMemberLiked;
 
-    @Cacheable(value = "itemsPage", key = "#region.id+'-'+#request.page")
     @Transactional(readOnly = true)
+    @Cacheable(value = "itemsPage", key = "#region.id+'-'+#request.page")
     public ItemList getItemList(ItemFilteredSlice request, Region region, MemberDetails loginMember) {
         Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
 
@@ -104,9 +104,17 @@ public class ItemReadService {
         return items;
     }
 
-     @Cacheable(value = "aItem", key = "id")
+    /**
+     * java docs
+     * @param id
+     * @param member
+     * @param isLike
+     * @return
+     * @throws ExistItemException
+     */
+    @Cacheable(value = "aItem", key = "id")
     @Transactional(readOnly = true)
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Lock(LockModeType.OPTIMISTIC)
     public ItemDetail viewAItem(Long id, MemberDetails member, Boolean isLike) throws ExistItemException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
         itemRepository.updateHits(item.getCount().getId());
