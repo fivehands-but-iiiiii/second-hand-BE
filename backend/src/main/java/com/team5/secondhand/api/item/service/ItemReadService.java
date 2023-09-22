@@ -110,8 +110,7 @@ public class ItemReadService {
      * @return
      * @throws ExistItemException
      */
-    @Transactional(readOnly = true)
-    @Lock(LockModeType.OPTIMISTIC)
+    @Transactional
     public ItemDetail viewAItem(Long id, MemberDetails member, Boolean isLike) throws ExistItemException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
         itemRepository.updateHits(item.getCount().getId());
