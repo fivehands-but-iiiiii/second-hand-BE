@@ -54,6 +54,7 @@ public class ItemReadService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "items", key = "#itemsRequest.last + '-' + #region.id")
     public ItemsResponse getItemList(ItemsRequest itemsRequest, Region region, MemberDetails loginMember) {
         Pageable pageable = PageRequest.ofSize(PAGE_SIZE);
         Slice<Item> pageResult = itemRepository.findAllByIdAndRegion(itemsRequest.getLast(), itemsRequest.getCategoryId(), itemsRequest.getSellerId(), Status.isSales(itemsRequest.getIsSales()), region.getId(), pageable);
