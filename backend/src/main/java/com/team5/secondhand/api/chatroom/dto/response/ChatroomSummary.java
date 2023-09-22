@@ -18,11 +18,12 @@ public class ChatroomSummary {
     private Instant lastUpdate;
 
     @Builder
-    private ChatroomSummary(String chatroomId, ChatMember opponent, ChatItemSummary item, ChatLog chatLogs) {
+    public ChatroomSummary(String chatroomId, ChatMember opponent, ChatItemSummary item, ChatLog chatLogs, Instant lastUpdate) {
         this.chatroomId = chatroomId;
         this.opponent = opponent;
         this.item = item;
         this.chatLogs = chatLogs;
+        this.lastUpdate = lastUpdate;
     }
 
     public static ChatroomSummary of(Chatroom chatroom, Member member) {
@@ -30,6 +31,7 @@ public class ChatroomSummary {
                 .chatroomId(chatroom.getChatroomId().toString())
                 .opponent(ChatMember.of(chatroom.findOpponent(member)))
                 .item(ChatItemSummary.of(chatroom.getItem()))
+                .lastUpdate(Instant.now())
                 .build();
     }
 
@@ -38,6 +40,7 @@ public class ChatroomSummary {
                 .chatroomId(chatroom.getChatroomId().toString())
                 .opponent(ChatMember.of(chatroom.getBuyer()))
                 .item(ChatItemSummary.of(chatroom.getItem()))
+                .lastUpdate(Instant.now())
                 .build();
     }
 
