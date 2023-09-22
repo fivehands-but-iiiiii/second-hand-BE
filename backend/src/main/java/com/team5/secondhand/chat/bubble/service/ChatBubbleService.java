@@ -30,7 +30,7 @@ public class ChatBubbleService {
     public Slice<ChatBubble> getChatBubbles(int page, String roomId) {
 //        ListOperations<String, ChatBubble> listOperations = redisChatBubbleTemplate.opsForList();
         String key = generateChatLogKey(roomId);
-        Pageable pageable = PageRequest.of(page, chatLoadSize, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(page, chatLoadSize, Sort.by("createdAt").descending());
         Slice<ChatBubble> list = chatBubbleRepository.findAllByRoomId(roomId, pageable);
         ChatBubble last = chatBubbleRepository.findFirstByOrderByIdDesc();
 

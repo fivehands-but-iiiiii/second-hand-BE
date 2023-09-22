@@ -1,7 +1,7 @@
 package com.team5.secondhand.api.item.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.team5.secondhand.api.item.dto.request.ItemPostWithUrl;
+import com.team5.secondhand.api.item.controller.v1.dto.request.ItemPostWithUrl;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.global.model.UpdatedTimeEntity;
@@ -42,7 +42,7 @@ public class Item extends UpdatedTimeEntity {
     @JoinColumn(name = "region_id")
     private Region region;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "item_counts_id")
     private ItemCounts count;
 

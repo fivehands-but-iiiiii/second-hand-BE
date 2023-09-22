@@ -62,4 +62,7 @@ public class ChatConfig {
     public ChannelTopic chatTopic() {
         return new ChannelTopic("chatRoom");
     }
+    public ChannelTopic notificationTopic() {
+        return new ChannelTopic("notification");
+    }
 }

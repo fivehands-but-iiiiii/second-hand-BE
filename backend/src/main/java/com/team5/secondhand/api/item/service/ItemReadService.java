@@ -1,19 +1,20 @@
 package com.team5.secondhand.api.item.service;
 
+import com.team5.secondhand.api.item.controller.dto.ItemSummary;
+import com.team5.secondhand.api.item.controller.v1.dto.request.ItemFilteredSlice;
+import com.team5.secondhand.api.item.controller.v1.dto.response.*;
+import com.team5.secondhand.api.item.controller.v2.dto.ItemsRequest;
+import com.team5.secondhand.api.item.controller.v2.dto.ItemsResponse;
 import com.team5.secondhand.api.item.domain.Item;
-import com.team5.secondhand.api.item.dto.request.ItemPostWithUrl;
 import com.team5.secondhand.api.item.domain.Status;
-import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
-import com.team5.secondhand.api.item.dto.request.MyItemFilteredSlice;
-import com.team5.secondhand.api.item.dto.response.*;
+import com.team5.secondhand.api.item.controller.v1.dto.request.MyItemFilteredSlice;
 import com.team5.secondhand.api.item.exception.ExistItemException;
 import com.team5.secondhand.api.item.repository.ItemRepository;
-import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
-import com.team5.secondhand.api.member.exception.UnauthorizedException;
 import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.wishlist.service.CheckMemberLikedUsecase;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ItemService {
+public class ItemReadService {
 
     private final int PAGE_SIZE = 10;
 
@@ -34,6 +35,7 @@ public class ItemService {
     private final CheckMemberLikedUsecase checkMemberLiked;
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "itemsPage", key = "#region.id+'-'+#request.page")
     public ItemList getItemList(ItemFilteredSlice request, Region region, MemberDetails loginMember) {
         Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
 
@@ -42,18 +44,38 @@ public class ItemService {
 
         List<ItemSummary> items = new ArrayList<>();
         if (!loginMember.isEmpty()) {
-            items = getItemSummariesWithIsLike(loginMember, itemEntities);
+            items = getItemSummariesWithIsLike(loginMember, region, itemEntities);
         }
 
         if (loginMember.isEmpty()) {
-            items = getItemSummaries(itemEntities);
+            items = getItemSummaries(region, itemEntities);
         }
 
         return ItemList.getSlice(pageResult.getNumber(), pageResult.hasPrevious(), pageResult.hasNext(), items);
     }
 
     @Transactional(readOnly = true)
-    public MyItemList getMyItemList(MyItemFilteredSlice request, MemberDetails loginMember) throws UnauthorizedException {
+    @Cacheable(value = "items", key = "#itemsRequest.last + '-' + #region.id")
+    public ItemsResponse getItemList(ItemsRequest itemsRequest, Region region, MemberDetails loginMember) {
+        Pageable pageable = PageRequest.ofSize(PAGE_SIZE);
+        Slice<Item> pageResult = itemRepository.findAllByIdAndRegion(itemsRequest.getLast(), itemsRequest.getCategoryId(), itemsRequest.getSellerId(), Status.isSales(itemsRequest.getIsSales()), region.getId(), pageable);
+
+        List<Item> itemEntities = pageResult.getContent();
+        List<ItemSummary> items = new ArrayList<>();
+        if (!loginMember.isEmpty()) {
+            items = getItemSummariesWithIsLike(loginMember, region, itemEntities);
+        }
+
+        if (loginMember.isEmpty()) {
+            items = getItemSummaries(region, itemEntities);
+        }
+
+        return ItemsResponse.getSlice(items.get(items.size()-1).getId(), pageResult.hasPrevious(), pageResult.hasNext(), items);
+    }
+
+    @Cacheable(value = "myItem", key = "#loginMember.id")
+    @Transactional(readOnly = true)
+    public MyItemList getMyItemList(MyItemFilteredSlice request, MemberDetails loginMember) {
         Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
 
         Slice<Item> pageResult = itemRepository.findAllByBasedRegion(null, loginMember.getId(), Status.isSales(request.getIsSales()), null, pageable);
@@ -63,47 +85,36 @@ public class ItemService {
         return MyItemList.getSlice(pageResult.getNumber(), pageResult.hasPrevious(), pageResult.hasNext(), items);
     }
 
-    private List<ItemSummary> getItemSummaries(List<Item> itemEntities) {
-        return itemEntities.stream().map(e -> ItemSummary.of(e, false)).collect(Collectors.toList());
+    private List<ItemSummary> getItemSummaries(Region region, List<Item> itemEntities) {
+        return itemEntities.stream().map(e -> ItemSummary.of(region, e, false)).collect(Collectors.toList());
     }
 
     private List<MyItemSummary> getMyItemSummaries(List<Item> itemEntities) {
         return itemEntities.stream().map(MyItemSummary::of).collect(Collectors.toList());
     }
 
-    private List<ItemSummary> getItemSummariesWithIsLike(MemberDetails loginMember, List<Item> itemEntities) {
+    private List<ItemSummary> getItemSummariesWithIsLike(MemberDetails loginMember, Region region, List<Item> itemEntities) {
         List<ItemSummary> items = new ArrayList<>();
         List<Long> itemId = itemEntities.stream().map(Item::getId).collect(Collectors.toList());
         List<Boolean> memberLiked = checkMemberLiked.isMemberLiked(itemId, loginMember.getId());
 
         for (int i = 0; i < itemId.size(); i++) {
-            items.add(ItemSummary.of(itemEntities.get(i), memberLiked.get(i)));
+            items.add(ItemSummary.of(region, itemEntities.get(i), memberLiked.get(i)));
         }
         return items;
     }
 
-    @Transactional
-    public Long postItem(Item item, Member seller, Region region, String thumbnailUrl) {
-        item.updateThumbnail(thumbnailUrl);
-        itemRepository.save(item.owned(seller, region));
-        return item.getId();
-    }
-
-    @Transactional
-    public void updateItem(Long id, ItemPostWithUrl itemPost, Member seller) throws ExistItemException, UnauthorizedException {
-        Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
-
-        if (!item.isSeller(seller.getId())) {
-            throw new UnauthorizedException("본인의 글만 수정할 수 있습니다.");
-        }
-
-        Item newItem = item.updatePost(itemPost, itemPost.getImages().get(0).getUrl());
-        itemRepository.save(newItem);
-    }
-
-    // @Cacheable(value = "itemCache")
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Transactional
+    /**
+     * java docs
+     * @param id
+     * @param member
+     * @param isLike
+     * @return
+     * @throws ExistItemException
+     */
+    @Cacheable(value = "aItem", key = "id")
+    @Transactional(readOnly = true)
+    @Lock(LockModeType.OPTIMISTIC)
     public ItemDetail viewAItem(Long id, MemberDetails member, Boolean isLike) throws ExistItemException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
         itemRepository.updateHits(item.getCount().getId());
@@ -115,28 +126,19 @@ public class ItemService {
         return ItemDetail.of(item, isSeller, isLike);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public CategoryList getCategoryList(Long regionId) {
         List<Long> categories = itemRepository.countCategoryByRegion(regionId);
         return CategoryList.of(categories);
     }
 
-    @Transactional
-    public boolean updateItemStatus(Long id, Status status) {
-        return itemRepository.updateStatus(id, status) == 1;
+    public Item findById(Long itemId) throws ExistItemException {
+        return itemRepository.findById(itemId).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
     }
 
+    @Transactional(readOnly = true)
     public boolean isValidSeller(Long id, long memberId) {
         Item item = itemRepository.findById(id).orElseThrow();
         return item.isSeller(memberId);
-    }
-
-    public void deleteById(Long id) {
-        itemRepository.deleteById(id);
-    }
-
-    public Item findById(Long itemId) throws ExistItemException {
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
-        return item;
     }
 }

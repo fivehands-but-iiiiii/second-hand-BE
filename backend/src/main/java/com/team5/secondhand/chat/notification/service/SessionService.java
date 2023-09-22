@@ -1,4 +1,4 @@
-package com.team5.secondhand.chat.session.service;
+package com.team5.secondhand.chat.notification.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

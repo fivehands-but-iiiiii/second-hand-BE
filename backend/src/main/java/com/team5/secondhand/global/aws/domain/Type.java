@@ -13,5 +13,4 @@ public enum Type {
     public static boolean isValidType(String name) {
         return Arrays.stream(values()).anyMatch(t -> t.suffix.endsWith(name.toLowerCase()));
     }
-
 }

@@ -1,9 +1,10 @@
 package com.team5.secondhand.api.item.domain;
 
-import com.team5.secondhand.api.item.dto.request.ItemImage;
+import com.team5.secondhand.api.item.controller.v1.dto.request.ItemImage;
 import com.team5.secondhand.api.item.util.ImageUrlConverter;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
+import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -12,8 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Entity
-@Getter
-@ToString
+@Getter @ToString @Validated
 @Table(name = "item_contents")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE item_contents SET is_deleted = true WHERE id = ?")

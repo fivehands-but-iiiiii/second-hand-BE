@@ -26,4 +26,12 @@ public class ChatLog {
                 .unReadCount(chatroom.getParticipants().getInfo().get(memberId).getMessageStock())
                 .build();
     }
+
+    public static ChatLog empty() {
+        return ChatLog.builder()
+                .lastMessage("")
+                .updateAt(null)
+                .unReadCount(0)
+                .build();
+    }
 }

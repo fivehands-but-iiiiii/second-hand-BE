@@ -47,6 +47,9 @@ dependencies {
             "com.querydsl:querydsl-apt:5.0.0:jpa"
     )
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    //자바 역직렬화 문제 해결 패키지
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 }
 
 clean {

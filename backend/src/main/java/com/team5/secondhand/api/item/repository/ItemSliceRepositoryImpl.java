@@ -24,21 +24,40 @@ public class ItemSliceRepositoryImpl implements ItemSliceRepository {
 
     @Override
     public Slice<Item> findAllByBasedRegion(Long categoryId, Long sellerId, List<Status> sales, Region region, Pageable pageable) {
-        int pageSize = pageable.getPageSize();
+        int pageSize = pageable.getPageSize()+1;
 
         List<Item> fetch = jpaQueryFactory.selectFrom(item)
                 .where(
-                        eqRegion(region),
+                        eqRegion(region.getId()),
                         eqCategory(categoryId),
                         inSales(sales),
                         eqSeller(sellerId),
                         item.isDeleted.eq(false)
                 )
                 .offset(pageable.getOffset())
-                .limit(pageSize+1)
+                .limit(pageSize)
                 .orderBy(item.id.desc())
                 .fetch();
-        return new SliceImpl<>(getContents(fetch, pageSize), pageable, hasNext(fetch, pageSize));
+        return new SliceImpl<>(getContents(fetch, pageSize-1), pageable, hasNext(fetch, pageSize-1));
+    }
+
+    @Override
+    public Slice<Item> findAllByIdAndRegion(Long last, Long categoryId, Long sellerId, List<Status> sales, Long regionId, Pageable pageable) {
+        int pageSize = pageable.getPageSize()+1;
+
+        List<Item> fetch = jpaQueryFactory.selectFrom(item)
+                .where(
+                        eqLast(last),
+                        eqRegion(regionId),
+                        eqCategory(categoryId),
+                        inSales(sales),
+                        eqSeller(sellerId),
+                        item.isDeleted.eq(false)
+                )
+                .limit(pageSize)
+                .orderBy(item.id.desc())
+                .fetch();
+        return new SliceImpl<>(getContents(fetch, pageSize-1), pageable, hasNext(fetch, pageSize-1));
     }
 
     private boolean hasNext(List<Item> fetch, int pageSize) {
@@ -47,6 +66,14 @@ public class ItemSliceRepositoryImpl implements ItemSliceRepository {
 
     private List<Item> getContents(List<Item> fetch, int pageSize) {
         return fetch.subList(0, Math.min(fetch.size(), pageSize));
+    }
+
+    private BooleanExpression eqLast(Long last) {
+        if (last == null) {
+            return null; // BooleanExpression 자리에 null이 반환되면 조건문에서 자동으로 제거된다
+        }
+
+        return item.id.lt(last);
     }
 
     private BooleanExpression eqSeller(Long sellerId) {
@@ -70,10 +97,10 @@ public class ItemSliceRepositoryImpl implements ItemSliceRepository {
         return item.category.eq(categoryId);
     }
 
-    private BooleanExpression eqRegion(Region region) {
-        if (region == null) {
+    private BooleanExpression eqRegion(Long regionId) {
+        if (regionId == null) {
             return null;
         }
-        return item.region.eq(region);
+        return item.region.id.eq(regionId);
     }
 }

@@ -7,12 +7,14 @@ import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.chat.chatroom.domain.Chatroom;
 import com.team5.secondhand.chat.chatroom.repository.ChatroomMetaRepository;
+import com.team5.secondhand.global.event.Events;
 import com.team5.secondhand.global.event.chatbubble.ChatBubbleArrivedEvent;
 import com.team5.secondhand.global.event.chatbubble.ChatNotificationEvent;
 import com.team5.secondhand.global.event.chatroom.ChatroomCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,6 +56,7 @@ public class ChatroomCacheService {
                 .collect(Collectors.toList());
     }
 
+    @Async
     @EventListener
     public void chatroomCreatedEventHandler(ChatroomCreatedEvent event) {
         ChatroomInfo info = event.getInfo();
@@ -61,12 +64,13 @@ public class ChatroomCacheService {
         metaInfoRepository.save(chatroom);
     }
 
+    @Async
     @EventListener
     public void chatBubbleArrivedEventHandler(ChatBubbleArrivedEvent event) throws NotChatroomMemberException {
         ChatBubble chatBubble = event.getChatBubble();
         Chatroom chatroom = getChatroom(chatBubble.getRoomId());
         chatroom.updateLastMessage(chatBubble);
         Chatroom saveChatroom = metaInfoRepository.save(chatroom);
-        eventPublisher.publishEvent(ChatNotificationEvent.of(saveChatroom,chatBubble));
+        Events.raise(ChatNotificationEvent.of(saveChatroom, chatBubble));
     }
 }

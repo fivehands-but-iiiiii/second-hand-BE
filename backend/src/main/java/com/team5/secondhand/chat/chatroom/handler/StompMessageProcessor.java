@@ -2,7 +2,7 @@ package com.team5.secondhand.chat.chatroom.handler;
 
 import com.team5.secondhand.chat.chatroom.service.ChatroomCacheService;
 import com.team5.secondhand.chat.exception.ErrorType;
-import com.team5.secondhand.chat.session.service.SessionService;
+import com.team5.secondhand.chat.notification.service.SessionService;
 import com.team5.secondhand.global.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

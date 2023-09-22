@@ -1,15 +1,19 @@
-package com.team5.secondhand.api.item.controller;
+package com.team5.secondhand.api.item.controller.v1;
 
+import com.team5.secondhand.api.item.controller.v1.dto.response.CategoryList;
+import com.team5.secondhand.api.item.controller.v1.dto.response.ItemDetail;
+import com.team5.secondhand.api.item.controller.v1.dto.response.ItemList;
+import com.team5.secondhand.api.item.controller.v1.dto.response.MyItemList;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.domain.ItemDetailImage;
-import com.team5.secondhand.api.item.dto.request.MyItemFilteredSlice;
-import com.team5.secondhand.api.item.dto.request.ItemFilteredSlice;
-import com.team5.secondhand.api.item.dto.request.ItemPost;
-import com.team5.secondhand.api.item.dto.request.ItemStatusUpdate;
-import com.team5.secondhand.api.item.dto.request.ItemPostWithUrl;
-import com.team5.secondhand.api.item.dto.response.*;
+import com.team5.secondhand.api.item.controller.v1.dto.request.MyItemFilteredSlice;
+import com.team5.secondhand.api.item.controller.v1.dto.request.ItemFilteredSlice;
+import com.team5.secondhand.api.item.controller.v1.dto.request.ItemPost;
+import com.team5.secondhand.api.item.controller.v1.dto.request.ItemStatusUpdate;
+import com.team5.secondhand.api.item.controller.v1.dto.request.ItemPostWithUrl;
 import com.team5.secondhand.api.item.exception.ExistItemException;
-import com.team5.secondhand.api.item.service.ItemService;
+import com.team5.secondhand.api.item.service.ItemPostService;
+import com.team5.secondhand.api.item.service.ItemReadService;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.member.exception.ExistMemberIdException;
@@ -38,9 +42,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
-public class ItemController {
+public class ItemControllerV1 {
 
-    private final ItemService itemService;
+    private final ItemReadService itemReadService;
+    private final ItemPostService itemPostService;
     private final GetValidRegionsUsecase getValidRegions;
     private final ItemDetailImageUpload detailImageUpload;
     private final ItemThumbnailImageUpload thumbnailImageUpload;
@@ -55,7 +60,7 @@ public class ItemController {
     @GetMapping
     public GenericResponse<ItemList> getItemList(ItemFilteredSlice itemSlice, @RequestAttribute(required = false) MemberDetails loginMember) throws NotValidRegionException {
         Region regions = getValidRegions.getRegion(itemSlice.getRegionId());
-        ItemList itemList = itemService.getItemList(itemSlice, regions, loginMember);
+        ItemList itemList = itemReadService.getItemList(itemSlice, regions, loginMember);
         return GenericResponse.send("상품 목록이 조회되었습니다.", itemList);
     }
 
@@ -70,7 +75,7 @@ public class ItemController {
             throw new UnauthorizedException("로그인이 필요한 기능입니다.");
         }
 
-        return GenericResponse.send("판매 내역이 조회되었습니다.", itemService.getMyItemList(itemSlice, loginMember));
+        return GenericResponse.send("판매 내역이 조회되었습니다.", itemReadService.getMyItemList(itemSlice, loginMember));
     }
 
     @Operation(
@@ -102,7 +107,7 @@ public class ItemController {
         Item item = itemPost.toEntity(itemDetailImages);
         String thumbnailUrl = thumbnailImageUpload.uploadItemThumbnailImage(item);
 
-        Long id = itemService.postItem(item, seller, region, thumbnailUrl);
+        Long id = itemPostService.postItem(item, seller, region, thumbnailUrl);
 
         return GenericResponse.send("상품 등록이 완료되었습니다.", id);
     }
@@ -117,7 +122,7 @@ public class ItemController {
         Member seller = memberService.findById(loginMember.getId());
         Region region = getValidRegions.getRegion(itemPost.getRegion());
 
-        itemService.updateItem(id, itemPost, seller);
+        itemPostService.updateItem(id, itemPost, seller);
 
         return GenericResponse.send("상품 수정이 완료되었습니다.", id);
     }
@@ -130,7 +135,7 @@ public class ItemController {
     @GetMapping("/{id}")
     public GenericResponse<ItemDetail> getItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember) throws ExistItemException {
         Boolean isLike = wishlistService.isMemberLiked(id, loginMember);
-        ItemDetail item = itemService.viewAItem(id, loginMember, isLike);
+        ItemDetail item = itemReadService.viewAItem(id, loginMember, isLike);
 
         return GenericResponse.send("상품 상세정보를 볼 수 있습니다.", item);
     }
@@ -143,11 +148,11 @@ public class ItemController {
     )
     @PatchMapping("/{id}/status")
     public GenericResponse<Boolean> updateItemStatus(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemStatusUpdate request) throws AuthenticationException {
-        if (!itemService.isValidSeller(id, loginMember.getId())) {
+        if (!itemReadService.isValidSeller(id, loginMember.getId())) {
             throw new AuthenticationException("글 작성자가 아닙니다.");
         }
 
-        boolean result = itemService.updateItemStatus(id, request.getStatus());
+        boolean result = itemPostService.updateItemStatus(id, request.getStatus());
         return GenericResponse.send("상품 판매글 상태가 업데이트 되었습니다.", result);
     }
 
@@ -158,11 +163,11 @@ public class ItemController {
     )
     @DeleteMapping("/{id}")
     public GenericResponse<Long> deleteId(@PathVariable Long id, @RequestAttribute MemberDetails loginMember) throws AuthenticationException {
-        if (!itemService.isValidSeller(id, loginMember.getId())) {
+        if (!itemReadService.isValidSeller(id, loginMember.getId())) {
             throw new AuthenticationException("글 작성자가 아닙니다.");
         }
 
-        itemService.deleteById(id);
+        itemPostService.deleteById(id);
         return GenericResponse.send("상품 판매글 상태가 삭제 되었습니다.", id);
     }
 
@@ -174,7 +179,7 @@ public class ItemController {
     )
     @GetMapping("/categories")
     public GenericResponse<CategoryList> getCategoryList(@RequestParam Long regionId) {
-        CategoryList categoryList = itemService.getCategoryList(regionId);
+        CategoryList categoryList = itemReadService.getCategoryList(regionId);
 
         return GenericResponse.send("카테고리 목록입니다.", categoryList);
     }
