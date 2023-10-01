@@ -5,7 +5,7 @@ import com.team5.secondhand.api.item.controller.v1.dto.response.ItemDetail;
 import com.team5.secondhand.api.item.controller.v1.dto.response.ItemList;
 import com.team5.secondhand.api.item.controller.v1.dto.response.MyItemList;
 import com.team5.secondhand.api.item.domain.Item;
-import com.team5.secondhand.api.item.domain.ItemDetailImage;
+import com.team5.secondhand.api.item.domain.ItemImage;
 import com.team5.secondhand.api.item.controller.v1.dto.request.MyItemFilteredSlice;
 import com.team5.secondhand.api.item.controller.v1.dto.request.ItemFilteredSlice;
 import com.team5.secondhand.api.item.controller.v1.dto.request.ItemPost;
@@ -102,9 +102,9 @@ public class ItemControllerV1 {
 
         Member seller = memberService.findById(loginMember.getId());
         Region region = getValidRegions.getRegion(itemPost.getRegion());
-        List<ItemDetailImage> itemDetailImages = detailImageUpload.uploadItemDetailImages(itemPost.getImages());
+        List<ItemImage> itemImages = detailImageUpload.uploadItemDetailImages(itemPost.getImages());
 
-        Item item = itemPost.toEntity(itemDetailImages);
+        Item item = itemPost.toEntity(itemImages);
         String thumbnailUrl = thumbnailImageUpload.uploadItemThumbnailImage(item);
 
         Long id = itemPostService.postItem(item, seller, region, thumbnailUrl);

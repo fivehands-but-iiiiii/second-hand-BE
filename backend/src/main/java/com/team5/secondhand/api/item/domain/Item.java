@@ -9,51 +9,37 @@ import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 @Entity
 @Getter
-@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE item SET is_deleted = true WHERE id = ?")
-@Access(AccessType.FIELD)
 public class Item extends UpdatedTimeEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull
-    @Size(min = 1, max = 45)
     private String title;
     private int price;
-    @NotNull
     private Long category;
-    @Size(max = 300)
     private String thumbnailUrl;
-    @NotNull
     @Enumerated(EnumType.STRING)
     private Status status;
-
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id")
     private Member seller;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id")
     private Region region;
-
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "item_counts_id")
     private ItemCounts count;
-
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "item_contents_id")
     private ItemContents contents;
-
     private Boolean isDeleted = Boolean.FALSE;
 
     @Builder
-    public Item(Long id, String title, int price, Long category, String thumbnailUrl, Status status, Member seller, Region region, ItemCounts count, ItemContents contents, Boolean isDeleted) {
+    protected Item(Long id, String title, int price, Long category, String thumbnailUrl, Status status, Member seller, Region region, ItemCounts count, ItemContents contents, Boolean isDeleted) {
         this.id = id;
         this.title = title;
         this.price = price;
@@ -67,43 +53,36 @@ public class Item extends UpdatedTimeEntity {
         this.isDeleted = isDeleted;
     }
 
-    public Item updatePost(ItemPostWithUrl itemPost, String thumbanilUrl) {
+    public Item updatePost(ItemPostWithUrl itemPost, String thumbnailUrl) {
         this.title = itemPost.getTitle();
         this.category = itemPost.getCategory();
         this.price = itemPost.getPrice();
-        this.thumbnailUrl = thumbanilUrl;
+        this.thumbnailUrl = thumbnailUrl;
         this.contents = contents.update(itemPost.getContents(), itemPost.getImages());
-
         return this;
     }
 
     @JsonIgnore
-    public ItemDetailImage getFirstDetailImage() {
+    public ItemImage getFirstDetailImage() {
         return contents.getFirstDetailImage();
     }
 
-    public Item sellerInfo(Member member, Region region) {
-        this.seller = member;
-        this.region = region;
+    public Item updateThumbnail(String thumbnail) {
+        this.thumbnailUrl = thumbnail;
         return this;
     }
 
-    public Item updateThumbnail(String thumbanilUrl) {
-        this.thumbnailUrl = thumbanilUrl;
-        return this;
-    }
-
-    public boolean isSeller(long memberId) {
-        return this.seller.equals(memberId);
-    }
-
-    public Item owned(Member seller, Region region) {
+    public Item assignOwnership(Member seller, Region region) {
         this.seller = seller;
         this.region = region;
         return this;
     }
 
-    public boolean isSameSellerAndBuyer(Member buyer) {
-        return seller.equals(buyer);
+    public boolean isSeller(Member member) {
+        return this.seller.equals(member);
+    }
+
+    public boolean isSeller(long memberId) {
+        return this.seller.equals(memberId);
     }
 }

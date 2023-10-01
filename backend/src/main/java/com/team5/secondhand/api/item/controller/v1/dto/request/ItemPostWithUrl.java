@@ -23,10 +23,10 @@ public class ItemPostWithUrl {
     private final Long region;
     private final int price;
     @NotNull
-    private final List<ItemImage> images;
+    private final List<RequestedItemImages> images;
 
     @JsonIgnore
-    public Optional<ItemImage> getFirstImageUrl() {
+    public Optional<RequestedItemImages> getFirstImageUrl() {
         return images.stream().sorted().findAny();
     }
 
@@ -36,7 +36,7 @@ public class ItemPostWithUrl {
                 .category(category)
                 .price(price)
                 .status(Status.ON_SALE)
-                .count(ItemCounts.createRelated())
+                .count(ItemCounts.initCounts())
                 .build();
     }
 }

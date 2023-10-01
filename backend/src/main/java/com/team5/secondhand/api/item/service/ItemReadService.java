@@ -16,11 +16,9 @@ import com.team5.secondhand.api.wishlist.service.CheckMemberLikedUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.*;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.LockModeType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +36,7 @@ public class ItemReadService {
     public ItemList getItemList(ItemFilteredSlice request, Region region, MemberDetails loginMember) {
         Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
 
-        Slice<Item> pageResult = itemRepository.findAllByBasedRegion(request.getCategoryId(), request.getSellerId(), Status.isSales(request.getIsSales()), region, pageable);
+        Slice<Item> pageResult = itemRepository.findAllByBasedRegion(request.getCategoryId(), request.getSellerId(), Status.isOnSales(request.getIsSales()), region, pageable);
         List<Item> itemEntities = pageResult.getContent();
 
         List<ItemSummary> items = new ArrayList<>();
@@ -57,7 +55,7 @@ public class ItemReadService {
     @Cacheable(value = "items", key = "#itemsRequest.last + '-' + #region.id")
     public ItemsResponse getItemList(ItemsRequest itemsRequest, Region region, MemberDetails loginMember) {
         Pageable pageable = PageRequest.ofSize(PAGE_SIZE);
-        Slice<Item> pageResult = itemRepository.findAllByIdAndRegion(itemsRequest.getLast(), itemsRequest.getCategoryId(), itemsRequest.getSellerId(), Status.isSales(itemsRequest.getIsSales()), region.getId(), pageable);
+        Slice<Item> pageResult = itemRepository.findAllByIdAndRegion(itemsRequest.getLast(), itemsRequest.getCategoryId(), itemsRequest.getSellerId(), Status.isOnSales(itemsRequest.getIsSales()), region.getId(), pageable);
 
         List<Item> itemEntities = pageResult.getContent();
         List<ItemSummary> items = new ArrayList<>();
@@ -72,12 +70,11 @@ public class ItemReadService {
         return ItemsResponse.getSlice(items.get(items.size()-1).getId(), pageResult.hasPrevious(), pageResult.hasNext(), items);
     }
 
-    @Cacheable(value = "myItem", key = "#loginMember.id")
     @Transactional(readOnly = true)
     public MyItemList getMyItemList(MyItemFilteredSlice request, MemberDetails loginMember) {
         Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
 
-        Slice<Item> pageResult = itemRepository.findAllByBasedRegion(null, loginMember.getId(), Status.isSales(request.getIsSales()), null, pageable);
+        Slice<Item> pageResult = itemRepository.findAllByBasedRegion(null, loginMember.getId(), Status.isOnSales(request.getIsSales()), null, pageable);
         List<Item> itemEntities = pageResult.getContent();
         List<MyItemSummary> items = getMyItemSummaries(itemEntities);
 
@@ -112,7 +109,8 @@ public class ItemReadService {
      * @throws ExistItemException
      */
     @Transactional
-    public ItemDetail viewAItem(Long id, MemberDetails member, Boolean isLike) throws ExistItemException {
+    @Cacheable(value = "aItem", key = "id")
+    public ItemDetail viewAItem(long id, MemberDetails member, Boolean isLike) throws ExistItemException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
         itemRepository.updateHits(item.getCount().getId());
 

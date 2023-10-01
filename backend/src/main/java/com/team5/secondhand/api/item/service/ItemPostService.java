@@ -10,7 +10,6 @@ import com.team5.secondhand.api.member.exception.UnauthorizedException;
 import com.team5.secondhand.api.region.domain.Region;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,16 +21,16 @@ public class ItemPostService {
 
     @Transactional
     public Long postItem(Item item, Member seller, Region region, String thumbnailUrl) {
-        item.updateThumbnail(thumbnailUrl);
-        itemRepository.save(item.owned(seller, region));
-        return item.getId();
+        Item updatedItem = item.updateThumbnail(thumbnailUrl)
+                .assignOwnership(seller, region);
+        return itemRepository.save(updatedItem).getId();
     }
 
     @Transactional
     public void updateItem(Long id, ItemPostWithUrl itemPost, Member seller) throws ExistItemException, UnauthorizedException {
         Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
 
-        if (!item.isSeller(seller.getId())) {
+        if (!item.isSeller(seller)) {
             throw new UnauthorizedException("본인의 글만 수정할 수 있습니다.");
         }
 

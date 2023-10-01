@@ -1,28 +1,27 @@
 package com.team5.secondhand.api.item.controller.v1.dto.request;
 
-import com.team5.secondhand.api.item.domain.ItemDetailImage;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class ItemImage {
+public class RequestedItemImages {
     private String url;
 
     @Builder
-    private ItemImage(String url) {
+    private RequestedItemImages(String url) {
         this.url = url;
     }
 
-    public ItemDetailImage toEntity() {
-        return ItemDetailImage.builder()
+    public com.team5.secondhand.api.item.domain.ItemImage toEntity() {
+        return com.team5.secondhand.api.item.domain.ItemImage.builder()
                 .url(this.url)
                 .build();
     }
 
-    public static ItemImage of(ItemDetailImage i) {
-        return ItemImage.builder()
+    public static RequestedItemImages of(com.team5.secondhand.api.item.domain.ItemImage i) {
+        return RequestedItemImages.builder()
                 .url(i.getUrl())
                 .build();
     }

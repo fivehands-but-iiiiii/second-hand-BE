@@ -1,6 +1,6 @@
 package com.team5.secondhand.api.item.controller.v1.dto.response;
 
-import com.team5.secondhand.api.item.controller.v1.dto.request.ItemImage;
+import com.team5.secondhand.api.item.controller.v1.dto.request.RequestedItemImages;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.domain.Status;
 import lombok.Builder;
@@ -23,7 +23,7 @@ public class ItemDetail {
     private final Status status;
     private final Seller seller;
     private final Boolean isMyItem;
-    private final List<ItemImage> images;
+    private final List<RequestedItemImages> images;
     private final Long hits;
     private final Long chatCount;
     private final Long likesCount;
@@ -31,8 +31,8 @@ public class ItemDetail {
     private final Instant createAt;
 
     public static ItemDetail of(Item item, Boolean isMyItem, Boolean isLike) {
-        List<ItemImage> images = item.getContents().getDetailImageUrl().stream()
-                .map(ItemImage::of).collect(Collectors.toList());
+        List<RequestedItemImages> images = item.getContents().getDetailImageUrl().stream()
+                .map(RequestedItemImages::of).collect(Collectors.toList());
 
         return ItemDetail.builder()
                 .id(item.getId())
