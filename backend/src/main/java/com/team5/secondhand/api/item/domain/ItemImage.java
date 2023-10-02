@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItemImage {
-    @Size(min = 0, max = 5000)
+    @Size(min = 10, max = 5000)
     private String url;
 
     @Builder
