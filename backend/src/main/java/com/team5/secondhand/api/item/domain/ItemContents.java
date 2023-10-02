@@ -58,7 +58,7 @@ public class ItemContents {
                 .build();
     }
 
-    public ItemImage getFirstDetailImage() {
+    public ItemImage getFirstImage() {
         return detailImageUrl.isEmpty() ? null : detailImageUrl.get(0);
     }
 }

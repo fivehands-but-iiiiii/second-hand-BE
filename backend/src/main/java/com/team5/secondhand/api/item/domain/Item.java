@@ -70,7 +70,7 @@ public class Item extends UpdatedTimeEntity {
 
     @JsonIgnore
     public ItemImage getFirstDetailImage() {
-        return contents.getFirstDetailImage();
+        return contents.getFirstImage();
     }
 
     public Item updateThumbnail(String thumbnail) {
