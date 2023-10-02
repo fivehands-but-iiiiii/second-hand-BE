@@ -28,14 +28,15 @@ public class ItemPostService {
 
     @Transactional
     public void updateItem(Long id, ItemPostWithUrl itemPost, Member seller) throws ExistItemException, UnauthorizedException {
-        Item item = itemRepository.findById(id).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
+        Item item = itemRepository.findById(id)
+                .orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
 
         if (!item.isSeller(seller)) {
             throw new UnauthorizedException("본인의 글만 수정할 수 있습니다.");
         }
 
-        Item newItem = item.updatePost(itemPost, itemPost.getImages().get(0).getUrl());
-        itemRepository.save(newItem);
+        Item updatedItem = item.update(itemPost.toEntity());
+        itemRepository.save(updatedItem);
     }
 
     @Transactional
