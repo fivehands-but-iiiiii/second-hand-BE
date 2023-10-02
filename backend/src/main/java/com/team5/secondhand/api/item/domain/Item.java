@@ -1,7 +1,6 @@
 package com.team5.secondhand.api.item.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.team5.secondhand.api.item.controller.v1.dto.request.ItemPostWithUrl;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.global.model.UpdatedTimeEntity;
@@ -30,7 +29,7 @@ public class Item extends UpdatedTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id")
     private Region region;
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "item_counts_id")
     private ItemCounts count;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -53,13 +52,20 @@ public class Item extends UpdatedTimeEntity {
         this.isDeleted = isDeleted;
     }
 
-    public Item updatePost(ItemPostWithUrl itemPost, String thumbnailUrl) {
-        this.title = itemPost.getTitle();
-        this.category = itemPost.getCategory();
-        this.price = itemPost.getPrice();
-        this.thumbnailUrl = thumbnailUrl;
-        this.contents = contents.update(itemPost.getContents(), itemPost.getImages());
-        return this;
+    public Item update(Item itemPost) {
+        return Item.builder()
+                .id(this.getId())
+                .title(itemPost.getTitle())
+                .price(itemPost.getPrice())
+                .category(itemPost.getCategory())
+                .thumbnailUrl(itemPost.getThumbnailUrl())
+                .status(this.status)
+                .seller(this.seller)
+                .region(this.region)
+                .count(this.count)
+                .contents(itemPost.getContents())
+                .isDeleted(this.isDeleted)
+                .build();
     }
 
     @JsonIgnore
