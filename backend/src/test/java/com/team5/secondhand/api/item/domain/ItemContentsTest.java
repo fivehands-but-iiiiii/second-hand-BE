@@ -35,7 +35,7 @@ class ItemContentsTest {
 
     @Test
     @DisplayName("등록된 이미지 중 첫번째 이미지 url을 반환할 수 있다.")
-    void getFirstDetailImage() throws Exception{
+    void getFirstImage_success() throws Exception{
         //given
         String contents = "content";
         String firstImageUrl = "First Image Url";
@@ -51,6 +51,22 @@ class ItemContentsTest {
 
         //then
         assertThat(createdContents.getFirstImage().getUrl()).isEqualTo(firstImageUrl);
+    }
+
+    @Test
+    @DisplayName("등록된 이미지가 없을 때 첫번째 이미지를 찾으면 빈 문자열을 반환한다.")
+    void getFirstImage_empty() throws Exception{
+        //given
+        String contents = "content";
+        String firstImageUrl = "First Image Url";
+        List<ItemImage> itemImagesList = List.of();
+
+        //when
+        ItemContents createdContents = ItemContents.of(contents, itemImagesList);
+
+        //then
+        assertThat(createdContents.getFirstImage()).isNotNull();
+        assertThat(createdContents.getFirstImage().getUrl()).isBlank();
     }
 
     @Test

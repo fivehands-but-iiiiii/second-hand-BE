@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,10 @@ public class ItemContents {
     }
 
     public static ItemContents of(String contents, List<ItemImage> images) {
+        if (images==null) {
+            images = Collections.EMPTY_LIST;
+        }
+
         return ItemContents.builder()
                 .contents(contents)
                 .detailImageUrl(images)
@@ -49,16 +54,20 @@ public class ItemContents {
                 .build();
     }
 
-    public ItemContents update(String contents, List<RequestedItemImages> itemImages) {
+    public ItemContents update(String contents, List<RequestedItemImages> images) {
+        if (images==null) {
+            images = Collections.EMPTY_LIST;
+        }
+
         return ItemContents.builder()
                 .id(this.id)
                 .contents(contents)
-                .detailImageUrl(itemImages.stream().map(RequestedItemImages::toEntity).collect(Collectors.toList()))
+                .detailImageUrl(images.stream().map(RequestedItemImages::toEntity).collect(Collectors.toList()))
                 .isDeleted(this.isDeleted)
                 .build();
     }
 
     public ItemImage getFirstImage() {
-        return detailImageUrl.isEmpty() ? null : detailImageUrl.get(0);
+        return detailImageUrl.isEmpty() ? ItemImage.from("") : detailImageUrl.get(0);
     }
 }
