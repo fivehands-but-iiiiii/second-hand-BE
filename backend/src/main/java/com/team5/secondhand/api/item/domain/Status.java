@@ -4,6 +4,7 @@ package com.team5.secondhand.api.item.domain;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,8 +22,10 @@ public enum Status {
 
     public static List<Status> isOnSales(Boolean value) {
         if (value!=null) {
-            return Arrays.stream(values()).filter(e -> e.isOnSales == value).collect(Collectors.toList());
+            return Arrays.stream(values())
+                    .filter(e -> e.isOnSales == value)
+                    .collect(Collectors.toList());
         }
-        return null;
+        return Collections.emptyList();
     }
 }
