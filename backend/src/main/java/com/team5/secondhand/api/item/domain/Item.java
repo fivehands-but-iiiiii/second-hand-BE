@@ -9,8 +9,10 @@ import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 
-@Entity
 @Getter
+@Entity
+@Builder
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE item SET is_deleted = true WHERE id = ?")
 public class Item extends UpdatedTimeEntity {
@@ -36,21 +38,6 @@ public class Item extends UpdatedTimeEntity {
     @JoinColumn(name = "item_contents_id")
     private ItemContents contents;
     private Boolean isDeleted = Boolean.FALSE;
-
-    @Builder
-    protected Item(Long id, String title, int price, Long category, String thumbnailUrl, Status status, Member seller, Region region, ItemCounts count, ItemContents contents, Boolean isDeleted) {
-        this.id = id;
-        this.title = title;
-        this.price = price;
-        this.category = category;
-        this.thumbnailUrl = thumbnailUrl;
-        this.status = status;
-        this.seller = seller;
-        this.region = region;
-        this.count = count;
-        this.contents = contents;
-        this.isDeleted = isDeleted;
-    }
 
     public Item update(Item itemPost) {
         return Item.builder()
