@@ -4,12 +4,8 @@ import com.team5.secondhand.api.item.controller.v1.dto.request.RequestedItemImag
 import com.team5.secondhand.api.item.util.ImageUrlConverter;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
-import org.springframework.data.annotation.Id;
 
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
