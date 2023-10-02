@@ -4,8 +4,14 @@ import com.team5.secondhand.api.item.controller.v1.dto.request.RequestedItemImag
 import com.team5.secondhand.api.item.util.ImageUrlConverter;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
+import org.springframework.data.annotation.Id;
 
-import javax.persistence.*;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,12 +23,15 @@ import java.util.stream.Collectors;
 public class ItemContents {
 
     @Id
+    @Min(1)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Size(min = 1)
     private String contents;
+    @Size(min = 1, max = 10)
     @Convert(converter = ImageUrlConverter.class)
     private List<ItemImage> detailImageUrl = new ArrayList<>();
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 
     @Builder
     protected ItemContents(Long id, String contents, List<ItemImage> detailImageUrl, Boolean isDeleted) {
@@ -41,9 +50,12 @@ public class ItemContents {
     }
 
     public ItemContents update(String contents, List<RequestedItemImages> itemImages) {
-        this.contents = contents;
-        this.detailImageUrl = itemImages.stream().map(RequestedItemImages::toEntity).collect(Collectors.toList());
-        return this;
+        return ItemContents.builder()
+                .id(this.id)
+                .contents(contents)
+                .detailImageUrl(itemImages.stream().map(RequestedItemImages::toEntity).collect(Collectors.toList()))
+                .isDeleted(this.isDeleted)
+                .build();
     }
 
     public ItemImage getFirstDetailImage() {
