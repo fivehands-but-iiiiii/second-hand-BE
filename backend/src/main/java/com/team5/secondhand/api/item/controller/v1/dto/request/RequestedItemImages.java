@@ -1,28 +1,30 @@
 package com.team5.secondhand.api.item.controller.v1.dto.request;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.team5.secondhand.api.item.domain.ItemImage;
+import lombok.*;
 
 @Getter
-@NoArgsConstructor
+@Builder
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RequestedItemImages {
     private String url;
 
-    @Builder
-    private RequestedItemImages(String url) {
-        this.url = url;
-    }
-
-    public com.team5.secondhand.api.item.domain.ItemImage toEntity() {
-        return com.team5.secondhand.api.item.domain.ItemImage.builder()
+    public ItemImage toEntity() {
+        return ItemImage.builder()
                 .url(this.url)
                 .build();
     }
 
-    public static RequestedItemImages of(com.team5.secondhand.api.item.domain.ItemImage i) {
+    public static RequestedItemImages from(ItemImage itemImage) {
         return RequestedItemImages.builder()
-                .url(i.getUrl())
+                .url(itemImage.getUrl())
+                .build();
+    }
+
+    public static RequestedItemImages from(String url) {
+        return RequestedItemImages.builder()
+                .url(url)
                 .build();
     }
 }

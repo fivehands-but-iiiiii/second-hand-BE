@@ -32,7 +32,7 @@ public class ItemDetail {
 
     public static ItemDetail of(Item item, Boolean isMyItem, Boolean isLike) {
         List<RequestedItemImages> images = item.getContents().getDetailImageUrl().stream()
-                .map(RequestedItemImages::of).collect(Collectors.toList());
+                .map(RequestedItemImages::from).collect(Collectors.toList());
 
         return ItemDetail.builder()
                 .id(item.getId())
