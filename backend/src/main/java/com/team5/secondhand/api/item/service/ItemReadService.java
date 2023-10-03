@@ -1,13 +1,12 @@
 package com.team5.secondhand.api.item.service;
 
 import com.team5.secondhand.api.item.controller.dto.ItemSummary;
-import com.team5.secondhand.api.item.controller.v1.dto.request.ItemFilteredSlice;
+import com.team5.secondhand.api.item.controller.v1.dto.request.ItemsOffsetRequest;
 import com.team5.secondhand.api.item.controller.v1.dto.response.*;
-import com.team5.secondhand.api.item.controller.v2.dto.ItemsRequest;
+import com.team5.secondhand.api.item.controller.v2.dto.ItemsCursorRequest;
 import com.team5.secondhand.api.item.controller.v2.dto.ItemsResponse;
 import com.team5.secondhand.api.item.domain.Item;
-import com.team5.secondhand.api.item.domain.Status;
-import com.team5.secondhand.api.item.controller.v1.dto.request.MyItemFilteredSlice;
+import com.team5.secondhand.api.item.controller.v1.dto.request.MyItemsRequest;
 import com.team5.secondhand.api.item.exception.ExistItemException;
 import com.team5.secondhand.api.item.repository.ItemRepository;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
@@ -33,10 +32,10 @@ public class ItemReadService {
     private final CheckMemberLikedUsecase checkMemberLiked;
 
     @Transactional(readOnly = true)
-    public ItemList getItemList(ItemFilteredSlice request, Region region, MemberDetails loginMember) {
+    public ItemList getItemList(ItemsOffsetRequest request, Region region, MemberDetails loginMember) {
         Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
 
-        Slice<Item> pageResult = itemRepository.findAllByFilterUsingOffset(request.getCategoryId(), request.getSellerId(), Status.isOnSales(request.getIsSales()), region, pageable);
+        Slice<Item> pageResult = itemRepository.findAllByFilterUsingOffset(request.toFilter(), pageable);
         List<Item> itemEntities = pageResult.getContent();
 
         List<ItemSummary> items = new ArrayList<>();
@@ -52,10 +51,10 @@ public class ItemReadService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "items", key = "#itemsRequest.last + '-' + #region.id")
-    public ItemsResponse getItemList(ItemsRequest itemsRequest, Region region, MemberDetails loginMember) {
+    @Cacheable(value = "items", key = "#request.last + '-' + #region.id")
+    public ItemsResponse getItemList(ItemsCursorRequest request, Region region, MemberDetails loginMember) {
         Pageable pageable = PageRequest.ofSize(PAGE_SIZE);
-        Slice<Item> pageResult = itemRepository.findAllByFilterUsingCursor(itemsRequest.getLast(), itemsRequest.getCategoryId(), itemsRequest.getSellerId(), Status.isOnSales(itemsRequest.getIsSales()), region.getId(), pageable);
+        Slice<Item> pageResult = itemRepository.findAllByFilterUsingCursor(request.getLast(), request.toFilter(), pageable);
 
         List<Item> itemEntities = pageResult.getContent();
         List<ItemSummary> items = new ArrayList<>();
@@ -71,10 +70,10 @@ public class ItemReadService {
     }
 
     @Transactional(readOnly = true)
-    public MyItemList getMyItemList(MyItemFilteredSlice request, MemberDetails loginMember) {
+    public MyItemList getMyItemList(MyItemsRequest request, MemberDetails loginMember) {
         Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
 
-        Slice<Item> pageResult = itemRepository.findAllByFilterUsingOffset(null, loginMember.getId(), Status.isOnSales(request.getIsSales()), null, pageable);
+        Slice<Item> pageResult = itemRepository.findAllByFilterUsingOffset(request.toFilter(loginMember), pageable);
         List<Item> itemEntities = pageResult.getContent();
         List<MyItemSummary> items = getMyItemSummaries(itemEntities);
 
@@ -134,6 +133,6 @@ public class ItemReadService {
     @Transactional(readOnly = true)
     public boolean isValidSeller(Long id, long memberId) {
         Item item = itemRepository.findById(id).orElseThrow();
-        return item.isSeller(memberId);
+        return !item.isSeller(memberId);
     }
 }

@@ -5,7 +5,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.domain.QItemCounts;
 import com.team5.secondhand.api.item.domain.Status;
-import com.team5.secondhand.api.region.domain.Region;
+import com.team5.secondhand.api.item.service.dto.ItemListFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -23,15 +23,15 @@ public class ItemSliceRepositoryImpl implements ItemSliceRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Slice<Item> findAllByFilterUsingOffset(Long categoryId, Long sellerId, List<Status> sales, Region region, Pageable pageable) {
+    public Slice<Item> findAllByFilterUsingOffset(ItemListFilter filter, Pageable pageable) {
         int pageSize = pageable.getPageSize()+1;
 
         List<Item> fetch = jpaQueryFactory.selectFrom(item)
                 .where(
-                        eqRegion(region.getId()),
-                        eqCategory(categoryId),
-                        inSales(sales),
-                        eqSeller(sellerId),
+                        eqRegion(filter.getRegionId()),
+                        eqCategory(filter.getCategoryId()),
+                        inSales(filter.getSales()),
+                        eqSeller(filter.getSellerId()),
                         item.isDeleted.eq(false)
                 )
                 .offset(pageable.getOffset())
@@ -42,7 +42,7 @@ public class ItemSliceRepositoryImpl implements ItemSliceRepository {
     }
 
     @Override
-    public Slice<Item> findAllByFilterUsingCursor(Long last, Long categoryId, Long sellerId, List<Status> sales, Long regionId, Pageable pageable) {
+    public Slice<Item> findAllByFilterUsingCursor(Long last, ItemListFilter filter, Pageable pageable) {
         int pageSize = pageable.getPageSize()+1;
 
         List<Item> fetch = jpaQueryFactory.selectFrom(item)
@@ -50,10 +50,10 @@ public class ItemSliceRepositoryImpl implements ItemSliceRepository {
                     .on(item.count.eq(QItemCounts.itemCounts))
                 .where(
                         eqLast(last),
-                        eqRegion(regionId),
-                        eqCategory(categoryId),
-                        inSales(sales),
-                        eqSeller(sellerId),
+                        eqRegion(filter.getRegionId()),
+                        eqCategory(filter.getCategoryId()),
+                        inSales(filter.getSales()),
+                        eqSeller(filter.getSellerId()),
                         item.isDeleted.eq(false)
                 )
                 .limit(pageSize)
