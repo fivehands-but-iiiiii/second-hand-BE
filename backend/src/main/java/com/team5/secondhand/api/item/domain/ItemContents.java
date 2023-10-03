@@ -51,14 +51,13 @@ public class ItemContents {
     }
 
     public ItemContents update(String contents, List<RequestedItemImages> images) {
-        if (images==null) {
-            images = Collections.EMPTY_LIST;
-        }
-
         return ItemContents.builder()
                 .id(this.id)
                 .contents(contents)
-                .detailImageUrl(images.stream().map(RequestedItemImages::toEntity).collect(Collectors.toList()))
+                .detailImageUrl(images.stream()
+                        .map(RequestedItemImages::toEntity)
+                        .collect(Collectors.toList())
+                )
                 .isDeleted(this.isDeleted)
                 .build();
     }

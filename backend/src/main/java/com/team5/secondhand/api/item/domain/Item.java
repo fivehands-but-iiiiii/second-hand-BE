@@ -1,6 +1,5 @@
 package com.team5.secondhand.api.item.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.global.model.UpdatedTimeEntity;
@@ -55,9 +54,8 @@ public class Item extends UpdatedTimeEntity {
                 .build();
     }
 
-    @JsonIgnore
-    public ItemImage getFirstDetailImage() {
-        return contents.getFirstImage();
+    public String getFirstImageUrl() {
+        return contents.getFirstImage().getUrl();
     }
 
     public Item updateThumbnail(String thumbnail) {
