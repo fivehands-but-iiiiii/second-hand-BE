@@ -120,7 +120,6 @@ public class ItemControllerV1 {
     @PutMapping("/{id}")
     public GenericResponse<Long> updateItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemUpdateRequest itemPost) throws ExistMemberIdException, NotValidRegionException, ExistItemException, ExistItemException, UnauthorizedException {
         Member seller = memberService.findById(loginMember.getId());
-        Region region = getValidRegions.getRegion(itemPost.getRegion());
 
         itemPostService.updateItem(id, itemPost, seller);
 
@@ -148,11 +147,7 @@ public class ItemControllerV1 {
     )
     @PatchMapping("/{id}/status")
     public GenericResponse<Boolean> updateItemStatus(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemStatusUpdate request) throws AuthenticationException {
-        if (itemReadService.isValidSeller(id, loginMember.getId())) {
-            throw new AuthenticationException("글 작성자가 아닙니다.");
-        }
-
-        boolean result = itemPostService.updateItemStatus(id, request.getStatus());
+        boolean result = itemPostService.updateItemStatus(id, request.getStatus(), loginMember.getId());
         return GenericResponse.send("상품 판매글 상태가 업데이트 되었습니다.", result);
     }
 
@@ -163,11 +158,7 @@ public class ItemControllerV1 {
     )
     @DeleteMapping("/{id}")
     public GenericResponse<Long> deleteId(@PathVariable Long id, @RequestAttribute MemberDetails loginMember) throws AuthenticationException {
-        if (itemReadService.isValidSeller(id, loginMember.getId())) {
-            throw new AuthenticationException("글 작성자가 아닙니다.");
-        }
-
-        itemPostService.deleteById(id);
+        itemPostService.deleteById(id, loginMember.getId());
         return GenericResponse.send("상품 판매글 상태가 삭제 되었습니다.", id);
     }
 

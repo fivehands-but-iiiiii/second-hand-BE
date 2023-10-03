@@ -13,6 +13,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.security.sasl.AuthenticationException;
+
 @Service
 @RequiredArgsConstructor
 public class ItemPostService {
@@ -62,7 +64,11 @@ public class ItemPostService {
      * @return 실행 결과
      */
     @Transactional
-    public boolean updateItemStatus(Long id, Status status) {
+    public boolean updateItemStatus(Long id, Status status, Long memberId) throws AuthenticationException {
+        if (!itemRepository.existsByIdAndSellerId(id, memberId)) {
+            throw new AuthenticationException("글 작성자가 아닙니다.");
+        }
+
         return itemRepository.updateStatus(id, status) == 1;
     }
 
@@ -72,7 +78,11 @@ public class ItemPostService {
      */
     @CacheEvict(value = "menu", allEntries = true)
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteById(Long id, Long memberId) throws AuthenticationException {
+        if (!itemRepository.existsByIdAndSellerId(id, memberId)) {
+            throw new AuthenticationException("글 작성자가 아닙니다.");
+        }
+
         itemRepository.deleteById(id);
     }
 }

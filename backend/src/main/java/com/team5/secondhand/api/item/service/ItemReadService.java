@@ -36,15 +36,14 @@ public class ItemReadService {
         Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
 
         Slice<Item> pageResult = itemRepository.findAllByFilterUsingOffset(request.toFilter(), pageable);
-        List<Item> itemEntities = pageResult.getContent();
 
         List<ItemSummary> items = new ArrayList<>();
         if (!loginMember.isEmpty()) {
-            items = getItemSummariesWithIsLike(loginMember, region, itemEntities);
+            items = getItemSummariesWithIsLike(loginMember, region, pageResult.getContent());
         }
 
         if (loginMember.isEmpty()) {
-            items = getItemSummaries(region, itemEntities);
+            items = getItemSummaries(region, pageResult.getContent());
         }
 
         return ItemList.getSlice(pageResult.getNumber(), pageResult.hasPrevious(), pageResult.hasNext(), items);
@@ -56,14 +55,13 @@ public class ItemReadService {
         Pageable pageable = PageRequest.ofSize(PAGE_SIZE);
         Slice<Item> pageResult = itemRepository.findAllByFilterUsingCursor(request.getLast(), request.toFilter(), pageable);
 
-        List<Item> itemEntities = pageResult.getContent();
         List<ItemSummary> items = new ArrayList<>();
         if (!loginMember.isEmpty()) {
-            items = getItemSummariesWithIsLike(loginMember, region, itemEntities);
+            items = getItemSummariesWithIsLike(loginMember, region, pageResult.getContent());
         }
 
         if (loginMember.isEmpty()) {
-            items = getItemSummaries(region, itemEntities);
+            items = getItemSummaries(region, pageResult.getContent());
         }
 
         return ItemsResponse.getSlice(items.get(items.size()-1).getId(), pageResult.hasPrevious(), pageResult.hasNext(), items);
@@ -128,11 +126,5 @@ public class ItemReadService {
 
     public Item findById(Long itemId) throws ExistItemException {
         return itemRepository.findById(itemId).orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isValidSeller(Long id, long memberId) {
-        Item item = itemRepository.findById(id).orElseThrow();
-        return !item.isSeller(memberId);
     }
 }

@@ -23,6 +23,8 @@ public interface ItemRepository extends JpaRepository<Item, Long>, ItemSliceRepo
 
     int countAllByRegion(Region region);
 
+    boolean existsByIdAndSellerId(Long id, Long sellerId);
+
     @Modifying
     @Query("SELECT DISTINCT category from Item where region.id = :regionId")
     List<Long> countCategoryByRegion(@Param("regionId") Long regionId);
