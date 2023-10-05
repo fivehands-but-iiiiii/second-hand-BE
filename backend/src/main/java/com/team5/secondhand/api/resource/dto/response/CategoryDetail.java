@@ -1,6 +1,6 @@
-package com.team5.secondhand.global.resource.dto.response;
+package com.team5.secondhand.api.resource.dto.response;
 
-import com.team5.secondhand.global.resource.domain.Category;
+import com.team5.secondhand.api.resource.domain.Category;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

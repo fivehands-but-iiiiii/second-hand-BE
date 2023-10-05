@@ -28,11 +28,11 @@ public class Chatroom extends BasedTimeEntity {
     private Long id;
     private UUID chatroomId;
 
-    @ManyToOne(fetch = FetchType.EAGER) //TODO 일단 임시로 에러 기워 사용하기
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     private Item item;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyer_id")
     private Member buyer;
 
@@ -74,7 +74,7 @@ public class Chatroom extends BasedTimeEntity {
     }
 
     public void exitMember(Member member) throws NotChatroomMemberException {
-        boolean isSeller = item.isSeller(member.getId());
+        boolean isSeller = item.isSeller(member);
         boolean isBuyer = buyer.equals(member);
 
         if (!isBuyer && !isSeller) {
@@ -97,7 +97,7 @@ public class Chatroom extends BasedTimeEntity {
     }
 
     public boolean isChatroomMember(Member member) throws NotChatroomMemberException {
-        boolean isSeller = item.isSeller(member.getId());
+        boolean isSeller = item.isSeller(member);
         //TODO: 현재 member 객체가 프록시 객체라 객체 비교가 불가능하다.. 어떤 방식을 해야 좋을지 모르겠다. 임시로 pk 비교
         boolean isBuyer = buyer.getId().equals(member.getId());
 
@@ -124,6 +124,7 @@ public class Chatroom extends BasedTimeEntity {
         Map<Long, Member> chatroomMembers = getChatroomMembers();
         return chatroomMembers.values().stream()
                 .filter(e -> !e.equals(myself))
-                .findAny().orElseThrow();
+                .findAny()
+                .orElseThrow();
     }
 }

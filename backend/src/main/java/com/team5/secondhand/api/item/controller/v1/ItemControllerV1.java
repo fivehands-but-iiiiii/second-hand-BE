@@ -5,12 +5,12 @@ import com.team5.secondhand.api.item.controller.v1.dto.response.ItemDetail;
 import com.team5.secondhand.api.item.controller.v1.dto.response.ItemList;
 import com.team5.secondhand.api.item.controller.v1.dto.response.MyItemList;
 import com.team5.secondhand.api.item.domain.Item;
-import com.team5.secondhand.api.item.domain.ItemDetailImage;
-import com.team5.secondhand.api.item.controller.v1.dto.request.MyItemFilteredSlice;
-import com.team5.secondhand.api.item.controller.v1.dto.request.ItemFilteredSlice;
+import com.team5.secondhand.api.item.domain.ItemImage;
+import com.team5.secondhand.api.item.controller.v1.dto.request.MyItemsRequest;
+import com.team5.secondhand.api.item.controller.v1.dto.request.ItemsOffsetRequest;
 import com.team5.secondhand.api.item.controller.v1.dto.request.ItemPost;
 import com.team5.secondhand.api.item.controller.v1.dto.request.ItemStatusUpdate;
-import com.team5.secondhand.api.item.controller.v1.dto.request.ItemPostWithUrl;
+import com.team5.secondhand.api.item.controller.v1.dto.request.ItemUpdateRequest;
 import com.team5.secondhand.api.item.exception.ExistItemException;
 import com.team5.secondhand.api.item.service.ItemPostService;
 import com.team5.secondhand.api.item.service.ItemReadService;
@@ -58,7 +58,7 @@ public class ItemControllerV1 {
             description = "사용자는 자신의 동네의 상품 목록을 볼 수 있다."
     )
     @GetMapping
-    public GenericResponse<ItemList> getItemList(ItemFilteredSlice itemSlice, @RequestAttribute(required = false) MemberDetails loginMember) throws NotValidRegionException {
+    public GenericResponse<ItemList> getItemList(ItemsOffsetRequest itemSlice, @RequestAttribute(required = false) MemberDetails loginMember) throws NotValidRegionException {
         Region regions = getValidRegions.getRegion(itemSlice.getRegionId());
         ItemList itemList = itemReadService.getItemList(itemSlice, regions, loginMember);
         return GenericResponse.send("상품 목록이 조회되었습니다.", itemList);
@@ -70,7 +70,7 @@ public class ItemControllerV1 {
             description = "사용자는 자신이 판매 중인/완료한 상품 목록을 볼 수 있다"
     )
     @GetMapping("/mine")
-    public GenericResponse<MyItemList> getItemMyList(MyItemFilteredSlice itemSlice, @RequestAttribute MemberDetails loginMember) throws UnauthorizedException {
+    public GenericResponse<MyItemList> getItemMyList(MyItemsRequest itemSlice, @RequestAttribute MemberDetails loginMember) throws UnauthorizedException {
         if (loginMember.isEmpty()) {
             throw new UnauthorizedException("로그인이 필요한 기능입니다.");
         }
@@ -102,9 +102,9 @@ public class ItemControllerV1 {
 
         Member seller = memberService.findById(loginMember.getId());
         Region region = getValidRegions.getRegion(itemPost.getRegion());
-        List<ItemDetailImage> itemDetailImages = detailImageUpload.uploadItemDetailImages(itemPost.getImages());
+        List<ItemImage> itemImages = detailImageUpload.uploadItemDetailImages(itemPost.getImages());
 
-        Item item = itemPost.toEntity(itemDetailImages);
+        Item item = itemPost.toEntity(itemImages);
         String thumbnailUrl = thumbnailImageUpload.uploadItemThumbnailImage(item);
 
         Long id = itemPostService.postItem(item, seller, region, thumbnailUrl);
@@ -118,9 +118,8 @@ public class ItemControllerV1 {
             description = "사용자는 상품 정보를 수정할 수 있다."
     )
     @PutMapping("/{id}")
-    public GenericResponse<Long> updateItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemPostWithUrl itemPost) throws ExistMemberIdException, NotValidRegionException, ExistItemException, ExistItemException, UnauthorizedException {
+    public GenericResponse<Long> updateItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemUpdateRequest itemPost) throws ExistMemberIdException, NotValidRegionException, ExistItemException, ExistItemException, UnauthorizedException {
         Member seller = memberService.findById(loginMember.getId());
-        Region region = getValidRegions.getRegion(itemPost.getRegion());
 
         itemPostService.updateItem(id, itemPost, seller);
 
@@ -148,11 +147,7 @@ public class ItemControllerV1 {
     )
     @PatchMapping("/{id}/status")
     public GenericResponse<Boolean> updateItemStatus(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemStatusUpdate request) throws AuthenticationException {
-        if (!itemReadService.isValidSeller(id, loginMember.getId())) {
-            throw new AuthenticationException("글 작성자가 아닙니다.");
-        }
-
-        boolean result = itemPostService.updateItemStatus(id, request.getStatus());
+        boolean result = itemPostService.updateItemStatus(id, request.getStatus(), loginMember.getId());
         return GenericResponse.send("상품 판매글 상태가 업데이트 되었습니다.", result);
     }
 
@@ -163,11 +158,7 @@ public class ItemControllerV1 {
     )
     @DeleteMapping("/{id}")
     public GenericResponse<Long> deleteId(@PathVariable Long id, @RequestAttribute MemberDetails loginMember) throws AuthenticationException {
-        if (!itemReadService.isValidSeller(id, loginMember.getId())) {
-            throw new AuthenticationException("글 작성자가 아닙니다.");
-        }
-
-        itemPostService.deleteById(id);
+        itemPostService.deleteById(id, loginMember.getId());
         return GenericResponse.send("상품 판매글 상태가 삭제 되었습니다.", id);
     }
 

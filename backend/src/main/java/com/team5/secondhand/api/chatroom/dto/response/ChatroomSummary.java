@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.time.Instant;
+
 @Getter
 @RequiredArgsConstructor
 public class ChatroomSummary {
@@ -13,13 +15,15 @@ public class ChatroomSummary {
     private final ChatMember opponent;
     private final ChatItemSummary item;
     private ChatLog chatLogs;
+    private Instant lastUpdate;
 
     @Builder
-    private ChatroomSummary(String chatroomId, ChatMember opponent, ChatItemSummary item, ChatLog chatLogs) {
+    public ChatroomSummary(String chatroomId, ChatMember opponent, ChatItemSummary item, ChatLog chatLogs, Instant lastUpdate) {
         this.chatroomId = chatroomId;
         this.opponent = opponent;
         this.item = item;
         this.chatLogs = chatLogs;
+        this.lastUpdate = lastUpdate;
     }
 
     public static ChatroomSummary of(Chatroom chatroom, Member member) {
@@ -27,6 +31,7 @@ public class ChatroomSummary {
                 .chatroomId(chatroom.getChatroomId().toString())
                 .opponent(ChatMember.of(chatroom.findOpponent(member)))
                 .item(ChatItemSummary.of(chatroom.getItem()))
+                .lastUpdate(Instant.now())
                 .build();
     }
 
@@ -35,12 +40,20 @@ public class ChatroomSummary {
                 .chatroomId(chatroom.getChatroomId().toString())
                 .opponent(ChatMember.of(chatroom.getBuyer()))
                 .item(ChatItemSummary.of(chatroom.getItem()))
+                .lastUpdate(Instant.now())
                 .build();
+    }
+
+    public Instant getLastUpdate() {
+        if (this.lastUpdate==null) {
+            return Instant.now();
+        }
+        return this.lastUpdate;
     }
 
     public ChatroomSummary addChatLogs(ChatLog chatLog) {
         this.chatLogs = chatLog;
-
+        this.lastUpdate = chatLog.getUpdateAt();
         return this;
     }
 }

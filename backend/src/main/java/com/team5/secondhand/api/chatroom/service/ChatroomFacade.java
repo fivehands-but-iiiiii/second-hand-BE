@@ -69,6 +69,7 @@ public class ChatroomFacade {
         }
         //마지막 채팅로그 추가
         chatroomList.addLastMessage(chatroomCacheService.addLastMessage(chatroomList.getChatRooms(), member.getMemberId()));
+        chatroomList.sort();
 
         return chatroomList;
     }

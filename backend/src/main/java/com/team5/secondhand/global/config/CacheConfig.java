@@ -19,7 +19,6 @@ import java.time.Duration;
 public class CacheConfig {
 
     private final RedisConnectionFactory redisConnectionFactory;
-    private final ObjectMapper objectMapper;
 
     @Bean
     public RedisCacheManager redisCacheManager() {
@@ -31,7 +30,7 @@ public class CacheConfig {
 
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
-        return RedisCacheConfiguration.defaultCacheConfig()
+         return RedisCacheConfiguration.defaultCacheConfig()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new JdkSerializationRedisSerializer()))
                 .entryTtl(Duration.ofMinutes(10))
                 .disableCachingNullValues();

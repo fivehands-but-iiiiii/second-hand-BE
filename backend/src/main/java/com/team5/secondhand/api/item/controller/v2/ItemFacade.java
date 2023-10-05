@@ -1,6 +1,6 @@
 package com.team5.secondhand.api.item.controller.v2;
 
-import com.team5.secondhand.api.item.controller.v2.dto.ItemsRequest;
+import com.team5.secondhand.api.item.controller.v2.dto.ItemsCursorRequest;
 import com.team5.secondhand.api.item.controller.v2.dto.ItemsResponse;
 import com.team5.secondhand.api.item.service.ItemReadService;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
@@ -17,7 +17,7 @@ public class ItemFacade {
     private final ItemReadService itemReadService;
     private final GetValidRegionsUsecase getValidRegionsUsecase;
 
-    public ItemsResponse findAllFilteredItems(ItemsRequest itemsRequest, MemberDetails loginMember) throws NotValidRegionException {
+    public ItemsResponse findAllFilteredItems(ItemsCursorRequest itemsRequest, MemberDetails loginMember) throws NotValidRegionException {
         Region region = getValidRegionsUsecase.getRegion(itemsRequest.getRegionId());
         return itemReadService.getItemList(itemsRequest, region, loginMember);
     }

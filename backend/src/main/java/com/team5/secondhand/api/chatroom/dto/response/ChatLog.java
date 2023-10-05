@@ -30,7 +30,7 @@ public class ChatLog {
     public static ChatLog empty() {
         return ChatLog.builder()
                 .lastMessage("")
-                .updateAt(null)
+                .updateAt(Instant.now())
                 .unReadCount(0)
                 .build();
     }
