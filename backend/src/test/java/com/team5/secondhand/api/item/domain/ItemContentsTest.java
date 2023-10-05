@@ -75,9 +75,9 @@ class ItemContentsTest {
         //given
         String updateContents = "updated content";
         List<RequestedItemImages> itemImagesList = List.of(
-                new RequestedItemImages("url1"),
-                new RequestedItemImages("url2"),
-                new RequestedItemImages("url3")
+                RequestedItemImages.from("url1"),
+                RequestedItemImages.from("url2"),
+                RequestedItemImages.from("url3")
         );
         
         //when

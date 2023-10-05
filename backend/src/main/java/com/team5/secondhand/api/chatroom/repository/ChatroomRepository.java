@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ChatroomRepository extends JpaRepository<Chatroom, Long> {
-    Optional<Chatroom> findByItemId(Long itemId);
     Optional<Chatroom> findByChatroomId(UUID chatroomId);
     Optional<Chatroom> findByBuyer_IdAndItem_Id(Long buyerId, Long itemId);
     Slice<Chatroom> findAllByBuyerIdOrSellerIdOrderByIdDesc(Pageable page, Long buyerId, Long sellerId);

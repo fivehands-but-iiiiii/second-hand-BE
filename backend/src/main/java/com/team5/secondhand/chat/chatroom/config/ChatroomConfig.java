@@ -21,6 +21,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class ChatroomConfig {
     private final RedisConnectionFactory redisConnectionFactory;
     private final ObjectMapper objectMapper;
+
     @Bean
     public RedisTemplate<String, Chatroom> redisChatroomTemplate() {
         final RedisTemplate<String, Chatroom> template = new RedisTemplate<>();
@@ -39,4 +40,5 @@ public class ChatroomConfig {
     public HashOperations<String, String, Chatroom> chatroomHashOperations() {
         return redisChatroomTemplate().opsForHash();
     }
+
 }

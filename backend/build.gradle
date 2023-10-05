@@ -55,6 +55,9 @@ dependencies {
     // FixtureMonkey
     testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.6.8")
     testImplementation("com.navercorp.fixturemonkey:fixture-monkey-javax-validation:0.6.8")
+    // testcontainers
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    testImplementation 'org.testcontainers:junit-jupiter:1.17.6'
 }
 
 clean {

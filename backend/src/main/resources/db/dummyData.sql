@@ -1,57 +1,163 @@
-DELIMITER $$
+create table if not exists based_region
+(
+    id          bigint auto_increment
+        primary key,
+    member_id   bigint  not null,
+    region_id   bigint  not null,
+    represented tinyint not null
+);
 
-CREATE PROCEDURE InsertDummyData3()
-BEGIN
-    DECLARE i INT DEFAULT 1;
+create index fk_member_has_region_member1_idx
+    on based_region (member_id);
 
-    WHILE i <= 1000000 DO
-            -- 랜덤한 title 생성 (임의로 예시를 추가하였으며, 본문에 더 다양한 한국어 내용을 추가할 수 있습니다)
-            SET @title = CONCAT('중고거래 물품 #', i);
+create index fk_member_has_region_region1_idx
+    on based_region (region_id);
 
-            -- 랜덤한 price 생성 (1원부터 1,000,000원까지)
-            SET @price = FLOOR(RAND() * 1000000) + 1;
+create table if not exists category
+(
+    id      bigint       not null,
+    title   varchar(16)  not null,
+    img_url varchar(300) not null,
+    primary key (id),
+    constraint title_UNIQUE
+        unique (title)
+);
 
-            -- 랜덤한 category 생성 (1부터 12까지)
-            SET @category = FLOOR(RAND() * 12) + 1;
+create table if not exists chat_log
+(
+    id           bigint auto_increment
+        primary key,
+    contents     varchar(300) null,
+    sender_id    bigint       not null,
+    reciver_id   bigint       not null,
+    chat_room_id bigint       not null
+);
 
-            -- 랜덤한 region_id 생성 (1168058000, 1168064000, 1168065000, 1168065500, 1168072000 중 하나)
-            SET @region_id = CASE FLOOR(RAND() * 5)
-                                 WHEN 0 THEN 1168058000
-                                 WHEN 1 THEN 1168064000
-                                 WHEN 2 THEN 1168065000
-                                 WHEN 3 THEN 1168065500
-                                 ELSE 1168072000
-                END;
+create index fk_chat_log_member1_idx
+    on chat_log (sender_id);
 
-            -- 랜덤한 item_contents_id 생성 (item_contents 테이블에 삽입)
-            INSERT INTO item_contents (contents, detail_image_url)
-            VALUES ('랜덤한 내용 #', "https://placeimg.com/200/100/any");
+create index fk_chat_log_member2_idx
+    on chat_log (reciver_id);
 
-    SET @item_contents_id = LAST_INSERT_ID();
+create index fk_chat_log_member_chat_about_item1_idx
+    on chat_log (chat_room_id);
 
-    -- 랜덤한 item_counts_id 생성 (item_counts 테이블에 삽입)
-    INSERT INTO item_counts (hits, like_counts, chat_counts)
-    VALUES (FLOOR(RAND() * 1000), FLOOR(RAND() * 1000), FLOOR(RAND() * 1000));
+create table if not exists item_contents
+(
+    id               bigint auto_increment
+        primary key,
+    contents         text             null,
+    detail_image_url text             null,
+    is_deleted       bit default b'0' null
+);
 
-    SET @item_counts_id = LAST_INSERT_ID();
+create table if not exists item_counts
+(
+    id          bigint auto_increment
+        primary key,
+    hits        bigint           not null,
+    like_counts bigint           not null,
+    chat_counts bigint           not null,
+    is_deleted  bit default b'0' null
+);
 
-    -- item 테이블에 데이터 삽입
-    INSERT INTO item (title, price, status, category, thumbnail_url, created_at, updated_at, seller_id, item_counts_id, region_id, item_contents_id, is_deleted)
-    VALUES (@title, @price, 'ON_SALE', @category, "[{'url':'https://placeimg.com/200/100/any'}]", NOW(), NULL, 1, @item_counts_id, @region_id, @item_contents_id, 0);
+create table if not exists member
+(
+    id              bigint auto_increment
+        primary key,
+    member_id       varchar(16)             not null,
+    profile_img_url varchar(300)            null,
+    oauth           enum ('GITHUB', 'NONE') null
+);
 
-    SET i = i + 1;
+create index memberId_UNIQUE
+    on member (member_id);
 
-    -- 10000건마다 COMMIT 수행
-    IF i % 10000 = 0 THEN
-      COMMIT;
-    END IF;
+create table if not exists region
+(
+    id       bigint      not null,
+    city     varchar(45) not null,
+    county   varchar(45) null,
+    district varchar(45) not null,
+    primary key (id)
+);
 
-  END WHILE;
+create table if not exists item
+(
+    id               bigint auto_increment
+        primary key,
+    title            varchar(45)      not null,
+    price            int              null,
+    status           varchar(16)      not null,
+    category         varchar(45)      not null,
+    thumbnail_url    varchar(300)     null,
+    created_at       datetime         not null,
+    updated_at       datetime         null,
+    seller_id        bigint           not null,
+    item_counts_id   bigint           not null,
+    region_id        bigint           not null,
+    item_contents_id bigint           not null,
+    is_deleted       bit default b'0' null,
+    constraint fk_item_member
+        foreign key (seller_id) references member (id),
+    constraint fk_item_region1
+        foreign key (region_id) references region (id)
+);
 
-  COMMIT;
+create table if not exists chatroom
+(
+    id              bigint auto_increment
+        primary key,
+    chatroom_id     binary(16)                                                         not null,
+    item_id         bigint                                                             not null,
+    seller_id       bigint                                                             not null,
+    buyer_id        bigint                                                             not null,
+    created_at      datetime                                                           null,
+    chatroom_status enum ('EMPTY', 'SELLER_ONLY', 'BUYER_ONLY', 'FULL') default 'FULL' null,
+    constraint chatroom_id
+        unique (chatroom_id),
+    constraint idx_my_chatroom_id
+        unique (chatroom_id),
+    constraint fk_chatroom_has_buyer
+        foreign key (buyer_id) references member (id),
+    constraint fk_chatroom_has_item
+        foreign key (item_id) references item (id),
+    constraint fk_chatroom_has_seller
+        foreign key (seller_id) references member (id)
+);
 
-END $$
+create index fk_item_has_member_item1_idx
+    on chatroom (item_id);
 
-DELIMITER ;
+create index fk_item_has_member_member1_idx
+    on chatroom (buyer_id);
 
-call InsertDummyData3();
+create index fk_item_item_contents1_idx
+    on item (item_contents_id);
+
+create index fk_item_item_image1_idx
+    on item (item_counts_id);
+
+create index fk_item_member_idx
+    on item (seller_id);
+
+create index fk_item_region1_idx
+    on item (region_id);
+
+create fulltext index idx_fulltext_ngram
+    on region (city, county, district);
+
+create table if not exists wishlist
+(
+    id         bigint auto_increment
+        primary key,
+    member_id  bigint   not null,
+    item_id    bigint   not null,
+    created_at datetime null
+);
+
+create index fk_member_has_item_item1_idx
+    on wishlist (item_id);
+
+create index fk_member_has_item_member1_idx
+    on wishlist (member_id);
