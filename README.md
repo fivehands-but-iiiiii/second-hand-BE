@@ -2,12 +2,11 @@
 
 <p align="center"><img src="https://github.com/masters2023-2nd-project-05/second-hand/assets/107349637/a9b41627-4e9c-4efd-8435-3366f50e17e8" width=400></p>
 
-> //TODO 간단한 프로젝트 설명 추가
-
 ## 프로젝트 소개
-### 진행기간
+>  진행기간 : 2023. 06 ~ 2023. 08
 
-### BE 구성원
+//TODO 간단한 프로젝트 설명과 동기
+
 | 이린 | Dewey |
 |:--:|:--:|
 |<img src="https://avatars.githubusercontent.com/u/103120173?v=4" alt="이린" width="120" height="120">|<img src="https://avatars.githubusercontent.com/u/115435482?v=4" alt="듀이" width="120" height="120">|
