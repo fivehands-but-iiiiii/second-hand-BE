@@ -5,16 +5,15 @@ import com.team5.secondhand.chat.bubble.repository.ChatBubbleRepository;
 import com.team5.secondhand.global.event.chatbubble.ChatBubbleArrivedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.event.EventListener;
-import org.springframework.data.domain.*;
-import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -53,16 +52,15 @@ public class ChatBubbleService {
 //        return new SliceImpl<>(messages, pageable, hasNext);
 //    }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void saveChatBubble(ChatBubble chatBubble) {
         String key = generateChatLogKey(chatBubble.getRoomId());
 //        redisChatBubbleTemplate.opsForList().rightPush(key, chatBubble); // 캐시 저장
-        chatBubbleRepository.save(chatBubble);
+        ChatBubble save = chatBubbleRepository.save(chatBubble);
     }
 
     @Async
     @EventListener
-    @Transactional
     public void getChatBubble(ChatBubbleArrivedEvent chatBubbleArrivedEvent) {
         ChatBubble chatBubble = chatBubbleArrivedEvent.getChatBubble();
         saveChatBubble(chatBubble);
