@@ -1,7 +1,6 @@
 package com.team5.secondhand.chat.topic.service;
 
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
-import com.team5.secondhand.global.event.Events;
 import com.team5.secondhand.global.event.chatbubble.ChatBubbleArrivedEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class RedisMessagePublisher {
     private final RedisTemplate<String, Object> redisTemplate;
+    private final ApplicationEventPublisher publisher;
 
     @Transactional
     public void publish(String topic, ChatBubble message) {
@@ -24,6 +24,6 @@ public class RedisMessagePublisher {
         message.ready();
         redisTemplate.convertAndSend(topic, message);
 
-        Events.raise(new ChatBubbleArrivedEvent(message));
+        publisher.publishEvent(new ChatBubbleArrivedEvent(message));
     }
 }
