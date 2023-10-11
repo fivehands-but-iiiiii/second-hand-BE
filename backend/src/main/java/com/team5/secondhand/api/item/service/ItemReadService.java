@@ -2,12 +2,12 @@ package com.team5.secondhand.api.item.service;
 
 import com.team5.secondhand.api.item.controller.dto.ItemSummary;
 import com.team5.secondhand.api.item.controller.v1.dto.request.ItemFilteredSlice;
+import com.team5.secondhand.api.item.controller.v1.dto.request.MyItemFilteredSlice;
 import com.team5.secondhand.api.item.controller.v1.dto.response.*;
 import com.team5.secondhand.api.item.controller.v2.dto.ItemsRequest;
 import com.team5.secondhand.api.item.controller.v2.dto.ItemsResponse;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.domain.Status;
-import com.team5.secondhand.api.item.controller.v1.dto.request.MyItemFilteredSlice;
 import com.team5.secondhand.api.item.exception.ExistItemException;
 import com.team5.secondhand.api.item.repository.ItemRepository;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
@@ -15,12 +15,13 @@ import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.wishlist.service.CheckMemberLikedUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.*;
-import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.LockModeType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,7 +58,7 @@ public class ItemReadService {
     @Cacheable(value = "items", key = "#itemsRequest.last + '-' + #region.id")
     public ItemsResponse getItemList(ItemsRequest itemsRequest, Region region, MemberDetails loginMember) {
         Pageable pageable = PageRequest.ofSize(PAGE_SIZE);
-        Slice<Item> pageResult = itemRepository.findAllByIdAndRegion(itemsRequest.getLast(), itemsRequest.getCategoryId(), itemsRequest.getSellerId(), Status.isSales(itemsRequest.getIsSales()), region.getId(), pageable);
+        Slice<Item> pageResult = itemRepository.findAllByIdAndRegion(itemsRequest.getLast(), itemsRequest.getCategoryId(), itemsRequest.getSellerId(), Status.isSales(itemsRequest.getIsSales()), region, pageable);
 
         List<Item> itemEntities = pageResult.getContent();
         List<ItemSummary> items = new ArrayList<>();
