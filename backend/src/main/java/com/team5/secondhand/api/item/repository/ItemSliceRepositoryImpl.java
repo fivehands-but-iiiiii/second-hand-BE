@@ -28,7 +28,7 @@ public class ItemSliceRepositoryImpl implements ItemSliceRepository {
 
         List<Item> fetch = jpaQueryFactory.selectFrom(item)
                 .where(
-                        eqRegion(region.getId()),
+                        eqRegion(region),
                         eqCategory(categoryId),
                         inSales(sales),
                         eqSeller(sellerId),
@@ -42,13 +42,13 @@ public class ItemSliceRepositoryImpl implements ItemSliceRepository {
     }
 
     @Override
-    public Slice<Item> findAllByIdAndRegion(Long last, Long categoryId, Long sellerId, List<Status> sales, Long regionId, Pageable pageable) {
+    public Slice<Item> findAllByIdAndRegion(Long last, Long categoryId, Long sellerId, List<Status> sales, Region region, Pageable pageable) {
         int pageSize = pageable.getPageSize()+1;
 
         List<Item> fetch = jpaQueryFactory.selectFrom(item)
                 .where(
                         eqLast(last),
-                        eqRegion(regionId),
+                        eqRegion(region),
                         eqCategory(categoryId),
                         inSales(sales),
                         eqSeller(sellerId),
@@ -97,10 +97,10 @@ public class ItemSliceRepositoryImpl implements ItemSliceRepository {
         return item.category.eq(categoryId);
     }
 
-    private BooleanExpression eqRegion(Long regionId) {
-        if (regionId == null) {
+    private BooleanExpression eqRegion(Region region) {
+        if (region == null) {
             return null;
         }
-        return item.region.id.eq(regionId);
+        return item.region.id.eq(region.getId());
     }
 }

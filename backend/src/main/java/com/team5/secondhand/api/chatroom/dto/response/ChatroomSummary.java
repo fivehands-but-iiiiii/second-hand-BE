@@ -31,7 +31,7 @@ public class ChatroomSummary {
                 .chatroomId(chatroom.getChatroomId().toString())
                 .opponent(ChatMember.of(chatroom.findOpponent(member)))
                 .item(ChatItemSummary.of(chatroom.getItem()))
-                .lastUpdate(Instant.now())
+                .lastUpdate(chatroom.getCreatedAt())
                 .build();
     }
 
@@ -40,15 +40,8 @@ public class ChatroomSummary {
                 .chatroomId(chatroom.getChatroomId().toString())
                 .opponent(ChatMember.of(chatroom.getBuyer()))
                 .item(ChatItemSummary.of(chatroom.getItem()))
-                .lastUpdate(Instant.now())
+                .lastUpdate(chatroom.getCreatedAt())
                 .build();
-    }
-
-    public Instant getLastUpdate() {
-        if (this.lastUpdate==null) {
-            return Instant.now();
-        }
-        return this.lastUpdate;
     }
 
     public ChatroomSummary addChatLogs(ChatLog chatLog) {
