@@ -3,11 +3,12 @@ package com.team5.secondhand.api.item.controller.v1.dto.response;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class MyItemList {
+public class MyItemList implements Serializable {
     private final int number;
     private final boolean hasPrevious;
     private final boolean hasNext;
