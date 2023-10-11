@@ -19,6 +19,7 @@
 ---
 ## 구성도
 ### 인프라 구성
+![image](https://github.com/masters2023-2nd-project-05/second-hand-BE/assets/103120173/9e6093ce-7618-411d-8ddf-738070a21865)
 
 ### RDB 구성
 
