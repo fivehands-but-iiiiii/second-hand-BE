@@ -22,41 +22,20 @@ public class ChatBubbleService {
     private String chatBucketPrefix;
     @Value("${const.chat.page-size}")
     private int chatLoadSize;
-    private final ChatBubbleRepository chatBubbleRepository;
+    private final ChatBubbleRepository repository;
     private final RedisTemplate<String, ChatBubble> redisChatBubbleTemplate;
 
     @Transactional(readOnly = true)
     public Slice<ChatBubble> getChatBubbles(int page, String roomId) {
-//        ListOperations<String, ChatBubble> listOperations = redisChatBubbleTemplate.opsForList();
         String key = generateChatLogKey(roomId);
         Pageable pageable = PageRequest.of(page, chatLoadSize, Sort.by("createdAt").ascending());
-        Slice<ChatBubble> list = chatBubbleRepository.findAllByRoomId(roomId, pageable);
-        ChatBubble last = chatBubbleRepository.findFirstByOrderByIdDesc();
-
-//        return new SliceImpl<>(list, pageable, list.contains(last));
+        Slice<ChatBubble> list = repository.findAllByRoomId(roomId, pageable);
         return list;
     }
 
-//    private long getStartIndex(int page) {
-//        return (-1L * chatLoadSize * page) - 1;
-//    }
-//
-//    private Slice<ChatBubble> getSlice(List<ChatBubble> messages, Pageable pageable) {
-//        boolean hasNext = false;
-//
-//        if (messages.size() > pageable.getPageSize()) {
-//            hasNext = true;
-//            messages.remove(pageable.getPageSize());
-//        }
-//
-//        return new SliceImpl<>(messages, pageable, hasNext);
-//    }
-
-    @Transactional
-    public void saveChatBubble(ChatBubble chatBubble) {
+    public ChatBubble saveChatBubble(ChatBubble chatBubble) {
         String key = generateChatLogKey(chatBubble.getRoomId());
-//        redisChatBubbleTemplate.opsForList().rightPush(key, chatBubble); // 캐시 저장
-        ChatBubble save = chatBubbleRepository.save(chatBubble);
+        return repository.save(key, chatBubble);
     }
 
     @Async

@@ -1,9 +1,6 @@
 package com.team5.secondhand.api.region.domain;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,4 +19,12 @@ public class Region implements Serializable {
     private String city;
     private String county;
     private String district;
+
+    @Builder
+    protected Region(Long id, String city, String county, String district) {
+        this.id = id;
+        this.city = city;
+        this.county = county;
+        this.district = district;
+    }
 }

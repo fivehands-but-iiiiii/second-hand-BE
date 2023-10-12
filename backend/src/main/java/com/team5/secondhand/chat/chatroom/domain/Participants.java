@@ -40,7 +40,7 @@ public class Participants implements Serializable {
         return true;
     }
 
-    public boolean getMessage(String receiver) {
+    public boolean getMessage(Long receiver) {
         ParticipantInfo member;
         if((member=info.get(receiver))==null) {
             return false;

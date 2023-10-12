@@ -49,8 +49,7 @@ public class Item extends UpdatedTimeEntity {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "item_contents_id")
     private ItemContents contents;
-
-    private Boolean isDeleted = Boolean.FALSE;
+    private Boolean isDeleted;
 
     @Builder
     public Item(Long id, String title, int price, Long category, String thumbnailUrl, Status status, Member seller, Region region, ItemCounts count, ItemContents contents, Boolean isDeleted) {
@@ -65,6 +64,22 @@ public class Item extends UpdatedTimeEntity {
         this.count = count;
         this.contents = contents;
         this.isDeleted = isDeleted;
+    }
+
+    public Item update(Item itemPost) {
+        return Item.builder()
+                .id(this.getId())
+                .title(itemPost.getTitle())
+                .price(itemPost.getPrice())
+                .category(itemPost.getCategory())
+                .thumbnailUrl(itemPost.getThumbnailUrl())
+                .status(this.status)
+                .seller(this.seller)
+                .region(this.region)
+                .count(this.count)
+                .contents(itemPost.getContents())
+                .isDeleted(Boolean.FALSE)
+                .build();
     }
 
     public Item updatePost(ItemPostWithUrl itemPost, String thumbanilUrl) {
