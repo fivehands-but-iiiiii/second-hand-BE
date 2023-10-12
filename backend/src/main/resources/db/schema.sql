@@ -71,7 +71,7 @@ create table if not exists based_region
         primary key,
     member_id   bigint  not null,
     region_id   bigint  not null,
-    represented tinyint not null,
+    represented tinyint not null
 );
 
 create index fk_member_has_region_member1_idx
@@ -95,7 +95,7 @@ create table if not exists item
     item_counts_id   bigint           not null,
     region_id        bigint           not null,
     item_contents_id bigint           not null,
-    is_deleted       bit default b'0' null,
+    is_deleted       bit default b'0' null
 );
 
 DROP TABLE IF EXISTS chatroom;
@@ -107,7 +107,7 @@ create table if not exists chatroom
     seller_id bigint not null,
     buyer_id   bigint   not null,
     created_at datetime null,
-    chatroom_status enum('EMPTY', 'SELLER_ONLY', 'BUYER_ONLY', 'FULL') default 'FULL' null,
+    chatroom_status enum('EMPTY', 'SELLER_ONLY', 'BUYER_ONLY', 'FULL') default 'FULL' null
 );
 CREATE UNIQUE INDEX idx_my_chatroom_id on chatroom (chatroom_id);
 
@@ -118,7 +118,7 @@ create table if not exists chat_log
     contents     varchar(300) null,
     sender_id    bigint       not null,
     reciver_id   bigint       not null,
-    chat_room_id bigint       not null,
+    chat_room_id bigint       not null
 );
 
 create index fk_chat_log_member1_idx
@@ -153,11 +153,10 @@ create fulltext index fulltext_address
 
 create table if not exists wishlist
 (
-    id         bigint auto_increment
-        primary key,
+    id         bigint auto_increment primary key,
     member_id  bigint   not null,
     item_id    bigint   not null,
-    created_at datetime null,
+    created_at datetime null
 );
 
 create index fk_member_has_item_item1_idx
@@ -169,13 +168,29 @@ create index fk_member_has_item_member1_idx
 create table if not exists chatbubble
 (
    id       bigint auto_increment primary key ,
-   room_id  varchar(25),
+   chatroom_id  varchar(25),
    sender   bigint not null ,
    receiver bigint not null ,
-   message text,
-   created_at datetime null
+   message varchar(400),
+   created_at datetime not null
 );
 
+create table if not exists meta_info
+(
+    id bigint auto_increment primary key ,
+    chatroom_id varchar(25) not null ,
+    last_message varchar(400) ,
+    updated_at datetime
+);
+
+create table if not exists participant_info
+(
+    id bigint auto_increment primary key ,
+    chatroom_id varchar(25) not null ,
+    member_id bigint not null ,
+    is_connected bit not null ,
+    message_stock int not null
+);
 
 
 SET SQL_MODE = @OLD_SQL_MODE;
