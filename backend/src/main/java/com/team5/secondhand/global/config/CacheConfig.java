@@ -33,7 +33,7 @@ public class CacheConfig {
     public RedisCacheConfiguration cacheConfiguration() {
          return RedisCacheConfiguration.defaultCacheConfig()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new JdkSerializationRedisSerializer()))
-                .entryTtl(Duration.ofMinutes(10))
+                .entryTtl(Duration.ofSeconds(3))
                 .disableCachingNullValues();
     }
 }
