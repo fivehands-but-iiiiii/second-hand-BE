@@ -1,43 +1,34 @@
 package com.team5.secondhand.chat.bubble.domain;
 
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.redis.core.index.Indexed;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.UUID;
 
 @Getter
 @ToString
-@Document("chatbubbles")
+@Entity
 @NoArgsConstructor
-public class ChatBubble implements Serializable, Comparable {
+@Table(name = "chatbubble")
+public class ChatBubble implements Serializable {
     @Id
-    private UUID id;
-    @Indexed
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String roomId;
-    private String sender;
-    private String receiver;
+    private Long sender;
+    private Long receiver;
     private String message;
     private String createdAt;
 
     @Builder
-    private ChatBubble(UUID id, String roomId, String sender, String receiver, String message, String createdAt) {
+    private ChatBubble(Long id, String roomId, Long sender, Long receiver, String message, String createdAt) {
         this.id = id;
         this.roomId = roomId;
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
         this.createdAt = createdAt;
-    }
-
-    private UUID generateKey() {
-        if (id==null) {
-            return UUID.randomUUID();
-        }
-        return id;
     }
 
     private String generateCreatedAt(String time) {
@@ -51,17 +42,7 @@ public class ChatBubble implements Serializable, Comparable {
         return this.sender.equals(memberId);
     }
 
-    @Override
-    public int compareTo(Object o) {
-        ChatBubble bubble = (ChatBubble) o;
-        if (Instant.parse(this.createdAt).isBefore(Instant.parse(bubble.createdAt))) {
-            return 1;
-        }
-        return -1;
-    }
-
     public void ready() {
-        this.id = generateKey();
         this.createdAt = generateCreatedAt(createdAt);
     }
 }
