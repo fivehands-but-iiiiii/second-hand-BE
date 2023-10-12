@@ -3,9 +3,8 @@ package com.team5.secondhand.api.item.repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.team5.secondhand.api.item.domain.Item;
-import com.team5.secondhand.api.item.domain.QItemCounts;
 import com.team5.secondhand.api.item.domain.Status;
-import com.team5.secondhand.api.item.service.dto.ItemListFilter;
+import com.team5.secondhand.api.region.domain.Region;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -22,17 +21,14 @@ public class ItemSliceRepositoryImpl implements ItemSliceRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
+
     @Override
-    public Slice<Item> findAllByFilterUsingOffset(ItemListFilter filter, Pageable pageable) {
+    public Slice<Item> findAllByBasedRegion(Long categoryId, Long sellerId, List<Status> sales, Region region, Pageable pageable) {
         int pageSize = pageable.getPageSize()+1;
 
         List<Item> fetch = jpaQueryFactory.selectFrom(item)
                 .where(
-                        eqRegion(filter.getRegionId()),
-                        eqCategory(filter.getCategoryId()),
-                        inSales(filter.getSales()),
-                        eqSeller(filter.getSellerId()),
-                        eqRegion(region.getId()),
+                        eqRegion(region),
                         eqCategory(categoryId),
                         inSales(sales),
                         eqSeller(sellerId),
@@ -46,18 +42,16 @@ public class ItemSliceRepositoryImpl implements ItemSliceRepository {
     }
 
     @Override
-    public Slice<Item> findAllByFilterUsingCursor(Long last, ItemListFilter filter, Pageable pageable) {
+    public Slice<Item> findAllByIdAndRegion(Long last, Long categoryId, Long sellerId, List<Status> sales, Region region, Pageable pageable) {
         int pageSize = pageable.getPageSize()+1;
 
         List<Item> fetch = jpaQueryFactory.selectFrom(item)
-                .fetchJoin()
-                    .on(item.count.eq(QItemCounts.itemCounts))
                 .where(
                         eqLast(last),
-                        eqRegion(filter.getRegionId()),
-                        eqCategory(filter.getCategoryId()),
-                        inSales(filter.getSales()),
-                        eqSeller(filter.getSellerId()),
+                        eqRegion(region),
+                        eqCategory(categoryId),
+                        inSales(sales),
+                        eqSeller(sellerId),
                         item.isDeleted.eq(false)
                 )
                 .limit(pageSize)
@@ -76,7 +70,7 @@ public class ItemSliceRepositoryImpl implements ItemSliceRepository {
 
     private BooleanExpression eqLast(Long last) {
         if (last == null) {
-            return null;
+            return null; // BooleanExpression 자리에 null이 반환되면 조건문에서 자동으로 제거된다
         }
 
         return item.id.lt(last);
@@ -103,10 +97,10 @@ public class ItemSliceRepositoryImpl implements ItemSliceRepository {
         return item.category.eq(categoryId);
     }
 
-    private BooleanExpression eqRegion(Long regionId) {
-        if (regionId == null) {
+    private BooleanExpression eqRegion(Region region) {
+        if (region == null) {
             return null;
         }
-        return item.region.id.eq(regionId);
+        return item.region.id.eq(region.getId());
     }
 }

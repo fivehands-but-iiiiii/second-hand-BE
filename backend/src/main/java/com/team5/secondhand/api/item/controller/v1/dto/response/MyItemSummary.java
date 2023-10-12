@@ -7,12 +7,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 @Getter
 @Builder
 @RequiredArgsConstructor
-public class MyItemSummary {
+public class MyItemSummary implements Serializable {
     private final Long id;
     private final String title;
     private final String thumbnailUrl;

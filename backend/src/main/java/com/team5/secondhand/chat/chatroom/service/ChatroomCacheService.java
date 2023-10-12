@@ -7,7 +7,6 @@ import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.chat.chatroom.domain.Chatroom;
 import com.team5.secondhand.chat.chatroom.repository.ChatroomMetaRepository;
-import com.team5.secondhand.global.event.Events;
 import com.team5.secondhand.global.event.chatbubble.ChatBubbleArrivedEvent;
 import com.team5.secondhand.global.event.chatbubble.ChatNotificationEvent;
 import com.team5.secondhand.global.event.chatroom.ChatroomCreatedEvent;
@@ -72,6 +71,6 @@ public class ChatroomCacheService {
         Chatroom chatroom = getChatroom(chatBubble.getRoomId());
         chatroom.updateLastMessage(chatBubble);
         Chatroom saveChatroom = metaInfoRepository.save(chatroom);
-        Events.raise(ChatNotificationEvent.of(saveChatroom, chatBubble));
+        eventPublisher.publishEvent(ChatNotificationEvent.of(saveChatroom, chatBubble));
     }
 }
