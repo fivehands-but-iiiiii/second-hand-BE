@@ -13,7 +13,7 @@ import com.team5.secondhand.api.item.service.ItemReadService;
 import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.exception.ExistMemberIdException;
 import com.team5.secondhand.api.member.service.MemberService;
-import com.team5.secondhand.chat.chatroom.service.ChatroomCacheService;
+import com.team5.secondhand.chat.chatroom.service.ChatroomMetaInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -28,7 +28,7 @@ public class ChatroomFacade {
     private final ChatroomService chatRoomService;
     private final ItemReadService itemService;
     private final MemberService memberService;
-    private final ChatroomCacheService chatroomCacheService;
+    private final ChatroomMetaInfoService chatroomMetaInfoService;
 
     private final int FILTER_SIZE = 10;
 
@@ -68,7 +68,7 @@ public class ChatroomFacade {
             chatroomList = chatRoomService.findChatroomListByItem(pageRequest, item);
         }
         //마지막 채팅로그 추가
-        chatroomList.addLastMessage(chatroomCacheService.addLastMessage(chatroomList.getChatRooms(), member.getMemberId()));
+        chatroomList.addLastMessage(chatroomMetaInfoService.addLastMessage(chatroomList.getChatRooms(), member.getMemberId()));
         chatroomList.sort();
 
         return chatroomList;

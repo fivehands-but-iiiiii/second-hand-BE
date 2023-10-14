@@ -1,6 +1,6 @@
 package com.team5.secondhand.chat.chatroom.handler;
 
-import com.team5.secondhand.chat.chatroom.service.ChatroomCacheService;
+import com.team5.secondhand.chat.chatroom.service.ChatroomMetaInfoService;
 import com.team5.secondhand.chat.exception.ErrorType;
 import com.team5.secondhand.chat.notification.service.SessionService;
 import com.team5.secondhand.global.jwt.service.JwtService;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 public class StompMessageProcessor implements ChannelInterceptor {
     private final JwtService jwtService;
     private final SessionService sessionService;
-    private final ChatroomCacheService chatroomCacheService;
+    private final ChatroomMetaInfoService chatroomMetaInfoService;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -64,13 +64,13 @@ public class StompMessageProcessor implements ChannelInterceptor {
     private void enterToChatRoom(StompHeaderAccessor headerAccessor) {
         String memberId = sessionService.getMemberIdBySessionId(headerAccessor.getSessionId());
         String roomId = extractRoomId(headerAccessor.getDestination());
-        chatroomCacheService.enterToChatRoom(roomId, memberId);
+        chatroomMetaInfoService.enterToChatRoom(roomId, memberId);
     }
 
     private void exitToChatRoom(StompHeaderAccessor headerAccessor) {
         String memberId = sessionService.getMemberIdBySessionId(headerAccessor.getSessionId());
         String roomId = extractRoomId(headerAccessor.getDestination());
-        chatroomCacheService.exitToChatRoom(roomId, memberId);
+        chatroomMetaInfoService.exitToChatRoom(roomId, memberId);
     }
 
     private String extractRoomId(String destination) {
