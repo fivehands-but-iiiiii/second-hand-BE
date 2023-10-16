@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class RedisChatBubbleRepository implements ChatBubbleRepository {
+public class RedisChatBubbleCache implements ChatBubbleCache {
 
     private final RedisTemplate<String, ChatBubble> redisChatBubbleTemplate;
 
@@ -22,14 +22,12 @@ public class RedisChatBubbleRepository implements ChatBubbleRepository {
     }
 
     private Slice<ChatBubble> getSlice(List<ChatBubble> messages, Pageable pageable) {
-        boolean hasNext = false;
 
         if (messages.size() > pageable.getPageSize()) {
-            hasNext = true;
             messages.remove(pageable.getPageSize());
         }
 
-        return new SliceImpl<>(messages, pageable, hasNext);
+        return new SliceImpl<>(messages, pageable, true);
     }
 
     @Override
@@ -45,7 +43,13 @@ public class RedisChatBubbleRepository implements ChatBubbleRepository {
 
     @Override
     public ChatBubble save(String key, ChatBubble chatBubble) {
-        redisChatBubbleTemplate.opsForList().rightPush(key, chatBubble); // 캐시 저장
-        return redisChatBubbleTemplate.opsForValue().get(key);
+        redisChatBubbleTemplate.opsForList().rightPush(key, chatBubble);
+        return chatBubble;
+    }
+
+    @Override
+    public int getLastPage(String key, int pageSize) {
+        Long size = redisChatBubbleTemplate.opsForList().size(key);
+        return (int)(size/pageSize);
     }
 }
