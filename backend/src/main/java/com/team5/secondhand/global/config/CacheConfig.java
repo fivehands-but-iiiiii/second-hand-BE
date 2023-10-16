@@ -19,7 +19,6 @@ import java.time.Duration;
 public class CacheConfig {
 
     private final RedisConnectionFactory redisConnectionFactory;
-    private final ObjectMapper objectMapper;
 
     @Bean
     public RedisCacheManager redisCacheManager() {

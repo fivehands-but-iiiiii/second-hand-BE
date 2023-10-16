@@ -1,24 +1,22 @@
-package com.team5.secondhand.chat.config;
+package com.team5.secondhand.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
+import com.team5.secondhand.chat.chatroom.domain.Chatroom;
 import com.team5.secondhand.chat.topic.service.RedisMessageSubscriber;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
-@Getter
 @Configuration
 @RequiredArgsConstructor
 @EnableRedisRepositories
@@ -27,17 +25,16 @@ public class ChatConfig {
     private final RedisConnectionFactory redisConnectionFactory;
     private final SimpMessageSendingOperations messagingTemplate;
     private final ObjectMapper objectMapper;
-    private final RedisTemplate<String, Object> redisObjectTemplate;
 
 
     @Bean
-    public RedisMessageListenerContainer redisContainer() {
-        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(redisConnectionFactory);
-        container.addMessageListener(messageListener(), chatTopic());
-        return container;
+    public RedisTemplate<String, Object> redisObjectTemplate() {
+        final RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
+        return template;
     }
-
 
     @Bean
     public RedisTemplate<String, ChatBubble> redisChatBubbleTemplate() {
@@ -54,15 +51,32 @@ public class ChatConfig {
     }
 
     @Bean
+    public RedisTemplate<String, Chatroom> redisChatroomTemplate() {
+        final RedisTemplate<String, Chatroom> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory);
+        template.setKeySerializer(new StringRedisSerializer());
+        objectMapper.registerModule(new JavaTimeModule());
+
+        Jackson2JsonRedisSerializer<Chatroom> jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Chatroom.class);
+        jsonRedisSerializer.setObjectMapper(objectMapper);
+        template.setValueSerializer(jsonRedisSerializer);
+
+        return template;
+    }
+
+    @Bean
     public RedisMessageSubscriber messageListener() {
-        return new RedisMessageSubscriber(objectMapper, redisObjectTemplate, messagingTemplate);
+        return new RedisMessageSubscriber(objectMapper, redisObjectTemplate(), messagingTemplate);
+    }
+
+    @Bean
+    public HashOperations<String, String, Chatroom> chatroomHashOperations() {
+        return redisChatroomTemplate().opsForHash();
     }
 
     @Bean
     public ChannelTopic chatTopic() {
         return new ChannelTopic("chatRoom");
     }
-    public ChannelTopic notificationTopic() {
-        return new ChannelTopic("notification");
-    }
+
 }
