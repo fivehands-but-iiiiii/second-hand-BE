@@ -7,7 +7,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class RedisChatroomMetaRepository implements ChatroomMetainfoRepository {
+public class RedisChatroomMetaCache implements ChatroomMetainfoCache {
     private final RedisTemplate<String, Chatroom> redisChatroomTemplate;
     private final String MAIN_KEY = "chatroom";
 
