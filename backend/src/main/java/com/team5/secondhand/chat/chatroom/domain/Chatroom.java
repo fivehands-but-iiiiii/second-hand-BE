@@ -1,13 +1,9 @@
 package com.team5.secondhand.chat.chatroom.domain;
 
 import com.team5.secondhand.api.chatroom.dto.ChatroomInfo;
-import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -15,9 +11,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
-@Document("chatroom_metainfo")
 public class Chatroom implements Serializable { // NoSQL 에 저장될 자료 구조
-    @Id
+
     private String chatroomId;
     private Participants participants = new Participants(new ConcurrentHashMap<>());
     private String lastMessage;
@@ -49,7 +44,7 @@ public class Chatroom implements Serializable { // NoSQL 에 저장될 자료 �
                 .build();
     }
 
-    public boolean updateLastMessage (ChatBubble chatBubble) throws NotChatroomMemberException {
+    public boolean updateLastMessage (ChatBubble chatBubble) {
         this.lastMessage = chatBubble.getMessage();
         this.updateAt = Instant.now();
         return participants.getMessage(chatBubble.getReceiver());
