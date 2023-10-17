@@ -7,16 +7,6 @@ services:
     ports:
       - "6379"
 
-  mysql:
-    image: mysql:8.0.22
-    environment:
-      MYSQL_ROOT_USER: root
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: secondhand-db
-    restart: always
-    ports:
-      - "3306"
-
   mongodb:
     image: mongo
     restart: always
