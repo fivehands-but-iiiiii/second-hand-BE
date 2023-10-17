@@ -42,6 +42,12 @@ public class RedisChatBubbleCache implements ChatBubbleCache {
     }
 
     @Override
+    public List<ChatBubble> findAllByRoomId(String key) {
+        long size = redisChatBubbleTemplate.opsForList().size(key);
+        return redisChatBubbleTemplate.opsForList().leftPop(key, size);
+    }
+
+    @Override
     public ChatBubble save(String key, ChatBubble chatBubble) {
         redisChatBubbleTemplate.opsForList().rightPush(key, chatBubble);
         return chatBubble;
