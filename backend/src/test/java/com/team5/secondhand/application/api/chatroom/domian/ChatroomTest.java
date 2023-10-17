@@ -1,5 +1,7 @@
-package com.team5.secondhand.api.chatroom.domian;
+package com.team5.secondhand.application.api.chatroom.domian;
 
+import com.team5.secondhand.api.chatroom.domian.Chatroom;
+import com.team5.secondhand.api.chatroom.domian.ChatroomStatus;
 import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.domain.ItemContents;

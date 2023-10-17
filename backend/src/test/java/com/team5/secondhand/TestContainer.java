@@ -29,11 +29,14 @@ public abstract class TestContainer {
 
         @Override
         public void initialize(ConfigurableApplicationContext context) {
-            TestPropertyValues.of("container.port=" + composeContainer.getServicePort("mysql", 3306))
+            TestPropertyValues
+                    .of("container.port=" + composeContainer.getServicePort("mysql", 3306))
                     .applyTo(context);
-            TestPropertyValues.of("container.port=" + composeContainer.getServicePort("redis", 6379))
+            TestPropertyValues
+                    .of("container.port=" + composeContainer.getServicePort("redis", 6379))
                     .applyTo(context);
-            TestPropertyValues.of("container.port=" + composeContainer.getServicePort("mongodb", 27017))
+            TestPropertyValues
+                    .of("container.port=" + composeContainer.getServicePort("mongodb", 27017))
                     .applyTo(context);
         }
     }
