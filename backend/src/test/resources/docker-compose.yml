@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - "6379"
+
+  mysql:
+    image: mysql:8.0.22
+    environment:
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: secondhand-db
+    restart: always
+    ports:
+      - "3306"
+
+  mongodb:
+    image: mongo
+    restart: always
+    ports:
+      - "27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=1234
+      - MONGO_INITDB_DATABASE=secondhand-db
