@@ -2,10 +2,10 @@ package com.team5.secondhand.chat.notification.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class SessionService {
     private final RedisTemplate<String, String> redisSessionTemplate;

@@ -34,7 +34,7 @@ public class RedisMessageSubscriber implements MessageListener {
         try {
             chatBubble = objectMapper.readValue(publishMessage, ChatBubble.class);
             log.debug("sub log : "+ message.toString());
-            messagingTemplate.convertAndSend("/sub/" + chatBubble.getRoomId(), chatBubble);
+            messagingTemplate.convertAndSend("/sub/" + chatBubble.getChatroomId(), chatBubble);
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
         }

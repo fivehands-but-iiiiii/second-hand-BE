@@ -3,6 +3,7 @@ package com.team5.secondhand.chat.bubble.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -12,37 +13,27 @@ import java.time.Instant;
 @NoArgsConstructor
 @Table(name = "chatbubble")
 public class ChatBubble implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String roomId;
+    private String chatroomId;
     private Long sender;
     private Long receiver;
     private String message;
-    private String createdAt;
+    private Instant createdAt;
 
     @Builder
-    private ChatBubble(Long id, String roomId, Long sender, Long receiver, String message, String createdAt) {
+    protected ChatBubble(Long id, String chatroomId, Long sender, Long receiver, String message, Instant createdAt) {
         this.id = id;
-        this.roomId = roomId;
+        this.chatroomId = chatroomId;
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
         this.createdAt = createdAt;
     }
 
-    private String generateCreatedAt(String time) {
-        if (time == null) {
-            return Instant.now().toString();
-        }
-        return time;
-    }
-
-    public Boolean isSender(String memberId) {
-        return this.sender.equals(memberId);
-    }
-
-    public void ready() {
-        this.createdAt = generateCreatedAt(createdAt);
+    public Boolean isSender(long memberId) {
+        return this.sender == memberId;
     }
 }
