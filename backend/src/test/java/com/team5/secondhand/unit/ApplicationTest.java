@@ -1,4 +1,4 @@
-package com.team5.secondhand.unit.api;
+package com.team5.secondhand.unit;
 
 import com.team5.secondhand.DataInitializerExtension;
 import org.junit.jupiter.api.extension.ExtendWith;

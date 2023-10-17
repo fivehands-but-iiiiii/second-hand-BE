@@ -1,7 +1,7 @@
 package com.team5.secondhand.unit.chat.chatroom.repository;
 
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
-import com.team5.secondhand.unit.api.AbstractApplicationTest;
+import com.team5.secondhand.unit.AbstractApplicationTest;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
