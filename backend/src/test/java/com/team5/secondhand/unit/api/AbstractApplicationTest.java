@@ -16,7 +16,6 @@ public abstract class AbstractApplicationTest extends TestContainer {
     public static FixtureMonkey fixtureMonkey() {
         return FixtureMonkey.builder()
                 .objectIntrospector(BuilderArbitraryIntrospector.INSTANCE)
-                .plugin(new JavaxValidationPlugin()) // or new JavaxValidationPlugin()
                 .defaultNotNull(true)
                 .build();
     }
