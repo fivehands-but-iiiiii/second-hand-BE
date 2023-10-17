@@ -13,7 +13,7 @@ public class ChatBubbleRequest {
     private final long receiver;
     private final String message;
 
-    public ChatBubble toDto() {
+    public ChatBubble toDomain() {
         return ChatBubble.builder()
                 .chatroomId(roomId)
                 .sender(sender)
