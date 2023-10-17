@@ -1,4 +1,4 @@
-package com.team5.secondhand.global.dto;
+package com.team5.secondhand.global.model;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

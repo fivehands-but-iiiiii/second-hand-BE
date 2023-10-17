@@ -1,6 +1,6 @@
-package com.team5.secondhand.global.resource.repository;
+package com.team5.secondhand.api.resource.repository;
 
-import com.team5.secondhand.global.resource.domain.Category;
+import com.team5.secondhand.api.resource.domain.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

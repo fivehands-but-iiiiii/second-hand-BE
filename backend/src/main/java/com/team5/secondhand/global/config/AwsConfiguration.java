@@ -1,4 +1,4 @@
-package com.team5.secondhand.global.aws.config;
+package com.team5.secondhand.global.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;

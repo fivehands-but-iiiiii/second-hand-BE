@@ -1,4 +1,4 @@
-package com.team5.secondhand.global.jwt.config;
+package com.team5.secondhand.global.jwt.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;

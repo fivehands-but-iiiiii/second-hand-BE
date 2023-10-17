@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -31,7 +32,11 @@ public class WebConfig implements WebMvcConfigurer {
                         "http://127.0.0.1:5174", "http://localhost:5174",
                         testDomain, prodDomain
                 )
-                .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS", "HEAD")
+                .allowedMethods(
+                        HttpMethod.GET.name(), HttpMethod.POST.name(),
+                        HttpMethod.PATCH.name(), HttpMethod.PUT.name(),
+                        HttpMethod.DELETE.name(), HttpMethod.OPTIONS.name(),
+                        HttpMethod.HEAD.name())
                 .allowedHeaders("*")
                 .maxAge(36000);
     }

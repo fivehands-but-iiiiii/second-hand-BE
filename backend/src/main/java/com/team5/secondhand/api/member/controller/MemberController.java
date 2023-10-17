@@ -21,7 +21,7 @@ import com.team5.secondhand.api.region.service.GetValidRegionsUsecase;
 import com.team5.secondhand.global.aws.dto.response.ProfileImageInfo;
 import com.team5.secondhand.global.aws.exception.ImageHostException;
 import com.team5.secondhand.global.aws.service.usecase.ProfileUpload;
-import com.team5.secondhand.global.dto.GenericResponse;
+import com.team5.secondhand.global.model.GenericResponse;
 import com.team5.secondhand.global.jwt.service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;

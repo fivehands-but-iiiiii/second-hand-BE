@@ -1,6 +1,6 @@
 package com.team5.secondhand.api.wishlist.exception;
 
-import com.team5.secondhand.global.dto.ErrorResponse;
+import com.team5.secondhand.global.model.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;

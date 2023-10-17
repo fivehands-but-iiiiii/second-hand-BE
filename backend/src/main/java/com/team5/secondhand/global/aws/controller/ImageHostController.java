@@ -1,11 +1,10 @@
 package com.team5.secondhand.global.aws.controller;
 
 import com.team5.secondhand.api.member.dto.request.MemberProfileImageUpdate;
-import com.team5.secondhand.global.aws.dto.response.ImageInfo;
 import com.team5.secondhand.global.aws.dto.response.ProfileImageInfo;
 import com.team5.secondhand.global.aws.exception.ImageHostException;
 import com.team5.secondhand.global.aws.service.ImageHostService;
-import com.team5.secondhand.global.dto.GenericResponse;
+import com.team5.secondhand.global.model.GenericResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

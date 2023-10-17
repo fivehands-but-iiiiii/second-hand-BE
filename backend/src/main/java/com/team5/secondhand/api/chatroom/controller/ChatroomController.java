@@ -10,7 +10,7 @@ import com.team5.secondhand.api.chatroom.service.ChatroomFacade;
 import com.team5.secondhand.api.item.exception.ExistItemException;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.member.exception.ExistMemberIdException;
-import com.team5.secondhand.global.dto.GenericResponse;
+import com.team5.secondhand.global.model.GenericResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
