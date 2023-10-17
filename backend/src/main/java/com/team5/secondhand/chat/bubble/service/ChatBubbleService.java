@@ -70,7 +70,7 @@ public class ChatBubbleService {
 
     @Transactional
     @Scheduled(cron = "0 0 * * * *")
-    public void clearCache() {
+    public void moveDataCacheToRepository() {
         List<ChatBubble> allChatBubble = bubbleCache.findAllByRoomId(chatContext.getBucket() + "*");
         bubbleRepository.saveAll(allChatBubble);
         bubbleCache.clear(chatContext.getBucket() + "*");

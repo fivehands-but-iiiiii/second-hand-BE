@@ -1,6 +1,6 @@
 package com.team5.secondhand.chat.bubble.controller;
 
-import com.team5.secondhand.chat.bubble.controller.dto.ChatBubbleRequest;
+import com.team5.secondhand.chat.bubble.dto.request.ChatBubbleRequest;
 import com.team5.secondhand.chat.bubble.service.ChatBubbleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ class ChatController {
 
     @MessageMapping("/message")
     public void message(ChatBubbleRequest message, SimpMessageHeaderAccessor messageHeaderAccessor) {
-        bubbleService.handleMessage(message.toDto());
+        bubbleService.handleMessage(message.toDomain());
     }
 
 }

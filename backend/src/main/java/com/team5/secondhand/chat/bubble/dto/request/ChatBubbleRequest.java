@@ -1,4 +1,4 @@
-package com.team5.secondhand.chat.bubble.controller.dto;
+package com.team5.secondhand.chat.bubble.dto.request;
 
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import lombok.Getter;
