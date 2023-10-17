@@ -1,5 +1,7 @@
-package com.team5.secondhand.application.api;
+package com.team5.secondhand.unit.api;
 
+import com.team5.secondhand.DataInitializerExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -11,6 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @SpringBootTest
+@ExtendWith(DataInitializerExtension.class)
 @ActiveProfiles("test")
 public @interface ApplicationTest {
 }

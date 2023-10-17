@@ -1,4 +1,4 @@
-package com.team5.secondhand.application.api.chatroom.domian;
+package com.team5.secondhand.unit.api.chatroom.domian;
 
 import com.team5.secondhand.api.chatroom.domian.Chatroom;
 import com.team5.secondhand.api.chatroom.domian.ChatroomStatus;
