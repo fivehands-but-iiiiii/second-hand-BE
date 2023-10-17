@@ -1,4 +1,4 @@
-package com.team5.secondhand.unit.api.repository;
+package com.team5.secondhand.unit.chat.chatroom.repository;
 
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.unit.api.AbstractApplicationTest;
