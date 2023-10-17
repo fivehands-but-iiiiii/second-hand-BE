@@ -18,7 +18,6 @@ public abstract class TestContainer {
     static DockerComposeContainer composeContainer =
             new DockerComposeContainer(new File("src/test/resources/docker-compose.yml"))
                     .withExposedService("redis", 6379, Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(30)))
-                    .withExposedService("mysql", 3306, Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(30)))
                     .withExposedService("mongodb", 27017, Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(30)));
 
     static {
@@ -29,9 +28,6 @@ public abstract class TestContainer {
 
         @Override
         public void initialize(ConfigurableApplicationContext context) {
-            TestPropertyValues
-                    .of("container.port=" + composeContainer.getServicePort("mysql", 3306))
-                    .applyTo(context);
             TestPropertyValues
                     .of("container.port=" + composeContainer.getServicePort("redis", 6379))
                     .applyTo(context);
