@@ -10,4 +10,6 @@ public interface ChatBubbleCache {
     ChatBubble save(String key, ChatBubble chatBubble);
 
     int getLastPage(String key, int pageSize);
+
+    void clear(String key);
 }

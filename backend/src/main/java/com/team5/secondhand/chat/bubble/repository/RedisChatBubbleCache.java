@@ -27,7 +27,7 @@ public class RedisChatBubbleCache implements ChatBubbleCache {
             messages.remove(pageable.getPageSize());
         }
 
-        return new SliceImpl<>(messages, pageable, true);
+        return new SliceImpl<>(messages.subList(0, Math.min(pageable.getPageSize(), messages.size())), pageable, pageable.getPageSize() < messages.size());
     }
 
     @Override
@@ -37,7 +37,7 @@ public class RedisChatBubbleCache implements ChatBubbleCache {
         long startIndex = getStartIndex(pageable);
         long endIndex = startIndex - pageable.getPageSize();
 
-        List<ChatBubble> messages = listOperations.range(key, endIndex, startIndex);
+        List<ChatBubble> messages = listOperations.range(key, endIndex - 1, startIndex);
         return getSlice(messages, pageable);
     }
 
@@ -51,5 +51,10 @@ public class RedisChatBubbleCache implements ChatBubbleCache {
     public int getLastPage(String key, int pageSize) {
         Long size = redisChatBubbleTemplate.opsForList().size(key);
         return (int)(size/pageSize);
+    }
+
+    @Override
+    public void clear(String key) {
+        redisChatBubbleTemplate.opsForList().getOperations().delete(key);
     }
 }
