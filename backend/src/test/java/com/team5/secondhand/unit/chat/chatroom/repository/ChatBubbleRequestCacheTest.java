@@ -1,7 +1,8 @@
 package com.team5.secondhand.unit.chat.chatroom.repository;
 
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
-import com.team5.secondhand.unit.AbstractApplicationTest;
+import com.team5.secondhand.unit.AbstractRepositoryTest;
+import com.team5.secondhand.unit.ApplicationTest;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,9 +13,11 @@ import org.springframework.data.domain.Slice;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 
+@ApplicationTest
 @DisplayName("REPOSITORY - ChatBubbleRequestCache 테스트")
-class ChatBubbleRequestCacheTest extends AbstractApplicationTest {
+class ChatBubbleRequestCacheTest extends AbstractRepositoryTest {
 
     ChatBubble chatBubble;
     String key = "test:chatBubble1";
@@ -24,7 +27,6 @@ class ChatBubbleRequestCacheTest extends AbstractApplicationTest {
         chatBubble = fixtureMonkey().giveMeBuilder(ChatBubble.class).sample();
         chatBubbleCache.clear(key);
     }
-
 
     @Test
     @DisplayName("캐시에 저장할 수 있다.")
@@ -70,8 +72,7 @@ class ChatBubbleRequestCacheTest extends AbstractApplicationTest {
         setCacheData(25);
 
         chatBubbleCache.clear(key);
-
-        assertThat(chatBubbleCache.findAllByRoomId(key, PageRequest.of(0, 10)).getContent()).hasSize(0);
+        assertThat(chatBubbleCache.findAllByRoomId(key, PageRequest.of(0, 10)).getContent()).isEmpty();
     }
 
     private void setCacheData(int x) {
@@ -92,4 +93,5 @@ class ChatBubbleRequestCacheTest extends AbstractApplicationTest {
         //then
         assertThat(allByRoomId).hasSize(123);
     }
+    
 }

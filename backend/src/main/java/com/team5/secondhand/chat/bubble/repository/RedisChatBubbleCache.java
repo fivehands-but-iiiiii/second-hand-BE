@@ -61,6 +61,7 @@ public class RedisChatBubbleCache implements ChatBubbleCache {
 
     @Override
     public void clear(String key) {
-        redisChatBubbleTemplate.opsForList().getOperations().delete(key);
+        Set<String> keys = redisChatBubbleTemplate.keys(key);
+        redisChatBubbleTemplate.delete(keys);
     }
 }

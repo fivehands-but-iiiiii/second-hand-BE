@@ -13,7 +13,7 @@ import java.time.Duration;
 
 @Testcontainers
 @ContextConfiguration(initializers = TestContainer.ContainerPropertyInitializer.class)
-public abstract class TestContainer {
+public abstract class TestContainer extends FixtureFactory {
 
     static DockerComposeContainer composeContainer =
             new DockerComposeContainer(new File("src/test/resources/docker-compose.yml"))

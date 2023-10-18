@@ -1,10 +1,12 @@
 package com.team5.secondhand.chat.bubble.dto.request;
 
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
+@Builder
 @RequiredArgsConstructor
 public class ChatBubbleRequest {
 

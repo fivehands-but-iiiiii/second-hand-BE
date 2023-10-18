@@ -1,22 +1,22 @@
 package com.team5.secondhand.unit;
 
-import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.api.introspector.BuilderArbitraryIntrospector;
-import com.team5.secondhand.TestContainer;
+import com.team5.secondhand.FixtureFactory;
 import com.team5.secondhand.chat.bubble.repository.ChatBubbleCache;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.team5.secondhand.chat.bubble.repository.ChatBubbleRepository;
+import com.team5.secondhand.chat.topic.service.RedisChatPublisher;
+import com.team5.secondhand.global.properties.ConstProperties;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.context.ApplicationEventPublisher;
 
-@ApplicationTest
-public abstract class AbstractApplicationTest extends TestContainer {
+public abstract class AbstractApplicationTest extends FixtureFactory {
 
-    @Autowired
-    protected ChatBubbleCache chatBubbleCache;
-
-    public static FixtureMonkey fixtureMonkey() {
-        return FixtureMonkey.builder()
-                .objectIntrospector(BuilderArbitraryIntrospector.INSTANCE)
-                .defaultNotNull(true)
-                .build();
-    }
-
+    @Mock
+    protected ChatBubbleCache chatBubbleCache; // ChatBubble 저장 및 조회를 위한 Cache
+    @Mock
+    protected ChatBubbleRepository chatBubbleRepository; // ChatBubble 저장 및 조회를 위한 Repository
+    @Mock
+    protected RedisChatPublisher redisChatPublisher; // Redis 메시지 발행을 위한 클래스
+    @Mock
+    protected ApplicationEventPublisher publisher; // event 발행을 위한 클래스
 }

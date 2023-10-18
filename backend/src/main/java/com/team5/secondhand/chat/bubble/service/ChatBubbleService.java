@@ -72,8 +72,8 @@ public class ChatBubbleService {
     @Scheduled(cron = "0 0 * * * *")
     public void moveDataCacheToRepository() {
         List<ChatBubble> allChatBubble = bubbleCache.findAllByRoomId(chatContext.getBucket() + "*");
-        bubbleRepository.saveAll(allChatBubble);
         bubbleCache.clear(chatContext.getBucket() + "*");
+        bubbleRepository.saveAll(allChatBubble);
     }
 
 }

@@ -16,7 +16,7 @@ public class ChatBubbleRepository {
     public Slice<ChatBubble> findAll(Pageable pageable) {
         pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize() + 1, Sort.by("createdAt").ascending());
         Page<ChatBubble> chatBubbles = repository.findAll(pageable);
-        return new SliceImpl(chatBubbles.getContent().subList(0, Math.max(pageable.getPageSize(), chatBubbles.getSize())), pageable, chatBubbles.getSize() > chatBubbles.getSize());
+        return new SliceImpl(chatBubbles.getContent().subList(0, Math.min(pageable.getPageSize(), chatBubbles.getContent().size())), pageable, chatBubbles.getSize() > chatBubbles.getSize());
     }
 
     public void saveAll(List<ChatBubble> allChatBubble) {

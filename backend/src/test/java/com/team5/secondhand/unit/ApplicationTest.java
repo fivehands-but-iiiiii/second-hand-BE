@@ -2,6 +2,9 @@ package com.team5.secondhand.unit;
 
 import com.team5.secondhand.DataInitializerExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -13,7 +16,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @SpringBootTest
-@ExtendWith(DataInitializerExtension.class)
 @ActiveProfiles("test")
+@ExtendWith(DataInitializerExtension.class)
 public @interface ApplicationTest {
 }
