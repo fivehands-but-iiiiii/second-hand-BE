@@ -11,9 +11,12 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+
+import javax.annotation.PostConstruct;
 
 @Configuration
 @RequiredArgsConstructor
@@ -24,27 +27,18 @@ public class ChatConfig {
     private final SimpMessageSendingOperations messagingTemplate;
     private final ObjectMapper objectMapper;
 
-
-    @Bean
-    public RedisTemplate<String, Object> redisObjectTemplate() {
-        final RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(redisConnectionFactory);
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
-        return template;
+    @PostConstruct
+    private void init(){
+        objectMapper.registerModule(new JavaTimeModule());
     }
 
+
     @Bean
-    public RedisTemplate<String, ChatBubble> redisChatBubbleTemplate() {
-        final RedisTemplate<String, ChatBubble> template = new RedisTemplate<>();
+    public RedisTemplate<String, ?> redisObjectTemplate() {
+        final RedisTemplate<String, ?> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
         template.setKeySerializer(new StringRedisSerializer());
-        objectMapper.registerModule(new JavaTimeModule());
-
-        Jackson2JsonRedisSerializer<ChatBubble> jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(ChatBubble.class);
-        jsonRedisSerializer.setObjectMapper(objectMapper);
-        template.setValueSerializer(jsonRedisSerializer);
-
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
         return template;
     }
 
