@@ -48,7 +48,11 @@ public class ChatroomService {
 
     @Transactional
     public Optional<Chatroom> findChatroom(long memberId, long itemId) {
-        return chatRoomRepository.findByBuyer_IdAndItem_Id(memberId, itemId);
+        Optional<Chatroom> buyerChatroom = chatRoomRepository.findByBuyer_IdAndItem_Id(memberId, itemId);
+        if (buyerChatroom.isEmpty()) {
+            return chatRoomRepository.findBySellerIdAndItemId(memberId, itemId);
+        }
+        return buyerChatroom;
     }
 
     @Transactional
