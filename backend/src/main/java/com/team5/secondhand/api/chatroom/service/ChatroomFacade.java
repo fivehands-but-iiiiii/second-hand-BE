@@ -68,7 +68,7 @@ public class ChatroomFacade {
             chatroomList = chatRoomService.findChatroomListByItem(pageRequest, item);
         }
         //마지막 채팅로그 추가
-        chatroomList.addLastMessage(chatroomMetaInfoService.addLastMessage(chatroomList.getChatRooms(), member.getMemberId()));
+        chatroomList.addLastMessage(chatroomMetaInfoService.addLastMessage(chatroomList.getChatRooms(), member.getId()));
         chatroomList.sort();
 
         return chatroomList;
@@ -79,7 +79,7 @@ public class ChatroomFacade {
         Member buyer = memberService.findById(memberId);
         Item item = itemService.findById(itemId);
         Chatroom createdChatroom = chatRoomService.create(item, buyer);
-        return createdChatroom.getChatroomId().toString();
+        return createdChatroom.getChatroomId();
     }
 
     public void exitChatroom(String chatId, Long memberId) throws ExistMemberIdException, ExistChatRoomException, NotChatroomMemberException {

@@ -30,7 +30,7 @@ public class ChatroomDetails {
                 .opponentId(opponent.getMemberId())
                 .isOpponentIn(chatRoom.isChatroomMember(opponent))
                 .item(ChatItemDetails.from(chatRoom.getItem()))
-                .chatroomId(chatRoom.getChatroomId().toString())
+                .chatroomId(chatRoom.getChatroomId())
                 .build();
     }
 

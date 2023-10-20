@@ -53,7 +53,7 @@ public class ChatroomService {
 
     @Transactional
     public Chatroom findByChatroomId(String chatroomId) throws ExistChatRoomException {
-        return chatRoomRepository.findByChatroomId(UUID.fromString(chatroomId)).orElseThrow(() -> new ExistChatRoomException("해당하는 채팅방이 없습니다."));
+        return chatRoomRepository.findByChatroomId(chatroomId).orElseThrow(() -> new ExistChatRoomException("해당하는 채팅방이 없습니다."));
     }
 
     @Transactional

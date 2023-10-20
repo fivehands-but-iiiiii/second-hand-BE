@@ -122,7 +122,7 @@ public class Chatroom extends BasedTimeEntity implements Serializable {
     public Member findOpponent(Member myself) {
         Map<Long, Member> chatroomMembers = getChatroomMembers();
         return chatroomMembers.values().stream()
-                .filter(e -> !e.equals(myself))
+                .filter(e -> !e.getId().equals(myself.getId()))
                 .findAny().orElseThrow();
     }
 }
