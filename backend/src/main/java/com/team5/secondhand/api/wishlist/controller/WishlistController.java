@@ -13,6 +13,7 @@ import com.team5.secondhand.api.wishlist.dto.response.CategoryList;
 import com.team5.secondhand.api.wishlist.dto.response.WishItemList;
 import com.team5.secondhand.api.wishlist.exception.ExistWishlistException;
 import com.team5.secondhand.api.wishlist.service.WishlistService;
+import com.team5.secondhand.global.auth.Logined;
 import com.team5.secondhand.global.model.GenericResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class WishlistController {
             description = "사용자는 상품을 관심상품으로 등록할 수 있다."
     )
     @PostMapping("/like")
-    public GenericResponse<Long> likeItem(@RequestAttribute MemberDetails loginMember, @RequestBody WishlistItem wishListItem) throws ExistMemberIdException, ExistItemException, ExistWishlistException {
+    public GenericResponse<Long> likeItem(@Logined MemberDetails loginMember, @RequestBody WishlistItem wishListItem) throws ExistMemberIdException, ExistItemException, ExistWishlistException {
         Member member = memberService.findById(loginMember.getId());
         Item item = itemService.findById(wishListItem.getItemId());
 
@@ -50,7 +51,7 @@ public class WishlistController {
     )
     @DeleteMapping("/like")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public GenericResponse<String> unlikeItem(@RequestAttribute MemberDetails loginMember, @RequestParam Long itemId) throws ExistMemberIdException, ExistItemException {
+    public GenericResponse<String> unlikeItem(@Logined MemberDetails loginMember, @RequestParam Long itemId) throws ExistMemberIdException, ExistItemException {
         Member member = memberService.findById(loginMember.getId());
         Item item = itemService.findById(itemId);
 
@@ -66,7 +67,7 @@ public class WishlistController {
             description = "사용자는 관심상품으로 등록한 글의 카테고리 목록을 볼 수 있다."
     )
     @GetMapping("/categories")
-    public GenericResponse<CategoryList> getCategories(@RequestAttribute MemberDetails loginMember) throws ExistMemberIdException {
+    public GenericResponse<CategoryList> getCategories(@Logined MemberDetails loginMember) {
         CategoryList categories = wishlistService.getCategories(loginMember.getId());
 
         return GenericResponse.send("카테고리 목록입니다.", categories);
@@ -78,7 +79,7 @@ public class WishlistController {
             description = "사용자는 관심상품으로 등록한 상품의 목록을 볼 수 있다."
     )
     @GetMapping()
-    public GenericResponse<WishItemList> getWishlist(@RequestAttribute MemberDetails loginMember, WishlistFilter wishlistFilter) {
+    public GenericResponse<WishItemList> getWishlist(@Logined MemberDetails loginMember, WishlistFilter wishlistFilter) {
         WishItemList wishlist = wishlistService.getWishlist(loginMember.getId(), wishlistFilter.getPage(), wishlistFilter.getCategory());
 
         return GenericResponse.send("관심목록 리스트 조회에 성공하였습니다.", wishlist);

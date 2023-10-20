@@ -30,13 +30,13 @@ public class JwtService {
         return token;
     }
 
-    public Optional<String> getMemberId(String authorization) {
+    public Optional<Long> getMemberId(String authorization) {
         try {
             String token = getToken(authorization);
             Claims claim = jwtUtils.getClaim(token);
             MemberDetails loginMember = objectMapper.readValue((String) claim.get(jwtProperties.getClaimKey()), MemberDetails.class);
             
-            return Optional.of(loginMember.getMemberId());
+            return Optional.of(loginMember.getId());
         } catch (JsonProcessingException e) {
             log.error("stomp JsonProcessingException");
         } catch (JwtException e) {

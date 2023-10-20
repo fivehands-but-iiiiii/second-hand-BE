@@ -4,6 +4,7 @@ import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.chat.bubble.dto.response.ChatroomLog;
 import com.team5.secondhand.chat.bubble.service.ChatBubbleService;
+import com.team5.secondhand.global.auth.Logined;
 import com.team5.secondhand.global.model.GenericResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class ChatLogController {
             description = "사용자는 채팅방 메시지 내용을  조회할 수 있다."
     )
     @GetMapping("/{roomId}/logs")
-    public GenericResponse<ChatroomLog> getChatroomLogs(int page, @PathVariable String roomId, @RequestAttribute MemberDetails loginMember) {
+    public GenericResponse<ChatroomLog> getChatroomLogs(int page, @PathVariable String roomId, @Logined MemberDetails loginMember) {
         Slice<ChatBubble> chatBubbles = chatLogService.getChatBubbles(page, roomId);
         ChatroomLog chatroomLog = ChatroomLog.from(chatBubbles, loginMember);
         return GenericResponse.send("채팅방 로그가 조회되었습니다.", chatroomLog);

@@ -6,7 +6,7 @@ import com.team5.secondhand.api.item.service.ItemReadService;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.region.exception.NotValidRegionException;
-import com.team5.secondhand.api.region.service.GetValidRegionsUsecase;
+import com.team5.secondhand.api.region.service.ValidationRegionsUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
 public class ItemFacade {
 
     private final ItemReadService itemReadService;
-    private final GetValidRegionsUsecase getValidRegionsUsecase;
+    private final ValidationRegionsUsecase validationRegionsUsecase;
 
     public ItemsResponse findAllFilteredItems(ItemsRequest itemsRequest, MemberDetails loginMember) throws NotValidRegionException {
-        Region region = getValidRegionsUsecase.getRegion(itemsRequest.getRegionId());
+        Region region = validationRegionsUsecase.getRegion(itemsRequest.getRegionId());
         return itemReadService.getItemList(itemsRequest, region, loginMember);
     }
 }

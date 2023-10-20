@@ -17,7 +17,8 @@ import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.region.exception.EmptyBasedRegionException;
 import com.team5.secondhand.api.region.exception.NoMainRegionException;
 import com.team5.secondhand.api.region.exception.NotValidRegionException;
-import com.team5.secondhand.api.region.service.GetValidRegionsUsecase;
+import com.team5.secondhand.api.region.service.ValidationRegionsUsecase;
+import com.team5.secondhand.global.auth.Logined;
 import com.team5.secondhand.global.aws.dto.response.ProfileImageInfo;
 import com.team5.secondhand.global.aws.exception.ImageHostException;
 import com.team5.secondhand.global.aws.service.usecase.ProfileUpload;
@@ -40,7 +41,7 @@ public class MemberController {
     private final OAuthService oAuthService;
     private final MemberService memberService;
     private final ProfileUpload profileUpload;
-    private final GetValidRegionsUsecase validRegions;
+    private final ValidationRegionsUsecase validRegions;
     private final JwtService jwtService;
 
     @Operation(
@@ -112,7 +113,7 @@ public class MemberController {
             description = "사용자는 자신의 프로필 사진을 변경할 수 있다."
     )
     @PatchMapping(value = "/members/image", consumes = {"multipart/form-data"})
-    public GenericResponse<ProfileImageInfo> setMemberProfile(@RequestAttribute MemberDetails member,
+    public GenericResponse<ProfileImageInfo> setMemberProfile(@Logined MemberDetails member,
                                                               @ModelAttribute MemberProfileImageUpdate profile) throws ImageHostException {
         ProfileImageInfo profileImageInfo = profileUpload.uploadMemberProfileImage(profile.getProfileImage());
         profileImageInfo.owned(member.getId());
