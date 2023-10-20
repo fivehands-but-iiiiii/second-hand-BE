@@ -1,7 +1,9 @@
 package com.team5.secondhand.api.member.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.Size;
@@ -9,11 +11,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberRegion {
-    private final Long id;
+    private Long id;
     @Size(min = 1, max = 2)
-    private final List<BasedRegionSummary> regions;
+    private List<BasedRegionSummary> regions;
 
     @JsonIgnore
     public List<Long> getRegionsId() {

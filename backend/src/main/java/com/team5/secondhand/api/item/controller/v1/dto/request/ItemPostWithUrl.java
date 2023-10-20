@@ -1,34 +1,28 @@
 package com.team5.secondhand.api.item.controller.v1.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.domain.ItemCounts;
 import com.team5.secondhand.api.item.domain.Status;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Optional;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItemPostWithUrl {
     @NotNull
-    private final String title;
-    private final String contents;
+    private String title;
+    private String contents;
     @NotNull
-    private final Long category;
+    private Long category;
     @NotNull
-    private final Long region;
-    private final int price;
+    private Long region;
+    private int price;
     @NotNull
-    private final List<ItemImage> images;
-
-    @JsonIgnore
-    public Optional<ItemImage> getFirstImageUrl() {
-        return images.stream().sorted().findAny();
-    }
+    private List<ItemImage> images;
 
     public Item toEntity() {
         return Item.builder()

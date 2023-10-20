@@ -2,7 +2,9 @@ package com.team5.secondhand.api.member.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team5.secondhand.api.member.domain.Member;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotNull;
@@ -12,16 +14,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberJoin {
 
     @NotNull
     @Size(min = 6, max = 16)
-    private final String memberId;
+    private String memberId;
     @Size(max = 300)
-    private final String profileImgUrl;
+    private String profileImgUrl;
     @Size(min = 1, max = 2)
-    private final List<BasedRegionSummary> regions;
+    private List<BasedRegionSummary> regions;
 
     @JsonIgnore
     public List<Long> getRegionsId() {

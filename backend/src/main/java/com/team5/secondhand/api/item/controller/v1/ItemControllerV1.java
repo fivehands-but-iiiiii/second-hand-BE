@@ -72,7 +72,8 @@ public class ItemControllerV1 {
             description = "사용자는 자신이 판매 중인/완료한 상품 목록을 볼 수 있다"
     )
     @GetMapping("/mine")
-    public GenericResponse<MyItemList> getItemMyList(MyItemFilteredSlice itemSlice, @Logined MemberDetails loginMember) throws UnauthorizedException {
+    public GenericResponse<MyItemList> getItemMyList(MyItemFilteredSlice itemSlice,
+                                                     @Logined MemberDetails loginMember) {
         return GenericResponse.send("판매 내역이 조회되었습니다.", itemReadService.getMyItemList(itemSlice, loginMember));
     }
 
@@ -113,12 +114,12 @@ public class ItemControllerV1 {
             description = "사용자는 상품 정보를 수정할 수 있다."
     )
     @PutMapping("/{id}")
-    public GenericResponse<Long> updateItem(@PathVariable Long id, @Logined MemberDetails loginMember, @RequestBody ItemPostWithUrl itemPost) throws ExistMemberIdException, NotValidRegionException, ExistItemException, ExistItemException, UnauthorizedException {
+    public GenericResponse<Long> updateItem(@PathVariable Long id,
+                                            @Logined MemberDetails loginMember,
+                                            @RequestBody ItemPostWithUrl itemPost) throws ExistMemberIdException, NotValidRegionException, ExistItemException, ExistItemException, UnauthorizedException {
         Member seller = memberService.findById(loginMember.getId());
-        Region region = getValidRegions.getRegion(itemPost.getRegion());
 
         itemPostService.updateItem(id, itemPost, seller);
-
         return GenericResponse.send("상품 수정이 완료되었습니다.", id);
     }
 
@@ -128,7 +129,8 @@ public class ItemControllerV1 {
             description = "사용자는 상품의 상세 정보를 볼 수 있다."
     )
     @GetMapping("/{id}")
-    public GenericResponse<ItemDetail> getItem(@PathVariable Long id, @Logined(required = false) MemberDetails loginMember) throws ExistItemException {
+    public GenericResponse<ItemDetail> getItem(@PathVariable Long id,
+                                               @Logined(required = false) MemberDetails loginMember) throws ExistItemException {
         Boolean isLike = wishlistService.isMemberLiked(id, loginMember);
         ItemDetail item = itemReadService.viewAItem(id, loginMember, isLike);
 

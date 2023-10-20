@@ -1,12 +1,13 @@
 package com.team5.secondhand.api.item.controller.v1.dto.request;
 
 import com.team5.secondhand.api.item.domain.ItemDetailImage;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItemImage {
     private String url;
 
