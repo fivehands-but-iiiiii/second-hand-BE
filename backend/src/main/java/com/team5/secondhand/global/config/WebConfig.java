@@ -3,8 +3,8 @@ package com.team5.secondhand.global.config;
 import com.team5.secondhand.global.auth.AuthorizationArgumentResolver;
 import com.team5.secondhand.global.auth.AuthorizationContext;
 import com.team5.secondhand.global.auth.AuthorityInterceptor;
+import com.team5.secondhand.global.properties.ServerProperties;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,16 +19,13 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
-    @Value("${server.address.domain}")
-    private String testDomain;
-    @Value("${server.address.was2}")
-    private String prodDomain;
 
     private final AuthorizationContext context;
+    private final ServerProperties serverProperties;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AuthorityInterceptor(context))
+        registry.addInterceptor(new AuthorityInterceptor())
                 .addPathPatterns(AuthorityInterceptor.LOGIN_ESSENTIAL)
                 .excludePathPatterns(AuthorityInterceptor.LOGIN_INESSENTIAL);
     }
@@ -42,9 +39,11 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(
-                        "http://127.0.0.1:5173", "http://localhost:5173",
-                        "http://127.0.0.1:5174", "http://localhost:5174",
-                        testDomain, prodDomain
+                    serverProperties.getDomain(),
+                    "http://127.0.0.1:5173",
+                    "http://localhost:5173",
+                    "http://127.0.0.1:5174",
+                    "http://localhost:5174"
                 )
                 .allowedMethods(
                         HttpMethod.GET.name(), HttpMethod.POST.name(),
