@@ -3,7 +3,6 @@ package com.team5.secondhand.chat.bubble.service;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.chat.bubble.repository.ChatBubbleCache;
 import com.team5.secondhand.chat.bubble.repository.ChatBubbleRepository;
-import com.team5.secondhand.chat.topic.service.RedisChatPublisher;
 import com.team5.secondhand.global.event.chatbubble.ChatBubbleArrivedEvent;
 import com.team5.secondhand.global.properties.ConstProperties;
 import org.springframework.context.ApplicationEventPublisher;
@@ -66,14 +65,6 @@ public class ChatBubbleService {
         saveChatBubble(message);
         redisChatPublisher.publish(message);
         publisher.publishEvent(new ChatBubbleArrivedEvent(message));
-    }
-
-    @Transactional
-    @Scheduled(cron = "0 0 * * * *")
-    public void moveDataCacheToRepository() {
-        List<ChatBubble> allChatBubble = bubbleCache.findAllByRoomId(chatContext.getBucket() + "*");
-        bubbleCache.clear(chatContext.getBucket() + "*");
-        bubbleRepository.saveAll(allChatBubble);
     }
 
 }

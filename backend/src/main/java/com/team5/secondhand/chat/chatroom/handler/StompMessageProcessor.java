@@ -1,11 +1,14 @@
 package com.team5.secondhand.chat.chatroom.handler;
 
+import com.team5.secondhand.chat.chatroom.event.EnterChatRoomEvent;
+import com.team5.secondhand.chat.chatroom.event.ExitChatRoomEvent;
 import com.team5.secondhand.chat.chatroom.service.ChatroomMetaInfoService;
 import com.team5.secondhand.chat.exception.ErrorType;
 import com.team5.secondhand.chat.notification.service.SessionService;
 import com.team5.secondhand.global.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageDeliveryException;
@@ -21,7 +24,7 @@ import org.springframework.stereotype.Component;
 public class StompMessageProcessor implements ChannelInterceptor {
     private final JwtService jwtService;
     private final SessionService sessionService;
-    private final ChatroomMetaInfoService chatroomMetaInfoService;
+    private final ApplicationEventPublisher publisher;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -38,7 +41,7 @@ public class StompMessageProcessor implements ChannelInterceptor {
 
         switch (headerAccessor.getCommand()) {
             case CONNECT:
-                String memberId = getMemberIdByToken(headerAccessor.getFirstNativeHeader("Authorization"));
+                Long memberId = getMemberIdByToken(headerAccessor.getFirstNativeHeader("Authorization"));
                 sessionService.saveSession(headerAccessor.getSessionId(), memberId);
                 break;
             case SUBSCRIBE:
@@ -53,7 +56,7 @@ public class StompMessageProcessor implements ChannelInterceptor {
         }
     }
 
-    private String getMemberIdByToken(String authorization) {
+    private Long getMemberIdByToken(String authorization) {
         if (authorization == null) {
             throw new MessageDeliveryException(ErrorType.UNAUTHORIZED.getMessage());
         }
@@ -64,13 +67,13 @@ public class StompMessageProcessor implements ChannelInterceptor {
     private void enterToChatRoom(StompHeaderAccessor headerAccessor) {
         String memberId = sessionService.getMemberIdBySessionId(headerAccessor.getSessionId());
         String roomId = extractRoomId(headerAccessor.getDestination());
-        chatroomMetaInfoService.enterToChatRoom(roomId, memberId);
+        publisher.publishEvent(new EnterChatRoomEvent(roomId, Long.valueOf(memberId)));
     }
 
     private void exitToChatRoom(StompHeaderAccessor headerAccessor) {
         String memberId = sessionService.getMemberIdBySessionId(headerAccessor.getSessionId());
         String roomId = extractRoomId(headerAccessor.getDestination());
-        chatroomMetaInfoService.exitToChatRoom(roomId, memberId);
+        publisher.publishEvent(new ExitChatRoomEvent(roomId, Long.valueOf(memberId)));
     }
 
     private String extractRoomId(String destination) {
