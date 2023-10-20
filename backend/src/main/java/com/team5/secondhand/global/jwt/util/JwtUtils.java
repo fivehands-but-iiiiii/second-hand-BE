@@ -1,6 +1,7 @@
 package com.team5.secondhand.global.jwt.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team5.secondhand.global.properties.JwtProperties;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
