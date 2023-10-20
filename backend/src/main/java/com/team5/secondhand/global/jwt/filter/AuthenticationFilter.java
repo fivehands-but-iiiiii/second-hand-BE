@@ -3,7 +3,7 @@ package com.team5.secondhand.global.jwt.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team5.secondhand.global.auth.AuthorizationContext;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
-import com.team5.secondhand.global.jwt.util.JwtProperties;
+import com.team5.secondhand.global.properties.JwtProperties;
 import com.team5.secondhand.global.jwt.util.JwtUtils;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.io.IOException;
 
 @Slf4j
 @Component
-@Order(1)
+@Order(2)
 @RequiredArgsConstructor
 public class AuthenticationFilter extends OncePerRequestFilter {
 
