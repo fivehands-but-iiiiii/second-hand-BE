@@ -3,9 +3,11 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
+    database: mysql   # 추가 해준 부분
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect # 추가 해준 부분
   datasource:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
-    url: jdbc:tc:mysql:8://secondhand-db
+    url: jdbc:tc:mysql:8.0.22:///secondhand-db #?TC_INITSCRIPT=src/main/resources/db/schema.sql
   cache:
     type: redis
     redis:
