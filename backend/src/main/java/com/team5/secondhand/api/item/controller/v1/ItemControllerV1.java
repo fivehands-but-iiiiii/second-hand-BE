@@ -21,8 +21,9 @@ import com.team5.secondhand.api.member.exception.UnauthorizedException;
 import com.team5.secondhand.api.member.service.MemberService;
 import com.team5.secondhand.api.region.domain.Region;
 import com.team5.secondhand.api.region.exception.NotValidRegionException;
-import com.team5.secondhand.api.region.service.GetValidRegionsUsecase;
+import com.team5.secondhand.api.region.service.ValidationRegionsUsecase;
 import com.team5.secondhand.api.wishlist.service.WishlistService;
+import com.team5.secondhand.global.auth.Logined;
 import com.team5.secondhand.global.aws.dto.request.ItemImageUpload;
 import com.team5.secondhand.global.aws.dto.response.ImageInfo;
 import com.team5.secondhand.global.aws.exception.ImageHostException;
@@ -46,7 +47,7 @@ public class ItemControllerV1 {
 
     private final ItemReadService itemReadService;
     private final ItemPostService itemPostService;
-    private final GetValidRegionsUsecase getValidRegions;
+    private final ValidationRegionsUsecase getValidRegions;
     private final ItemDetailImageUpload detailImageUpload;
     private final ItemThumbnailImageUpload thumbnailImageUpload;
     private final MemberService memberService;
@@ -58,7 +59,8 @@ public class ItemControllerV1 {
             description = "사용자는 자신의 동네의 상품 목록을 볼 수 있다."
     )
     @GetMapping
-    public GenericResponse<ItemList> getItemList(ItemFilteredSlice itemSlice, @RequestAttribute(required = false) MemberDetails loginMember) throws NotValidRegionException {
+    public GenericResponse<ItemList> getItemList(ItemFilteredSlice itemSlice,
+                                                 @Logined(required = false) MemberDetails loginMember) throws NotValidRegionException {
         Region regions = getValidRegions.getRegion(itemSlice.getRegionId());
         ItemList itemList = itemReadService.getItemList(itemSlice, regions, loginMember);
         return GenericResponse.send("상품 목록이 조회되었습니다.", itemList);
@@ -70,11 +72,7 @@ public class ItemControllerV1 {
             description = "사용자는 자신이 판매 중인/완료한 상품 목록을 볼 수 있다"
     )
     @GetMapping("/mine")
-    public GenericResponse<MyItemList> getItemMyList(MyItemFilteredSlice itemSlice, @RequestAttribute MemberDetails loginMember) throws UnauthorizedException {
-        if (loginMember.isEmpty()) {
-            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
-        }
-
+    public GenericResponse<MyItemList> getItemMyList(MyItemFilteredSlice itemSlice, @Logined MemberDetails loginMember) throws UnauthorizedException {
         return GenericResponse.send("판매 내역이 조회되었습니다.", itemReadService.getMyItemList(itemSlice, loginMember));
     }
 
@@ -95,11 +93,8 @@ public class ItemControllerV1 {
             description = "사용자는 새로운 상품을 등록할 수 있다."
     )
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public GenericResponse<Long> postItem(@RequestAttribute MemberDetails loginMember, ItemPost itemPost) throws ExistMemberIdException, NotValidRegionException, ImageHostException, AuthenticationException {
-        if (loginMember == null) {
-            throw new AuthenticationException("로그인이 필요한 기능입니다.");
-        }
-
+    public GenericResponse<Long> postItem(@Logined MemberDetails loginMember,
+                                          ItemPost itemPost) throws ExistMemberIdException, NotValidRegionException, ImageHostException, AuthenticationException {
         Member seller = memberService.findById(loginMember.getId());
         Region region = getValidRegions.getRegion(itemPost.getRegion());
         List<ItemDetailImage> itemDetailImages = detailImageUpload.uploadItemDetailImages(itemPost.getImages());
@@ -118,7 +113,7 @@ public class ItemControllerV1 {
             description = "사용자는 상품 정보를 수정할 수 있다."
     )
     @PutMapping("/{id}")
-    public GenericResponse<Long> updateItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemPostWithUrl itemPost) throws ExistMemberIdException, NotValidRegionException, ExistItemException, ExistItemException, UnauthorizedException {
+    public GenericResponse<Long> updateItem(@PathVariable Long id, @Logined MemberDetails loginMember, @RequestBody ItemPostWithUrl itemPost) throws ExistMemberIdException, NotValidRegionException, ExistItemException, ExistItemException, UnauthorizedException {
         Member seller = memberService.findById(loginMember.getId());
         Region region = getValidRegions.getRegion(itemPost.getRegion());
 
@@ -133,7 +128,7 @@ public class ItemControllerV1 {
             description = "사용자는 상품의 상세 정보를 볼 수 있다."
     )
     @GetMapping("/{id}")
-    public GenericResponse<ItemDetail> getItem(@PathVariable Long id, @RequestAttribute MemberDetails loginMember) throws ExistItemException {
+    public GenericResponse<ItemDetail> getItem(@PathVariable Long id, @Logined(required = false) MemberDetails loginMember) throws ExistItemException {
         Boolean isLike = wishlistService.isMemberLiked(id, loginMember);
         ItemDetail item = itemReadService.viewAItem(id, loginMember, isLike);
 
@@ -147,7 +142,7 @@ public class ItemControllerV1 {
             description = "판매자는 상품 판매 상태만 별도로 수정할 수 있다."
     )
     @PatchMapping("/{id}/status")
-    public GenericResponse<Boolean> updateItemStatus(@PathVariable Long id, @RequestAttribute MemberDetails loginMember, @RequestBody ItemStatusUpdate request) throws AuthenticationException {
+    public GenericResponse<Boolean> updateItemStatus(@PathVariable Long id, @Logined MemberDetails loginMember, @RequestBody ItemStatusUpdate request) throws AuthenticationException {
         if (!itemReadService.isValidSeller(id, loginMember.getId())) {
             throw new AuthenticationException("글 작성자가 아닙니다.");
         }
@@ -162,7 +157,7 @@ public class ItemControllerV1 {
             description = "판매자는 상품을 삭제할 수 있다."
     )
     @DeleteMapping("/{id}")
-    public GenericResponse<Long> deleteId(@PathVariable Long id, @RequestAttribute MemberDetails loginMember) throws AuthenticationException {
+    public GenericResponse<Long> deleteId(@PathVariable Long id, @Logined MemberDetails loginMember) throws AuthenticationException {
         if (!itemReadService.isValidSeller(id, loginMember.getId())) {
             throw new AuthenticationException("글 작성자가 아닙니다.");
         }

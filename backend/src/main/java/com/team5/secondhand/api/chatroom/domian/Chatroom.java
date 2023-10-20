@@ -12,6 +12,8 @@ import org.hibernate.annotations.Type;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -21,14 +23,13 @@ import java.util.stream.Collectors;
 @Getter
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Chatroom extends BasedTimeEntity {
+public class Chatroom extends BasedTimeEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Type(type="uuid-char")
-    private UUID chatroomId;
+    private String chatroomId;
 
-    @ManyToOne(fetch = FetchType.EAGER) //TODO 일단 임시로 에러 기워 사용하기
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "item_id")
     private Item item;
 
@@ -42,7 +43,7 @@ public class Chatroom extends BasedTimeEntity {
     private ChatroomStatus chatroomStatus;
 
     @Builder
-    public Chatroom(Long id, UUID chatroomId, Item item, Member buyer, Long sellerId, ChatroomStatus chatroomStatus) {
+    protected Chatroom(Long id, String chatroomId, Item item, Member buyer, Long sellerId, ChatroomStatus chatroomStatus) {
         this.id = id;
         this.chatroomId = chatroomId;
         this.item = item;
@@ -53,7 +54,7 @@ public class Chatroom extends BasedTimeEntity {
 
     public static Chatroom create(Item item, Member buyer) {
         return com.team5.secondhand.api.chatroom.domian.Chatroom.builder()
-                .chatroomId(UUID.randomUUID())
+                .chatroomId(UUID.randomUUID().toString())
                 .item(item)
                 .buyer(buyer)
                 .sellerId(item.getSeller().getId())
@@ -61,11 +62,9 @@ public class Chatroom extends BasedTimeEntity {
                 .build();
     }
 
-    public List<String> getChatroomMemberIds() {
+    public List<Long> getChatroomMemberIds() {
         Map<Long, Member> chatroomMembers = getChatroomMembers();
-        return chatroomMembers.values().stream()
-                .map(Member::getMemberId)
-                .collect(Collectors.toList());
+        return new ArrayList<>(chatroomMembers.keySet());
     }
 
     private Map<Long, Member> getChatroomMembers() {

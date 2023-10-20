@@ -14,7 +14,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class RegionService implements GetValidRegionsUsecase {
+public class RegionService implements ValidationRegionsUsecase {
 
     private final RegionRepository regionRepository;
 

@@ -15,7 +15,7 @@ class ChatController {
     private final ChatBubbleService bubbleService;
 
     @MessageMapping("/message")
-    public void message(ChatBubbleRequest message, SimpMessageHeaderAccessor messageHeaderAccessor) {
+    public void message(ChatBubbleRequest message) {
         bubbleService.handleMessage(message.toDomain());
     }
 
