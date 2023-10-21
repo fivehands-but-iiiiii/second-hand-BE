@@ -17,13 +17,14 @@ import java.util.Optional;
 
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long>, ItemSliceRepository {
-    Optional<Item> findById(Long id);
 
     Slice<Item> findAllByRegion(Region region, Pageable pageable);
 
     Optional<Item> getTopByRegion(Region region);
 
     int countAllByRegion(Region region);
+
+    boolean existsByIdAndSellerId(Long id, Long sellerId);
 
     @Modifying
     @Query("SELECT DISTINCT category from Item where region.id = :regionId")
@@ -35,10 +36,10 @@ public interface ItemRepository extends JpaRepository<Item, Long>, ItemSliceRepo
 
     @Modifying
     @Query("update ItemCounts ic set ic.hits = ic.hits +1 where ic.id = :id")
-    int updateHits(@Param("id") Long countsId);
+    void updateHits(@Param("id") Long countsId);
 
     @Modifying
     @Query("update ItemCounts ic set ic.likeCounts = ic.likeCounts +1 where ic.id = :id")
-    int updateLikes(@Param("id") Long countsId);
+    void updateLikes(@Param("id") Long countsId);
 
 }

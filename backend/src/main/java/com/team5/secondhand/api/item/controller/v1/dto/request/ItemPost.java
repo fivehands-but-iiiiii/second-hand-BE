@@ -1,7 +1,7 @@
 package com.team5.secondhand.api.item.controller.v1.dto.request;
 
 import com.team5.secondhand.api.item.domain.*;
-import lombok.Builder;
+import com.team5.secondhand.api.item.domain.ItemImage;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,14 +27,14 @@ public class ItemPost {
     @Size(min = 1, max = 10)
     private final List<MultipartFile> images;
 
-    public Item toEntity(List<ItemDetailImage> images) {
+    public Item toEntity(List<ItemImage> images) {
         return Item.builder()
                 .title(title)
                 .price(price)
                 .category(category)
                 .status(Status.ON_SALE)
-                .count(ItemCounts.createRelated())
-                .contents(ItemContents.createdRelated(contents, images))
+                .count(ItemCounts.initCounts())
+                .contents(ItemContents.of(contents, images))
                 .isDeleted(false)
                 .build();
     }

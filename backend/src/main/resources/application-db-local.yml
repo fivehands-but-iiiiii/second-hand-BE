@@ -3,6 +3,13 @@ spring:
     url: jdbc:mysql://localhost:3306/secondhand-db
     username: root
     password: 1122
+    hikari:
+      maximum-pool-size: 10  # 커넥션 풀의 최대 크기 설정
+      minimum-idle: 5  # 유휴 커넥션을 유지할 최소한의 커넥션 수 설정
+      idle-timeout: 600000  # 유휴 커넥션의 최대 유지 시간 설정 (ms)
+      pool-name: LabelingPool  # 커넥션 풀의 이름 설정
+      validation-timeout: 5000  # 커넥션 유효성 검사 타임아웃 설정 (ms)
+      auto-commit: true  # 자동 커밋 모드 설정
   cache:
     type: redis
     redis:

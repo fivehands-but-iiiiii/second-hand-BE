@@ -73,8 +73,8 @@ public class ItemReadService {
         return ItemsResponse.getSlice(items.get(items.size()-1).getId(), pageResult.hasPrevious(), pageResult.hasNext(), items);
     }
 
-    @Cacheable(value = "myItem", key = "#loginMember.id")
     @Transactional(readOnly = true)
+    @Cacheable(value = "myItem", key = "#loginMember.id+'-'+#request.page+'-'+#request.isSales")
     public MyItemList getMyItemList(MyItemFilteredSlice request, MemberDetails loginMember) {
         Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
 
