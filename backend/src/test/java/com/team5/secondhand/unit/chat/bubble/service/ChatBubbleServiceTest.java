@@ -1,10 +1,10 @@
 package com.team5.secondhand.unit.chat.bubble.service;
 
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
-import com.team5.secondhand.chat.bubble.dto.request.ChatBubbleRequest;
 import com.team5.secondhand.chat.bubble.service.ChatBubbleService;
+import com.team5.secondhand.chat.chatroom.domain.Chatroom;
 import com.team5.secondhand.global.event.chatbubble.ChatBubbleArrivedEvent;
-import com.team5.secondhand.global.properties.ConstProperties;
+import com.team5.secondhand.global.properties.ChatConstProperties;
 import com.team5.secondhand.unit.AbstractApplicationTest;
 import com.team5.secondhand.unit.ApplicationTest;
 import org.assertj.core.api.SoftAssertions;
@@ -12,14 +12,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 
-import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -31,10 +31,10 @@ class ChatBubbleServiceTest extends AbstractApplicationTest {
     String key = "testroom-1";
     ChatBubble chatBubble;
 
-    @Autowired
-    ChatBubbleService chatBubbleService;
     @InjectMocks
-    protected ConstProperties properties; // 전체 설정
+    ChatBubbleService chatBubbleService;
+    @Mock
+    protected ChatConstProperties properties; // 전체 설정
 
 
     @BeforeEach
@@ -45,19 +45,23 @@ class ChatBubbleServiceTest extends AbstractApplicationTest {
 
     @BeforeEach
     void init() {
-        when(chatBubbleCache.save(any(String.class), any(ChatBubble.class))).thenReturn(chatBubble);
-        when(chatBubbleCache.findAllByRoomId(any(String.class))).thenReturn(fixtureMonkey().giveMe(ChatBubble.class,25));
-        when(chatBubbleCache.findAllByRoomId(any(String.class), any(Pageable.class))).thenReturn(new SliceImpl<>(fixtureMonkey().giveMe(ChatBubble.class,25), PageRequest.of(0, 25), true));
+        MockitoAnnotations.openMocks(this);
+
+        when(properties.getBucket()).thenReturn("chatroom");
+        when(properties.getPageSize()).thenReturn(25);
+        when(chatroomMetainfoCache.findByChatroomId(any(String.class)))
+                .thenReturn(Optional.of(fixtureMonkey().giveMeOne(Chatroom.class)));
+        when(chatBubbleCache.save(any(String.class), eq(chatBubble)))
+                .thenReturn(chatBubble);
+        when(chatBubbleCache.findAllByRoomId(any(String.class)))
+                .thenReturn(fixtureMonkey().giveMe(ChatBubble.class, 25));
+        when(chatBubbleCache.findAllByRoomId(any(String.class), any(Pageable.class)))
+                .thenReturn(new SliceImpl<>(fixtureMonkey().giveMe(ChatBubble.class, 25), PageRequest.of(0, 25), true));
     }
 
     @Test
     @DisplayName("채팅 메시지를 저장할 수 있다.")
     void saveChatBubble() throws Exception {
-        //given
-        ChatBubbleRequest chatBubbleRequest = fixtureMonkey().giveMeOne(ChatBubbleRequest.class);
-        ChatBubble chatBubble = chatBubbleRequest.toDomain();
-
-        //when
         ChatBubble chatBubble1 = chatBubbleService.saveChatBubble(chatBubble);
 
         //then
@@ -76,7 +80,7 @@ class ChatBubbleServiceTest extends AbstractApplicationTest {
                 .forEach(chatBubbleService::saveChatBubble);
 
         //when
-        Slice<ChatBubble> chatBubbles = chatBubbleService.getChatBubbles(0, key);
+        Slice<ChatBubble> chatBubbles = chatBubbleService.getChatBubbles(1, key);
 
         //then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -89,6 +93,7 @@ class ChatBubbleServiceTest extends AbstractApplicationTest {
     void handleMessage() {
         chatBubbleService.handleMessage(chatBubble);
 
+        verify(chatroomMetainfoCache, times(1)).findByChatroomId(any(String.class));
         verify(publisher, times(1)).publishEvent(any(ChatBubbleArrivedEvent.class));
         verify(chatBubbleCache, times(1)).save(any(String.class), any(ChatBubble.class));
         verify(redisChatPublisher, times(1)).publish(any(ChatBubble.class));

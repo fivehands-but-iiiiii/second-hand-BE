@@ -1,6 +1,7 @@
 package com.team5.secondhand.chat.chatroom.domain;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Participants implements Serializable {
     private Map<Long, ParticipantInfo> info = new ConcurrentHashMap<>();
 
+    @Builder
     public Participants(Map<Long, ParticipantInfo> info) {
         this.info = info;
     }
