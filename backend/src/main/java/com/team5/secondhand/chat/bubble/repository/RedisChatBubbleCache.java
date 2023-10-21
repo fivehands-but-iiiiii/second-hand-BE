@@ -10,12 +10,14 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
 public class RedisChatBubbleCache implements ChatBubbleCache {
 
-    private final RedisTemplate<String, ChatBubble> redisChatBubbleTemplate;
+    private final RedisTemplate<String, Object> redisChatBubbleTemplate;
 
     private long getStartIndex(Pageable page) {
         return (-1L * page.getPageSize() * page.getPageNumber()) - 1;
@@ -32,19 +34,23 @@ public class RedisChatBubbleCache implements ChatBubbleCache {
 
     @Override
     public Slice<ChatBubble> findAllByRoomId(String key, Pageable pageable) {
-        ListOperations<String, ChatBubble> listOperations = redisChatBubbleTemplate.opsForList();
+        ListOperations<String, Object> listOperations = redisChatBubbleTemplate.opsForList();
 
         long startIndex = getStartIndex(pageable);
         long endIndex = startIndex - pageable.getPageSize();
 
-        List<ChatBubble> messages = listOperations.range(key, endIndex - 1, startIndex);
+        List<ChatBubble> messages = listOperations.range(key, endIndex - 1, startIndex)
+                .stream().map(o -> (ChatBubble) o)
+                .collect(Collectors.toList());
         return getSlice(messages, pageable);
     }
 
     @Override
     public List<ChatBubble> findAllByRoomId(String key) {
-        long size = redisChatBubbleTemplate.opsForList().size(key);
-        return redisChatBubbleTemplate.opsForList().leftPop(key, size);
+        Long size = redisChatBubbleTemplate.opsForList().size(key);
+        return redisChatBubbleTemplate.opsForList()
+                .leftPop(key, size).stream()
+                .map(o -> (ChatBubble) o).collect(Collectors.toList());
     }
 
     @Override
@@ -56,7 +62,7 @@ public class RedisChatBubbleCache implements ChatBubbleCache {
     @Override
     public int getLastPage(String key, int pageSize) {
         Long size = redisChatBubbleTemplate.opsForList().size(key);
-        return (int)(size/pageSize);
+        return (int) (size / pageSize);
     }
 
     @Override

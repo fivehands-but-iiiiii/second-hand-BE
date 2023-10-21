@@ -2,10 +2,9 @@ package com.team5.secondhand.chat.chatroom.handler;
 
 import com.team5.secondhand.chat.chatroom.event.EnterChatRoomEvent;
 import com.team5.secondhand.chat.chatroom.event.ExitChatRoomEvent;
-import com.team5.secondhand.chat.chatroom.service.ChatroomMetaInfoService;
 import com.team5.secondhand.chat.exception.ErrorType;
 import com.team5.secondhand.chat.notification.service.SessionService;
-import com.team5.secondhand.global.jwt.service.JwtService;
+import com.team5.secondhand.global.util.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;

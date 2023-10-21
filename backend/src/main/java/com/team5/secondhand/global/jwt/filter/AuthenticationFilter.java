@@ -1,10 +1,10 @@
 package com.team5.secondhand.global.jwt.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team5.secondhand.global.auth.AuthorizationContext;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
+import com.team5.secondhand.global.auth.AuthorizationContext;
 import com.team5.secondhand.global.properties.JwtProperties;
-import com.team5.secondhand.global.jwt.util.JwtUtils;
+import com.team5.secondhand.global.util.JwtUtils;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.*;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
