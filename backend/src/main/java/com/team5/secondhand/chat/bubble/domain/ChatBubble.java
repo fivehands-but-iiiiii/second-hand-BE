@@ -9,20 +9,15 @@ import java.time.Instant;
 
 @Getter
 @ToString
-@Entity
 @NoArgsConstructor
-@Table(name = "chatbubble")
 public class ChatBubble implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String chatroomId;
     private Long sender;
     private Long receiver;
     private String message;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
-    private Instant createdAt;
+    private String createdAt;
 
     @Builder
     protected ChatBubble(Long id, String chatroomId, Long sender, Long receiver, String message, Instant createdAt) {
@@ -31,7 +26,7 @@ public class ChatBubble implements Serializable {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
-        this.createdAt = createdAt;
+        this.createdAt = createdAt!=null ? createdAt.toString() : "";
     }
 
     public Boolean isSender(long memberId) {
