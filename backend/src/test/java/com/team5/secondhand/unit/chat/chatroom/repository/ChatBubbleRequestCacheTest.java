@@ -48,7 +48,7 @@ class ChatBubbleRequestCacheTest extends AbstractRepositoryTest {
 
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(allByRoomId.getSize()).isEqualTo(10);
-            softAssertions.assertThat(allByRoomId.getContent().get(0).getId()).isNotNull();
+            softAssertions.assertThat(allByRoomId.getContent().get(0).getChatroomId()).isNotNull();
             softAssertions.assertThat(allByRoomId.hasNext()).isTrue();
         });
     }
@@ -77,7 +77,7 @@ class ChatBubbleRequestCacheTest extends AbstractRepositoryTest {
 
     private void setCacheData(int x) {
         for (int i = 0; i < x; i++) {
-            chatBubbleCache.save(key, fixtureMonkey().giveMeOne(ChatBubble.class));
+            chatBubbleCache.save(key, fixtureMonkey().giveMeBuilder(ChatBubble.class).set("chatroomId", key).sample());
         }
     }
 

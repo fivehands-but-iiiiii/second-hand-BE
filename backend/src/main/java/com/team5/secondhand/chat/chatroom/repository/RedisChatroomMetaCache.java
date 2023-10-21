@@ -5,6 +5,7 @@ import com.team5.secondhand.global.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -24,6 +25,16 @@ public class RedisChatroomMetaCache implements ChatroomMetainfoCache {
     public Optional<Chatroom> findByChatroomId(String chatroomId) {
         Optional<Chatroom> chatroom = Optional.ofNullable(redisUtil.get(generateKey(chatroomId), Chatroom.class));
         return chatroom;
+    }
+
+    @Override
+    public List<Chatroom> findAll() {
+        return redisUtil.getAll(generateKey("*"), Chatroom.class);
+    }
+
+    @Override
+    public void clear() {
+        redisUtil.delete(generateKey("*"));
     }
 
     private String generateKey(String chatroomId) {

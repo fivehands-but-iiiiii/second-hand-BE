@@ -3,17 +3,12 @@ package com.team5.secondhand.global.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.json.JsonParser;
-import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -29,6 +24,10 @@ public class RedisUtil {
         }
     }
 
+    public void putToList(String key, Object value) {
+        redisTemplate.opsForList().rightPush(key, value);
+    }
+
     public void delete(String key) {
         redisTemplate.delete(key);
     }
@@ -37,8 +36,7 @@ public class RedisUtil {
         Object object = redisTemplate.opsForValue().get(key);
         if (object != null) {
             try {
-                String s = objectMapper.writeValueAsString(object);
-                return objectMapper.readValue(s, clazz);
+                return getT(clazz, object);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
@@ -46,26 +44,9 @@ public class RedisUtil {
         return null;
     }
 
-    private <T> T createInstanceRecursively(Class<T> clazz, LinkedHashMap<String, Object> map) throws
-            InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        Constructor<T> constructor = clazz.getDeclaredConstructor();
-        constructor.setAccessible(true); // Make it accessible if it's private
-        T instance = constructor.newInstance();
-
-        for (Field field : clazz.getDeclaredFields()) {
-            String fieldName = field.getName();
-            if (map.containsKey(fieldName)) {
-                Object fieldValue = map.get(fieldName);
-                field.setAccessible(true);
-
-                if (field.getType().isAssignableFrom(Map.class) && fieldValue instanceof LinkedHashMap) {
-                    field.set(instance, createInstanceRecursively(field.getType(), (LinkedHashMap<String, Object>) fieldValue));
-                } else {
-                    field.set(instance, fieldValue);
-                }
-            }
-        }
-        return instance;
+    private <T> T getT(Class<T> clazz, Object object) throws JsonProcessingException {
+        String s = objectMapper.writeValueAsString(object);
+        return objectMapper.readValue(s, clazz);
     }
 
     public boolean isExists(String key) {
@@ -78,5 +59,32 @@ public class RedisUtil {
 
     public long getExpireTime(String key) {
         return redisTemplate.getExpire(key, TimeUnit.SECONDS);
+    }
+
+    public <T> List<T> getAll(String generateKey, Class<T> clazz) {
+        List<Object> range = redisTemplate.opsForList().range(generateKey, 0, -1);
+        return range.stream().map(e -> {
+            try {
+                return getT(clazz, e);
+            } catch (JsonProcessingException ex) {
+                throw new RuntimeException(ex);
+            }
+        }).collect(Collectors.toList());
+    }
+
+    public <T> List<T> getList(String key, long start, long end, Class<T> clazz) {
+        List<Object> range = redisTemplate.opsForList().range(key, start, end);
+
+        return range.stream().map(e -> {
+            try {
+                return getT(clazz, e);
+            } catch (JsonProcessingException ex) {
+                throw new RuntimeException(ex);
+            }
+        }).collect(Collectors.toList());
+    }
+
+    public long size(String key) {
+        return redisTemplate.opsForList().size(key);
     }
 }

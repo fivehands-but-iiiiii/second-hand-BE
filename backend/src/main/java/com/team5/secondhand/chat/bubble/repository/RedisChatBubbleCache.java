@@ -1,6 +1,7 @@
 package com.team5.secondhand.chat.bubble.repository;
 
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
+import com.team5.secondhand.global.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -17,8 +18,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RedisChatBubbleCache implements ChatBubbleCache {
 
-    private final RedisTemplate<String, Object> redisChatBubbleTemplate;
-
+    private final RedisUtil redisUtil;
     private long getStartIndex(Pageable page) {
         return (-1L * page.getPageSize() * page.getPageNumber()) - 1;
     }
@@ -34,40 +34,34 @@ public class RedisChatBubbleCache implements ChatBubbleCache {
 
     @Override
     public Slice<ChatBubble> findAllByRoomId(String key, Pageable pageable) {
-        ListOperations<String, Object> listOperations = redisChatBubbleTemplate.opsForList();
 
         long startIndex = getStartIndex(pageable);
         long endIndex = startIndex - pageable.getPageSize();
 
-        List<ChatBubble> messages = listOperations.range(key, endIndex - 1, startIndex)
-                .stream().map(o -> (ChatBubble) o)
-                .collect(Collectors.toList());
+        List<ChatBubble> messages = redisUtil.getList(key, endIndex - 1, startIndex, ChatBubble.class);
         return getSlice(messages, pageable);
     }
 
     @Override
     public List<ChatBubble> findAllByRoomId(String key) {
-        Long size = redisChatBubbleTemplate.opsForList().size(key);
-        return redisChatBubbleTemplate.opsForList()
-                .leftPop(key, size).stream()
-                .map(o -> (ChatBubble) o).collect(Collectors.toList());
+        long size = redisUtil.size(key);
+        return redisUtil.getList(key, 0, size, ChatBubble.class);
     }
 
     @Override
     public ChatBubble save(String key, ChatBubble chatBubble) {
-        redisChatBubbleTemplate.opsForList().rightPush(key, chatBubble);
+        redisUtil.putToList(key, chatBubble);
         return chatBubble;
     }
 
     @Override
     public int getLastPage(String key, int pageSize) {
-        Long size = redisChatBubbleTemplate.opsForList().size(key);
+        Long size = redisUtil.size(key);
         return (int) (size / pageSize);
     }
 
     @Override
     public void clear(String key) {
-        Set<String> keys = redisChatBubbleTemplate.keys(key);
-        redisChatBubbleTemplate.delete(keys);
+        redisUtil.delete(key);
     }
 }
