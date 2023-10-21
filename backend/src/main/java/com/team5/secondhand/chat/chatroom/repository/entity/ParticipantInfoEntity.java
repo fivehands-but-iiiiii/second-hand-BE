@@ -17,22 +17,19 @@ import java.util.stream.Collectors;
 public class ParticipantInfoEntity {
 
     private String chatroomId;
-    private Long memberId;
     private Boolean isConnected;
     private Integer messageStock;
 
-    protected ParticipantInfoEntity(String chatroomId, Long memberId, Boolean isConnected, Integer messageStock) {
+    protected ParticipantInfoEntity(String chatroomId, Boolean isConnected, Integer messageStock) {
         this.chatroomId = chatroomId;
-        this.memberId = memberId;
         this.isConnected = isConnected;
         this.messageStock = messageStock;
     }
 
     public static Map<Long, ParticipantInfoEntity> fromDomain(Participants participants, String chatroomId) {
         return participants.getInfo().entrySet().stream()
-                .collect(Collectors.toConcurrentMap(Map.Entry::getKey, e -> new ParticipantInfoEntity(
+                .collect(Collectors.toConcurrentMap(e -> e.getValue().getMemberId(), e -> new ParticipantInfoEntity(
                         chatroomId,
-                        e.getKey(),
                         e.getValue().getIsConnected(),
                         e.getValue().getMessageStock()
                 )));
@@ -41,9 +38,9 @@ public class ParticipantInfoEntity {
     public static Participants toDomain(Map<Long, ParticipantInfoEntity> participants) {
 
         ConcurrentMap<Long, ParticipantInfo> collect = participants.entrySet().stream()
-                .collect(Collectors.toConcurrentMap(Map.Entry::getKey,
+                .collect(Collectors.toConcurrentMap(e -> e.getKey(),
                         e -> ParticipantInfo.of(
-                                e.getValue().getMemberId(),
+                                e.getKey(),
                                 e.getValue().getIsConnected(),
                                 e.getValue().getMessageStock()
                         )));

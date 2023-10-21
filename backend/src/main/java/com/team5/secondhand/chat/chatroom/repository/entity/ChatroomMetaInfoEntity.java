@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 @Entity
-@Table(name = "chatroom_metainfo")
+@Table(name = "chatroom_meta_info")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatroomMetaInfoEntity {
 
@@ -23,7 +23,8 @@ public class ChatroomMetaInfoEntity {
     private String lastMessage;
     private Instant updatedAt;
     @ElementCollection
-    @CollectionTable(name = "chatroom_participant_info", joinColumns = @JoinColumn(name = "id"))
+    @MapKeyColumn(name = "member_id")
+    @CollectionTable(name = "chatroom_participant_info", joinColumns = @JoinColumn(name = "chatroom_meta_info_id", referencedColumnName = "id"))
     private Map<Long, ParticipantInfoEntity> participants = new ConcurrentHashMap<>();
 
     @Builder
