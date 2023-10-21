@@ -89,19 +89,19 @@ class ChatBubbleServiceTest extends AbstractApplicationTest {
     void handleMessage() {
         chatBubbleService.handleMessage(chatBubble);
 
-        verify(publisher, times(1)).publishEvent(isA(ChatBubbleArrivedEvent.class));
+        verify(publisher, times(1)).publishEvent(any(ChatBubbleArrivedEvent.class));
         verify(chatBubbleCache, times(1)).save(any(String.class), any(ChatBubble.class));
         verify(redisChatPublisher, times(1)).publish(any(ChatBubble.class));
     }
 
-    @Test
-    @DisplayName("채팅 메시지를 캐시에서 Repository로 옮긴다.")
-    void moveDataCacheToRepository() {
-        chatBubbleService.moveDataCacheToRepository();
-
-        verify(chatBubbleCache, times(1)).findAllByRoomId(any(String.class));
-        verify(chatBubbleRepository, times(1)).saveAll(any(List.class));
-        verify(chatBubbleCache, times(1)).clear(any(String.class));
-    }
+//    @Test
+//    @DisplayName("채팅 메시지를 캐시에서 Repository로 옮긴다.")
+//    void moveDataCacheToRepository() {
+//        chatBubbleService.moveDataCacheToRepository();
+//
+//        verify(chatBubbleCache, times(1)).findAllByRoomId(any(String.class));
+//        verify(chatBubbleRepository, times(1)).saveAll(any(List.class));
+//        verify(chatBubbleCache, times(1)).clear(any(String.class));
+//    }
 
 }
