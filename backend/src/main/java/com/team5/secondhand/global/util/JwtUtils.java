@@ -1,4 +1,4 @@
-package com.team5.secondhand.global.jwt.util;
+package com.team5.secondhand.global.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team5.secondhand.global.properties.JwtProperties;

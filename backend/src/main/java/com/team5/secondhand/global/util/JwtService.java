@@ -1,22 +1,21 @@
-package com.team5.secondhand.global.jwt.service;
+package com.team5.secondhand.global.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
 import com.team5.secondhand.global.properties.JwtProperties;
-import com.team5.secondhand.global.jwt.util.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
 public class JwtService {
     private final ObjectMapper objectMapper;
