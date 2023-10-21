@@ -26,7 +26,7 @@ public class InmemoryNotificationRepository implements NotificationRepository {
     @Override
     public void deleteAllStartByWithId(String id) {
         int regIdx = id.indexOf("_");
-        String prefix = id.substring(0, regIdx+1);
+        String prefix = id.substring(0, regIdx+1)+"__";
         emitters.forEach((key, value) -> {
             if (key.startsWith(prefix)) {
                 emitters.remove(key);

@@ -66,7 +66,7 @@ class ChatroomTest {
                 .build();
 
         chatRoom = Chatroom.builder().id(1L)
-                .chatroomId(UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479"))
+                .chatroomId("f47ac10b-58cc-4372-a567-0e02b2c3d479")
                 .buyer(iirin)
                 .item(keyboard)
                 .chatroomStatus(ChatroomStatus.FULL)
@@ -76,11 +76,11 @@ class ChatroomTest {
     @Test
     @DisplayName("채팅방에 참여한 사람들의 ID를 알 수 있다.")
     public void getMemberIds() throws Exception{
-        List<String> chatroomMemberIds = chatRoom.getChatroomMemberIds();
+        List<Long> chatroomMemberIds = chatRoom.getChatroomMemberIds();
         assertSoftly(assertions -> {
             assertions.assertThat(chatroomMemberIds).hasSize(2);
-            assertions.assertThat(chatroomMemberIds.contains(iirin.getMemberId())).isTrue();
-            assertions.assertThat(chatroomMemberIds.contains(dewey.getMemberId())).isTrue();
+            assertions.assertThat(chatroomMemberIds.contains(iirin.getId())).isTrue();
+            assertions.assertThat(chatroomMemberIds.contains(dewey.getId())).isTrue();
         });
     }
     
