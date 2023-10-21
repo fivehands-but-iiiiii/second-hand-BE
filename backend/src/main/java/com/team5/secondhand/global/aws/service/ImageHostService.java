@@ -88,7 +88,7 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
 
     @Override
     public String uploadItemThumbnailImage(Item item) throws ImageHostException {
-        String url = item.getFirstImageUrl();
+        String url = item.getThumbnailUrl();
         String key = getKey(url);
         String newKey = key.replace(Directory.ITEM_DETAIL.getPrefix(), Directory.ITEM_THUMBNAIL_ORIGIN.getPrefix());
         try {

@@ -1,6 +1,6 @@
 package com.team5.secondhand.api.item.controller.v1.dto.request;
 
-import com.team5.secondhand.api.item.domain.ItemDetailImage;
+import com.team5.secondhand.api.item.domain.ItemImage;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,22 +8,22 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ItemImage {
+public class ItemImageDto {
     private String url;
 
     @Builder
-    private ItemImage(String url) {
+    private ItemImageDto(String url) {
         this.url = url;
     }
 
-    public ItemDetailImage toEntity() {
-        return ItemDetailImage.builder()
+    public ItemImage toEntity() {
+        return ItemImage.builder()
                 .url(this.url)
                 .build();
     }
 
-    public static ItemImage of(ItemDetailImage i) {
-        return ItemImage.builder()
+    public static ItemImageDto of(ItemImage i) {
+        return ItemImageDto.builder()
                 .url(i.getUrl())
                 .build();
     }

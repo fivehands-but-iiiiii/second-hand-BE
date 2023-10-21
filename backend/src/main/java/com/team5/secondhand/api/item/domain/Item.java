@@ -93,8 +93,8 @@ public class Item extends UpdatedTimeEntity {
     }
 
     @JsonIgnore
-    public ItemDetailImage getFirstDetailImage() {
-        return contents.getFirstDetailImage();
+    public ItemImage getFirstDetailImage() {
+        return contents.getFirstImage();
     }
 
     public Item sellerInfo(Member member, Region region) {
@@ -112,7 +112,7 @@ public class Item extends UpdatedTimeEntity {
         return this.seller.equals(memberId);
     }
 
-    public Item owned(Member seller, Region region) {
+    public Item assignOwnership(Member seller, Region region) {
         this.seller = seller;
         this.region = region;
         return this;

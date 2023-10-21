@@ -1,6 +1,6 @@
 package com.team5.secondhand.api.item.service;
 
-import com.team5.secondhand.api.item.controller.v1.dto.request.ItemUpdateRequest;
+import com.team5.secondhand.api.item.controller.v1.dto.request.ItemPostWithUrl;
 import com.team5.secondhand.api.item.domain.Item;
 import com.team5.secondhand.api.item.domain.Status;
 import com.team5.secondhand.api.item.exception.ExistItemException;
@@ -45,11 +45,11 @@ public class ItemPostService {
      * @throws UnauthorizedException
      */
     @Transactional
-    public void updateItem(Long id, ItemUpdateRequest request, Member seller) throws ExistItemException, UnauthorizedException {
+    public void updateItem(Long id, ItemPostWithUrl request, Member seller) throws ExistItemException, UnauthorizedException {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new ExistItemException("없는 아이템입니다."));
 
-        if (!item.isSeller(seller)) {
+        if (!item.isSeller(seller.getId())) {
             throw new UnauthorizedException("본인의 글만 수정할 수 있습니다.");
         }
 

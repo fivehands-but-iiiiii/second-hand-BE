@@ -22,7 +22,7 @@ public class ItemPostWithUrl {
     private Long region;
     private int price;
     @NotNull
-    private List<ItemImage> images;
+    private List<ItemImageDto> images;
 
     public Item toEntity() {
         return Item.builder()
@@ -30,7 +30,7 @@ public class ItemPostWithUrl {
                 .category(category)
                 .price(price)
                 .status(Status.ON_SALE)
-                .count(ItemCounts.createRelated())
+                .count(ItemCounts.initCounts())
                 .build();
     }
 }

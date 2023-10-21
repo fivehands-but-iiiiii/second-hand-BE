@@ -29,7 +29,7 @@ dependencies {
     implementation 'org.springframework:spring-messaging'
 //    implementation 'org.webjars:sockjs-client:1.5.1'
     implementation 'org.webjars:stomp-websocket:2.3.4'
-    implementation 'org.projectlombok:lombok:1.18.22'
+    implementation 'org.projectlombok:lombok:1.18.26'
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
@@ -67,4 +67,10 @@ clean {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+task copyGitSubmodule(type: Copy) {
+    from './src/main/resources/secret'
+    include '*.yml'
+    into './src/main/resources'
 }

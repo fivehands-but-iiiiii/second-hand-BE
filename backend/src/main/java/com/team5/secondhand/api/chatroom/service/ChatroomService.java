@@ -34,7 +34,7 @@ public class ChatroomService {
         if (chatRoomRepository.findByBuyer_IdAndItem_Id(buyer.getId(), item.getId()).isPresent()) {
             throw new ExistChatRoomException("이미 존재하는 채팅방입니다.");
         }
-        if (item.isSeller(buyer)) {
+        if (item.isSeller(buyer.getId())) {
             throw new BuyerException("구매자는 판매자와 같을 수 없습니다.");
         }
 

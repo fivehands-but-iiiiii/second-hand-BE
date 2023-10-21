@@ -39,7 +39,7 @@ public class ItemReadService {
     public ItemList getItemList(ItemFilteredSlice request, Region region, MemberDetails loginMember) {
         Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
 
-        Slice<Item> pageResult = itemRepository.findAllByBasedRegion(request.getCategoryId(), request.getSellerId(), Status.isSales(request.getIsSales()), region, pageable);
+        Slice<Item> pageResult = itemRepository.findAllByBasedRegion(request.getCategoryId(), request.getSellerId(), Status.isOnSales(request.getIsSales()), region, pageable);
         List<Item> itemEntities = pageResult.getContent();
 
         List<ItemSummary> items = new ArrayList<>();
@@ -58,7 +58,7 @@ public class ItemReadService {
     @Cacheable(value = "items", key = "#itemsRequest.last + '-' + #region.id")
     public ItemsResponse getItemList(ItemsRequest itemsRequest, Region region, MemberDetails loginMember) {
         Pageable pageable = PageRequest.ofSize(PAGE_SIZE);
-        Slice<Item> pageResult = itemRepository.findAllByIdAndRegion(itemsRequest.getLast(), itemsRequest.getCategoryId(), itemsRequest.getSellerId(), Status.isSales(itemsRequest.getIsSales()), region, pageable);
+        Slice<Item> pageResult = itemRepository.findAllByIdAndRegion(itemsRequest.getLast(), itemsRequest.getCategoryId(), itemsRequest.getSellerId(), Status.isOnSales(itemsRequest.getIsSales()), region, pageable);
 
         List<Item> itemEntities = pageResult.getContent();
         List<ItemSummary> items = new ArrayList<>();
@@ -78,7 +78,7 @@ public class ItemReadService {
     public MyItemList getMyItemList(MyItemFilteredSlice request, MemberDetails loginMember) {
         Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
 
-        Slice<Item> pageResult = itemRepository.findAllByBasedRegion(null, loginMember.getId(), Status.isSales(request.getIsSales()), null, pageable);
+        Slice<Item> pageResult = itemRepository.findAllByBasedRegion(null, loginMember.getId(), Status.isOnSales(request.getIsSales()), null, pageable);
         List<Item> itemEntities = pageResult.getContent();
         List<MyItemSummary> items = getMyItemSummaries(itemEntities);
 

@@ -1,5 +1,6 @@
 package com.team5.secondhand.api.item.domain;
 
+import com.team5.secondhand.api.item.controller.v1.dto.request.ItemImageDto;
 import com.team5.secondhand.api.item.controller.v1.dto.request.RequestedItemImages;
 import com.team5.secondhand.api.item.util.ImageUrlConverter;
 import lombok.*;
@@ -50,12 +51,12 @@ public class ItemContents {
                 .build();
     }
 
-    public ItemContents update(String contents, List<RequestedItemImages> images) {
+    public ItemContents update(String contents, List<ItemImageDto> images) {
         return ItemContents.builder()
                 .id(this.id)
                 .contents(contents)
                 .detailImageUrl(images.stream()
-                        .map(RequestedItemImages::toEntity)
+                        .map(ItemImageDto::toEntity)
                         .collect(Collectors.toList())
                 )
                 .isDeleted(this.isDeleted)
