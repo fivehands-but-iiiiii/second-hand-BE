@@ -178,7 +178,7 @@ create table if not exists chatbubble
 create table if not exists chatroom_meta_info
 (
     id bigint auto_increment primary key ,
-    chatroom_id varchar(25) not null ,
+    chatroom_id varchar(255) not null ,
     last_message varchar(400) ,
     updated_at datetime
 );
@@ -186,7 +186,8 @@ create table if not exists chatroom_meta_info
 create table if not exists chatroom_participant_info
 (
     id bigint auto_increment primary key ,
-    chatroom_id varchar(25) not null ,
+    chatroom_meta_info_id bigint not null ,
+    chatroom_id varchar(255) not null ,
     member_id bigint not null ,
     is_connected bit not null ,
     message_stock int not null
