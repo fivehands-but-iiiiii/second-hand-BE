@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
@@ -24,13 +25,16 @@ public class ChatConfig {
     private final ObjectMapper objectMapper;
 
     @Bean
-    public RedisTemplate<?, ?> redisObjectTemplate() {
+    public RedisTemplate<String, Object> redisObjectTemplate() {
         objectMapper.registerModule(new JavaTimeModule());
 
-        RedisTemplate<?, ?> template = new RedisTemplate<>();
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
         template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
+        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class)); // Use Jackson2JsonRedisSerializer
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class)); // Use Jackson2JsonRedisSerializer
+
 
         return template;
     }
