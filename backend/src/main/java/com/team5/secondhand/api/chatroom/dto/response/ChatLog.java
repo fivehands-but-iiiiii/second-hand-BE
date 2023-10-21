@@ -9,17 +9,17 @@ import java.time.Instant;
 @Getter
 public class ChatLog {
     private final String lastMessage;
-    private final Instant updateAt;
+    private final String updateAt;
     private final Integer unReadCount;
 
     @Builder
-    private ChatLog(String lastMessage, Instant updateAt, Integer unReadCount) {
+    private ChatLog(String lastMessage, String updateAt, Integer unReadCount) {
         this.lastMessage = lastMessage;
         this.updateAt = updateAt;
         this.unReadCount = unReadCount;
     }
 
-    public static ChatLog of(Chatroom chatroom, String memberId) {
+    public static ChatLog of(Chatroom chatroom, Long memberId) {
         return ChatLog.builder()
                 .lastMessage(chatroom.getLastMessage())
                 .updateAt(chatroom.getUpdateAt())
@@ -30,7 +30,7 @@ public class ChatLog {
     public static ChatLog empty() {
         return ChatLog.builder()
                 .lastMessage("")
-                .updateAt(Instant.now())
+                .updateAt(Instant.now().toString())
                 .unReadCount(0)
                 .build();
     }

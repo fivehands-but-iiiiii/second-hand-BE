@@ -1,7 +1,6 @@
 package com.team5.secondhand.global.auth;
 
 import com.team5.secondhand.api.member.dto.response.MemberDetails;
-import com.team5.secondhand.api.member.exception.MemberException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;

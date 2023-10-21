@@ -1,9 +1,9 @@
 package com.team5.secondhand.chat.bubble.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -21,6 +21,7 @@ public class ChatBubble implements Serializable {
     private Long sender;
     private Long receiver;
     private String message;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     private Instant createdAt;
 
     @Builder

@@ -16,7 +16,7 @@ public class ChatBubbleArrivedEvent extends BaseEvent {
         log.info("ChatBubble Arrived Event Occur = {}", chatBubble.toString());
     }
 
-    public String getChatReceiverId() {
+    public Long getChatReceiverId() {
         return chatBubble.getReceiver();
     }
 }

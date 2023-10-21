@@ -46,7 +46,7 @@ public class ChatroomSummary {
 
     public ChatroomSummary addChatLogs(ChatLog chatLog) {
         this.chatLogs = chatLog;
-        this.lastUpdate = chatLog.getUpdateAt();
+        this.lastUpdate = Instant.parse(chatLog.getUpdateAt());
         return this;
     }
 }

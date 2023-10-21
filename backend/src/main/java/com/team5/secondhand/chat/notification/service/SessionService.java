@@ -12,9 +12,9 @@ public class SessionService {
     private final String MAIN_KEY = "sessionStore";
 
     @Transactional
-    public void saveSession(String sessionId, String memberId) {
+    public void saveSession(String sessionId, Long memberId) {
         redisSessionTemplate.opsForSet().add(MAIN_KEY, sessionId);
-        redisSessionTemplate.opsForValue().set(generateSessionKey(sessionId), memberId);
+        redisSessionTemplate.opsForValue().set(generateSessionKey(sessionId), String.valueOf(memberId));
     }
 
     public String getMemberIdBySessionId(String sessionId) {
