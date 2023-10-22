@@ -14,6 +14,35 @@
 ---
 ## 프로젝트 구조
 ```text
+src
+├── main
+│   ├── java.com.team5.secondhand
+│   │    ├── api    #외부 API
+│   │    │   └── s3    #이미지 호스팅
+│   │    ├── application    #기본 API
+│   │    │   ├── chatroom    #채팅방 관련 패키지
+│   │    │   ├── item    #판매 상품 관련 패키지
+│   │    │   ├── member    #회원 관련 로패키지직
+│   │    │   ├── oauth    #oauth 관련 패키지
+│   │    │   ├── region    #지역 관련 패키지
+│   │    │   ├── resource    #초기 데이터 반환 패키지
+│   │    │   └── wishlist    #좋아요 표시한 상품 관련 패키지
+│   │    ├── chat #채팅
+│   │    │   ├── bubble    #채팅메시지
+│   │    │   ├── chatroom-metainfo    #채팅metainfo
+│   │    │   └── notification    #채팅 알람
+│   │    └── global
+│   │        ├── auth   #요청당 인증 인가
+│   │        ├── config
+│   │        ├── exception
+│   │        ├── model
+│   │        ├── properties
+│   │        └── util
+│   └── resources
+└── test
+    └── java.com.team5.secondhand
+        ├── integration    #통합테스트
+        └── unit    #단위테스트
 ```
 
 ---
