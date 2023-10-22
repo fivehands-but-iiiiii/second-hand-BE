@@ -4,7 +4,7 @@ import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.chat.bubble.repository.ChatBubbleCache;
 import com.team5.secondhand.chat.bubble.repository.ChatBubbleRepository;
 import com.team5.secondhand.chat.bubble.repository.entity.ChatBubbleEntity;
-import com.team5.secondhand.global.event.chatbubble.ChatBubbleArrivedEvent;
+import com.team5.secondhand.chat.bubble.event.ChatBubbleArrivedEvent;
 import com.team5.secondhand.global.properties.ChatConstProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;

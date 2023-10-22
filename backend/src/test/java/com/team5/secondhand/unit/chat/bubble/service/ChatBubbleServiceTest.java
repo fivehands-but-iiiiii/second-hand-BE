@@ -3,7 +3,7 @@ package com.team5.secondhand.unit.chat.bubble.service;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.chat.bubble.service.ChatBubbleService;
 import com.team5.secondhand.chat.chatroom.domain.Chatroom;
-import com.team5.secondhand.global.event.chatbubble.ChatBubbleArrivedEvent;
+import com.team5.secondhand.chat.bubble.event.ChatBubbleArrivedEvent;
 import com.team5.secondhand.global.properties.ChatConstProperties;
 import com.team5.secondhand.unit.AbstractApplicationTest;
 import com.team5.secondhand.unit.ApplicationTest;

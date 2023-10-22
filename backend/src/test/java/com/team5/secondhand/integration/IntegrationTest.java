@@ -2,11 +2,8 @@ package com.team5.secondhand.integration;
 
 import com.team5.secondhand.DataInitializerExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.servlet.mvc.Controller;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

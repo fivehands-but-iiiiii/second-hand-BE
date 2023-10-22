@@ -1,7 +1,7 @@
 package com.team5.secondhand.chat.chatroom.service;
 
-import com.team5.secondhand.api.chatroom.dto.response.ChatLog;
-import com.team5.secondhand.api.chatroom.dto.response.ChatroomSummary;
+import com.team5.secondhand.application.chatroom.dto.response.ChatLog;
+import com.team5.secondhand.application.chatroom.dto.response.ChatroomSummary;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.chat.chatroom.domain.Chatroom;
 import com.team5.secondhand.chat.chatroom.repository.ChatroomMetainfoCache;

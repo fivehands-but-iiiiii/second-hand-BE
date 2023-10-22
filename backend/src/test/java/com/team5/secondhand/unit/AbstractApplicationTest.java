@@ -1,7 +1,6 @@
 package com.team5.secondhand.unit;
 
 import com.team5.secondhand.FixtureFactory;
-import com.team5.secondhand.api.chatroom.repository.ChatroomRepository;
 import com.team5.secondhand.chat.bubble.repository.ChatBubbleCache;
 import com.team5.secondhand.chat.bubble.repository.ChatBubbleRepository;
 import com.team5.secondhand.chat.bubble.service.RedisChatPublisher;

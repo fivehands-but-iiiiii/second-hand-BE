@@ -1,14 +1,12 @@
 package com.team5.secondhand.chat.chatroom.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.team5.secondhand.api.chatroom.dto.ChatroomInfo;
+import com.team5.secondhand.application.chatroom.dto.ChatroomInfo;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;

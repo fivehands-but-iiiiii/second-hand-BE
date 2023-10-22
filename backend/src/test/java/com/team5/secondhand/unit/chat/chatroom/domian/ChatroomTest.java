@@ -1,23 +1,22 @@
 package com.team5.secondhand.unit.chat.chatroom.domian;
 
-import com.team5.secondhand.api.chatroom.domian.Chatroom;
-import com.team5.secondhand.api.chatroom.domian.ChatroomStatus;
-import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
-import com.team5.secondhand.api.item.domain.Item;
-import com.team5.secondhand.api.item.domain.ItemContents;
-import com.team5.secondhand.api.item.domain.ItemCounts;
-import com.team5.secondhand.api.item.domain.Status;
-import com.team5.secondhand.api.member.domain.BasedRegion;
-import com.team5.secondhand.api.member.domain.Member;
-import com.team5.secondhand.api.member.domain.Oauth;
-import com.team5.secondhand.api.region.domain.Region;
+import com.team5.secondhand.application.chatroom.domian.Chatroom;
+import com.team5.secondhand.application.chatroom.domian.ChatroomStatus;
+import com.team5.secondhand.application.chatroom.exception.NotChatroomMemberException;
+import com.team5.secondhand.application.item.domain.Item;
+import com.team5.secondhand.application.item.domain.ItemContents;
+import com.team5.secondhand.application.item.domain.ItemCounts;
+import com.team5.secondhand.application.item.domain.Status;
+import com.team5.secondhand.application.member.domain.BasedRegion;
+import com.team5.secondhand.application.member.domain.Member;
+import com.team5.secondhand.application.member.domain.Oauth;
+import com.team5.secondhand.application.region.domain.Region;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.util.List;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;

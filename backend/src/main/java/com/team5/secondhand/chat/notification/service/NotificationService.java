@@ -5,7 +5,7 @@ import com.team5.secondhand.chat.notification.domain.SseEvent;
 import com.team5.secondhand.chat.notification.domain.SseKey;
 import com.team5.secondhand.chat.notification.dto.ChatNotification;
 import com.team5.secondhand.chat.notification.repository.NotificationRepository;
-import com.team5.secondhand.global.event.chatbubble.ChatNotificationEvent;
+import com.team5.secondhand.chat.notification.event.ChatNotificationEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

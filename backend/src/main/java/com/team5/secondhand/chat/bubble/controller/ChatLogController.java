@@ -1,6 +1,6 @@
 package com.team5.secondhand.chat.bubble.controller;
 
-import com.team5.secondhand.api.member.dto.response.MemberDetails;
+import com.team5.secondhand.application.member.dto.response.MemberDetails;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.chat.bubble.dto.response.ChatroomLog;
 import com.team5.secondhand.chat.bubble.service.ChatBubbleService;

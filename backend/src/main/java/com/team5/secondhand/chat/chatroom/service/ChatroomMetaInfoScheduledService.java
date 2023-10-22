@@ -1,6 +1,5 @@
 package com.team5.secondhand.chat.chatroom.service;
 
-import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.chat.chatroom.domain.Chatroom;
 import com.team5.secondhand.chat.chatroom.repository.ChatroomMetainfoCache;
 import com.team5.secondhand.chat.chatroom.repository.ChatroomMetainfoRepository;
