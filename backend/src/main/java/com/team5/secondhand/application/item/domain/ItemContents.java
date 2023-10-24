@@ -1,8 +1,10 @@
 package com.team5.secondhand.application.item.domain;
 
-import com.team5.secondhand.application.item.controller.v1.dto.request.ItemImageDto;
 import com.team5.secondhand.application.item.util.ImageUrlConverter;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
@@ -11,7 +13,6 @@ import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -39,7 +40,7 @@ public class ItemContents {
     }
 
     public static ItemContents of(String contents, List<ItemImage> images) {
-        if (images==null) {
+        if (images == null) {
             images = Collections.EMPTY_LIST;
         }
 
@@ -50,14 +51,11 @@ public class ItemContents {
                 .build();
     }
 
-    public ItemContents update(String contents, List<ItemImageDto> images) {
+    public ItemContents update(String contents, List<ItemImage> images) {
         return ItemContents.builder()
                 .id(this.id)
                 .contents(contents)
-                .detailImageUrl(images.stream()
-                        .map(ItemImageDto::toEntity)
-                        .collect(Collectors.toList())
-                )
+                .detailImageUrl(images)
                 .isDeleted(this.isDeleted)
                 .build();
     }
