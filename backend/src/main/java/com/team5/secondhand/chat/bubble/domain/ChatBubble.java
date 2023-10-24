@@ -8,23 +8,20 @@ import java.time.Instant;
 
 @Getter
 @ToString
-@Entity
 @NoArgsConstructor
-@Table(name = "chatbubble")
 public class ChatBubble implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
-    private String roomId;
+    private String chatroomId;
     private Long sender;
     private Long receiver;
     private String message;
     private String createdAt;
 
     @Builder
-    private ChatBubble(Long id, String roomId, Long sender, Long receiver, String message, String createdAt) {
+    private ChatBubble(Long id, String chatroomId, Long sender, Long receiver, String message, String createdAt) {
         this.id = id;
-        this.roomId = roomId;
+        this.chatroomId = chatroomId;
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
