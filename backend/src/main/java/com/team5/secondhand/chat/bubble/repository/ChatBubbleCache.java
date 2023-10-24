@@ -32,7 +32,6 @@ public class ChatBubbleCache{
         return new SliceImpl<>(messages, pageable, hasNext);
     }
 
-    @Override
     public Slice<ChatBubble> findAllByRoomId(String key, Pageable pageable) {
         ListOperations<String, ChatBubble> listOperations = redisChatBubbleTemplate.opsForList();
 
@@ -43,7 +42,6 @@ public class ChatBubbleCache{
         return getSlice(messages, pageable);
     }
 
-    @Override
     public ChatBubble save(String key, ChatBubble chatBubble) {
         redisChatBubbleTemplate.opsForList().rightPush(key, chatBubble); // 캐시 저장
         return redisChatBubbleTemplate.opsForValue().get(key);
