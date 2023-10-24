@@ -1,20 +1,26 @@
 package com.team5.secondhand.chat.bubble.repository;
 
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
+import com.team5.secondhand.chat.bubble.repository.entity.ChatBubbleEntity;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.UUID;
 
-@Repository
-public interface ChatBubbleRepository extends MongoRepository<ChatBubble, UUID> {
+@Component
+@RequiredArgsConstructor
+public class ChatBubbleRepository {
 
-    Slice<ChatBubble> findAllByRoomId(String roomId, Pageable pageable);
+    private final SpringDataChatBubbleRepository repository;
 
-    List<ChatBubble> findAllByRoomIdOrderByCreatedAtDesc(String roomId);
+    public Slice<ChatBubbleEntity> findAll(Pageable pageable) {
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize() + 1, Sort.by("createdAt").ascending());
+        Page<ChatBubbleEntity> chatBubbles = repository.findAll(pageable);
+        return new SliceImpl(chatBubbles.getContent().subList(0, Math.min(pageable.getPageSize(), chatBubbles.getContent().size())), pageable, chatBubbles.getSize() > chatBubbles.getSize());
+    }
 
-    ChatBubble findFirstByOrderByIdDesc();
+    public void saveAll(List<ChatBubbleEntity> allChatBubble) {
+        repository.saveAll(allChatBubble);
+    }
 }

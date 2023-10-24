@@ -1,67 +1,35 @@
 package com.team5.secondhand.chat.bubble.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.redis.core.index.Indexed;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.UUID;
 
 @Getter
 @ToString
-@Document("chatbubbles")
 @NoArgsConstructor
-public class ChatBubble implements Serializable, Comparable {
-    @Id
-    private UUID id;
-    @Indexed
-    private String roomId;
-    private String sender;
-    private String receiver;
+public class ChatBubble implements Serializable {
+
+    private Long id;
+    private String chatroomId;
+    private Long sender;
+    private Long receiver;
     private String message;
     private String createdAt;
 
     @Builder
-    private ChatBubble(UUID id, String roomId, String sender, String receiver, String message, String createdAt) {
+    protected ChatBubble(Long id, String chatroomId, Long sender, Long receiver, String message, Instant createdAt) {
         this.id = id;
-        this.roomId = roomId;
+        this.chatroomId = chatroomId;
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
-        this.createdAt = createdAt;
+        this.createdAt = createdAt!=null ? createdAt.toString() : "";
     }
 
-    private UUID generateKey() {
-        if (id==null) {
-            return UUID.randomUUID();
-        }
-        return id;
-    }
-
-    private String generateCreatedAt(String time) {
-        if (time == null) {
-            return Instant.now().toString();
-        }
-        return time;
-    }
-
-    public Boolean isSender(String memberId) {
-        return this.sender.equals(memberId);
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        ChatBubble bubble = (ChatBubble) o;
-        if (Instant.parse(this.createdAt).isBefore(Instant.parse(bubble.createdAt))) {
-            return 1;
-        }
-        return -1;
-    }
-
-    public void ready() {
-        this.id = generateKey();
-        this.createdAt = generateCreatedAt(createdAt);
+    public Boolean isSender(long memberId) {
+        return this.sender == memberId;
     }
 }
