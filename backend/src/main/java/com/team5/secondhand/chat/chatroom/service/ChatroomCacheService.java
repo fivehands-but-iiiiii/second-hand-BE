@@ -28,9 +28,18 @@ public class ChatroomCacheService {
     private final ApplicationEventPublisher eventPublisher;
 
     public void enterToChatRoom(String roomId, Long memberId) {
-        Chatroom chatroom = metaInfoRepository.findById(roomId).orElseThrow();
+        // 1. 캐시에서 채팅방을 찾는다.
+        Chatroom chatroom = chatroomMetaCache.findByChatroomId(roomId).orElseThrow();
+        // 2.
+        if (chatroom==null) {
+            ChatroomMetaInfoEntity chatroomEntity = chatroomMetaRepository.findByChatroomId(roomId).orElseThrow();
+            chatroom = chatroomEntity.toDomain();
+        }
+        // 3.
         chatroom.enter(memberId);
-        metaInfoRepository.save(chatroom);
+        chatroomMetaCache.saveChatroom(roomId, chatroom);
+        // 시간 지나면 한꺼번에 처리하도록 함
+        chatroomMetaRepository.save(ChatroomMetaInfoEntity.fromDomain(chatroom));
     }
 
     public void exitToChatRoom(String roomId, Long memberId) {
