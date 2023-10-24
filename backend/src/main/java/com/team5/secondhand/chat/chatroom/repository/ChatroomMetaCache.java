@@ -3,11 +3,13 @@ package com.team5.secondhand.chat.chatroom.repository;
 import com.team5.secondhand.chat.chatroom.domain.Chatroom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+@Repository
 @RequiredArgsConstructor
-public class ChatroomCacheRepository implements ChatroomMetainfoCustomRepository {
+public class ChatroomMetaCache {
     private final RedisTemplate<String, Chatroom> redisChatroomTemplate;
     private final String MAIN_KEY = "meta:chatroom";
 
