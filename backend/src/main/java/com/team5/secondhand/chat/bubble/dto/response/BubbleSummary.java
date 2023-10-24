@@ -1,12 +1,10 @@
 package com.team5.secondhand.chat.bubble.dto.response;
 
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BubbleSummary {
     private String id;
     private String senderId;

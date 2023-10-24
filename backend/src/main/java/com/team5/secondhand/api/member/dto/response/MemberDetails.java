@@ -5,27 +5,32 @@ import com.team5.secondhand.api.member.domain.Member;
 import com.team5.secondhand.api.member.domain.Oauth;
 import com.team5.secondhand.api.member.dto.request.BasedRegionSummary;
 import com.team5.secondhand.api.region.exception.EmptyBasedRegionException;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
-@Builder
+@Getter
 @ToString
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberDetails {
 
-    private final Long id;
-    private final String memberId;
-    private final String profileImgUrl;
-    private final Oauth oauth;
-    private final List<BasedRegionSummary> regions;
+    private Long id;
+    private String memberId;
+    private String profileImgUrl;
+    private Oauth oauth;
+    private List<BasedRegionSummary> regions;
 
-    public static MemberDetails fromMember(Member member) throws EmptyBasedRegionException {
+    @Builder
+    protected MemberDetails(Long id, String memberId, String profileImgUrl, Oauth oauth, List<BasedRegionSummary> regions) {
+        this.id = id;
+        this.memberId = memberId;
+        this.profileImgUrl = profileImgUrl;
+        this.oauth = oauth;
+        this.regions = regions;
+    }
+
+    public static MemberDetails fromMember(Member member) {
         List<BasedRegionSummary> regions = member.getRegions().stream()
                 .map(BasedRegionSummary::of)
                 .collect(Collectors.toList());
