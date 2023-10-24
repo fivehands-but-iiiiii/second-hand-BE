@@ -168,7 +168,7 @@ create index fk_member_has_item_member1_idx
 create table if not exists chatbubble
 (
     id       bigint auto_increment primary key ,
-    room_id  varchar(255),
+    chatroom_id  varchar(255),
     sender   bigint not null ,
     receiver bigint not null ,
     message varchar(400),
