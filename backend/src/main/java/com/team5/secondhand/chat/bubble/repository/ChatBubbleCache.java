@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class RedisChatBubbleRepository implements ChatBubbleRepository {
+public class ChatBubbleCache{
 
     private final RedisTemplate<String, ChatBubble> redisChatBubbleTemplate;
 

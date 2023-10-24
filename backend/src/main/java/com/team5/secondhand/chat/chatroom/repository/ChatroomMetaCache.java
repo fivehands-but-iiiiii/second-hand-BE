@@ -9,7 +9,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ChatroomCacheRepository implements ChatroomMetainfoCustomRepository {
     private final RedisTemplate<String, Chatroom> redisChatroomTemplate;
-    private final String MAIN_KEY = "chatroom";
+    private final String MAIN_KEY = "meta:chatroom";
+
 
     public Chatroom saveChatroom(String chatroomId, Chatroom chatroom) {
         redisChatroomTemplate.opsForValue().set(generateKey(chatroomId), chatroom);
