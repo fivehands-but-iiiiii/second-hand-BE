@@ -1,7 +1,9 @@
 package com.team5.secondhand.chat.bubble.service;
 
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
+import com.team5.secondhand.chat.bubble.repository.ChatBubbleCache;
 import com.team5.secondhand.chat.bubble.repository.ChatBubbleRepository;
+import com.team5.secondhand.chat.bubble.repository.entity.BubbleEntity;
 import com.team5.secondhand.global.event.chatbubble.ChatBubbleArrivedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,20 +23,22 @@ public class ChatBubbleService {
     private String chatBucketPrefix;
     @Value("${const.chat.page-size}")
     private int chatLoadSize;
-    private final ChatBubbleRepository repository;
-    private final RedisTemplate<String, ChatBubble> redisChatBubbleTemplate;
+    private final ChatBubbleRepository bubbleRepository;
+    private final ChatBubbleCache bubbleCache;
 
     @Transactional(readOnly = true)
     public Slice<ChatBubble> getChatBubbles(int page, String roomId) {
         String key = generateChatLogKey(roomId);
         Pageable pageable = PageRequest.of(page, chatLoadSize, Sort.by("createdAt").ascending());
-        Slice<ChatBubble> list = repository.findAllByRoomId(roomId, pageable);
-        return list;
+        Slice<BubbleEntity> list = bubbleRepository.findAllByChatroomId(roomId, pageable);
+        //TODO service 로직 변경
+        return null;
     }
 
     public ChatBubble saveChatBubble(ChatBubble chatBubble) {
-        String key = generateChatLogKey(chatBubble.getRoomId());
-        return repository.save(key, chatBubble);
+        String key = generateChatLogKey(chatBubble.getChatroomId());
+        BubbleEntity bubble= bubbleRepository.save(BubbleEntity.fromDomain(chatBubble));
+        return bubble.toDomain();
     }
 
     @Async
