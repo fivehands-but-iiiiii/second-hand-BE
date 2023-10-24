@@ -48,6 +48,15 @@ public class ChatroomMetaInfoEntity implements Serializable {
                 .build();
     }
 
+    public static ChatroomMetaInfoEntity create(String roomId, Long memberId) {
+        return ChatroomMetaInfoEntity.builder()
+                .id(null)
+                .chatroomId(roomId)
+                .lastMessage("")
+                .updatedAt(null)
+                .build();
+    }
+
     public Chatroom toDomain() {
         return Chatroom.builder()
                 .id(this.id)
