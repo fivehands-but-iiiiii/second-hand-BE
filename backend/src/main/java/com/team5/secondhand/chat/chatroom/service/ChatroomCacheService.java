@@ -6,7 +6,9 @@ import com.team5.secondhand.api.chatroom.dto.response.ChatroomSummary;
 import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.chat.chatroom.domain.Chatroom;
+import com.team5.secondhand.chat.chatroom.repository.ChatroomMetaCache;
 import com.team5.secondhand.chat.chatroom.repository.ChatroomMetaRepository;
+import com.team5.secondhand.chat.chatroom.repository.entity.ChatroomMetaInfoEntity;
 import com.team5.secondhand.global.event.chatbubble.ChatBubbleArrivedEvent;
 import com.team5.secondhand.global.event.chatbubble.ChatNotificationEvent;
 import com.team5.secondhand.global.event.chatroom.ChatroomCreatedEvent;
@@ -23,8 +25,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ChatroomCacheService {
-    private final String MAIN_KEY = "chatroom";
-    private final ChatroomMetaRepository metaInfoRepository;
+    private final ChatroomMetaCache chatroomMetaCache;
+    private final ChatroomMetaRepository chatroomMetaRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     public void enterToChatRoom(String roomId, Long memberId) {
@@ -42,19 +44,20 @@ public class ChatroomCacheService {
         chatroomMetaRepository.save(ChatroomMetaInfoEntity.fromDomain(chatroom));
     }
 
+    // TODO
     public void exitToChatRoom(String roomId, Long memberId) {
-        Chatroom chatroom = metaInfoRepository.findById(roomId).orElseThrow();
-        chatroom.exit(memberId);
+        ChatroomMetaInfoEntity chatroom = chatroomMetaRepository.findByChatroomId(roomId).orElseThrow();
+        chatroom.toDomain().exit(memberId);
     }
 
-    public Chatroom getChatroom(String chatroomId) {
-        return metaInfoRepository.findById(chatroomId).orElseThrow();
+    public ChatroomMetaInfoEntity getChatroom(String chatroomId) {
+        return chatroomMetaRepository.findByChatroomId(chatroomId).orElseThrow();
     }
 
     @Transactional(readOnly = true)
     public ChatLog getMessageInfo(String roomId, Long memberId) {
-        Chatroom chatroom = metaInfoRepository.findById(roomId).orElseGet(() -> Chatroom.create(roomId, memberId));
-        return ChatLog.of(chatroom, memberId);
+        ChatroomMetaInfoEntity chatroom = chatroomMetaRepository.findByChatroomId(roomId).orElseGet(() -> ChatroomMetaInfoEntity.create(roomId, memberId));
+        return ChatLog.of(chatroom.toDomain(), memberId);
     }
 
     @Transactional(readOnly = true)
@@ -70,16 +73,16 @@ public class ChatroomCacheService {
     public void chatroomCreatedEventHandler(ChatroomCreatedEvent event) {
         ChatroomInfo info = event.getInfo();
         Chatroom chatroom = Chatroom.init(info);
-        metaInfoRepository.save(chatroom);
+        chatroomMetaRepository.save(ChatroomMetaInfoEntity.fromDomain(chatroom));
     }
 
     @Async
     @EventListener
     public void chatBubbleArrivedEventHandler(ChatBubbleArrivedEvent event) throws NotChatroomMemberException {
         ChatBubble chatBubble = event.getChatBubble();
-        Chatroom chatroom = getChatroom(chatBubble.getRoomId());
+        Chatroom chatroom = getChatroom(chatBubble.getChatroomId()).toDomain();
         chatroom.updateLastMessage(chatBubble);
-        Chatroom saveChatroom = metaInfoRepository.save(chatroom);
-        eventPublisher.publishEvent(ChatNotificationEvent.of(saveChatroom, chatBubble));
+        ChatroomMetaInfoEntity saveChatroom = chatroomMetaRepository.save(ChatroomMetaInfoEntity.fromDomain(chatroom));
+        eventPublisher.publishEvent(ChatNotificationEvent.of(saveChatroom.toDomain(), chatBubble));
     }
 }
