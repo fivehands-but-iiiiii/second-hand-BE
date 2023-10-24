@@ -117,7 +117,7 @@ create table if not exists chat_log
         primary key,
     contents     varchar(300) null,
     sender_id    bigint       not null,
-    reciver_id   bigint       not null,
+    receiver_id   bigint       not null,
     chat_room_id bigint       not null
 );
 
@@ -187,7 +187,6 @@ create table if not exists chatroom_participant_info
 (
     id bigint auto_increment primary key ,
     chatroom_meta_info_id bigint not null ,
-    chatroom_id varchar(255) not null ,
     member_id bigint not null ,
     is_connected bit not null ,
     message_stock int not null
