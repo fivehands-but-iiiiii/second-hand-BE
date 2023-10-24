@@ -117,7 +117,7 @@ create table if not exists chat_log
         primary key,
     contents     varchar(300) null,
     sender_id    bigint       not null,
-    reciver_id   bigint       not null,
+    receiver_id   bigint       not null,
     chat_room_id bigint       not null
 );
 
@@ -167,26 +167,26 @@ create index fk_member_has_item_member1_idx
 
 create table if not exists chatbubble
 (
-   id       bigint auto_increment primary key ,
-   chatroom_id  varchar(25),
-   sender   bigint not null ,
-   receiver bigint not null ,
-   message varchar(400),
-   created_at datetime not null
+    id       bigint auto_increment primary key ,
+    room_id  varchar(255),
+    sender   bigint not null ,
+    receiver bigint not null ,
+    message varchar(400),
+    created_at datetime not null
 );
 
-create table if not exists meta_info
+create table if not exists chatroom_meta_info
 (
     id bigint auto_increment primary key ,
-    chatroom_id varchar(25) not null ,
+    chatroom_id varchar(255) not null ,
     last_message varchar(400) ,
     updated_at datetime
 );
 
-create table if not exists participant_info
+create table if not exists chatroom_participant_info
 (
     id bigint auto_increment primary key ,
-    chatroom_id varchar(25) not null ,
+    chatroom_meta_info_id bigint not null ,
     member_id bigint not null ,
     is_connected bit not null ,
     message_stock int not null
