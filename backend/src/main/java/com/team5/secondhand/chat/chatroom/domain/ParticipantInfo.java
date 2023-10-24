@@ -2,11 +2,13 @@ package com.team5.secondhand.chat.chatroom.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.Instant;
 
 @Getter
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class ParticipantInfo implements Serializable {
     private Long memberId;
     private Instant lastDisconnectedAt;
@@ -27,6 +29,15 @@ public class ParticipantInfo implements Serializable {
                 .lastDisconnectedAt(null)
                 .isConnected(false)
                 .messageStock(0)
+                .build();
+    }
+
+    public static ParticipantInfo of(Long memberId, Boolean isConnected, Integer messageStock) {
+        return ParticipantInfo.builder()
+                .memberId(memberId)
+                .lastDisconnectedAt(null)
+                .isConnected(isConnected)
+                .messageStock(messageStock)
                 .build();
     }
 
