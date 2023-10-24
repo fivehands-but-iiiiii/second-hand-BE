@@ -33,7 +33,7 @@ public class ChatroomCacheService {
         metaInfoRepository.save(chatroom);
     }
 
-    public void exitToChatRoom(String roomId, String memberId) {
+    public void exitToChatRoom(String roomId, Long memberId) {
         Chatroom chatroom = metaInfoRepository.findById(roomId).orElseThrow();
         chatroom.exit(memberId);
     }
@@ -49,7 +49,7 @@ public class ChatroomCacheService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChatroomSummary> addLastMessage(List<ChatroomSummary> chatroomSummaries, String memberId) {
+    public List<ChatroomSummary> addLastMessage(List<ChatroomSummary> chatroomSummaries, Long memberId) {
 
         return chatroomSummaries.stream()
                 .map(s -> s.addChatLogs(getMessageInfo(s.getChatroomId(), memberId)))

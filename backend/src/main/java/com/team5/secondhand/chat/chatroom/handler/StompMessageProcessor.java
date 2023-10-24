@@ -62,7 +62,7 @@ public class StompMessageProcessor implements ChannelInterceptor {
     }
 
     private void enterToChatRoom(StompHeaderAccessor headerAccessor) {
-        String memberId = sessionService.getMemberIdBySessionId(headerAccessor.getSessionId());
+        Long memberId = sessionService.getMemberIdBySessionId(headerAccessor.getSessionId());
         String roomId = extractRoomId(headerAccessor.getDestination());
         chatroomCacheService.enterToChatRoom(roomId, memberId);
     }
