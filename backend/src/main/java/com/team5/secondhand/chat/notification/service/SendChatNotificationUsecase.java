@@ -4,5 +4,5 @@ import com.team5.secondhand.chat.chatroom.domain.Chatroom;
 import com.team5.secondhand.chat.notification.dto.ChatNotification;
 
 public interface SendChatNotificationUsecase {
-    void sendChatNotificationToMember(String id, Chatroom chatroom, ChatNotification chatNotification);
+    void sendChatNotificationToMember(Long id, Chatroom chatroom, ChatNotification chatNotification);
 }

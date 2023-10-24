@@ -17,8 +17,8 @@ public class SessionService {
         redisSessionTemplate.opsForValue().set(generateSessionKey(sessionId), memberId);
     }
 
-    public String getMemberIdBySessionId(String sessionId) {
-        return redisSessionTemplate.opsForValue().get(generateSessionKey(sessionId));
+    public Long getMemberIdBySessionId(String sessionId) {
+        return Long.parseLong(redisSessionTemplate.opsForValue().get(generateSessionKey(sessionId)));
     }
 
     @Transactional

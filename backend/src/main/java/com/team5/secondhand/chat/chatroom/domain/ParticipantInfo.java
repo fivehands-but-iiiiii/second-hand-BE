@@ -8,20 +8,20 @@ import java.time.Instant;
 
 @Getter
 public class ParticipantInfo implements Serializable {
-    private String memberId;
+    private Long memberId;
     private Instant lastDisconnectedAt;
     private Boolean isConnected;
     private Integer messageStock;
 
     @Builder
-    private ParticipantInfo(String memberId, Instant lastDisconnectedAt, Boolean isConnected, Integer messageStock) {
+    private ParticipantInfo(Long memberId, Instant lastDisconnectedAt, Boolean isConnected, Integer messageStock) {
         this.memberId = memberId;
         this.lastDisconnectedAt = lastDisconnectedAt;
         this.isConnected = isConnected;
         this.messageStock = messageStock;
     }
 
-    public static ParticipantInfo init(String memberId) {
+    public static ParticipantInfo init(Long memberId) {
         return ParticipantInfo.builder()
                 .memberId(memberId)
                 .lastDisconnectedAt(null)

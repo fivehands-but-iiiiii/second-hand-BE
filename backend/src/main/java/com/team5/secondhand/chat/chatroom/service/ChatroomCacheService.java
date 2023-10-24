@@ -27,7 +27,7 @@ public class ChatroomCacheService {
     private final ChatroomMetaRepository metaInfoRepository;
     private final ApplicationEventPublisher eventPublisher;
 
-    public void enterToChatRoom(String roomId, String memberId) {
+    public void enterToChatRoom(String roomId, Long memberId) {
         Chatroom chatroom = metaInfoRepository.findById(roomId).orElseThrow();
         chatroom.enter(memberId);
         metaInfoRepository.save(chatroom);
@@ -43,7 +43,7 @@ public class ChatroomCacheService {
     }
 
     @Transactional(readOnly = true)
-    public ChatLog getMessageInfo(String roomId, String memberId) {
+    public ChatLog getMessageInfo(String roomId, Long memberId) {
         Chatroom chatroom = metaInfoRepository.findById(roomId).orElseGet(() -> Chatroom.create(roomId, memberId));
         return ChatLog.of(chatroom, memberId);
     }

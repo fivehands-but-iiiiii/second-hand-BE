@@ -61,10 +61,10 @@ public class Chatroom extends BasedTimeEntity {
                 .build();
     }
 
-    public List<String> getChatroomMemberIds() {
+    public List<Long> getChatroomMemberIds() {
         Map<Long, Member> chatroomMembers = getChatroomMembers();
         return chatroomMembers.values().stream()
-                .map(Member::getMemberId)
+                .map(Member::getId)
                 .collect(Collectors.toList());
     }
 

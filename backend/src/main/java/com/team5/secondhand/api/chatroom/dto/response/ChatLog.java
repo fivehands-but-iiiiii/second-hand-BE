@@ -19,10 +19,10 @@ public class ChatLog {
         this.unReadCount = unReadCount;
     }
 
-    public static ChatLog of(Chatroom chatroom, String memberId) {
+    public static ChatLog of(Chatroom chatroom, Long memberId) {
         return ChatLog.builder()
                 .lastMessage(chatroom.getLastMessage())
-                .updateAt(chatroom.getUpdateAt())
+                .updateAt(Instant.parse(chatroom.getUpdateAt()))
                 .unReadCount(chatroom.getParticipants().getInfo().get(memberId).getMessageStock())
                 .build();
     }

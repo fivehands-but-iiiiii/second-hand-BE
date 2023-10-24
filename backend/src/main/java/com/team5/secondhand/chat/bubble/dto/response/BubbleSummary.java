@@ -9,13 +9,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BubbleSummary {
     private String id;
-    private String senderId;
+    private Long senderId;
     private String message;
     private Boolean isMine;
     private String createdAt;
 
     @Builder
-    private BubbleSummary(String id, String senderId, String contents, Boolean isMine, String createdAt) {
+    private BubbleSummary(String id, Long senderId, String contents, Boolean isMine, String createdAt) {
         this.id = id;
         this.senderId = senderId;
         this.message = contents;
