@@ -2,19 +2,19 @@ package com.team5.secondhand.chat.notification.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class SessionService {
     private final RedisTemplate<String, String> redisSessionTemplate;
     private final String MAIN_KEY = "sessionStore";
 
     @Transactional
-    public void saveSession(String sessionId, String memberId) {
+    public void saveSession(String sessionId, Long memberId) {
         redisSessionTemplate.opsForSet().add(MAIN_KEY, sessionId);
-        redisSessionTemplate.opsForValue().set(generateSessionKey(sessionId), memberId);
+        redisSessionTemplate.opsForValue().set(generateSessionKey(sessionId), String.valueOf(memberId));
     }
 
     public String getMemberIdBySessionId(String sessionId) {

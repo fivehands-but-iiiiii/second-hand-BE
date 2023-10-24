@@ -1,0 +1,6 @@
+spring:
+  profiles:
+    active: test
+    group:
+      test: [ test ] #test
+    include: [ common, aws, jwt, oauth ]

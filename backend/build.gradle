@@ -29,11 +29,13 @@ dependencies {
     implementation 'org.springframework:spring-messaging'
 //    implementation 'org.webjars:sockjs-client:1.5.1'
     implementation 'org.webjars:stomp-websocket:2.3.4'
+    implementation 'org.projectlombok:lombok:1.18.26'
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
     implementation 'com.amazonaws:aws-java-sdk-core:1.12.472'
     implementation 'com.amazonaws:aws-java-sdk-s3:1.12.470'
@@ -46,18 +48,17 @@ dependencies {
             "com.querydsl:querydsl-apt:5.0.0:jpa"
     )
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-    // 자바 역직렬화 문제 해결 패키지
+    //자바 역직렬화 문제 해결 패키지
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
-
-    // test ONLY
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    // FixtureMonkey
+    // fixture monkey
     testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.6.8")
-    testImplementation("com.navercorp.fixturemonkey:fixture-monkey-javax-validation:0.6.8")
-    // testcontainers
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
-    testImplementation 'org.testcontainers:junit-jupiter:1.17.6'
+    testImplementation('com.navercorp.fixturemonkey:fixture-monkey-javax-validation:0.5.2')
+    // test container
+    implementation platform('org.testcontainers:testcontainers-bom:1.19.1') //import bom
+    testImplementation "org.testcontainers:testcontainers:1.19.1"
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation('org.testcontainers:mysql') //no version specified
 }
 
 clean {
@@ -66,4 +67,10 @@ clean {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+task copyGitSubmodule(type: Copy) {
+    from './src/main/resources/secret'
+    include '*.yml'
+    into './src/main/resources'
 }

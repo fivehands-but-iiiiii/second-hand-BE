@@ -22,7 +22,7 @@ public class ChatNotification {
 
     public static ChatNotification of(ChatBubble message, Chatroom chatroom) {
         return new ChatNotification(
-                message.getRoomId(),
+                message.getChatroomId(),
                 message.getMessage(),
                 chatroom.getParticipants().getInfo().get(message.getReceiver()).getMessageStock()
         );

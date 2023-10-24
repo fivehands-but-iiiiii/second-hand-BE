@@ -1,6 +1,7 @@
 package com.team5.secondhand.chat.chatroom.domain;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,14 +14,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Participants implements Serializable {
-    private Map<String, ParticipantInfo> info = new ConcurrentHashMap<>();
+    private Map<Long, ParticipantInfo> info = new ConcurrentHashMap<>();
 
-    public Participants(Map<String, ParticipantInfo> info) {
+    @Builder
+    public Participants(Map<Long, ParticipantInfo> info) {
         this.info = info;
     }
 
-    public static Participants init(List<String> memberIds) {
-        Map<String, ParticipantInfo> info = new ConcurrentHashMap<>();
+    public static Participants init(List<Long> memberIds) {
+        Map<Long, ParticipantInfo> info = new ConcurrentHashMap<>();
         memberIds.forEach(e -> info.put(e, ParticipantInfo.init(e)));
 
         if (info.size() != memberIds.size()) {
@@ -29,7 +31,7 @@ public class Participants implements Serializable {
         return new Participants(info);
     }
 
-    public boolean enter(String memberId) {
+    public boolean enter(Long memberId) {
         ParticipantInfo participantInfo;
         if ((participantInfo = info.get(memberId))==null) {
             return false;
@@ -40,7 +42,7 @@ public class Participants implements Serializable {
         return true;
     }
 
-    public boolean getMessage(String receiver) {
+    public boolean getMessage(Long receiver) {
         ParticipantInfo member;
         if((member=info.get(receiver))==null) {
             return false;
@@ -49,7 +51,7 @@ public class Participants implements Serializable {
         return true;
     }
 
-    public boolean exit(String memberId) {
+    public boolean exit(Long memberId) {
         ParticipantInfo participantInfo;
         if ((participantInfo = info.get(memberId))==null) {
             return false;
@@ -60,7 +62,8 @@ public class Participants implements Serializable {
         return true;
     }
 
-    public boolean hasMember(String id) {
+    public boolean hasMember(long id) {
         return this.info.get(id).getIsConnected();
     }
+
 }
