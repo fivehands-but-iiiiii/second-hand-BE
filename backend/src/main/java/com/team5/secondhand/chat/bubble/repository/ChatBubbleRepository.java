@@ -1,6 +1,6 @@
 package com.team5.secondhand.chat.bubble.repository;
 
-import com.team5.secondhand.chat.bubble.domain.ChatBubble;
+import com.team5.secondhand.chat.bubble.repository.entity.BubbleEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 

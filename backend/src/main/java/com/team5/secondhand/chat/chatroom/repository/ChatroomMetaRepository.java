@@ -1,10 +1,13 @@
 package com.team5.secondhand.chat.chatroom.repository;
 
-import com.team5.secondhand.chat.chatroom.domain.Chatroom;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import com.team5.secondhand.chat.chatroom.repository.entity.ChatroomMetaInfoEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface ChatroomMetaRepository extends MongoRepository<Chatroom, String>, ChatroomMetainfoCustomRepository {
+import java.util.Optional;
 
+@Repository
+public interface  ChatroomMetaRepository extends JpaRepository<ChatroomMetaInfoEntity, Long> {
+
+    Optional<ChatroomMetaInfoEntity> findByChatroomId(String chatroomId);
 }
