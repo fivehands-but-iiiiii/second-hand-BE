@@ -1,4 +1,4 @@
-package com.team5.secondhand.chat.config;
+package com.team5.secondhand.global.config;
 
 import com.team5.secondhand.chat.chatroom.handler.StompErrorHandler;
 import com.team5.secondhand.chat.chatroom.handler.StompMessageProcessor;
@@ -15,7 +15,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSocketMessageBroker
-public class WebSocketMessageBroker implements WebSocketMessageBrokerConfigurer {
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final StompMessageProcessor stompMessageProcessor;
     private final StompErrorHandler stompErrorHandler;
 
