@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 public class ChatBubbleService {
 
     private final ChatConstProperties chatContext;
-
     private final RedisChatPublisher redisChatPublisher;
     private final ApplicationEventPublisher publisher;
 
