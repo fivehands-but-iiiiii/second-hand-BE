@@ -14,9 +14,10 @@ public class ItemDetailImage {
         this.url = url;
     }
 
-    public static ItemDetailImage create (String url) {
+    public static ItemDetailImage from(String url) {
         return ItemDetailImage.builder()
                 .url(url)
                 .build();
     }
+
 }

@@ -1,6 +1,7 @@
 package com.team5.secondhand.application.item.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.team5.secondhand.application.item.controller.v1.dto.request.ItemImage;
 import com.team5.secondhand.application.item.controller.v1.dto.request.ItemPostWithUrl;
 import com.team5.secondhand.application.member.domain.Member;
 import com.team5.secondhand.application.region.domain.Region;
@@ -11,10 +12,10 @@ import org.hibernate.annotations.SQLDelete;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
-@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE item SET is_deleted = true WHERE id = ?")
 @Access(AccessType.FIELD)
@@ -87,14 +88,14 @@ public class Item extends UpdatedTimeEntity {
         this.category = itemPost.getCategory();
         this.price = itemPost.getPrice();
         this.thumbnailUrl = thumbanilUrl;
-        this.contents = contents.update(itemPost.getContents(), itemPost.getImages());
+        this.contents = contents.update(itemPost.getContents(), itemPost.getImages().stream().map(ItemImage::toEntity).collect(Collectors.toList()));
 
         return this;
     }
 
     @JsonIgnore
     public ItemDetailImage getFirstDetailImage() {
-        return contents.getFirstDetailImage();
+        return contents.getFirstImage();
     }
 
     public Item sellerInfo(Member member, Region region) {

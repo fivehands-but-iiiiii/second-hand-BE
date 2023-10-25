@@ -33,7 +33,7 @@ public class ItemPost {
                 .category(category)
                 .status(Status.ON_SALE)
                 .count(ItemCounts.createRelated())
-                .contents(ItemContents.createdRelated(contents, images))
+                .contents(ItemContents.of(contents, images))
                 .isDeleted(false)
                 .build();
     }

@@ -38,7 +38,7 @@ public class ItemContents {
         this.isDeleted = isDeleted;
     }
 
-    public static ItemContents createdRelated(String contents, List<ItemDetailImage> images) {
+    public static ItemContents of(String contents, List<ItemDetailImage> images) {
         return ItemContents.builder()
                 .contents(contents)
                 .detailImageUrl(images)
@@ -46,14 +46,13 @@ public class ItemContents {
                 .build();
     }
 
-    public ItemContents update(String contents, List<ItemImage> itemImages) {
+    public ItemContents update(String contents, List<ItemDetailImage> itemImages) {
         this.contents = contents;
-        this.detailImageUrl = itemImages.stream().map(ItemImage::toEntity).collect(Collectors.toList());
-
+        this.detailImageUrl = itemImages;
         return this;
     }
 
-    public ItemDetailImage getFirstDetailImage() {
+    public ItemDetailImage getFirstImage() {
         return detailImageUrl.get(0);
     }
 }

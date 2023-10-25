@@ -116,7 +116,7 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
 
         for (MultipartFile multipartFile : request) {
             ImageInfo imageInfo = uploadItemDetailImage(multipartFile);
-            images.add(ItemDetailImage.create(imageInfo.getImageUrl()));
+            images.add(ItemDetailImage.from(imageInfo.getImageUrl()));
         }
 
         return images;
