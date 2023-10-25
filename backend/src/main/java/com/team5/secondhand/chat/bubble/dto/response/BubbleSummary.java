@@ -7,15 +7,15 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BubbleSummary {
     private String id;
-    private String senderId;
+    private String sender;
     private String message;
     private Boolean isMine;
     private String createdAt;
 
     @Builder
-    private BubbleSummary(String id, String senderId, String contents, Boolean isMine, String createdAt) {
+    private BubbleSummary(String id, String sender, String contents, Boolean isMine, String createdAt) {
         this.id = id;
-        this.senderId = senderId;
+        this.sender = sender;
         this.message = contents;
         this.isMine = isMine;
         this.createdAt = createdAt;
@@ -24,7 +24,7 @@ public class BubbleSummary {
     public static BubbleSummary from(ChatBubble bubble, String memberId) {
         return BubbleSummary.builder()
                 .id(bubble.getId().toString())
-                .senderId(bubble.getSender())
+                .sender(bubble.getSender())
                 .contents(bubble.getMessage())
                 .isMine(bubble.isSender(memberId))
                 .createdAt(bubble.getCreatedAt())
