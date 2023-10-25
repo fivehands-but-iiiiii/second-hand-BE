@@ -1,0 +1,8 @@
+server:
+  address:
+    domain: "http://fivehands-but-iiiiii.site"
+    was2: "3.38.162.177"
+const:
+  chat:
+    bucket: "chatroom:"
+    page-size: 25
