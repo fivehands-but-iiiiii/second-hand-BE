@@ -2,8 +2,9 @@ spring:
   profiles:
     active: local
     group:
-      local: [ db-local, local ] # localhost
+      local: [ local ] # localhost
       prod: [ prod ] # production
+      test: [ test ] #test
     include: [ common, aws, jwt, oauth ]
   servlet:
     multipart:
