@@ -27,35 +27,18 @@ public class ChatBubbleService {
 
     @Transactional(readOnly = true)
     public Slice<ChatBubble> getChatBubbles(int page, String roomId) {
-//        ListOperations<String, ChatBubble> listOperations = redisChatBubbleTemplate.opsForList();
         String key = generateChatLogKey(roomId);
         Pageable pageable = PageRequest.of(page, chatLoadSize, Sort.by("createdAt").ascending());
         Slice<ChatBubble> list = chatBubbleRepository.findAllByRoomId(roomId, pageable);
         ChatBubble last = chatBubbleRepository.findFirstByOrderByIdDesc();
 
-//        return new SliceImpl<>(list, pageable, list.contains(last));
         return list;
     }
 
-//    private long getStartIndex(int page) {
-//        return (-1L * chatLoadSize * page) - 1;
-//    }
-//
-//    private Slice<ChatBubble> getSlice(List<ChatBubble> messages, Pageable pageable) {
-//        boolean hasNext = false;
-//
-//        if (messages.size() > pageable.getPageSize()) {
-//            hasNext = true;
-//            messages.remove(pageable.getPageSize());
-//        }
-//
-//        return new SliceImpl<>(messages, pageable, hasNext);
-//    }
 
     @Transactional
     public void saveChatBubble(ChatBubble chatBubble) {
         String key = generateChatLogKey(chatBubble.getRoomId());
-//        redisChatBubbleTemplate.opsForList().rightPush(key, chatBubble); // 캐시 저장
         ChatBubble save = chatBubbleRepository.save(chatBubble);
     }
 
