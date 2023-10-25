@@ -1,17 +1,17 @@
 package com.team5.secondhand.chat.chatroom.service;
 
-import com.team5.secondhand.api.chatroom.dto.ChatroomInfo;
-import com.team5.secondhand.api.chatroom.dto.response.ChatLog;
-import com.team5.secondhand.api.chatroom.dto.response.ChatroomSummary;
-import com.team5.secondhand.api.chatroom.exception.NotChatroomMemberException;
+import com.team5.secondhand.application.chatroom.dto.ChatroomInfo;
+import com.team5.secondhand.application.chatroom.dto.response.ChatLog;
+import com.team5.secondhand.application.chatroom.dto.response.ChatroomSummary;
+import com.team5.secondhand.application.chatroom.exception.NotChatroomMemberException;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.chat.chatroom.domain.Chatroom;
 import com.team5.secondhand.chat.chatroom.repository.ChatroomMetaCache;
 import com.team5.secondhand.chat.chatroom.repository.ChatroomMetaRepository;
 import com.team5.secondhand.chat.chatroom.repository.entity.ChatroomMetaInfoEntity;
-import com.team5.secondhand.global.event.chatbubble.ChatBubbleArrivedEvent;
-import com.team5.secondhand.global.event.chatbubble.ChatNotificationEvent;
-import com.team5.secondhand.global.event.chatroom.ChatroomCreatedEvent;
+import com.team5.secondhand.chat.bubble.event.ChatBubbleArrivedEvent;
+import com.team5.secondhand.chat.bubble.event.ChatNotificationEvent;
+import com.team5.secondhand.chat.chatroom.event.ChatroomCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;

@@ -1,6 +1,6 @@
 package com.team5.secondhand.chat.chatroom.domain;
 
-import com.team5.secondhand.api.chatroom.dto.ChatroomInfo;
+import com.team5.secondhand.application.chatroom.dto.ChatroomInfo;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import lombok.Builder;
 import lombok.Getter;

@@ -1,6 +1,6 @@
 package com.team5.secondhand.global.auth.interceptor;
 
-import com.team5.secondhand.api.member.dto.response.MemberDetails;
+import com.team5.secondhand.application.member.dto.response.MemberDetails;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.security.sasl.AuthenticationException;
