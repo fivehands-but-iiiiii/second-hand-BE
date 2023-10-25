@@ -2,10 +2,10 @@ spring:
   profiles:
     active: prod
     group:
-      local: [ db-local, local ] # localhost
+      local: [ local ] # localhost
       prod: [ prod ] # production
-#      dev: [ dev ] #test
-    include: [ aws, jwt, oauth ]
+      test: [ test ]
+    include: [ aws, jwt, oauth, common ]
   servlet:
     multipart:
       max-file-size: 50MB
@@ -16,11 +16,3 @@ spring:
         jdbc:
         default_batch_fetch_size: 100
     open-in-view: false
-server:
-  address:
-    domain: "http://fivehands-but-iiiiii.site"
-    was2: "3.38.162.177"
-const:
-  chat:
-    bucket: "chatroom:"
-    page-size: 25
