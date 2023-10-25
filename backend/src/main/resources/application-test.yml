@@ -1,0 +1,22 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    database: mysql   # 추가 해준 부분
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect # 추가 해준 부분
+  datasource:
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:mysql:8.0.22:///secondhand-db #?TC_INITSCRIPT=src/main/resources/db/schema.sql
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600
+      cache-null-values: true
+      host: localhost
+      port: 6379
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/secondhand-db
+      username: root
+      password: 1234
