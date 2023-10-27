@@ -30,8 +30,9 @@ public class JwtUtils {
 
     //TODO: refresh token 생성
 
-    public Claims getClaim(String token) throws JwtException {
+    public Claims getClaim(String headValue) throws JwtException {
         try {
+            String token = getToken(headValue);
             return Jwts.parser().setSigningKey(jwtProperties.getSecretKey()).parseClaimsJws(token).getBody();
         } catch (MalformedJwtException e) {
             log.error("Invalid JWT token", e);
@@ -46,5 +47,9 @@ public class JwtUtils {
             log.error("JWT claims string is empty.", e);
             throw new JwtException("빈 토큰입니다");
         }
+    }
+
+    private String getToken(String headValue) {
+        return headValue.split(" ")[1];
     }
 }

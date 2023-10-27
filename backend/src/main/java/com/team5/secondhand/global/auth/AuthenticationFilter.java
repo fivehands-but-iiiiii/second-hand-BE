@@ -34,17 +34,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
         MemberDetails loginMember = MemberDetails.empty();
         if (headValue != null && headValue.startsWith(jwtProperties.getTokenType())) {
-            String token = getToken(headValue);
-            Claims claim = jwtUtils.getClaim(token);
+            Claims claim = jwtUtils.getClaim(headValue);
             loginMember = objectMapper.readValue((String) claim.get(jwtProperties.getClaimKey()), MemberDetails.class);
         }
         context.storeLoginMember(loginMember);
 
         chain.doFilter(request, response);
     }
-
-    private String getToken(String headValue) {
-        return headValue.split(" ")[1];
-    }
-
 }
