@@ -21,6 +21,7 @@ import com.team5.secondhand.application.region.service.GetValidRegionsUsecase;
 import com.team5.secondhand.api.image.dto.response.ProfileImageInfo;
 import com.team5.secondhand.api.image.exception.ImageHostException;
 import com.team5.secondhand.api.image.service.usecase.ProfileUpload;
+import com.team5.secondhand.global.auth.Login;
 import com.team5.secondhand.global.dto.GenericResponse;
 import com.team5.secondhand.global.jwt.service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -112,7 +113,7 @@ public class MemberController {
             description = "사용자는 자신의 프로필 사진을 변경할 수 있다."
     )
     @PatchMapping(value = "/members/image", consumes = {"multipart/form-data"})
-    public GenericResponse<ProfileImageInfo> setMemberProfile(@RequestAttribute MemberDetails member,
+    public GenericResponse<ProfileImageInfo> setMemberProfile(@Login MemberDetails member,
                                                               @ModelAttribute MemberProfileImageUpdate profile) throws ImageHostException {
         ProfileImageInfo profileImageInfo = profileUpload.uploadMemberProfileImage(profile.getProfileImage());
         profileImageInfo.owned(member.getId());
