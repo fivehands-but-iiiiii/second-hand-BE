@@ -54,8 +54,65 @@ src
 //TODO 듀이
 
 ---
-## API 엔드포인트 목록 및 사용법
-//TODO 새힘
+## API 엔드포인트 목록
+- 자세한 내용은 문서를 참고하세요. [링크](https://documenter.getpostman.com/view/27928775/2s9Y5Wy4Jc)
+
+### 계정 및 인증 (Authentication and Account)**
+| 설명                                     | HTTP 메서드 | 엔드포인트                    |
+|------------------------------------------|-------------|------------------------------|
+| 사용자는 로그아웃 할 수 있다.             | GET         | /logout                      |
+| 사용자는 OAuth를 통해 로그인 할 수 있다.  | GET         | /git/login?code={string}&env={LOCAL | PROD} |
+| 사용자는 회원가입을 할 수 있다 (Github/일반 가입). | POST | /join |
+| 사용자는 아이디 중복확인을 할 수 있다.     | GET         | /join/availability?memberId={memberId} |
+| 사용자는 로그인을 할 수 있다.             | POST        | /login                       |
+| 사용자는 프로필 사진을 설정할 수 있다.    | PATCH       | /members/image               |
+
+
+### 상품 관리 (Item Management)
+| 설명                                       | HTTP 메서드 | 엔드포인트                             |
+|--------------------------------------------|-------------|---------------------------------------|
+| 사용자는 새로운 상품을 등록할 수 있다.    | POST        | /items                               |
+| 판매자는 상품 정보를 수정할 수 있다.     | PUT         | /items/{id}                          |
+| 사용자는 상품의 상세 정보를 볼 수 있다.  | GET         | /items/{id}                          |
+| 판매자는 판매중인 판매 상품 목록에서 글을 삭제할 수 있다. | DELETE | /items/{id}                          |
+| 판매자는 상품 판매 상태만 별도로 수정할 수 있다. | PATCH | /items/{id}/status                  |
+| 사용자는 자신의 동네의 상품 목록을 볼 수 있다. | GET | /items?page={number}&region={id}    |
+| 사용자는 자신의 동네의 상품 목록을 특정 카테고리별로 볼 수 있다. | GET | /items?page={number}&region={id}&category={id} |
+| 사용자는 자신의 동네의 판매중인 카테고리 목록을 볼 수 있다. | GET | /items/categories?regionId={id}   |
+| 사용자는 상품 이미지를 첨부할 수 있다.    | POST        | /items/image                         |
+| 사용자는 자신이 판매완료한 상품 목록을 볼 수 있다. | GET | /items/mine?page={number}&isSales={boolean} |
+| 사용자는 자신이 판매중인 상품 목록을 볼 수 있다. | GET | /items/mine?page={number}&isSales={boolean} |
+
+
+### 채팅 (Chat)
+| 설명                                       | HTTP 메서드 | 엔드포인트                            |
+|--------------------------------------------|-------------|--------------------------------------|
+| 구매자는 판매자에게 판매상품에 대한 채팅을 생성할 수 있다. | POST | /chats                           |
+| 사용자는 나의 채팅 내역을 모두 볼 수 있다. | GET | /chats?page={number}&itemId={number} |
+| 사용자는 아이템 상세보기에서 채팅방에 입장할 수 있다. | GET | /chats/items/{itemId}             |
+| 사용자는 나의 채팅 내역의 알림을 받을 수 있다. | GET | /chats/subscribe                   |
+| 사용자는 채팅방에서 나갈 수 있다 (삭제). | DELETE | /chats/{chatId}                  |
+| 사용자는 대화하던 채팅방에 다시 입장할 수 있다. | GET | /chats/{chatId}                   |
+| 사용자는 아이템에 대한 이전 채팅 로그를 알 수 있다. | GET | /chats/{chatId}/logs?page={number} |
+
+
+### 상품 관심 등록 (Wishlist)
+| 설명                                       | HTTP 메서드 | 엔드포인트                             |
+|--------------------------------------------|-------------|---------------------------------------|
+| 사용자는 관심상품으로 등록한 글의 목록 전체를 볼 수 있다. | GET | /wishlist?page={number} |
+| 사용자는 관심상품으로 등록한 글의 목록을 카테고리별로 볼 수 있다. | GET | /wishlist?page={number}&category={id} |
+| 사용자는 관심상품으로 등록한 아이템의 카테고리 목록을 볼 수 있다. | GET | /wishlist/categories |
+| 사용자는 상품을 관심상품으로 등록할 수 있다 (좋아요 누르기). | POST | /wishlist/like |
+| 사용자는 관심상품을 관심상품 목록에서 삭제할 수 있다 (좋아요 해제). | DELETE | /wishlist/like?itemId={number} |
+
+
+### 리소스 및 기타 (Resources and Miscellaneous)
+| 설명                                       | HTTP 메서드 | 엔드포인트                             |
+|--------------------------------------------|-------------|---------------------------------------|
+| 사용자는 동네 명단을 볼 수 있다. | GET | /regions?address={string} |
+| 초기 데이터를 받을 수 있다. | GET | /resources?tag={??} |
+| 사용자는 카테고리 리소스 정보를 받을 수 있다. | GET | /resources/categories |
+  
 
 ---
 ## 주요 기능
