@@ -16,6 +16,7 @@ import com.team5.secondhand.application.item.domain.Item;
 import com.team5.secondhand.application.item.domain.ItemDetailImage;
 import com.team5.secondhand.api.image.domain.Directory;
 import com.team5.secondhand.api.image.domain.Type;
+import com.team5.secondhand.global.properties.AwsProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,11 +33,10 @@ import static com.amazonaws.services.s3.internal.Constants.MB;
 @RequiredArgsConstructor
 public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, ItemThumbnailImageUpload {
 
-    @Value("${aws.s3.bucket}")
-    private String bucket;
+    private final AwsProperties properties;
     private final AmazonS3 amazonS3;
 
-    public String generateKey(String originFileKey, String prefix) {
+    private String generateKey(String originFileKey, String prefix) {
         return String.format("%s%s-%s", prefix, UUID.randomUUID(), originFileKey);
     }
 
@@ -54,9 +54,9 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentLength(file.getSize());
         objectMetadata.setContentType(file.getContentType());
-        amazonS3.putObject(new PutObjectRequest(bucket, newFileKey, file.getInputStream(), objectMetadata));
+        amazonS3.putObject(new PutObjectRequest(properties.getBucket(), newFileKey, file.getInputStream(), objectMetadata));
 
-        return amazonS3.getUrl(bucket, newFileKey).toString();
+        return amazonS3.getUrl(properties.getBucket(), newFileKey).toString();
     }
 
     @Override
@@ -92,8 +92,8 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
         String key = getKey(url);
         String newKey = key.replace(Directory.ITEM_DETAIL.getPrefix(), Directory.ITEM_THUMBNAIL_ORIGIN.getPrefix());
         try {
-            amazonS3.copyObject(bucket, key, bucket, newKey);
-            return amazonS3.getUrl(bucket, newKey).toString().replace("/origin", "");
+            amazonS3.copyObject(properties.getBucket(), key, properties.getBucket(), newKey);
+            return amazonS3.getUrl(properties.getBucket(), newKey).toString().replace("/origin", "");
         } catch (AmazonS3Exception e) {
             return url;
         }
