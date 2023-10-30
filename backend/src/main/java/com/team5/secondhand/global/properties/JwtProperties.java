@@ -1,4 +1,4 @@
-package com.team5.secondhand.global.jwt.util;
+package com.team5.secondhand.global.properties;
 
 import lombok.Getter;
 import lombok.Setter;
