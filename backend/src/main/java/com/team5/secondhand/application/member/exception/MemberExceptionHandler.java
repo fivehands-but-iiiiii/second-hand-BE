@@ -1,8 +1,8 @@
 package com.team5.secondhand.application.member.exception;
 
 import com.team5.secondhand.application.oauth.dto.UserProfile;
-import com.team5.secondhand.global.dto.ErrorResponse;
-import com.team5.secondhand.global.dto.ErrorResponseWithBody;
+import com.team5.secondhand.global.model.ErrorResponse;
+import com.team5.secondhand.global.model.ErrorResponseWithBody;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;

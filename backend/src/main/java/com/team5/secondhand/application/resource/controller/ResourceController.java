@@ -2,7 +2,7 @@ package com.team5.secondhand.application.resource.controller;
 
 import com.team5.secondhand.application.resource.dto.response.CategoryList;
 import com.team5.secondhand.application.resource.service.ResourceService;
-import com.team5.secondhand.global.dto.GenericResponse;
+import com.team5.secondhand.global.model.GenericResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

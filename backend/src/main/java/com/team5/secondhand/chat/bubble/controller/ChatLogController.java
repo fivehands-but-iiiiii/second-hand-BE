@@ -5,7 +5,7 @@ import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import com.team5.secondhand.chat.bubble.dto.response.ChatroomLog;
 import com.team5.secondhand.chat.bubble.service.ChatBubbleService;
 import com.team5.secondhand.global.auth.Login;
-import com.team5.secondhand.global.dto.GenericResponse;
+import com.team5.secondhand.global.model.GenericResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;

@@ -1,6 +1,6 @@
 package com.team5.secondhand.application.region.exception;
 
-import com.team5.secondhand.global.dto.ErrorResponse;
+import com.team5.secondhand.global.model.ErrorResponse;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
