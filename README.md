@@ -57,18 +57,21 @@ src
 ## API 엔드포인트 목록
 - 자세한 내용은 문서를 참고하세요. [링크](https://documenter.getpostman.com/view/27928775/2s9Y5Wy4Jc)
 
-### 계정 및 인증 (Authentication and Account)**
+<details><summary>계정 및 인증 (Authentication and Account)</summary>
+ 
 | 설명                                     | HTTP 메서드 | 엔드포인트                    |
 |------------------------------------------|-------------|------------------------------|
 | 사용자는 로그아웃 할 수 있다.             | GET         | /logout                      |
-| 사용자는 OAuth를 통해 로그인 할 수 있다.  | GET         | /git/login?code={string}&env={LOCAL | PROD} |
+| 사용자는 OAuth를 통해 로그인 할 수 있다.  | GET         | /git/login?code={string}&env={PROD} |
 | 사용자는 회원가입을 할 수 있다 (Github/일반 가입). | POST | /join |
 | 사용자는 아이디 중복확인을 할 수 있다.     | GET         | /join/availability?memberId={memberId} |
 | 사용자는 로그인을 할 수 있다.             | POST        | /login                       |
 | 사용자는 프로필 사진을 설정할 수 있다.    | PATCH       | /members/image               |
 
+</details>
 
-### 상품 관리 (Item Management)
+<details><summary>상품 관리 (Item Management)</summary>
+
 | 설명                                       | HTTP 메서드 | 엔드포인트                             |
 |--------------------------------------------|-------------|---------------------------------------|
 | 사용자는 새로운 상품을 등록할 수 있다.    | POST        | /items                               |
@@ -83,8 +86,10 @@ src
 | 사용자는 자신이 판매완료한 상품 목록을 볼 수 있다. | GET | /items/mine?page={number}&isSales={boolean} |
 | 사용자는 자신이 판매중인 상품 목록을 볼 수 있다. | GET | /items/mine?page={number}&isSales={boolean} |
 
+</details>
 
-### 채팅 (Chat)
+<details><summary>채팅 (Chat)</summary>
+
 | 설명                                       | HTTP 메서드 | 엔드포인트                            |
 |--------------------------------------------|-------------|--------------------------------------|
 | 구매자는 판매자에게 판매상품에 대한 채팅을 생성할 수 있다. | POST | /chats                           |
@@ -95,8 +100,11 @@ src
 | 사용자는 대화하던 채팅방에 다시 입장할 수 있다. | GET | /chats/{chatId}                   |
 | 사용자는 아이템에 대한 이전 채팅 로그를 알 수 있다. | GET | /chats/{chatId}/logs?page={number} |
 
+</details>
 
-### 상품 관심 등록 (Wishlist)
+
+<details><summary>상품 관심 등록 (Wishlist)</summary>
+
 | 설명                                       | HTTP 메서드 | 엔드포인트                             |
 |--------------------------------------------|-------------|---------------------------------------|
 | 사용자는 관심상품으로 등록한 글의 목록 전체를 볼 수 있다. | GET | /wishlist?page={number} |
@@ -105,21 +113,62 @@ src
 | 사용자는 상품을 관심상품으로 등록할 수 있다 (좋아요 누르기). | POST | /wishlist/like |
 | 사용자는 관심상품을 관심상품 목록에서 삭제할 수 있다 (좋아요 해제). | DELETE | /wishlist/like?itemId={number} |
 
+</details>
 
-### 리소스 및 기타 (Resources and Miscellaneous)
+
+<details><summary>리소스 및 기타 (Resources and etc...)</summary>
+
 | 설명                                       | HTTP 메서드 | 엔드포인트                             |
 |--------------------------------------------|-------------|---------------------------------------|
 | 사용자는 동네 명단을 볼 수 있다. | GET | /regions?address={string} |
-| 초기 데이터를 받을 수 있다. | GET | /resources?tag={??} |
+| 초기 데이터를 받을 수 있다. | GET | /resources |
 | 사용자는 카테고리 리소스 정보를 받을 수 있다. | GET | /resources/categories |
-  
+
+ </details>
 
 ---
 ## 주요 기능
-### 기능1. 회원가입/로그인
-- 내용 : oauth, 중간에 세션에 저장하여 기본 지역을 입력받은 후 회원가입이 완료되는 로직
-// 다이어그램
-// 기능 설명 조금 (2~3줄)
+### 기능1. OAuth2.0을 적용한 회원가입 및 회원 인증 절차
+- OAuth 서버 인증 후, 회원에게 필수적인 지역 정보를 추가로 받아야 회원가입이 완료되며 데이터베이스에 저장되는 형태입니다.
+- 유효시간 30분 이후에 추가 정보 입력을 마칠 경우, 예외가 발생하여 처음부터 다시 가입 절차를 거쳐야 합니다.
+
+#### OAuth 회원가입 및 로그인 Sequence Diagram
+```mermaid
+sequenceDiagram
+    participant User as 사용자
+    participant Client as Web server
+    participant Server as WAS
+    participant OAuthServer as OAuth 서버
+
+    User ->> Client: 인증 요청
+    Client ->> User: 리다이렉트 URL 생성
+    User -->> Client: 사용자 리다이렉션
+    Client ->> OAuthServer: 사용자 인증 및 권한 부여 요청
+    OAuthServer -->> Client: 사용자 인증 및 권한 부여 확인
+    Client ->> Server: 회원가입 요청
+    activate Server
+    Server ->> OAuthServer: 회원 정보 요청
+    OAuthServer -->> Server: 회원 정보 반환
+    Server -->> Server: Server Session에 회원 정보 임시 저장
+    Server -->> Client: 추가 지역 정보 필요 요청
+    deactivate Server
+    Client ->> User: 지역 정보 입력 폼 표시
+    User -->> Client: 지역 정보 제출
+    Client ->> Server: 지역 정보와 SID 전달
+    activate Server
+    Server -->> Server: 회원가입 로직 처리
+    Server -->> Client: 회원가입 완료 응답
+    deactivate Server
+    Client -->> User: 로그인 페이지로 리다이렉션
+    User ->> Client: 로그인 요청
+    Client ->> Server: 로그인 요청
+    activate Server
+    Server -->> Server: Jwt 토큰 발급
+    Server -->> Client: 로그인 완료 및 토큰 응답
+    deactivate Server
+    Client -->> User: 로그인 완료 및 토큰 응답
+```
+
 
 ### 기능2. 실시간 채팅 및 알람 구조
 // 다이어그램
