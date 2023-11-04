@@ -1,6 +1,6 @@
 package com.team5.secondhand.application.item.exception;
 
-import com.team5.secondhand.global.dto.ErrorResponse;
+import com.team5.secondhand.global.model.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;

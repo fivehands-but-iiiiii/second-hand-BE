@@ -25,7 +25,7 @@ import com.team5.secondhand.application.region.exception.NotValidRegionException
 import com.team5.secondhand.application.region.service.GetValidRegionsUsecase;
 import com.team5.secondhand.application.wishlist.service.WishlistService;
 import com.team5.secondhand.global.auth.Login;
-import com.team5.secondhand.global.dto.GenericResponse;
+import com.team5.secondhand.global.model.GenericResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

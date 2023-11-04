@@ -1,4 +1,4 @@
-package com.team5.secondhand.application.chatroom.service;
+package com.team5.secondhand.application.chatroom.controller;
 
 import com.team5.secondhand.application.chatroom.domian.Chatroom;
 import com.team5.secondhand.application.chatroom.dto.request.ChatItem;
@@ -7,6 +7,7 @@ import com.team5.secondhand.application.chatroom.dto.response.ChatroomList;
 import com.team5.secondhand.application.chatroom.exception.BuyerException;
 import com.team5.secondhand.application.chatroom.exception.ExistChatRoomException;
 import com.team5.secondhand.application.chatroom.exception.NotChatroomMemberException;
+import com.team5.secondhand.application.chatroom.service.ChatroomService;
 import com.team5.secondhand.application.item.domain.Item;
 import com.team5.secondhand.application.item.exception.ExistItemException;
 import com.team5.secondhand.application.item.service.ItemReadService;

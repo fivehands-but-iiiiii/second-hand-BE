@@ -2,7 +2,7 @@ package com.team5.secondhand.application.region.controller;
 
 import com.team5.secondhand.application.region.dto.RegionSummary;
 import com.team5.secondhand.application.region.service.RegionService;
-import com.team5.secondhand.global.dto.GenericResponse;
+import com.team5.secondhand.global.model.GenericResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

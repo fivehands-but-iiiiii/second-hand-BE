@@ -1,6 +1,6 @@
 package com.team5.secondhand.global.exception;
 
-import com.team5.secondhand.global.dto.ErrorResponse;
+import com.team5.secondhand.global.model.ErrorResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
