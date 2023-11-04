@@ -102,6 +102,16 @@ src
 
 </details>
 
+<details><summary>실시간 채팅 (Live Chat)</summary>
+
+- 웹소켓 프로토콜입니다.
+| 설명                                        | 엔드포인트                            |
+|--------------------------------------------|-------------|--------------------------------------|
+| 사용자는 채팅 소켓을 연결할 수 있다. | /chat                          |
+| 사용자는 채팅방에 입장할 수 있다. (subscribe) | /sub/{chatroomId} |
+| 사용자는 채팅방에 메시지를 보낼 수 있다. (publish) | /pub/message             |
+ 
+</details>
 
 <details><summary>상품 관심 등록 (Wishlist)</summary>
 
