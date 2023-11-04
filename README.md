@@ -169,6 +169,34 @@ sequenceDiagram
     Client -->> User: 로그인 완료 및 토큰 응답
 ```
 
+#### 사용자 권한이 필요한 요청을 했을 때 Sequence Diagram
+```mermaid
+sequenceDiagram
+    participant Client as 클라이언트
+    participant Filter as Servlet Filter
+    participant Jwt as JwtUtil
+    participant Context as Authorization Context
+    participant Controller as Controller
+    participant Service as Service
+
+    Client ->> Filter: 보호된 페이지 요청
+    Filter ->> Jwt: Authorization 헤더에서 토큰 추출
+    activate Jwt
+    Jwt -->> Jwt: 토큰 유효성 검증
+    Jwt -->> Jwt: 클레임 추출
+    Jwt -->> Filter: 클레임 전달
+    deactivate Jwt
+    Filter ->> Context: 클레임 저장
+    Context -->> Controller: 사용자 정보 및 권한 추출
+    Controller ->> Service: 요청 전달
+    activate Service
+    Service -->> Controller: 응답 반환
+    deactivate Service
+    Controller -->> Filter: 응답 반환
+    Filter -->> Client: 응답 반환
+```
+
+---
 
 ### 기능2. 실시간 채팅 및 알람 구조
 // 다이어그램
