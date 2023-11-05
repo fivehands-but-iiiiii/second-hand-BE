@@ -1,4 +1,4 @@
-package com.team5.secondhand.chat.chatroom.config;
+package com.team5.secondhand.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;

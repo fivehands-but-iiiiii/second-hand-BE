@@ -23,7 +23,7 @@ import com.team5.secondhand.api.image.exception.ImageHostException;
 import com.team5.secondhand.api.image.service.usecase.ProfileUpload;
 import com.team5.secondhand.global.auth.Login;
 import com.team5.secondhand.global.model.GenericResponse;
-import com.team5.secondhand.global.jwt.service.JwtService;
+import com.team5.secondhand.global.auth.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
