@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Getter @Setter
 @Component
-@ConfigurationProperties(prefix = "const.chat")
-public class ChatProperties {
+@ConfigurationProperties(prefix = "const.bubble")
+public class ChatBubbleProperties {
     private String bucket;
     private int pageSize;
 }
