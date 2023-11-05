@@ -12,4 +12,8 @@ import org.springframework.stereotype.Component;
 public class AwsProperties {
 
     private String bucket;
+    private long maxSize;
+    private int minFileCount;
+    private int maxFileCount;
+
 }
