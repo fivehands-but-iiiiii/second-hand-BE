@@ -12,13 +12,12 @@ import com.team5.secondhand.api.image.exception.TooLargeImageException;
 import com.team5.secondhand.api.image.service.usecase.ItemDetailImageUpload;
 import com.team5.secondhand.api.image.service.usecase.ItemThumbnailImageUpload;
 import com.team5.secondhand.api.image.service.usecase.ProfileUpload;
-import com.team5.secondhand.application.item.domain.Item;
 import com.team5.secondhand.application.item.domain.ItemDetailImage;
 import com.team5.secondhand.api.image.domain.Directory;
 import com.team5.secondhand.api.image.domain.Type;
 import com.team5.secondhand.global.properties.AwsProperties;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +28,7 @@ import java.util.UUID;
 
 import static com.amazonaws.services.s3.internal.Constants.MB;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, ItemThumbnailImageUpload {
@@ -36,26 +36,14 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
     private final AwsProperties properties;
     private final AmazonS3 amazonS3;
 
-    private String generateKey(String originFileKey, String prefix) {
-        return String.format("%s%s-%s", prefix, UUID.randomUUID(), originFileKey);
-    }
-
     public String upload(MultipartFile file, Directory directory) throws IOException, TooLargeImageException, NotValidImageTypeException {
-
-        if (file.getSize() > (30*MB)) {
-            throw new TooLargeImageException("사진 용량이 30MB를 초과해 업로드에 실패하였습니다.");
-        }
-
-        if (Type.isValidType(file.getName())) {
-            throw new NotValidImageTypeException("잘못된 확장자입니다.");
-        }
+        log.debug("Thread start: {}", Thread.currentThread().getName());
+        checkFileSize(file);
+        checkFileType(file);
 
         String newFileKey = generateKey(file.getOriginalFilename(), directory.getPrefix());
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentLength(file.getSize());
-        objectMetadata.setContentType(file.getContentType());
-        amazonS3.putObject(new PutObjectRequest(properties.getBucket(), newFileKey, file.getInputStream(), objectMetadata));
-
+        amazonS3.putObject(new PutObjectRequest(properties.getBucket(), newFileKey, file.getInputStream(), getMetadata(file)));
+        log.debug("Thread end: {}", Thread.currentThread().getName());
         return amazonS3.getUrl(properties.getBucket(), newFileKey).toString();
     }
 
@@ -87,30 +75,19 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
     }
 
     @Override
-    public String uploadItemThumbnailImage(Item item) throws ImageHostException {
-        String url = item.getFirstDetailImage().getUrl();
-        String key = getKey(url);
-        String newKey = key.replace(Directory.ITEM_DETAIL.getPrefix(), Directory.ITEM_THUMBNAIL_ORIGIN.getPrefix());
+    public String uploadItemThumbnailImage(MultipartFile file) throws ImageHostException {
+        String url = "";
         try {
-            amazonS3.copyObject(properties.getBucket(), key, properties.getBucket(), newKey);
-            return amazonS3.getUrl(properties.getBucket(), newKey).toString().replace("/origin", "");
-        } catch (AmazonS3Exception e) {
-            return url;
-        }
-    }
-
-    private String getKey(String url) {
-        if (url.contains(Directory.ITEM_DETAIL.getPrefix())) {
-            return url.split("amazonaws.com/")[1];
+            url = upload(file, Directory.ITEM_THUMBNAIL_ORIGIN);
+        } catch (AmazonS3Exception | IOException e) {
+            throw new ImageHostException("물품 썸네일 업로드에 실패하였습니다.");
         }
         return url;
     }
 
     @Override
     public List<ItemDetailImage> uploadItemDetailImages(List<MultipartFile> request) throws ImageHostException {
-        if (request.size() < 1 || request.size() > 10) {
-            throw new ImageHostException("이미지 첨부는 1개 이상 10개 이하로 해야합니다.");
-        }
+        checkFilesSize(request);
 
         List<ItemDetailImage> images = new ArrayList<>();
 
@@ -120,5 +97,41 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
         }
 
         return images;
+    }
+
+    private void checkFilesSize(List<MultipartFile> files) throws ImageHostException {
+        if (files.size() < properties.getMinFileCount() || files.size() > properties.getMaxFileCount()) {
+            throw new ImageHostException(String.format("이미지 첨부는 %d개 이상 %d개 이하로 해야합니다.", properties.getMinFileCount(), properties.getMaxFileCount()));
+        }
+    }
+
+    private ObjectMetadata getMetadata(MultipartFile file) {
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentLength(file.getSize());
+        objectMetadata.setContentType(file.getContentType());
+        return objectMetadata;
+    }
+
+    private void checkFileType(MultipartFile file) throws NotValidImageTypeException {
+        if (Type.isValidType(file.getName())) {
+            throw new NotValidImageTypeException("잘못된 확장자입니다.");
+        }
+    }
+
+    private void checkFileSize(MultipartFile file) throws TooLargeImageException {
+        if (file.getSize() > (properties.getMaxSize()*MB)) {
+            throw new TooLargeImageException(String.format("사진 용량이 %s MB를 초과해 업로드에 실패하였습니다.", properties.getMaxSize()));
+        }
+    }
+
+    private String generateKey(String originFileKey, String prefix) {
+        return String.format("%s%s-%s", prefix, UUID.randomUUID(), originFileKey);
+    }
+
+    private String getKey(String url) {
+        if (url.contains(Directory.ITEM_DETAIL.getPrefix())) {
+            return url.split("amazonaws.com/")[1];
+        }
+        return url;
     }
 }
