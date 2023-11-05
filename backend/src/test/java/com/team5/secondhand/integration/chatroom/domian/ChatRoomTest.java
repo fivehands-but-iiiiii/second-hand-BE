@@ -22,7 +22,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-class ChatroomTest {
+class ChatRoomTest {
 
     @Mock
     private Region region;
@@ -76,11 +76,11 @@ class ChatroomTest {
     @Test
     @DisplayName("채팅방에 참여한 사람들의 ID를 알 수 있다.")
     public void getMemberIds() throws Exception{
-        List<String> chatroomMemberIds = chatRoom.getChatroomMemberIds();
+        List<Long> chatroomMemberIds = chatRoom.getChatroomMemberIds();
         assertSoftly(assertions -> {
             assertions.assertThat(chatroomMemberIds).hasSize(2);
-            assertions.assertThat(chatroomMemberIds.contains(iirin.getMemberId())).isTrue();
-            assertions.assertThat(chatroomMemberIds.contains(dewey.getMemberId())).isTrue();
+            assertions.assertThat(chatroomMemberIds.contains(iirin.getId())).isTrue();
+            assertions.assertThat(chatroomMemberIds.contains(dewey.getId())).isTrue();
         });
     }
     
