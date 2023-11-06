@@ -34,18 +34,7 @@ import static com.amazonaws.services.s3.internal.Constants.MB;
 public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, ItemThumbnailImageUpload {
 
     private final AwsProperties properties;
-    private final AmazonS3 amazonS3;
-
-    public String upload(MultipartFile file, Directory directory) throws IOException, TooLargeImageException, NotValidImageTypeException {
-        log.debug("Thread start: {}", Thread.currentThread().getName());
-        checkFileSize(file);
-        checkFileType(file);
-
-        String newFileKey = generateKey(file.getOriginalFilename(), directory.getPrefix());
-        amazonS3.putObject(new PutObjectRequest(properties.getBucket(), newFileKey, file.getInputStream(), getMetadata(file)));
-        log.debug("Thread end: {}", Thread.currentThread().getName());
-        return amazonS3.getUrl(properties.getBucket(), newFileKey).toString();
-    }
+    private final ImageUploader imageUploader;
 
     @Override
     public ProfileImageInfo uploadMemberProfileImage(MultipartFile file) throws ImageHostException {
