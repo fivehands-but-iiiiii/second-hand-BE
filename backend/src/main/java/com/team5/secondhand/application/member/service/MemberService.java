@@ -67,7 +67,7 @@ public class MemberService implements JoinService {
     }
 
     @Transactional
-    public Member findById(Long id) throws ExistMemberIdException {
+    public Member findById(long id) throws ExistMemberIdException {
         return memberRepository.findById(id).orElseThrow(() -> new ExistMemberIdException("잘못된 회원입니다."));
     }
 
