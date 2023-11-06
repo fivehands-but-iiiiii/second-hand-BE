@@ -2,8 +2,6 @@ package com.team5.secondhand.api.image.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.team5.secondhand.api.image.dto.response.ImageInfo;
 import com.team5.secondhand.api.image.dto.response.ProfileImageInfo;
 import com.team5.secondhand.api.image.exception.ImageHostException;
@@ -24,7 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 
 import static com.amazonaws.services.s3.internal.Constants.MB;
 
@@ -41,9 +41,11 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
         String imageUrl = "";
 
         try {
-            String upload = upload(file, Directory.MEMBER_PROFILE_ORIGIN);
-            imageUrl = upload.replace("/origin", "");
-        } catch (IOException e) {
+            checkFileSize(file);
+            checkFileType(file);
+            CompletableFuture<String> upload = imageUploader.upload(file, Directory.MEMBER_PROFILE_ORIGIN);
+            imageUrl = upload.get().replace("/origin", "");
+        } catch (IOException | InterruptedException | ExecutionException e) {
             throw new ImageHostException("회원 사진 업로드에 실패하였습니다.");
         }
 
@@ -55,8 +57,11 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
         String imageUrl = "";
 
         try {
-            imageUrl = upload(file, Directory.ITEM_DETAIL);
-        } catch (IOException e) {
+            checkFileSize(file);
+            checkFileType(file);
+            CompletableFuture<String> upload = imageUploader.upload(file, Directory.ITEM_DETAIL);
+            imageUrl = upload.get();
+        } catch (IOException | InterruptedException | ExecutionException e) {
             throw new ImageHostException("물품 사진 업로드에 실패하였습니다.");
         }
 
@@ -64,41 +69,48 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
     }
 
     @Override
-    public String uploadItemThumbnailImage(MultipartFile file) throws ImageHostException {
-        String url = "";
+    public CompletableFuture<String> uploadItemThumbnailImage(MultipartFile file) throws ImageHostException {
+        CompletableFuture<String> upload;
         try {
-            url = upload(file, Directory.ITEM_THUMBNAIL_ORIGIN);
+            upload = imageUploader.upload(file, Directory.ITEM_THUMBNAIL_ORIGIN);
         } catch (AmazonS3Exception | IOException e) {
             throw new ImageHostException("물품 썸네일 업로드에 실패하였습니다.");
         }
-        return url;
+        return upload;
     }
 
     @Override
     public List<ItemDetailImage> uploadItemDetailImages(List<MultipartFile> request) throws ImageHostException {
-        checkFilesSize(request);
+        checkFilesCount(request);
 
         List<ItemDetailImage> images = new ArrayList<>();
+        List<CompletableFuture<String>> uploadFutures = new ArrayList<>();
 
         for (MultipartFile multipartFile : request) {
-            ImageInfo imageInfo = uploadItemDetailImage(multipartFile);
-            images.add(ItemDetailImage.create(imageInfo.getImageUrl()));
+            CompletableFuture<String> upload = null;
+            try {
+                upload = imageUploader.upload(multipartFile, Directory.ITEM_DETAIL);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            uploadFutures.add(upload);
         }
+
+        uploadFutures.forEach(upload -> images.add(ItemDetailImage.create(
+        upload.exceptionally(e -> {
+                    log.error("이미지 업로드에 실패하였습니다.", e);
+                    throw new CompletionException(e);
+                })
+                .join())));
 
         return images;
     }
 
-    private void checkFilesSize(List<MultipartFile> files) throws ImageHostException {
+
+    private void checkFilesCount(List<MultipartFile> files) throws ImageHostException {
         if (files.size() < properties.getMinFileCount() || files.size() > properties.getMaxFileCount()) {
             throw new ImageHostException(String.format("이미지 첨부는 %d개 이상 %d개 이하로 해야합니다.", properties.getMinFileCount(), properties.getMaxFileCount()));
         }
-    }
-
-    private ObjectMetadata getMetadata(MultipartFile file) {
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentLength(file.getSize());
-        objectMetadata.setContentType(file.getContentType());
-        return objectMetadata;
     }
 
     private void checkFileType(MultipartFile file) throws NotValidImageTypeException {
@@ -113,14 +125,4 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
         }
     }
 
-    private String generateKey(String originFileKey, String prefix) {
-        return String.format("%s%s-%s", prefix, UUID.randomUUID(), originFileKey);
-    }
-
-    private String getKey(String url) {
-        if (url.contains(Directory.ITEM_DETAIL.getPrefix())) {
-            return url.split("amazonaws.com/")[1];
-        }
-        return url;
-    }
 }
