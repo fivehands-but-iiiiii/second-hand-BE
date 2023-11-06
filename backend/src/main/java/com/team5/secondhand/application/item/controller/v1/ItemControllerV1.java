@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.security.sasl.AuthenticationException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @RestController
@@ -92,13 +93,12 @@ public class ItemControllerV1 {
     public GenericResponse<Long> postItem(@Login MemberDetails loginMember, ItemPost itemPost) throws ExistMemberIdException, NotValidRegionException, ImageHostException {
         Member seller = memberService.findById(loginMember.getId());
         Region region = getValidRegions.getRegion(itemPost.getRegion());
+
+        CompletableFuture<String> thumbnailUrl = thumbnailImageUpload.uploadItemThumbnailImage(itemPost.getImages().get(0));
         List<ItemDetailImage> itemDetailImages = detailImageUpload.uploadItemDetailImages(itemPost.getImages());
-
         Item item = itemPost.toEntity(itemDetailImages);
-        String thumbnailUrl = thumbnailImageUpload.uploadItemThumbnailImage(item);
 
-        Long id = itemPostService.postItem(item, seller, region, thumbnailUrl);
-
+        Long id = itemPostService.postItem(item, seller, region, thumbnailUrl.join());
         return GenericResponse.send("상품 등록이 완료되었습니다.", id);
     }
 
