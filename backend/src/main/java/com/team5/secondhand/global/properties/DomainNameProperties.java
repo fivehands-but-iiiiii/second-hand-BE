@@ -1,0 +1,15 @@
+package com.team5.secondhand.global.properties;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+@Getter @Setter
+@Component
+@ConfigurationProperties(prefix = "server.address")
+public class DomainNameProperties {
+
+    private String domain;
+    private String was;
+}

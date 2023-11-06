@@ -8,8 +8,8 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
-@EnableAsync
-@EnableCaching
+@EnableAsync(proxyTargetClass = true)
+@EnableCaching(proxyTargetClass = true)
 @EnableWebSocket
 @EnableJpaAuditing
 @EnableRedisRepositories
