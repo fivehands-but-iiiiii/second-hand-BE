@@ -1,8 +1,10 @@
 package com.team5.secondhand.api.image.service.usecase;
 
 import com.team5.secondhand.api.image.exception.ImageHostException;
-import com.team5.secondhand.application.item.domain.Item;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.concurrent.CompletableFuture;
 
 public interface ItemThumbnailImageUpload {
-    String uploadItemThumbnailImage(Item item) throws ImageHostException;
+    CompletableFuture<String> uploadItemThumbnailImage(MultipartFile url) throws ImageHostException;
 }
