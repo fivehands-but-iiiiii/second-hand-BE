@@ -3,7 +3,7 @@ package com.team5.secondhand.global.auth;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team5.secondhand.application.member.dto.response.MemberDetails;
 import com.team5.secondhand.global.properties.JwtProperties;
-import com.team5.secondhand.global.jwt.util.JwtUtils;
+import com.team5.secondhand.global.util.JwtUtils;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

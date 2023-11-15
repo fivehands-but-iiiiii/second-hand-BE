@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface ItemDetailImageUpload {
+
     List<ItemDetailImage> uploadItemDetailImages(List<MultipartFile> request) throws ImageHostException;
 
     ImageInfo uploadItemDetailImage(MultipartFile itemImages) throws ImageHostException;

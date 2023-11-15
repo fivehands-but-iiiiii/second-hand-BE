@@ -5,6 +5,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+// session 으로 변경
 @Service
 @RequiredArgsConstructor
 public class SessionService {

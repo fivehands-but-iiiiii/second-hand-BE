@@ -5,14 +5,12 @@ import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 
 @Getter
-@ToString
 @Entity
 @NoArgsConstructor
 @Table(name = "chatbubble")

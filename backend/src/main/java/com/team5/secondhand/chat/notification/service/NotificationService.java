@@ -6,12 +6,13 @@ import com.team5.secondhand.chat.notification.domain.SseKey;
 import com.team5.secondhand.chat.notification.dto.ChatNotification;
 import com.team5.secondhand.chat.notification.repository.NotificationRepository;
 import com.team5.secondhand.chat.bubble.event.ChatNotificationEvent;
+import com.team5.secondhand.global.properties.ChatNotificationProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,30 +25,23 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class NotificationService implements SendChatNotificationUsecase {
 
-    private final Long DEFAULT_TIMEOUT = 120L * 1000 * 60;
+    private final ChatNotificationProperties notificationProperties;
     private final NotificationRepository notificationRepository;
 
     @Transactional
     public SseEmitter subscribe(Long id, String lastEventId, HttpServletResponse response) {
         SseKey sseId = SseKey.of(id);
 
-        SseEmitter emitter = notificationRepository.save(sseId, new SseEmitter(DEFAULT_TIMEOUT));
+        SseEmitter emitter = notificationRepository.save(sseId, new SseEmitter(notificationProperties.getTimeOut()));
         response.setHeader("X-Accel-Buffering", "no");
         response.setHeader("Last-Event-ID", sseId.getKey());
 
-        emitter.onCompletion(() -> {
-            log.info("SSE onCompletion");
-            notificationRepository.deleteAllStartByWithId(id+"_");
-        });
+        emitter.onCompletion(() -> onStatusCallback("SSE onCompletion", id));
         emitter.onTimeout(() -> {
-            log.info("SSE onTimeout");
-            notificationRepository.deleteAllStartByWithId(id+"_");
+            onStatusCallback("SSE onTimeout", id);
             emitter.complete();
         });
-        emitter.onError(e -> {
-            log.info("SSE error : {}", e.getMessage());
-            notificationRepository.deleteAllStartByWithId(id+"_");
-        });
+        emitter.onError(e -> onStatusCallback("SSE onError = " + e.getMessage(), id));
 
         sendToClient(emitter, id, String.format("connected successfully member key : %s", id));
 
@@ -61,6 +55,11 @@ public class NotificationService implements SendChatNotificationUsecase {
         return emitter;
     }
 
+    public void onStatusCallback(String message, Long id) {
+        log.info(message);
+        notificationRepository.deleteAllStartByWithId(id +"_");
+    }
+
     private void sendToClient(SseEmitter emitter, Long id, Object data) {
         try {
             emitter.send(SseEmitter.event()
@@ -68,31 +67,28 @@ public class NotificationService implements SendChatNotificationUsecase {
                     .name(SseEvent.CHAT_NOTIFICATION.getEvent())
                     .data(data));
         } catch (IOException e) {
-            log.info("상대방이 접속중이 아닙니다.");
+            log.debug(e.getMessage());
         }
     }
 
     @Override
     public void sendChatNotificationToMember(Long id, Chatroom chatroom, ChatNotification chatNotification) {
         try {
-            SseEmitter sseEmitter = notificationRepository.findStartById(id+"_").get(); //TODO 에러 작성해주기
-            if (!chatroom.hasPaticipant(id)) {
+            SseEmitter sseEmitter = notificationRepository.findStartById(id+"_").orElseThrow(() -> new NoSuchElementException("상대방이 접속중이 아닙니다."));
+            if (chatroom.hasPaticipant(id)) {
                 sendToClient(sseEmitter, id, chatNotification);
             }
         } catch (NoSuchElementException e) {
-            log.info("상대방이 접속중이 아닙니다.");
+            log.info(e.getMessage());
         }
 
     }
 
     //TODO Transaction 관련된 문제가 나지는 않을까?
     @Async
-    @TransactionalEventListener
+    @EventListener
     public void getChatBubble (ChatNotificationEvent event) {
         Long receiverId = event.getChatBubble().getReceiver();
-        //TODO 유효성 검증이 필요
-        //TODO 현재 채팅방에 존재하는 멤버(1인 이상)에게 알람을 보내야 한다.
-        //TODO 현재 채팅방을 구독중(websocket 통신중인) 멤버에게는 보내지 않아야 한다.
         sendChatNotificationToMember(receiverId, event.getChatroom(), ChatNotification.of(event.getChatBubble(), event.getChatroom()));
     }
 

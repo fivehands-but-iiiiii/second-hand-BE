@@ -5,15 +5,10 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@Getter
-@Setter
+@Getter @Setter
 @Component
-@ConfigurationProperties(prefix = "aws.s3")
-public class AwsProperties {
-
+@ConfigurationProperties(prefix = "const.bubble")
+public class ChatBubbleProperties {
     private String bucket;
-    private long maxSize;
-    private int minFileCount;
-    private int maxFileCount;
-
+    private int pageSize;
 }

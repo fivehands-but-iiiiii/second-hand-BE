@@ -2,7 +2,9 @@ server:
   address:
     domain: "http://fivehands-but-iiiiii.site"
     was2: "3.38.162.177"
-const:
-  chat:
+chat:
+  bubble:
     bucket: "chatroom:"
     page-size: 25
+  notification:
+    time-out: 720000
