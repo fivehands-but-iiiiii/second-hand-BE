@@ -2,12 +2,10 @@ package com.team5.secondhand.chat.bubble.domain;
 
 import lombok.*;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 
 @Getter
-@ToString
 @NoArgsConstructor
 public class ChatBubble implements Serializable {
 

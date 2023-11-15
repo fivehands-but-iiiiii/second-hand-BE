@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-//TODO Redis로 스케일아웃의 필요성이 있을지???
+//TODO Redis로 변경
 @Repository
 @RequiredArgsConstructor
 public class InmemoryNotificationRepository implements NotificationRepository {

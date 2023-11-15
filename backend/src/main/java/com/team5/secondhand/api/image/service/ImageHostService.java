@@ -106,7 +106,6 @@ public class ImageHostService implements ProfileUpload, ItemDetailImageUpload, I
         return images;
     }
 
-
     private void checkFilesCount(List<MultipartFile> files) throws ImageHostException {
         if (files.size() < properties.getMinFileCount() || files.size() > properties.getMaxFileCount()) {
             throw new ImageHostException(String.format("이미지 첨부는 %d개 이상 %d개 이하로 해야합니다.", properties.getMinFileCount(), properties.getMaxFileCount()));

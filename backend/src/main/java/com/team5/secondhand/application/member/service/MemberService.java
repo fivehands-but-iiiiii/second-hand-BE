@@ -25,7 +25,6 @@ import java.util.regex.Pattern;
 public class MemberService implements JoinService {
 
     private final String ID_PATTERN = "^[a-z0-9]+$";
-
     private final MemberRepository memberRepository;
 
     @Override
