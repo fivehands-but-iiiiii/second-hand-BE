@@ -213,12 +213,86 @@ sequenceDiagram
 ---
 
 ### 기능2. 실시간 채팅 및 알람 구조
-// 다이어그램
-// 기능 설명 조금
-// 구성
-// 1. 채팅방과 채팅 내용 저장 구조
-// 2. 채팅 메시지 전달 구조
-// 3. 채팅 알람 구조
+- 실시간 채팅을 하기 위해서 STOMP 프로토콜과 Redis Pub/Sub 을 활용하여 채팅 기능을 구현하였습니다.
+- CONNECT 요청마다 사용자 정보를 `Authorization` header에서 추출하여 사용합니다.
+- Web Socket 연결 중에 예외 발생 시, 해당 연결은 Disconnect 되고 처음부터 다시 연결 시도를 해야합니다. (예외 발생 경우 몇 개 있는데 다 적어야하나? stomp 구조에 맞지 않은 요청이 들어오거나, 인증되지 않은 사용자거나, 경로가 잘못되거나 등등)
+- 영구적인 저장이 필요없는 채팅방 참여자 상태 정보는 Redis 에 캐시로 저장되고, 영구적인 저장이 필요한 채팅방 정보와 메시지는 데이터베이스에 저장합니다.
+
+#### 채팅 흐름 Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant WebServer
+    participant WAS
+    participant Redis
+    participant Database
+
+    WAS->>Redis: 채팅 topic 구독
+    User->>WebServer: 판매글에서 채팅하기 클릭
+    WebServer->>WAS: 채팅방 진입 요청
+    WAS->>Database: 채팅방 정보 조회
+    opt 채팅방이 생성되지 않은 경우
+        WAS->>WAS: 채팅방 생성
+        WAS->>Database: 채팅방 정보 저장
+        WAS->>Redis: 채팅방 참여자 메타정보 저장
+    end
+    Database-->>WAS: 채탕방 정보 반환
+    WAS-->>WebServer: 채팅방 정보 반환
+    WebServer->>WAS: 채팅방 Connect 요청
+    WAS-->>WAS: Connect 검증
+    WAS-->>Redis: 세션 스토리지에 사용자 세션 정보 저장
+    WebServer->>WAS: Subscribe (채팅방 ID) 요청
+    WAS-->>WAS: Subscribe (채팅방 ID) 검증
+    WAS-->>Redis: 채팅방 참여자 메타정보 갱신
+    loop 사용자 채팅
+        User->>WebServer: 채팅 메시지 입력 및 보내기
+        WebServer->>WAS: Send 요청
+        WAS->>+Redis: 채팅 메시지 수신 및 채팅 topic으로 발행
+        WAS->>Database: 채팅 내용 저장
+        Redis-->>-WAS: 채팅 topic을 구독한 서버로 브로드캐스트
+        WAS-->>WebServer: 채팅방에 존재하는 사용자에게 메시지 전달
+        WebServer->>User: 채팅 메시지 업데이트
+    end
+    User->>WebServer: 채팅방 접속 종료
+    WebServer->>WAS: Unsubscribe 요청 
+    WAS-->>WAS: Unsubscribe 검증
+    WAS-->>Redis: 채팅방 참여자 메타정보 갱신
+    WebServer-->>WAS: Disconnect 요청
+    WAS-->>Redis: 세션 스토리지에서 사용자 세션 정보 삭제 
+    loop TTL주기 마다
+        Redis-->>Database: 채팅 메타 정보 저장
+    end
+```
+
+#### 채팅 알람 Sequence Diagram
+
+- 사용자가 WebSocket 연결이 끊겨도 채팅 알람을 받기 위해 SSE를 활용하여 채팅 알람 기능을 구현하였습니다.
+```mermaid
+sequenceDiagram
+    participant User
+    participant WebServer
+    participant WAS
+    participant Redis
+    
+    User->> WebServer: 로그인
+    loop
+        WebServer->>+WAS: SSE 연결 요청
+        WAS-->>WebServer: SSE 연결 승인
+        loop 
+            User->> WebServer: 채팅 메시지 보내기
+            WebServer->>+WAS: 채팅 메시지 전송
+            WAS->>Redis: 메시지 저장
+            WAS->>-WebServer: SSE를 통한 메시지 알림 전송
+        end
+        alt SSE 타임아웃일 경우
+            WebServer->>WAS: SSE 연결 재요청
+            WAS-->>WebServer: SSE 연결 승인
+        end
+        WebServer->>WAS: SSE 연결 종료 요청
+        WAS-->>-WebServer: SSE 연결 종료 응답
+    end
+```
 
 ### 기능3. 
 
