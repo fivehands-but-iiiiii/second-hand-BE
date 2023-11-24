@@ -27,10 +27,13 @@ public class RedisConfig {
 
     @Bean
     public RedisTemplate<String, Object> redisObjectTemplate() {
-        final RedisTemplate<String, Object> template = new RedisTemplate<>();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
         template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class)); //json포맷으로 메시지 교환하려면
+        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class)); // Use Jackson2JsonRedisSerializer
+
         return template;
     }
 }
