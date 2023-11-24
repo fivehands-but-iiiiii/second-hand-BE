@@ -9,8 +9,6 @@ spring:
     redis:
       time-to-live: 3600
       cache-null-values: true
-      host: localhost
-      port: 6379
   datasource:
     url: jdbc:mysql://localhost:3306/secondhand-db
     username: root
@@ -18,6 +16,9 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/secondhand
+    redis:
+      host: localhost
+      port: 6379
 
 logging:
   level:
