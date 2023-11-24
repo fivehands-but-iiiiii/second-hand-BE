@@ -22,35 +22,15 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @EnableRedisRepositories
 public class RedisConfig {
 
-    @Value("${spring.cache.redis.host}")
-    private String host;
-
-    @Value("${spring.cache.redis.port}")
-    private int port;
-
+    private final RedisConnectionFactory redisConnectionFactory;
     private final ObjectMapper objectMapper;
-
-    @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory(host, port);
-    }
 
     @Bean
     public RedisTemplate<String, Object> redisObjectTemplate() {
         final RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(redisConnectionFactory());
+        template.setConnectionFactory(redisConnectionFactory);
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class)); //json포맷으로 메시지 교환하려면
         return template;
     }
-
-    @Bean
-    public StringRedisTemplate stringRedisTemplate() {
-        StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
-        stringRedisTemplate.setKeySerializer(new StringRedisSerializer());
-        stringRedisTemplate.setValueSerializer(new StringRedisSerializer());
-        stringRedisTemplate.setConnectionFactory(redisConnectionFactory());
-        return stringRedisTemplate;
-    }
-
 }

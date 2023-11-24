@@ -37,30 +37,17 @@ public class ChatConfig {
         return container;
     }
 
-
-    @Bean
-    public RedisTemplate<String, ChatBubble> redisChatBubbleTemplate() {
-        final RedisTemplate<String, ChatBubble> template = new RedisTemplate<>();
-        template.setConnectionFactory(redisConnectionFactory);
-        template.setKeySerializer(new StringRedisSerializer());
-        objectMapper.registerModule(new JavaTimeModule());
-
-        Jackson2JsonRedisSerializer<ChatBubble> jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(ChatBubble.class);
-        jsonRedisSerializer.setObjectMapper(objectMapper);
-        template.setValueSerializer(jsonRedisSerializer);
-
-        return template;
-    }
-
     @Bean
     public RedisMessageSubscriber messageListener() {
         return new RedisMessageSubscriber(objectMapper, redisObjectTemplate, messagingTemplate);
     }
 
-    @Bean
+    @Bean("chatTopic")
     public ChannelTopic chatTopic() {
         return new ChannelTopic("chatRoom");
     }
+
+    @Bean("notificationTopic")
     public ChannelTopic notificationTopic() {
         return new ChannelTopic("notification");
     }

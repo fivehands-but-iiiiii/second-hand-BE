@@ -15,35 +15,35 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatBubbleCache{
 
-    private final RedisTemplate<String, ChatBubble> redisChatBubbleTemplate;
-
-    private long getStartIndex(Pageable page) {
-        return (-1L * page.getPageSize() * page.getPageNumber()) - 1;
-    }
-
-    private Slice<ChatBubble> getSlice(List<ChatBubble> messages, Pageable pageable) {
-        boolean hasNext = false;
-
-        if (messages.size() > pageable.getPageSize()) {
-            hasNext = true;
-            messages.remove(pageable.getPageSize());
-        }
-
-        return new SliceImpl<>(messages, pageable, hasNext);
-    }
-
-    public Slice<ChatBubble> findAllByRoomId(String key, Pageable pageable) {
-        ListOperations<String, ChatBubble> listOperations = redisChatBubbleTemplate.opsForList();
-
-        long startIndex = getStartIndex(pageable);
-        long endIndex = startIndex - pageable.getPageSize();
-
-        List<ChatBubble> messages = listOperations.range(key, endIndex, startIndex);
-        return getSlice(messages, pageable);
-    }
-
-    public ChatBubble save(String key, ChatBubble chatBubble) {
-        redisChatBubbleTemplate.opsForList().rightPush(key, chatBubble); // 캐시 저장
-        return redisChatBubbleTemplate.opsForValue().get(key);
-    }
+//    private final RedisTemplate<String, ChatBubble> redisChatBubbleTemplate;
+//
+//    private long getStartIndex(Pageable page) {
+//        return (-1L * page.getPageSize() * page.getPageNumber()) - 1;
+//    }
+//
+//    private Slice<ChatBubble> getSlice(List<ChatBubble> messages, Pageable pageable) {
+//        boolean hasNext = false;
+//
+//        if (messages.size() > pageable.getPageSize()) {
+//            hasNext = true;
+//            messages.remove(pageable.getPageSize());
+//        }
+//
+//        return new SliceImpl<>(messages, pageable, hasNext);
+//    }
+//
+//    public Slice<ChatBubble> findAllByRoomId(String key, Pageable pageable) {
+//        ListOperations<String, ChatBubble> listOperations = redisChatBubbleTemplate.opsForList();
+//
+//        long startIndex = getStartIndex(pageable);
+//        long endIndex = startIndex - pageable.getPageSize();
+//
+//        List<ChatBubble> messages = listOperations.range(key, endIndex, startIndex);
+//        return getSlice(messages, pageable);
+//    }
+//
+//    public ChatBubble save(String key, ChatBubble chatBubble) {
+//        redisChatBubbleTemplate.opsForList().rightPush(key, chatBubble); // 캐시 저장
+//        return redisChatBubbleTemplate.opsForValue().get(key);
+//    }
 }
