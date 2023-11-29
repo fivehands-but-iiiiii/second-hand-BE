@@ -5,7 +5,7 @@ import com.team5.secondhand.chat.bubble.repository.ChatBubbleCache;
 import com.team5.secondhand.chat.bubble.repository.ChatBubbleRepository;
 import com.team5.secondhand.chat.bubble.repository.entity.BubbleEntity;
 import com.team5.secondhand.chat.bubble.event.ChatBubbleArrivedEvent;
-import com.team5.secondhand.global.properties.ChatBubbleProperties;
+import com.team5.secondhand.global.properties.ChatCacheProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ChatBubbleService {
     private final ChatBubbleRepository bubbleRepository;
     private final ChatBubbleCache bubbleCache;
-    private final ChatBubbleProperties chatBubbleProperties;
+    private final ChatCacheProperties chatBubbleProperties;
 
     @Transactional(readOnly = true)
     public Slice<ChatBubble> getChatBubbles(int page, String roomId) {
@@ -46,6 +46,6 @@ public class ChatBubbleService {
     }
 
     private String generateChatLogKey (String roomId) {
-        return String.format("%s%s:logs", chatBubbleProperties.getBucket(), roomId);
+        return String.format("%s%s:logs", chatBubbleProperties.getKey(), roomId);
     }
 }
