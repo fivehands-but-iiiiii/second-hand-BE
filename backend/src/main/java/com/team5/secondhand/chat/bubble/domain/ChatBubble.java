@@ -11,7 +11,7 @@ import java.time.Instant;
 @NoArgsConstructor
 public class ChatBubble implements Serializable {
 
-    private static AtomicLong basicId;
+    private AtomicLong basicId;
 
     private Long id;
     private String chatroomId;
