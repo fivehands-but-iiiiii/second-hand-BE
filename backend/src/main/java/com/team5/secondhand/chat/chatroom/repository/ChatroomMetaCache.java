@@ -1,8 +1,10 @@
 package com.team5.secondhand.chat.chatroom.repository;
 
 import com.team5.secondhand.chat.chatroom.domain.Chatroom;
+import com.team5.secondhand.global.properties.ChatMetaInfoProperties;
+import com.team5.secondhand.global.util.RedisOperationsHelper;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -10,21 +12,28 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class ChatroomMetaCache {
-    private final RedisTemplate<String, Chatroom> redisChatroomTemplate;
-    private final String MAIN_KEY = "meta:chatroom";
-
+    private final RedisOperationsHelper operationsHelper;
+    private final ChatMetaInfoProperties chatMetaInfoProperties;
 
     public Chatroom saveChatroom(String chatroomId, Chatroom chatroom) {
-        redisChatroomTemplate.opsForValue().set(generateKey(chatroomId), chatroom);
-        return redisChatroomTemplate.opsForValue().get(generateKey((chatroomId)));
+        operationsHelper.put(generateKey(chatroomId), chatroom, null);
+        return chatroom;
     }
 
     public Optional<Chatroom> findByChatroomId(String chatroomId) {
-       Chatroom chatroom = redisChatroomTemplate.opsForValue().get(generateKey((chatroomId)));
-        return Optional.ofNullable(chatroom);
+        Optional<Chatroom> chatroom = operationsHelper.get(generateKey(chatroomId), Chatroom.class);
+        return chatroom;
+    }
+
+    public List<Chatroom> findAll() {
+        return operationsHelper.getAll(generateKey("*"), Chatroom.class);
+    }
+
+    public void clear() {
+        operationsHelper.delete(generateKey("*"));
     }
 
     private String generateKey(String chatroomId) {
-        return String.format("%s:%s", MAIN_KEY, chatroomId);
+        return String.format("%s:%s", chatMetaInfoProperties.getMetaInfoKey(), chatroomId);
     }
 }

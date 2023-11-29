@@ -4,9 +4,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.Size;
+import lombok.ToString;
 
 @Getter
 @RequiredArgsConstructor
+@ToString
 public class ItemFilteredSlice {
     @Size(min = 0)
     private final int page;

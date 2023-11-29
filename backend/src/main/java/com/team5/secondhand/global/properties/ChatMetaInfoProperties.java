@@ -5,10 +5,11 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@Getter @Setter
+@Getter
+@Setter
 @Component
-@ConfigurationProperties(prefix = "const.bubble")
-public class ChatBubbleProperties {
-    private String bucket;
-    private int pageSize;
+@ConfigurationProperties(prefix = "chat.meta")
+public class ChatMetaInfoProperties {
+    private String metaInfoKey;
+    private String connectionKey;
 }

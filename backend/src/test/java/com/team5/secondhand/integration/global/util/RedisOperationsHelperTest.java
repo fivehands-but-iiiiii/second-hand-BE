@@ -122,10 +122,6 @@ class RedisOperationsHelperTest extends TestContainer {
         });
     }
 
-    @Test
-    void isExists() {
-    }
-
     @Nested
     @DisplayName("만료시간 테스트 - ")
     class setExpireTime {
@@ -134,12 +130,15 @@ class RedisOperationsHelperTest extends TestContainer {
         @DisplayName("만료 전 테스트")
         void setExpireTime_not_expired() {
             String key = "member::3";
-            long expire = 1;
+            long expire = 10;
 
             redisOperationsHelper.put(key, dewey, null);
             redisOperationsHelper.setExpireTime(key, expire);
 
-            assertThat(redisOperationsHelper.getExpireTime(key)).isLessThan(expire);
+            SoftAssertions.assertSoftly(softAssertions -> {
+                softAssertions.assertThat(redisOperationsHelper.getExpireTime(key)).isGreaterThan(0);
+                softAssertions.assertThat(redisOperationsHelper.get(key, Member.class)).isNotEmpty();
+            });
         }
 
         @Test

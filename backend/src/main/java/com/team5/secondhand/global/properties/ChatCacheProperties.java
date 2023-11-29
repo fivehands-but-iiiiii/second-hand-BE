@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Getter @Setter
 @Component
-@ConfigurationProperties(prefix = "chat.notification")
-public class ChatNotificationProperties {
-    private long timeOut;
+@ConfigurationProperties(prefix = "chat.bubble")
+public class ChatCacheProperties {
+    private String key;
+    private int pageSize;
 }

@@ -4,7 +4,10 @@ server:
     was: "3.38.162.177"
 chat:
   bubble:
-    bucket: "chatroom:"
+    key: "chatroom::bubble::"
     page-size: 25
   notification:
     time-out: 720000
+  meta:
+    meta-info-key: "chatroom::meta::"
+    connection-key:

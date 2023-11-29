@@ -8,18 +8,23 @@ import com.team5.secondhand.application.item.repository.ItemRepository;
 import com.team5.secondhand.application.member.domain.Member;
 import com.team5.secondhand.application.member.exception.UnauthorizedException;
 import com.team5.secondhand.application.region.domain.Region;
+import com.team5.secondhand.global.config.CacheKey;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@CacheConfig(cacheNames = CacheKey.ITEM)
 public class ItemPostService {
 
     private final ItemRepository itemRepository;
 
     @Transactional
+    @CacheEvict(allEntries = true)
     public Long postItem(Item item, Member seller, Region region, String thumbnailUrl) {
         item.updateThumbnail(thumbnailUrl);
         itemRepository.save(item.owned(seller, region));
@@ -43,7 +48,7 @@ public class ItemPostService {
         return itemRepository.updateStatus(id, status) == 1;
     }
 
-    @CacheEvict(value = "menu", allEntries = true)
+    @CacheEvict(allEntries = true)
     public void deleteById(Long id) {
         itemRepository.deleteById(id);
     }

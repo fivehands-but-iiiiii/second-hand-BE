@@ -36,6 +36,7 @@ public class ItemReadService {
     private final CheckMemberLikedUsecase checkMemberLiked;
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "items", key = "#request.toString() + '::' + #region.id")
     public ItemList getItemList(ItemFilteredSlice request, Region region, MemberDetails loginMember) {
         Pageable pageable = PageRequest.of(request.getPage() , PAGE_SIZE, Sort.by("id").descending());
 
