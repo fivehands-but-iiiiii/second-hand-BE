@@ -1,6 +1,7 @@
 package com.team5.secondhand.chat.bubble.controller;
 
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
+import com.team5.secondhand.chat.bubble.dto.request.ChatbubbleRequest;
 import com.team5.secondhand.chat.topic.service.RedisMessagePublisher;
 import com.team5.secondhand.chat.notification.service.SendChatNotificationUsecase;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,10 @@ class ChatController {
     private final ChannelTopic chatTopic;
 
     @MessageMapping("/message")
-    public void message(ChatBubble message, SimpMessageHeaderAccessor messageHeaderAccessor) {
+    public void message(ChatbubbleRequest message, SimpMessageHeaderAccessor messageHeaderAccessor) {
         messageHeaderAccessor.getSessionAttributes();
         log.debug("pub controller");
-        redisMessagePublisher.publish(chatTopic.getTopic(), message);
+        redisMessagePublisher.publish(chatTopic.getTopic(), message.toDomain());
     }
 
 }

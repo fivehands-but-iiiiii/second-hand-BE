@@ -1,5 +1,6 @@
 package com.team5.secondhand.chat.bubble.domain;
 
+import java.util.concurrent.atomic.AtomicLong;
 import lombok.*;
 
 import java.io.Serializable;
