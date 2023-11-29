@@ -1,6 +1,7 @@
 package com.team5.secondhand.chat.bubble.domain;
 
 import java.util.concurrent.atomic.AtomicLong;
+import javax.annotation.PostConstruct;
 import lombok.*;
 
 import java.io.Serializable;
@@ -9,6 +10,8 @@ import java.time.Instant;
 @Getter
 @NoArgsConstructor
 public class ChatBubble implements Serializable {
+
+    private static AtomicLong basicId;
 
     private Long id;
     private String chatroomId;
@@ -27,6 +30,15 @@ public class ChatBubble implements Serializable {
         this.createdAt = createdAt;
     }
 
+    @PostConstruct
+    private void init() {
+        basicId = new AtomicLong(System.currentTimeMillis());
+    }
+
+    private static Long generateId() {
+        return basicId.getAndIncrement();
+    }
+
     private String generateCreatedAt(String time) {
         if (time == null) {
             return Instant.now().toString();
@@ -39,6 +51,7 @@ public class ChatBubble implements Serializable {
     }
 
     public void ready() {
+        this.id = generateId();
         this.createdAt = generateCreatedAt(createdAt);
     }
 }
