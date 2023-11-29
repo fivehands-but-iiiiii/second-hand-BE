@@ -20,8 +20,7 @@ public class RedisMessagePublisher {
 
     @Transactional
     public void publish(String topic, ChatBubble message) {
-        log.debug("pub log : " +  message.toString() + "/ topic: " + topic);
-        message.ready();
+        message.ready(); // id, createdAt 설정
         redisTemplate.convertAndSend(topic, message);
 
         publisher.publishEvent(new ChatBubbleArrivedEvent(message));

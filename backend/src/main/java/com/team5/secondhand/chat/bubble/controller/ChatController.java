@@ -21,7 +21,6 @@ class ChatController {
     @MessageMapping("/message")
     public void message(ChatbubbleRequest message, SimpMessageHeaderAccessor messageHeaderAccessor) {
         messageHeaderAccessor.getSessionAttributes();
-        log.debug("pub controller");
         redisMessagePublisher.publish(chatTopic.getTopic(), message.toDomain());
     }
 
