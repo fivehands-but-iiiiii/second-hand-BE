@@ -37,8 +37,7 @@ public class ChatBubbleService {
 
     public ChatBubble saveChatBubble(ChatBubble chatBubble) {
         String key = generateChatLogKey(chatBubble.getChatroomId());
-        BubbleEntity bubble= bubbleRepository.save(BubbleEntity.fromDomain(chatBubble));
-        return bubble.toDomain();
+        return bubbleCache.save(key, chatBubble);
     }
 
     @Async
