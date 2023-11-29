@@ -11,7 +11,7 @@ import java.time.Instant;
 @NoArgsConstructor
 public class ChatBubble implements Serializable {
 
-    private AtomicLong basicId;
+    private static AtomicLong basicId;
 
     private Long id;
     private String chatroomId;
@@ -30,12 +30,11 @@ public class ChatBubble implements Serializable {
         this.createdAt = createdAt;
     }
 
-    @PostConstruct
-    private void init() {
+    static {
         basicId = new AtomicLong(System.currentTimeMillis());
     }
 
-    private static Long generateId() {
+    private Long generateId() {
         return basicId.getAndIncrement();
     }
 
