@@ -27,9 +27,12 @@ public class ChatBubbleService {
     public Slice<ChatBubble> getChatBubbles(int page, String roomId) {
         String key = generateChatLogKey(roomId);
         Pageable pageable = PageRequest.of(page, chatBubbleProperties.getPageSize(), Sort.by("createdAt").ascending());
-        Slice<BubbleEntity> list = bubbleRepository.findAllByChatroomId(roomId, pageable);
-        //TODO service 로직 변경
-        return list.map(BubbleEntity::toDomain);
+        try {
+            return bubbleCache.findAllByRoomId(key, pageable);
+        } catch (IndexOutOfBoundsException e) {
+            Slice<BubbleEntity> list = bubbleRepository.findAllByChatroomId(roomId, pageable);
+            return list.map(BubbleEntity::toDomain);
+        }
     }
 
     public ChatBubble saveChatBubble(ChatBubble chatBubble) {
