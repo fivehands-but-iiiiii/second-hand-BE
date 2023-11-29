@@ -8,6 +8,7 @@ public abstract class FixtureFactory {
     public static FixtureMonkey fixtureMonkey() {
         return FixtureMonkey.builder()
                 .objectIntrospector(BuilderArbitraryIntrospector.INSTANCE)
+                .defaultNotNull(true)
                 .build();
     }
 
