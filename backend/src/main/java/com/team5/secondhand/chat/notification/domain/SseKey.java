@@ -31,7 +31,7 @@ public class SseKey {
         return String.format("%d_%d",memberId,createdAt.getEpochSecond());
     }
 
-    public boolean startsWith(String memberId) {
+    public boolean startsWith(long memberId) {
         return this.memberId.equals(memberId);
     }
 }
