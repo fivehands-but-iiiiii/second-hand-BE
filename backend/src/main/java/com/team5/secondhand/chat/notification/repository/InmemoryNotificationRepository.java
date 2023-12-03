@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-//TODO Redis로 변경
 @Repository
 @RequiredArgsConstructor
 public class InmemoryNotificationRepository implements NotificationRepository {
@@ -24,29 +23,23 @@ public class InmemoryNotificationRepository implements NotificationRepository {
     }
 
     @Override
-    public void deleteAllStartByWithId(String id) {
-        int regIdx = id.indexOf("_");
-        String prefix = id.substring(0, regIdx+1);
+    public void deleteAllStartByWithId(long id) {
         emitters.forEach((key, value) -> {
-            if (key.startsWith(prefix)) {
+            if (key.startsWith(id)) {
                 emitters.remove(key);
             }
         });
     }
 
     @Override
-    public Map<SseKey, SseEmitter> findAllStartById(String id) {
-        int regIdx = id.indexOf("_");
-        String prefix = id.substring(0, regIdx+1);
+    public Map<SseKey, SseEmitter> findAllStartById(long id) {
         return emitters.entrySet().stream()
-                .filter(e -> e.getKey().startsWith(prefix))
+                .filter(e -> e.getKey().startsWith(id))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     @Override
-    public Optional<SseEmitter> findStartById(String id) {
-        int regIdx = id.indexOf("_");
-        String prefix = id.substring(0, regIdx+1);
+    public Optional<SseEmitter> findStartById(long id) {
         return emitters.entrySet().stream()
                 .filter(e -> e.getKey().startsWith(id))
                 .map(Map.Entry::getValue)
