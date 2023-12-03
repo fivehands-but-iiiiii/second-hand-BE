@@ -2,6 +2,7 @@ package com.team5.secondhand.chat.bubble.dto.response;
 
 import com.team5.secondhand.application.member.dto.response.MemberDetails;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
+import java.util.Comparator;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.domain.Slice;
@@ -25,6 +26,7 @@ public class ChatroomLog {
     public static ChatroomLog from(Slice<ChatBubble> chatBubbles, MemberDetails loginMember) {
         List<BubbleSummary> bubbleSummaries = chatBubbles.getContent().stream()
                 .map(e -> BubbleSummary.from(e, loginMember.getMemberId()))
+                .sorted(Comparator.comparing(BubbleSummary::getCreatedAt))
                 .collect(Collectors.toList());
 
         return ChatroomLog.builder()
