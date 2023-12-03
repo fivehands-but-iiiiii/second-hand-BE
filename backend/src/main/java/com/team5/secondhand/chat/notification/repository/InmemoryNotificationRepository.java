@@ -45,4 +45,9 @@ public class InmemoryNotificationRepository implements NotificationRepository {
                 .map(Map.Entry::getValue)
                 .findAny();
     }
+
+    @Override
+    public void deleteById(SseKey sseId) {
+        emitters.remove(sseId);
+    }
 }
