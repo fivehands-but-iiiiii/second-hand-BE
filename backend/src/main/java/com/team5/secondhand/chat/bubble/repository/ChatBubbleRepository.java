@@ -11,7 +11,5 @@ public interface ChatBubbleRepository extends JpaRepository<BubbleEntity, Long> 
 
     Slice<BubbleEntity> findAllByChatroomId(String chatroomId, Pageable pageable);
 
-    List<BubbleEntity> findAllByChatroomIdOrderByIdDesc(String chatroomId);
-
     BubbleEntity findFirstByOrderByIdDesc();
 }

@@ -23,7 +23,7 @@ public class BubbleSummary {
         this.createdAt = createdAt;
     }
 
-    public static BubbleSummary from(ChatBubble bubble, String memberId) {
+    public static BubbleSummary from(ChatBubble bubble, long memberId) {
         return BubbleSummary.builder()
                 .id(bubble.getId().toString())
                 .senderId(bubble.getSender())

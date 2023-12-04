@@ -26,7 +26,7 @@ public class ChatBubbleService {
     @Transactional(readOnly = true)
     public Slice<ChatBubble> getChatBubbles(int page, String roomId) {
         String key = generateChatLogKey(roomId);
-        Pageable pageable = PageRequest.of(page, chatBubbleProperties.getPageSize(), Sort.by("createdAt").ascending());
+        Pageable pageable = PageRequest.of(page, chatBubbleProperties.getPageSize(), Sort.by("createdAt").descending());
         try {
             return bubbleCache.findAllByRoomId(key, pageable);
         } catch (IndexOutOfBoundsException e) {
