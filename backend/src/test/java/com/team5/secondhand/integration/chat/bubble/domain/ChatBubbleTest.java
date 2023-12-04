@@ -1,7 +1,8 @@
-package com.team5.secondhand.chat.bubble.domain;
+package com.team5.secondhand.integration.chat.bubble.domain;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.team5.secondhand.chat.bubble.domain.ChatBubble;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
