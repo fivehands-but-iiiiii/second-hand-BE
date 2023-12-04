@@ -1,18 +1,17 @@
 package com.team5.secondhand.chat.bubble.domain;
 
-import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.PostConstruct;
-import lombok.*;
-
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.concurrent.atomic.AtomicLong;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
 public class ChatBubble implements Serializable {
 
-    private static AtomicLong basicId;
-
+    private static final AtomicLong basicId;
     private Long id;
     private String chatroomId;
     private Long sender;
@@ -21,7 +20,8 @@ public class ChatBubble implements Serializable {
     private String createdAt;
 
     @Builder
-    private ChatBubble(Long id, String chatroomId, Long sender, Long receiver, String message, String createdAt) {
+    private ChatBubble(Long id, String chatroomId, Long sender, Long receiver, String message,
+            String createdAt) {
         this.id = id;
         this.chatroomId = chatroomId;
         this.sender = sender;
@@ -45,7 +45,7 @@ public class ChatBubble implements Serializable {
         return time;
     }
 
-    public Boolean isSender(String memberId) {
+    public Boolean isSender(long memberId) {
         return this.sender.equals(memberId);
     }
 

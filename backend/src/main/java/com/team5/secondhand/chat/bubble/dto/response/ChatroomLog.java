@@ -25,7 +25,7 @@ public class ChatroomLog {
 
     public static ChatroomLog from(Slice<ChatBubble> chatBubbles, MemberDetails loginMember) {
         List<BubbleSummary> bubbleSummaries = chatBubbles.getContent().stream()
-                .map(e -> BubbleSummary.from(e, loginMember.getMemberId()))
+                .map(e -> BubbleSummary.from(e, loginMember.getId()))
                 .sorted(Comparator.comparing(BubbleSummary::getCreatedAt))
                 .collect(Collectors.toList());
 
