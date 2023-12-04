@@ -2,6 +2,7 @@ package com.team5.secondhand.chat.notification.repository;
 
 import com.team5.secondhand.chat.notification.domain.SseKey;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -10,6 +11,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class InmemoryNotificationRepository implements NotificationRepository {

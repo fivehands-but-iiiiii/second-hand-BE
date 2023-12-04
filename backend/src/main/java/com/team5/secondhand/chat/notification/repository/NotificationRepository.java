@@ -11,6 +11,5 @@ public interface NotificationRepository {
     void deleteAllStartByWithId(long id);
     Map<SseKey, SseEmitter> findAllStartById(long id);
     Optional<SseEmitter> findStartById(long id);
-
     void deleteById(SseKey sseId);
 }
