@@ -59,6 +59,8 @@ dependencies {
     testImplementation "org.testcontainers:testcontainers:1.19.1"
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation('org.testcontainers:mysql') //no version specified
+    // test await
+    testImplementation 'org.awaitility:awaitility:4.2.0'
 }
 
 clean {
