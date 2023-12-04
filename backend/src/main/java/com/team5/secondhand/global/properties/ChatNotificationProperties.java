@@ -9,5 +9,6 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "chat.notification")
 public class ChatNotificationProperties {
+    private String key;
     private long timeOut;
 }

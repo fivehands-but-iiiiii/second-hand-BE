@@ -7,6 +7,7 @@ chat:
     key: "chatroom::bubble::"
     page-size: 25
   notification:
+    key: "member::notification::"
     time-out: 720000
   meta:
     meta-info-key: "chatroom::meta::"
