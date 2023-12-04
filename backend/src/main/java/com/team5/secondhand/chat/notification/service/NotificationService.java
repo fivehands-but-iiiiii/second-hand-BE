@@ -85,12 +85,4 @@ public class NotificationService implements SendChatNotificationUsecase {
         }
     }
 
-    @Async
-    @EventListener
-    public void getChatBubble(ChatNotificationEvent event) {
-        Long receiverId = event.getChatBubble().getReceiver();
-        sendChatNotificationToMember(receiverId, event.getChatroom(),
-                ChatNotification.of(event.getChatBubble(), event.getChatroom()));
-    }
-
 }
