@@ -1,6 +1,5 @@
 package com.team5.secondhand.chat.notification.service;
 
-import com.team5.secondhand.chat.bubble.event.ChatNotificationEvent;
 import com.team5.secondhand.chat.chatroom.domain.Chatroom;
 import com.team5.secondhand.chat.notification.domain.SseEvent;
 import com.team5.secondhand.chat.notification.domain.SseKey;
@@ -13,8 +12,7 @@ import java.util.NoSuchElementException;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -31,8 +29,7 @@ public class NotificationService implements SendChatNotificationUsecase {
     public SseEmitter subscribe(Long id, String lastEventId, HttpServletResponse response) {
         SseKey sseId = SseKey.of(id);
 
-        SseEmitter emitter = notificationRepository.save(sseId,
-                new SseEmitter(notificationProperties.getTimeOut()));
+        SseEmitter emitter = new SseEmitter(notificationProperties.getTimeOut());
         response.setHeader("X-Accel-Buffering", "no");
         response.setHeader("Last-Event-ID", sseId.getKey());
 
@@ -49,9 +46,10 @@ public class NotificationService implements SendChatNotificationUsecase {
             emitter.complete();
         });
 
+        notificationRepository.save(sseId, emitter);
         sendToClient(emitter, id, String.format("connected successfully member key : %s", id));
 
-        if (!lastEventId.isEmpty()) {
+        if (lastEventId != null && !lastEventId.isEmpty()) {
             Map<SseKey, SseEmitter> events = notificationRepository.findAllStartById(id);
             events.entrySet().stream()
                     .filter(entry -> lastEventId.compareTo(entry.getKey().getKey()) < 0)
