@@ -71,6 +71,8 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+processResources.dependsOn('copyGitSubmodule')
+
 task copyGitSubmodule(type: Copy) {
     from './src/main/resources/secret'
     include '*.yml'
