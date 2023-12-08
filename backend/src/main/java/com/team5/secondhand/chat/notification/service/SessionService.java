@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class SessionService {
+    //TODO session key pk로 변경
     private final RedisTemplate<String, String> redisSessionTemplate;
     private final String MAIN_KEY = "sessionStore";
 
