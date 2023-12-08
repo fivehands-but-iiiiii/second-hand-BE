@@ -1,4 +1,4 @@
-package com.team5.secondhand.integration.chat.notification.service;
+package com.team5.secondhand.integration.notification.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
@@ -74,12 +74,9 @@ class NotificationServiceTest extends FixtureFactory {
             // when
             sseEmitter.complete();
 
-            // then
-            await().untilAsserted(() -> {
-                log.debug("after: {}", notificationRepository.findAllStartById(id).size());
-                assertEquals(before.size()-1, notificationRepository.findAllStartById(id).size());
-            });
+            await().atLeast(Duration.ofMillis(1000));
 
+            // then
             SoftAssertions.assertSoftly(softAssertions -> {
                 softAssertions.assertThat(
                                 notificationRepository.findAllStartById(id).size())
@@ -95,10 +92,7 @@ class NotificationServiceTest extends FixtureFactory {
             SseEmitter sseEmitter = notificationService.subscribe(1L, null, httpServletResponse);
             sseEmitter.completeWithError(new RuntimeException());
 
-            await().untilAsserted(() -> {
-                log.debug("after: {}", notificationRepository.findAllStartById(id).size());
-                assertEquals(0, notificationRepository.findAllStartById(id).size());
-            });
+            await().atLeast(Duration.ofMillis(1000));
 
             // then
             SoftAssertions.assertSoftly(softAssertions -> {
@@ -116,6 +110,7 @@ class NotificationServiceTest extends FixtureFactory {
             SseEmitter sseEmitter = notificationService.subscribe(1L, "", httpServletResponse);
 
             await().atLeast(Duration.ofMillis(chatNotificationProperties.getTimeOut()));
+            await().until(() -> sseEmitter.getTimeout()==0);
 
             // then
             SoftAssertions.assertSoftly(softAssertions -> {

@@ -1,4 +1,4 @@
-package com.team5.secondhand.integration.chat.notification.repository;
+package com.team5.secondhand.integration.notification.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
