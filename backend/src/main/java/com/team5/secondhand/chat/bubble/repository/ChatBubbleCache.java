@@ -50,7 +50,7 @@ public class ChatBubbleCache {
     }
 
     public ChatBubble save(String key, ChatBubble chatBubble) {
-        operationsHelper.putToList(key, chatBubble);
+        operationsHelper.add(key, chatBubble);
         return chatBubble;
     }
 

@@ -40,7 +40,7 @@ public class BubbleEntity implements Serializable {
         return this.sender == memberId;
     }
 
-    public static BubbleEntity fromDomain(ChatBubble bubble) {
+    public static BubbleEntity from(ChatBubble bubble) {
         return BubbleEntity.builder()
                 .id(bubble.getId())
                 .chatroomId(bubble.getChatroomId())
