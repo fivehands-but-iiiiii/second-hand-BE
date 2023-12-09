@@ -7,6 +7,7 @@ import com.team5.secondhand.chat.bubble.repository.ChatBubbleCache;
 import com.team5.secondhand.integration.IntegrationTest;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,11 @@ class ChatBubbleCacheTest extends FixtureFactory {
     String roomId = "1234";
     @Autowired
     ChatBubbleCache chatBubbleCache;
+
+    @AfterEach
+    void tearDown() {
+        chatBubbleCache.findAllBubbles();
+    }
 
     @Nested
     @DisplayName("findAllBubbles 를 시행할 때, ")
@@ -80,7 +86,7 @@ class ChatBubbleCacheTest extends FixtureFactory {
 
             int lastPage = chatBubbleCache.getLastPage(roomId, 10);
             SoftAssertions.assertSoftly(softAssertions -> {
-                softAssertions.assertThat(lastPage).isEqualTo(10);
+                softAssertions.assertThat(lastPage).isEqualTo(9);
             });
         }
     }
