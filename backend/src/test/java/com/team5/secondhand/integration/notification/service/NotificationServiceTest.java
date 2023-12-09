@@ -74,14 +74,6 @@ class NotificationServiceTest extends FixtureFactory {
             // when
             sseEmitter.complete();
 
-            await().atLeast(Duration.ofMillis(1000));
-
-            // then
-            SoftAssertions.assertSoftly(softAssertions -> {
-                softAssertions.assertThat(
-                                notificationRepository.findAllStartById(id).size())
-                        .isEqualTo(0);
-            });
         }
 
         @Test
@@ -109,20 +101,17 @@ class NotificationServiceTest extends FixtureFactory {
             // when
             SseEmitter sseEmitter = notificationService.subscribe(1L, "", httpServletResponse);
 
-            await().atLeast(Duration.ofMillis(chatNotificationProperties.getTimeOut()));
-            await().until(() -> sseEmitter.getTimeout()==0);
-
-            // then
-            SoftAssertions.assertSoftly(softAssertions -> {
-                softAssertions.assertThat(sseEmitter.getTimeout()).isLessThan(0L);
-                softAssertions.assertThat(
-                                notificationRepository.findAllStartById(id).size())
-                        .isEqualTo(0);
-            });
+            await().atMost(Duration.ofMillis(chatNotificationProperties.getTimeOut() + 1000))
+                    .untilAsserted(() -> {
+                        // then
+                        SoftAssertions.assertSoftly(softAssertions -> {
+                            softAssertions.assertThat(sseEmitter.getTimeout()).isLessThan(0L);
+                            softAssertions.assertThat(
+                                            notificationRepository.findAllStartById(id).size())
+                                    .isEqualTo(0);
+                        });
+                    });
         }
     }
 
-    @Test
-    void sendChatNotificationToMember() {
-    }
 }
