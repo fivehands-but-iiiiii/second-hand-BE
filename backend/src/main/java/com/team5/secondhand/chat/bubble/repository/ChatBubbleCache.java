@@ -1,7 +1,9 @@
 package com.team5.secondhand.chat.bubble.repository;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.team5.secondhand.chat.bubble.domain.ChatBubble;
-import com.team5.secondhand.global.util.RedisOperationsHelper;
+import com.team5.secondhand.global.properties.ChatCacheProperties;
+import com.team5.secondhand.global.util.RedisListOperationsHelper;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +15,8 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class ChatBubbleCache {
 
-    private final RedisOperationsHelper operationsHelper;
+    private final RedisListOperationsHelper operationsHelper;
+    private final ChatCacheProperties chatBubbleProperties;
 
     private long getStartIndex(Pageable page) {
         return (-1L * page.getPageSize() * page.getPageNumber());
@@ -38,28 +41,36 @@ public class ChatBubbleCache {
         long startIndex = getStartIndex(pageable);
         long endIndex = startIndex - pageable.getPageSize();
 
-        List<ChatBubble> messages = operationsHelper.getList(key, endIndex - 1, startIndex,
+        List<ChatBubble> messages = operationsHelper.getList(generateChatLogKey(key), endIndex - 1, startIndex,
                 ChatBubble.class);
 
         return getSlice(messages, pageable);
     }
 
     public List<ChatBubble> findAllByRoomId(String key) {
-        long size = operationsHelper.size(key);
-        return operationsHelper.getList(key, 0, size, ChatBubble.class);
+        long size = operationsHelper.size(generateChatLogKey(key));
+        return operationsHelper.getList(generateChatLogKey(key), 0, size, ChatBubble.class);
     }
 
     public ChatBubble save(String key, ChatBubble chatBubble) {
-        operationsHelper.putToList(key, chatBubble);
+        operationsHelper.add(generateChatLogKey(key), chatBubble);
         return chatBubble;
     }
 
     public int getLastPage(String key, int pageSize) {
-        Long size = operationsHelper.size(key);
+        Long size = operationsHelper.size(generateChatLogKey(key));
         return (int) (size / pageSize);
     }
 
     public void clear(String key) {
-        operationsHelper.delete(key);
+        operationsHelper.delete(generateChatLogKey(key));
+    }
+
+    public List<ChatBubble> findAllBubbles() {
+        return operationsHelper.popAll(chatBubbleProperties.getKey(), ChatBubble.class);
+    }
+
+    private String generateChatLogKey (String roomId) {
+        return String.format("%s%s", chatBubbleProperties.getKey(), roomId);
     }
 }

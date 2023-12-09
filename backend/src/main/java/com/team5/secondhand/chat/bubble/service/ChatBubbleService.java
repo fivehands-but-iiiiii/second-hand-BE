@@ -35,19 +35,13 @@ public class ChatBubbleService {
         }
     }
 
+    @Transactional
     public ChatBubble saveChatBubble(ChatBubble chatBubble) {
         String key = generateChatLogKey(chatBubble.getChatroomId());
         return bubbleCache.save(key, chatBubble);
     }
 
-    @Async
-    @EventListener
-    public void getChatBubble(ChatBubbleArrivedEvent chatBubbleArrivedEvent) {
-        ChatBubble chatBubble = chatBubbleArrivedEvent.getChatBubble();
-        saveChatBubble(chatBubble);
-    }
-
     private String generateChatLogKey (String roomId) {
-        return String.format("%s%s:logs", chatBubbleProperties.getKey(), roomId);
+        return String.format("%s%s", chatBubbleProperties.getKey(), roomId);
     }
 }

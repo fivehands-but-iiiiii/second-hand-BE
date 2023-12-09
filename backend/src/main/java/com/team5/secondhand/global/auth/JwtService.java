@@ -32,8 +32,7 @@ public class JwtService {
 
     public Optional<String> getMemberId(String authorization) {
         try {
-            String token = getToken(authorization);
-            Claims claim = jwtUtils.getClaim(token);
+            Claims claim = jwtUtils.getClaim(authorization);
             MemberDetails loginMember = objectMapper.readValue((String) claim.get(jwtProperties.getClaimKey()), MemberDetails.class);
             
             return Optional.of(loginMember.getMemberId());

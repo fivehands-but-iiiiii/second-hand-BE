@@ -94,20 +94,6 @@ class RedisOperationsHelperTest extends TestContainer {
     }
 
     @Test
-    void putToList() {
-        String key = "member::2";
-
-        redisOperationsHelper.putToList(key, iirin);
-        List<Member> list = redisOperationsHelper.getList(key, 0, 1, Member.class);
-        Member savedMember = list.get(0);
-
-        SoftAssertions.assertSoftly(softAssertions -> {
-            softAssertions.assertThat(savedMember.getMemberId()).isEqualTo(iirin.getMemberId());
-            softAssertions.assertThat(savedMember.getProfileImgUrl()).isEqualTo(iirin.getProfileImgUrl());
-        });
-    }
-
-    @Test
     void delete() {
         String key = "delete::";
         redisOperationsHelper.put(key, iirin, null);
@@ -158,54 +144,4 @@ class RedisOperationsHelperTest extends TestContainer {
         }
     }
 
-    @Test
-    void getAll() {
-        String key = "test::";
-        redisOperationsHelper.putToList(key, dewey);
-        redisOperationsHelper.putToList(key, dewey);
-        redisOperationsHelper.putToList(key, dewey);
-        redisOperationsHelper.putToList(key, dewey);
-        redisOperationsHelper.putToList(key, dewey);
-        redisOperationsHelper.putToList(key, dewey);
-        redisOperationsHelper.putToList(key, iirin);
-        redisOperationsHelper.putToList(key, iirin);
-        redisOperationsHelper.putToList(key, iirin);
-        redisOperationsHelper.putToList(key, iirin);
-        redisOperationsHelper.putToList(key, iirin);
-        redisOperationsHelper.putToList(key, iirin);
-
-        List<Member> members = redisOperationsHelper.getAll(key, Member.class);
-
-        SoftAssertions.assertSoftly(softAssertions -> {
-            softAssertions.assertThat(members).hasSize(12);
-            softAssertions.assertThat(members.get(7).getMemberId()).isEqualTo(iirin.getMemberId());
-        });
-
-    }
-
-    @Test
-    void getList() {
-        String key = "test::";
-        redisOperationsHelper.putToList(key, dewey);
-        redisOperationsHelper.putToList(key, dewey);
-        redisOperationsHelper.putToList(key, iirin);
-        redisOperationsHelper.putToList(key, iirin);
-
-        List<Member> members = redisOperationsHelper.getList(key, 0, 10, Member.class);
-        assertThat(members).hasSize(4);
-    }
-
-    @Test
-    void size() {
-        String key = "test::";
-        redisOperationsHelper.putToList(key, dewey);
-        redisOperationsHelper.putToList(key, dewey);
-        redisOperationsHelper.putToList(key, iirin);
-        redisOperationsHelper.putToList(key, iirin);
-        redisOperationsHelper.putToList(key, iirin);
-
-        List<Member> members = redisOperationsHelper.getList(key, 0, 3, Member.class);
-
-        assertThat(members).hasSize(3);
-    }
 }

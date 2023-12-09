@@ -26,7 +26,7 @@ public class ChatroomMetaCache {
     }
 
     public List<Chatroom> findAll() {
-        return operationsHelper.getAll(generateKey("*"), Chatroom.class);
+        return operationsHelper.findAll(generateKey("*"), Chatroom.class);
     }
 
     public void clear() {
